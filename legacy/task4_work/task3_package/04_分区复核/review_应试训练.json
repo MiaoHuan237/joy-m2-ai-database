@@ -1,0 +1,730 @@
+[
+  {
+    "question_id": "M2QD-DA-TRAIN-Q1",
+    "source_section": "应试训练",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "pass",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "pass",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "已知曲线 $x\\ln y^{2}+y^{2}=9$ 与 $y$ 轴相交于两点。求曲线在这两个交点处的切线方程。",
+    "solution_verified": "令 $x=0$，得 $y=\\pm3$。对 $x\\ln y^2+y^2=9$ 关于 $x$ 隐式求导：$\\ln y^2+(2x/y+2y)\\,dy/dx=0$，故 $dy/dx=-y\\ln y^2/(2x+2y^2)$。在 $(0,3)$ 处斜率为 $-\\ln3/3$，切线为 $y=-(\\ln3)x/3+3$；在 $(0,-3)$ 处斜率为 $\\ln3/3$，切线为 $y=(\\ln3)x/3-3$。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "checked_pass",
+    "primary_type": "切线与法线",
+    "tags": ["切点未知", "隐函数求导"],
+    "difficulty_level": 3,
+    "difficulty_dimensions": {"概念数": 1, "推理链长度": 2, "建模强度": 0, "代数负担": 1, "条件处理": 1, "易错风险": 1},
+    "difficulty_evidence": "须先求两个未知切点，再作隐式求导并分别写出切线，属多步骤标准题。",
+    "correction_status": "confirmed",
+    "corrections": [
+      {
+        "field": "solution_source_file/solution_source_member",
+        "error_origin": "database_mapping",
+        "original": "M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd",
+        "corrected": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd",
+        "reason": "当前成员只含题面，出版社答案实际来自甲部答案 MMD。",
+        "evidence": "甲部答案 MMD 第5–30行完整出现本题答案；该成员 SHA-256 为 bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0。"
+      },
+      {
+        "field": "solution_source_member_sha256",
+        "error_origin": "database_mapping",
+        "original": "4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5",
+        "corrected": "bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+        "reason": "答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。",
+        "evidence": "对微分的应用甲部.mmd.zip内c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd直接解压计算SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第5–30行。"
+      }
+    ],
+    "duplicate_status": "historical_reference",
+    "duplicate_reference": "DSE-2014-Q3",
+    "duplicate_evidence": "来源明确标注为 HKDSE M2 2014 Q3；不属于本批45题内重复。",
+    "unresolved_issues": ["答案来源档案及成员映射尚未在正式记录中改正。"],
+    "audit_notes": "题界、两种语言、6分总分及两条切线均与原题和独立复算一致。",
+    "record_status": "audit_pending"
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q2",
+    "source_section": "应试训练",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "pass",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "pass",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "求曲线 $C:x^{2}+2xy-y^{2}=1$ 的两条经过点 $A(0,-1)$ 的切线方程。",
+    "solution_verified": "隐式求导得 $dy/dx=(x+y)/(y-x)$。设切点为 $P(a,b)$，则 $P$ 在曲线上，且切线经过 $A$，所以 $(a+b)/(b-a)=(b+1)/a$。结合 $a^2+2ab-b^2=1$ 得 $b=a+1$，继而 $a=1$ 或 $a=-1$。相应切点为 $(1,2)$、$(-1,0)$，两条切线分别为 $3x-y-1=0$ 和 $x+y+1=0$。可能的竖直切线不经过 $A$，故没有遗漏。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "checked_pass",
+    "primary_type": "切线与法线",
+    "tags": ["过指定点的切线", "切点未知", "隐函数求导"],
+    "difficulty_level": 4,
+    "difficulty_dimensions": {"概念数": 2, "推理链长度": 2, "建模强度": 0, "代数负担": 2, "条件处理": 2, "易错风险": 2},
+    "difficulty_evidence": "须以未知切点建立切线斜率条件并联立隐式曲线方程，还要排查斜率分母情形。",
+    "correction_status": "confirmed",
+    "corrections": [
+      {
+        "field": "solution_source_file/solution_source_member",
+        "error_origin": "database_mapping",
+        "original": "M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd",
+        "corrected": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd",
+        "reason": "当前成员只含题面，出版社答案实际来自甲部答案 MMD。",
+        "evidence": "甲部答案 MMD 第31–96行完整出现本题答案。"
+      },
+      {
+        "field": "solution_source_member_sha256",
+        "error_origin": "database_mapping",
+        "original": "4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5",
+        "corrected": "bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+        "reason": "答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。",
+        "evidence": "直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第31–96行。"
+      }
+    ],
+    "duplicate_status": "historical_reference",
+    "duplicate_reference": "HKDSE-M2-PP-Q9",
+    "duplicate_evidence": "来源答案明确标注 HKDSE Math M2 Practice Paper Q9；不属于本批45题内重复。",
+    "unresolved_issues": ["答案来源档案及成员映射尚未在正式记录中改正。"],
+    "audit_notes": "6分总分及两条切线均核对无误；独立检查了被原解斜率等式除去的特殊情形。",
+    "record_status": "audit_pending"
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q3",
+    "source_section": "应试训练",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "pass",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "issue",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "考虑连续函数 $f(x)=\\dfrac{x^{2}-1}{x^{2}+3}$。求曲线 $y=f(x)$ 的所有极值点。",
+    "solution_verified": "$f'(x)=8x/(x^2+3)^2$。由于分母恒正，$f'(x)<0$（$x<0$），$f'(0)=0$，$f'(x)>0$（$x>0$），故函数在 $x=0$ 处由减转增。又 $f(0)=-1/3$，所以唯一极值点为极小点 $(0,-1/3)$。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "checked_pass",
+    "primary_type": "极值与曲线性质",
+    "tags": ["极小点"],
+    "difficulty_level": 2,
+    "difficulty_dimensions": {"概念数": 1, "推理链长度": 1, "建模强度": 0, "代数负担": 1, "条件处理": 0, "易错风险": 1},
+    "difficulty_evidence": "求导、解唯一驻点并作一次符号判别即可完成。",
+    "correction_status": "confirmed",
+    "corrections": [
+      {
+        "field": "marks_total",
+        "error_origin": "database_mapping",
+        "original": "null（未记录）",
+        "corrected": "4",
+        "reason": "题面未印分值，但出版社答案的分项标记合计4分且末行明确标示（4）。",
+        "evidence": "甲部答案 MMD 第98–126行；第106、108、117、125行各1分，第126行为（4）。"
+      },
+      {
+        "field": "solution_source_file/solution_source_member",
+        "error_origin": "database_mapping",
+        "original": "M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd",
+        "corrected": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd",
+        "reason": "当前成员只含题面，出版社答案实际来自甲部答案 MMD。",
+        "evidence": "甲部答案 MMD 第98–126行完整出现本题答案。"
+      },
+      {
+        "field": "solution_source_member_sha256",
+        "error_origin": "database_mapping",
+        "original": "4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5",
+        "corrected": "bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+        "reason": "答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。",
+        "evidence": "直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第98–126行。"
+      }
+    ],
+    "duplicate_status": "adapted",
+    "duplicate_reference": "M2QD-DA-TRAIN-Q7",
+    "duplicate_evidence": "与Q7使用完全相同的函数及开首句，但本题考极值，Q7考拐点，并非整题重复。",
+    "unresolved_issues": ["正式记录仍缺总分4及正确答案来源映射。"],
+    "audit_notes": "数学答案正确；原题档第494行没有题面分值，4分由出版社答案页可靠恢复。",
+    "record_status": "audit_pending"
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q4",
+    "source_section": "应试训练",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "pass",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "pass",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "设 $f(x)=\\dfrac{\\ln x}{x}$，其中 $x>0$。\n(a) 求 $f(x)$ 的极值。\n(b) 利用(a)的结果，证明对于 $x>0$，$e^x\\ge x^e$。",
+    "solution_verified": "(a) $f'(x)=(1-\\ln x)/x^2$。当 $0<x<e$ 时 $f'(x)>0$，当 $x>e$ 时 $f'(x)<0$，故 $x=e$ 时取得最大值 $f(e)=1/e$。\n(b) 对一切 $x>0$，由(a)得 $\\ln x/x\\le1/e$，即 $e\\ln x\\le x$。两边取指数得 $x^e\\le e^x$；等号在 $x=e$ 时成立。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "checked_pass",
+    "primary_type": "极值与曲线性质",
+    "tags": ["极大点"],
+    "difficulty_level": 3,
+    "difficulty_dimensions": {"概念数": 2, "推理链长度": 2, "建模强度": 0, "代数负担": 1, "条件处理": 1, "易错风险": 1},
+    "difficulty_evidence": "先作极值判别，再把最大值不等式转换为指数不等式，推理链跨两个小问。",
+    "correction_status": "confirmed",
+    "corrections": [
+      {
+        "field": "solution_source_file/solution_source_member",
+        "error_origin": "database_mapping",
+        "original": "M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd",
+        "corrected": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd",
+        "reason": "当前成员只含题面，出版社答案实际来自甲部答案 MMD。",
+        "evidence": "甲部答案 MMD 第127–176行完整出现本题答案。"
+      },
+      {
+        "field": "solution_source_member_sha256",
+        "error_origin": "database_mapping",
+        "original": "4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5",
+        "corrected": "bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+        "reason": "答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。",
+        "evidence": "直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第127–176行。"
+      }
+    ],
+    "duplicate_status": "new",
+    "duplicate_reference": "",
+    "duplicate_evidence": "未发现本批记录中有相同函数、两小问要求及不等式结论的整题。",
+    "unresolved_issues": ["答案来源档案及成员映射尚未在正式记录中改正。"],
+    "audit_notes": "6分结构及证明方向均正确，并补明等号条件。",
+    "record_status": "audit_pending"
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q5",
+    "source_section": "应试训练",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "pass",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "pass",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "定义 $f(x)=36x^2+4x^3-3x^4$。求 $f(x)$ 的最大值。",
+    "solution_verified": "$f'(x)=-12x(x-3)(x+2)$，驻点为 $x=-2,0,3$。导数符号依次为 $+,-,+,-$，所以 $x=-2$ 和 $x=3$ 为极大点，且 $f(-2)=64$、$f(3)=189$。由于 $x\\to\\pm\\infty$ 时 $f(x)\\to-\\infty$，故全局最大值为 $189$。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "checked_pass",
+    "primary_type": "最值与最优化",
+    "tags": ["极大点"],
+    "difficulty_level": 3,
+    "difficulty_dimensions": {"概念数": 1, "推理链长度": 2, "建模强度": 0, "代数负担": 2, "条件处理": 1, "易错风险": 1},
+    "difficulty_evidence": "须处理三个驻点、比较两个局部极大值，并确认无穷远行为以判定全局最大值。",
+    "correction_status": "confirmed",
+    "corrections": [
+      {
+        "field": "solution_source_file/solution_source_member",
+        "error_origin": "database_mapping",
+        "original": "M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd",
+        "corrected": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd",
+        "reason": "当前成员只含题面，出版社答案实际来自甲部答案 MMD。",
+        "evidence": "甲部答案 MMD 第177–199行完整出现本题答案。"
+      },
+      {
+        "field": "solution_source_member_sha256",
+        "error_origin": "database_mapping",
+        "original": "4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5",
+        "corrected": "bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+        "reason": "答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。",
+        "evidence": "直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第177–199行。"
+      }
+    ],
+    "duplicate_status": "new",
+    "duplicate_reference": "",
+    "duplicate_evidence": "未发现本批记录中有相同多项式及相同全局最大值要求的整题。",
+    "unresolved_issues": ["答案来源档案及成员映射尚未在正式记录中改正。"],
+    "audit_notes": "4分答案数值与导数符号表复算一致。",
+    "record_status": "audit_pending"
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q6",
+    "source_section": "应试训练",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "pass",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "pass",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "定义 $f(x)=2x^3-3x^2-12x$，其中 $x\\ge-3$。求 $f(x)$ 的最小值。",
+    "solution_verified": "$f'(x)=6(x-2)(x+1)$，驻点为 $x=-1,2$。在定义域 $[-3,\\infty)$ 上，$f$ 先增、后减、再增；候选最小值为端点 $f(-3)=-45$ 与局部极小值 $f(2)=-20$。比较得全局最小值为 $-45$。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "checked_pass",
+    "primary_type": "最值与最优化",
+    "tags": ["极小点", "区间最值", "端点比较"],
+    "difficulty_level": 3,
+    "difficulty_dimensions": {"概念数": 1, "推理链长度": 2, "建模强度": 0, "代数负担": 1, "条件处理": 2, "易错风险": 1},
+    "difficulty_evidence": "除驻点判别外，还必须处理半闭定义域的端点并比较候选值。",
+    "correction_status": "confirmed",
+    "corrections": [
+      {
+        "field": "solution_source_file/solution_source_member",
+        "error_origin": "database_mapping",
+        "original": "M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd",
+        "corrected": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd",
+        "reason": "当前成员只含题面，出版社答案实际来自甲部答案 MMD。",
+        "evidence": "甲部答案 MMD 第200–227行完整出现本题答案。"
+      },
+      {
+        "field": "solution_source_member_sha256",
+        "error_origin": "database_mapping",
+        "original": "4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5",
+        "corrected": "bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+        "reason": "答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。",
+        "evidence": "直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第200–227行。"
+      }
+    ],
+    "duplicate_status": "new",
+    "duplicate_reference": "",
+    "duplicate_evidence": "未发现本批记录中有相同多项式、同一定义域端点及最小值要求的整题。",
+    "unresolved_issues": ["答案来源档案及成员映射尚未在正式记录中改正。"],
+    "audit_notes": "4分题面及端点比较无误；来源答案虽未计算局部极大值，仍不影响最小值结论。",
+    "record_status": "audit_pending"
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q7",
+    "source_section": "应试训练",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "pass",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "issue",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "needs_correction"
+    },
+    "question_text_zh_reviewed": "考虑连续函数 $f(x)=\\dfrac{x^2-1}{x^2+3}$。求曲线 $y=f(x)$ 的所有拐点。",
+    "solution_verified": "$f'(x)=8x/(x^2+3)^2$，$f''(x)=-24(x-1)(x+1)/(x^2+3)^3$。因此 $f''(x)=0$ 给出 $x=-1,1$；其符号在 $x=-1$ 处由负变正，在 $x=1$ 处由正变负，凹凸性均发生改变。又 $f(-1)=f(1)=0$，故全部拐点为 $(-1,0)$ 与 $(1,0)$。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "corrected_verified",
+    "primary_type": "极值与曲线性质",
+    "tags": ["拐点", "凹凸性"],
+    "difficulty_level": 3,
+    "difficulty_dimensions": {"概念数": 1, "推理链长度": 2, "建模强度": 0, "代数负担": 2, "条件处理": 0, "易错风险": 1},
+    "difficulty_evidence": "须连续求两阶导数、因式分解，并验证二阶导数在两个候选点均变号。",
+    "correction_status": "confirmed",
+    "corrections": [
+      {
+        "field": "marks_total",
+        "error_origin": "database_mapping",
+        "original": "null（未记录）",
+        "corrected": "6",
+        "reason": "题面未印分值，但出版社答案的分项标记合计6分且末行明确标示（6）。",
+        "evidence": "甲部答案 MMD 第228–258行；各评分标记合计6分，第258行为（6）。"
+      },
+      {
+        "field": "solution_original",
+        "error_origin": "source_original",
+        "original": "答案在算得 $f(-1)=f(1)=0$ 后结束，没有写出所求拐点结论。",
+        "corrected": "全部拐点为 $(-1,0)$ 与 $(1,0)$。",
+        "reason": "题目要求点的坐标；只列函数值而不把横、纵坐标组成最终答案不完整。",
+        "evidence": "甲部答案 MMD 第251–258行在两个函数值后直接进入评分及下一题；独立复算 $f''$ 在 $x=\\pm1$ 两处均变号。"
+      },
+      {
+        "field": "solution_source_file/solution_source_member",
+        "error_origin": "database_mapping",
+        "original": "M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd",
+        "corrected": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd",
+        "reason": "当前成员只含题面，出版社答案实际来自甲部答案 MMD。",
+        "evidence": "甲部答案 MMD 第228–258行完整出现本题答案。"
+      },
+      {
+        "field": "solution_source_member_sha256",
+        "error_origin": "database_mapping",
+        "original": "4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5",
+        "corrected": "bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+        "reason": "答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。",
+        "evidence": "直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第228–258行。"
+      }
+    ],
+    "duplicate_status": "adapted",
+    "duplicate_reference": "M2QD-DA-TRAIN-Q3",
+    "duplicate_evidence": "与Q3使用完全相同的函数及开首句，但本题考拐点，Q3考极值，并非整题重复。",
+    "unresolved_issues": ["正式记录仍缺总分6、完整最终结论及正确答案来源映射。"],
+    "audit_notes": "来源推导和坐标计算正确，但答案文本漏写最终的两个拐点。",
+    "record_status": "audit_pending"
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q8",
+    "source_section": "应试训练",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "pass",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "pass",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "设 $y=(7x+x^2)e^{-x}$。\n(a) 求 $dy/dx$ 及 $d^2y/dx^2$。\n(b) 某人声称曲线 $y=(7x+x^2)e^{-x}$ 有两个拐点。你是否同意？解释你的答案。",
+    "solution_verified": "(a) $dy/dx=(-x^2-5x+7)e^{-x}$，$d^2y/dx^2=(x^2+3x-12)e^{-x}$。\n(b) 因 $e^{-x}>0$，二阶导数的零点为 $\\alpha=(-3-\\sqrt{57})/2$、$\\beta=(-3+\\sqrt{57})/2$，且其符号在两点外为正、两点之间为负，故两处均为拐点。因此同意该声称；两点可写成 $(\\alpha,(7\\alpha+\\alpha^2)e^{-\\alpha})$ 与 $(\\beta,(7\\beta+\\beta^2)e^{-\\beta})$。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "corrected_verified",
+    "primary_type": "极值与曲线性质",
+    "tags": ["拐点", "凹凸性"],
+    "difficulty_level": 3,
+    "difficulty_dimensions": {"概念数": 1, "推理链长度": 2, "建模强度": 0, "代数负担": 2, "条件处理": 1, "易错风险": 1},
+    "difficulty_evidence": "须两次使用乘积及链式法则，再解二次方程并用变号判定两处拐点。",
+    "correction_status": "confirmed",
+    "corrections": [
+      {
+        "field": "solution_original",
+        "error_origin": "source_original",
+        "original": "甲部答案 MMD 第285–286行在求得两个根后连续出现两个1M。",
+        "corrected": "求得两个根的步骤只保留一个1M，使(a)3分、(b)3分，总分为6分。",
+        "reason": "保留两个相邻1M会令可见评分标记合计7分，与题面及答案总分6冲突。",
+        "evidence": "甲部答案 MMD 第259–298行；v116_import_snapshot.json 的 train-q08-duplicate-mark-token 亦记录同一出版社评分标记校订。"
+      },
+      {
+        "field": "solution_source_file/solution_source_member",
+        "error_origin": "database_mapping",
+        "original": "M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd",
+        "corrected": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd",
+        "reason": "当前成员只含题面，出版社答案实际来自甲部答案 MMD。",
+        "evidence": "甲部答案 MMD 第259–298行完整出现本题答案。"
+      },
+      {
+        "field": "solution_source_member_sha256",
+        "error_origin": "database_mapping",
+        "original": "4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5",
+        "corrected": "bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+        "reason": "答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。",
+        "evidence": "直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第259–298行。"
+      }
+    ],
+    "duplicate_status": "adapted",
+    "duplicate_reference": "DSE-2022-Q4",
+    "duplicate_evidence": "与2022-Q4同属“二阶导数—拐点声称”结构，但函数系数及结论数据不同。",
+    "unresolved_issues": ["答案来源档案及成员映射尚未在正式记录中改正。"],
+    "audit_notes": "数学答案无误；输入的solution_original已删除重复1M，但原记录没有保留该校订证据，本审计已补记。",
+    "record_status": "audit_pending"
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q9",
+    "source_section": "应试训练",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "pass",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "pass",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "对所有实数 $x\\ne-4$，定义 $f(x)=\\dfrac{4x^2-5x+1}{x+4}$。求曲线 $y=f(x)$ 的所有渐近线。",
+    "solution_verified": "因分母在 $x=-4$ 为零而分子值为85，故垂直渐近线为 $x=-4$。多项式除法得 $f(x)=4x-21+85/(x+4)$，余项在 $x\\to\\pm\\infty$ 时趋于0，故斜渐近线为 $y=4x-21$。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "checked_pass",
+    "primary_type": "极值与曲线性质",
+    "tags": ["渐近线"],
+    "difficulty_level": 2,
+    "difficulty_dimensions": {"概念数": 1, "推理链长度": 1, "建模强度": 0, "代数负担": 1, "条件处理": 1, "易错风险": 0},
+    "difficulty_evidence": "检查分母零点并作一次多项式除法即可得到两条渐近线。",
+    "correction_status": "confirmed",
+    "corrections": [
+      {
+        "field": "solution_source_file/solution_source_member",
+        "error_origin": "database_mapping",
+        "original": "M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd",
+        "corrected": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd",
+        "reason": "当前成员只含题面，出版社答案实际来自甲部答案 MMD。",
+        "evidence": "甲部答案 MMD 第300–311行完整出现本题答案。"
+      },
+      {
+        "field": "solution_source_member_sha256",
+        "error_origin": "database_mapping",
+        "original": "4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5",
+        "corrected": "bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+        "reason": "答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。",
+        "evidence": "直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第300–311行。"
+      }
+    ],
+    "duplicate_status": "new",
+    "duplicate_reference": "",
+    "duplicate_evidence": "未发现本批记录中有相同有理函数及同组渐近线的整题。",
+    "unresolved_issues": ["答案来源档案及成员映射尚未在正式记录中改正。"],
+    "audit_notes": "3分题答、余数85及两条渐近线均复算无误。",
+    "record_status": "audit_pending"
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q10",
+    "source_section": "应试训练",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "pass",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "pass",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "对所有实数 $x\\ne1$，定义 $r(x)=\\dfrac{x^3-3x^2+3x+11}{(x-1)^2}$。\n(a) 求曲线 $y=r(x)$ 的渐近线。\n(b) 求 $r'(x)$。\n(c) 求曲线 $y=r(x)$ 的拐点数目。",
+    "solution_verified": "先化为 $r(x)=x-1+12/(x-1)^2$。\n(a) 垂直渐近线为 $x=1$，斜渐近线为 $y=x-1$。\n(b) $r'(x)=1-24/(x-1)^3$。\n(c) $r''(x)=72/(x-1)^4>0$（$x\\ne1$），曲线在定义域各区间内均凹向上；$x=1$ 又不在定义域内，故没有拐点，数目为0。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "checked_pass",
+    "primary_type": "极值与曲线性质",
+    "tags": ["渐近线", "拐点", "凹凸性"],
+    "difficulty_level": 4,
+    "difficulty_dimensions": {"概念数": 2, "推理链长度": 2, "建模强度": 0, "代数负担": 1, "条件处理": 2, "易错风险": 1},
+    "difficulty_evidence": "须识别立方展开作关键化简，并跨渐近线、一阶导数、二阶导数及定义域整合判断。",
+    "correction_status": "confirmed",
+    "corrections": [
+      {
+        "field": "solution_source_file/solution_source_member",
+        "error_origin": "database_mapping",
+        "original": "M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd",
+        "corrected": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd",
+        "reason": "当前成员只含题面，出版社答案实际来自甲部答案 MMD。",
+        "evidence": "甲部答案 MMD 第313–334行完整出现本题答案。"
+      },
+      {
+        "field": "solution_source_member_sha256",
+        "error_origin": "database_mapping",
+        "original": "4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5",
+        "corrected": "bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+        "reason": "答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。",
+        "evidence": "直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第313–334行。"
+      }
+    ],
+    "duplicate_status": "adapted",
+    "duplicate_reference": "DSE-2021-Q5",
+    "duplicate_evidence": "保留2021-Q5的三小问有理函数分析结构，但函数数据经改编。",
+    "unresolved_issues": ["答案来源档案及成员映射尚未在正式记录中改正。"],
+    "audit_notes": "6分三小问全部复算通过，特别核实了不连续点不能构成拐点。",
+    "record_status": "audit_pending"
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q11",
+    "source_section": "应试训练",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "revised",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "pass",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "考虑有理函数 $f(x)=\\dfrac{x^2+6x-3}{x-1}$。已知符号表各列依次为 $x<-1$、$x=-1$、$-1<x<1$、$x=1$、$1<x<3$、$x=3$、$x>3$；相应的 $f'(x)$ 符号为 $+$、$0$、$-$、未定义、$-$、$0$、$+$，$f''(x)$ 符号为 $-$、$-$、$-$、未定义、$+$、$+$、$+$。（“+”和“−”分别表示正值和负值。）\n(a) 求曲线 $y=f(x)$ 的所有极大点及／或极小点，并判断曲线是否有拐点。\n(b) 求曲线的渐近线。\n(c) 描绘曲线。",
+    "solution_verified": "(a) $f(-1)=4$、$f(3)=12$。由一阶导数变号，极大点为 $(-1,4)$，极小点为 $(3,12)$。二阶导数只在 $x=1$ 两侧变号，但 $x=1$ 不在定义域内，故没有拐点。\n(b) $f(x)=x+7+4/(x-1)$，故垂直渐近线为 $x=1$，斜渐近线为 $y=x+7$。\n(c) $x<1$ 的分支在斜渐近线下方，经过极大点 $(-1,4)$，并在 $x\\to1^-$ 时趋于 $-\\infty$；$x>1$ 的分支在斜渐近线上方，在 $x\\to1^+$ 时趋于 $+\\infty$，经过极小点 $(3,12)$ 后趋近 $y=x+7$。此描述与出版社图像一致。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "checked_pass",
+    "primary_type": "极值与曲线性质",
+    "tags": ["极大点", "极小点", "拐点", "渐近线", "曲线作图"],
+    "difficulty_level": 4,
+    "difficulty_dimensions": {"概念数": 2, "推理链长度": 2, "建模强度": 0, "代数负担": 1, "条件处理": 2, "易错风险": 2},
+    "difficulty_evidence": "须综合两阶导数符号、间断点、斜渐近线和极值信息完成整幅曲线。",
+    "correction_status": "confirmed",
+    "corrections": [
+      {
+        "field": "question_text_zh",
+        "error_origin": "mathpix_conversion",
+        "original": "（ ↑＋與 －－」分別標示 「正值」與「負值」。）",
+        "corrected": "（“+”和“−”分别表示“正值”和“负值”。）",
+        "reason": "原始MMD的引号及正负号被OCR破坏；输入记录已作语义正确的规范化，但未保存校订证据。",
+        "evidence": "题目 MMD 第871行；英文对应说明见第855行，符号表见第849–854行。"
+      },
+      {
+        "field": "solution_source_file/solution_source_member",
+        "error_origin": "database_mapping",
+        "original": "M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd",
+        "corrected": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd",
+        "reason": "当前成员只含题面，出版社答案及曲线图实际来自甲部答案 MMD。",
+        "evidence": "甲部答案 MMD 第336–365行；曲线图为 c2e97ff4-9258-43ff-802f-ac95d2c5c0e2-06_644_1010_242_343.jpg，SHA-256 0b12a704a1a6765e08d8f5ec77562a1f157fcfaab2739cf9b11f656ffc103814。"
+      },
+      {
+        "field": "solution_source_member_sha256",
+        "error_origin": "database_mapping",
+        "original": "4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5",
+        "corrected": "bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+        "reason": "答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。",
+        "evidence": "直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第336–365行。"
+      }
+    ],
+    "duplicate_status": "adapted",
+    "duplicate_reference": "DSE-2013-Q5",
+    "duplicate_evidence": "采用2013-Q5的符号表—极值—渐近线—作图结构，但函数及结果有改编。",
+    "unresolved_issues": ["答案来源档案及成员映射尚未在正式记录中改正。"],
+    "audit_notes": "8分题答及出版社曲线图已逐项核对；题目无需输入图，答案图已用原图验证。",
+    "record_status": "audit_pending"
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q12",
+    "source_section": "应试训练",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "revised",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "pass",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "考虑有理函数 $f(x)=\\dfrac{x^2+2}{x^2-1}$。已知符号表各列依次为 $x<-1$、$x=-1$、$-1<x<0$、$x=0$、$0<x<1$、$x=1$、$x>1$；相应的 $f'(x)$ 符号为 $+$、未定义、$+$、$0$、$-$、未定义、$-$，$f''(x)$ 符号为 $+$、未定义、$-$、$-$、$-$、未定义、$+$。（“+”和“−”分别表示正值和负值。）\n(a) 求曲线 $y=f(x)$ 的所有极大点及／或极小点，并判断曲线是否有拐点。\n(b) 求曲线的渐近线。\n(c) 描绘曲线。",
+    "solution_verified": "(a) $f(0)=-2$，一阶导数在 $x=0$ 由正变负，故极大点为 $(0,-2)$，没有极小点。二阶导数只在不属于定义域的 $x=\\pm1$ 两侧变号，故没有拐点。\n(b) 垂直渐近线为 $x=-1$、$x=1$；因 $f(x)=1+3/(x^2-1)$，水平渐近线为 $y=1$。\n(c) 曲线为偶函数；两条外侧分支均在 $y=1$ 上方，靠近垂直渐近线时趋于 $+\\infty$，当 $|x|\\to\\infty$ 时从上方趋近 $y=1$；内侧分支在 $x=\\pm1$ 附近趋于 $-\\infty$，并在 $(0,-2)$ 取得极大值。此描述与出版社图像一致。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "checked_pass",
+    "primary_type": "极值与曲线性质",
+    "tags": ["极大点", "极小点", "拐点", "渐近线", "曲线作图"],
+    "difficulty_level": 4,
+    "difficulty_dimensions": {"概念数": 2, "推理链长度": 2, "建模强度": 0, "代数负担": 1, "条件处理": 2, "易错风险": 2},
+    "difficulty_evidence": "须综合间断点、两阶导数符号、三条渐近线与偶对称性完成曲线全局分析。",
+    "correction_status": "confirmed",
+    "corrections": [
+      {
+        "field": "question_text_zh",
+        "error_origin": "mathpix_conversion",
+        "original": "（ $\\lceil+\\rfloor$ 與 $\\Gamma-$ 」分別標示 「正值」與「負值」。）",
+        "corrected": "（“+”和“−”分别表示“正值”和“负值”。）",
+        "reason": "原始MMD的引号及正负号被OCR误识为LaTeX符号；输入记录已规范化但未保存校订证据。",
+        "evidence": "题目 MMD 第905行；英文对应说明见第889行，符号表见第883–888行。"
+      },
+      {
+        "field": "solution_source_file/solution_source_member",
+        "error_origin": "database_mapping",
+        "original": "M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd",
+        "corrected": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd",
+        "reason": "当前成员只含题面，出版社答案及曲线图实际来自甲部答案 MMD。",
+        "evidence": "甲部答案 MMD 第367–383行；曲线图为 c2e97ff4-9258-43ff-802f-ac95d2c5c0e2-06_402_804_1622_347.jpg，SHA-256 23990703bb7a2d8b7da866001b01a80da8a3292cdd7f92d5a7872434996792ac。"
+      },
+      {
+        "field": "solution_source_member_sha256",
+        "error_origin": "database_mapping",
+        "original": "4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5",
+        "corrected": "bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+        "reason": "答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。",
+        "evidence": "直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第367–383行。"
+      }
+    ],
+    "duplicate_status": "historical_reference",
+    "duplicate_reference": "DSE-2013-Q5",
+    "duplicate_evidence": "来源明确标注为 HKDSE M2 2013 Q5；不属于本批45题内重复。",
+    "unresolved_issues": ["答案来源档案及成员映射尚未在正式记录中改正。"],
+    "audit_notes": "8分题答及出版社曲线图已逐项核对；题目无需输入图，答案图已用原图验证。",
+    "record_status": "audit_pending"
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q13",
+    "source_section": "应试训练",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "pass",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "issue",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "玻璃杯中水的体积 $V\\,\\mathrm{cm}^3$ 由 $V=\\dfrac{\\pi(h^3+3h^2+3h)}{12}$ 给出，其中 $0\\le h\\le4$，$h\\,\\mathrm{cm}$ 为水深。起初杯中装满水；杯底有一小孔，水以恒定速率 $\\pi\\,\\mathrm{cm}^3\\,\\mathrm{s}^{-1}$ 漏出。求水深为 $3\\,\\mathrm{cm}$ 时水深的变化率。",
+    "solution_verified": "$dV/dh=\\pi(h+1)^2/4$，而漏水表示 $dV/dt=-\\pi\\,\\mathrm{cm}^3\\,\\mathrm{s}^{-1}$。由链式法则 $dV/dt=[\\pi(h+1)^2/4]dh/dt$。当 $h=3$ 时，$-\\pi=4\\pi\\,dh/dt$，故 $dh/dt=-1/4\\,\\mathrm{cm}\\,\\mathrm{s}^{-1}$。负号表示水深下降。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "checked_pass",
+    "primary_type": "变率",
+    "tags": ["相关变化率", "体积变化"],
+    "difficulty_level": 2,
+    "difficulty_dimensions": {"概念数": 1, "推理链长度": 1, "建模强度": 1, "代数负担": 0, "条件处理": 1, "易错风险": 1},
+    "difficulty_evidence": "体积关系及即时数据均已给出，只需一次链式相关变化率并处理漏出负号。",
+    "correction_status": "confirmed",
+    "corrections": [
+      {
+        "field": "marks_total",
+        "error_origin": "database_mapping",
+        "original": "null（未记录）",
+        "corrected": "3",
+        "reason": "题面未印分值，但出版社答案的分项标记合计3分且末行明确标示（3）。",
+        "evidence": "甲部答案 MMD 第385–405行；第392、402、403行各1分，第404行为（3）。"
+      },
+      {
+        "field": "solution_source_file/solution_source_member",
+        "error_origin": "database_mapping",
+        "original": "M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd",
+        "corrected": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd",
+        "reason": "当前成员只含题面，出版社答案实际来自甲部答案 MMD。",
+        "evidence": "甲部答案 MMD 第385–405行完整出现本题答案。"
+      },
+      {
+        "field": "solution_source_member_sha256",
+        "error_origin": "database_mapping",
+        "original": "4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5",
+        "corrected": "bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+        "reason": "答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。",
+        "evidence": "直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第385–405行。"
+      }
+    ],
+    "duplicate_status": "new",
+    "duplicate_reference": "",
+    "duplicate_evidence": "漏水体积模型及数值与本批其他变率题不同。",
+    "unresolved_issues": ["正式记录仍缺总分3及正确答案来源映射。"],
+    "audit_notes": "单位和负号复核通过；题面起初装满的信息不影响所问瞬时变化率。",
+    "record_status": "audit_pending"
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q14",
+    "source_section": "应试训练",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "pass",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "pass",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "考虑曲线 $C:y=4\\ln x$，其中 $x>1$。设 $O$ 为原点，$P$ 为 $C$ 上一点。过 $P$ 的竖直线与 $x$ 轴交于 $Q$，并以 $u$ 表示 $Q$ 的 $x$ 坐标。\n(a) 用 $u$ 表示 $\\triangle OPQ$ 的面积。\n(b) 若 $P$ 沿 $C$ 移动，使 $PQ$ 以每秒4单位的恒定速率缩短，求当 $u=e$ 时 $\\triangle OPQ$ 面积的变化率。",
+    "solution_verified": "(a) $P=(u,4\\ln u)$、$Q=(u,0)$，故面积 $A=\\tfrac12(u)(4\\ln u)=2u\\ln u$ 平方单位。\n(b) 令 $v=PQ=4\\ln u$，则 $dv/dt=(4/u)du/dt$。已知 $dv/dt=-4$，所以当 $u=e$ 时 $du/dt=-e$。又 $dA/dt=(2+2\\ln u)du/dt$，故在 $u=e$ 时 $dA/dt=-4e$ 平方单位每秒。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "checked_pass",
+    "primary_type": "变率",
+    "tags": ["相关变化率", "面积变化", "建立变量关系"],
+    "difficulty_level": 3,
+    "difficulty_dimensions": {"概念数": 1, "推理链长度": 2, "建模强度": 1, "代数负担": 1, "条件处理": 1, "易错风险": 1},
+    "difficulty_evidence": "须先建立面积及边长关于 $u$ 的两个关系，再连续转换两次变化率。",
+    "correction_status": "confirmed",
+    "corrections": [
+      {
+        "field": "solution_source_file/solution_source_member",
+        "error_origin": "database_mapping",
+        "original": "M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd",
+        "corrected": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd",
+        "reason": "当前成员只含题面，出版社答案实际来自甲部答案 MMD。",
+        "evidence": "甲部答案 MMD 第407–448行完整出现本题答案。"
+      },
+      {
+        "field": "solution_source_member_sha256",
+        "error_origin": "database_mapping",
+        "original": "4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5",
+        "corrected": "bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+        "reason": "答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。",
+        "evidence": "直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第407–448行。"
+      }
+    ],
+    "duplicate_status": "historical_reference",
+    "duplicate_reference": "DSE-2016-Q3",
+    "duplicate_evidence": "来源明确标注为 HKDSE M2 2016 Q3；不属于本批45题内重复。",
+    "unresolved_issues": ["答案来源档案及成员映射尚未在正式记录中改正。"],
+    "audit_notes": "5分两小问、几何关系、速率符号及单位均复算无误；题目不依赖附图。",
+    "record_status": "audit_pending"
+  }
+]

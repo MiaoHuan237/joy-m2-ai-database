@@ -1,0 +1,19 @@
+{
+  "release_version": "V1.18",
+  "locked_at": "2026-08-08T21:00:00+08:00",
+  "release_directory": "releases/V1.18",
+  "question_counts": {
+    "all": 497,
+    "task6": 452,
+    "v117": 45
+  },
+  "answer_status_counts": {
+    "source_provided": 392,
+    "ai_solved_verified": 71,
+    "missing_from_source": 34
+  },
+  "sha256sums_sha256": "ae7fea3558a8942262ab8578a66d9d4c3330fe0c9683de9aeaedac462bb750f3",
+  "sqlite_sha256": "fd9fe44f1d4bebb3e6dc94ef9d0ef28afde217920c09682e3b4840a97522f5a7",
+  "source_release_zip_sha256": "302782a47f347ce2b75a7813903f5d0b4c29fae2e0a837ccdc98b7b3439b4d4e",
+  "immutability_rule": "Never edit V1.18 in place. Future formal data changes require a new release and migration."
+}

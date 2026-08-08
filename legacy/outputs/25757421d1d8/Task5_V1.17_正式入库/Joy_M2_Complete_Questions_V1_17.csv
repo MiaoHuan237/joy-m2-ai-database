@@ -1,0 +1,2158 @@
+﻿question_id,source_id,source_question_number,source_section,source_file,source_member,source_sha256,source_member_sha256,source_fragment_hash,source_page,solution_source_file,solution_source_member,solution_source_member_sha256,question_text_original,question_text_zh,question_text_zh_reviewed,question_latex,marks_total,year,image_paths_json,solution_original,solution_verified,answer_status,answer_verification_status,official_marking_available,primary_type,tags_json,difficulty_level,difficulty_evidence,difficulty_dimensions_json,old_difficulty,old_difficulty_label,old_tags_json,question_review_status,formula_review_status,image_review_status,answer_review_status,correction_status,corrections_json,duplicate_status,duplicate_reference,duplicate_evidence,audit_notes,review_checks_json,unresolved_issues_json,record_status,joy_approval,audited_at,approved_at,schema_version,selectable,source_heading,task4_processed_at,task4_resolution,source_order
+M2QD-DA-EXAMPLE-Q1,M2QD-DIFFERENTIATION-APPLICATIONS,EXAMPLE-Q1,教材例题,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,7ca9b7902bf8efd929145e64c5d4a1aa11b2da06028e4e2123026a09da640e89,"questions MMD English lines 329, 332, 334; Chinese lines 330, 333, 335",M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,"Consider the curve $C: y=26-\frac{108}{x}$ ,where $0<x<20$ .
+(a) Find $\frac{d y}{d x}$ .
+(b) If a tangent $L$ to $C$ passes through the point（ 10,20 ）,find the equation of $L$ .","考虑曲线 $C: y=26-\frac{108}{x}$，其中 $0<x<20$。
+(a) 求 $\frac{d y}{d x}$。
+(b) 若 $C$ 的切线 $L$ 通过点 $(10,20)$，求 $L$ 的方程。","考虑曲线 $C:y=26-\frac{108}{x}$，其中 $0<x<20$。
+(a) 求 $\frac{dy}{dx}$。
+(b) 若曲线 $C$ 的一条切线 $L$ 通过点 $(10,20)$，求 $L$ 的方程。（共 7 分）","Consider the curve $C: y=26-\frac{108}{x}$ ,where $0<x<20$ .
+(a) Find $\frac{d y}{d x}$ .
+(b) If a tangent $L$ to $C$ passes through the point（ 10,20 ）,find the equation of $L$ .",7,,[],"(a) $y=26-\frac{108}{x}=26-108 x^{-1}$
+$$
+\begin{aligned}
+& \frac{d y}{d x} \\
+& =0-108(-1) x^{-2} \\
+& =\frac{108}{\underline{x^{2}}}
+\end{aligned}
+$$
+（1）提示
+Power rule 冪法則
+$$
+\frac{d}{d x}\left(x^{n}\right)=n x^{n-1}
+$$
+(b) 分断
+當 $x=10$ 時,$y=26-\frac{108}{10}=15.2 \neq 20$ 。
+$\therefore \quad(10,20)$ 不是曲線 $C$ 上的點。
+$\left.\therefore \frac{d y}{d x}\right|_{x=10}$ 不是所求切線（tangent）的斜率（slope）。
+
+Let $h$ be the $x$－coordinate of the point of contact,then the $y$－coordinate is $26-\frac{108}{h}$ .
+
+設接觸點的 $x$ 坐標為 $h$ ,則 $y$ 坐標為26－$\frac{108}{h}$ 。
+$$
+\begin{aligned}
+& \frac{108}{h^{2}}=\frac{\left(26-\frac{108}{h}\right)-20}{h-10} \\
+& \frac{108}{h^{2}}=\frac{6-\frac{108}{h}}{h-10}
+\end{aligned}
+$$
+$$
+1 \mathrm{M}+1 \mathrm{M}
+$$
+斜率 $=\left.\frac{d y}{d x}\right|_{x=h}$
+$L$ 通過 $(10,20)$ 及接觸點 $\left(h, 26-\frac{108}{h}\right)$ 。由斜率公式（slope formula）得出斜率。
+$$
+\begin{aligned}
+108(h-10) & =h^{2}\left(6-\frac{108}{h}\right) \\
+108 h-1080 & =6 h^{2}-108 h \\
+6 h^{2}-216 h+1080 & =0 \\
+h^{2}-36 h+180 & =0 \\
+(h-6)(h-30) & =0 \\
+h & =6 \text { or } h=30 \text { (rejected) }
+\end{aligned}
+$$
+The equation of $L$ is
+$L$ 的方程為
+$$
+\frac{y-20}{x-10}=\frac{108}{6^{2}}
+$$
+$$
+\frac{y-20}{x-10}=3
+$$
+$$
+y-20=3 x-30
+$$
+$$
+3 x-y-10=0
+$$
+
+由題目所給範圍 $0<x<20$ ,捨去 $h=30$ 。
+1M
+
+1M
+
+1A
+
+點斜式,$L$ 通過 $(10,20)$ ,
+斜率 $=\left.\frac{d y}{d x}\right|_{x=6}=\frac{108}{6^{2}}$
+
+以一般式（general form）表示。","(a) $y=26-108x^{-1}$，故 $\frac{dy}{dx}=108x^{-2}=\frac{108}{x^2}$。
+(b) 设切点为 $\left(h,26-\frac{108}{h}\right)$。切线斜率同时为 $\frac{108}{h^2}$ 及 $\frac{(26-108/h)-20}{h-10}$，所以
+$$\frac{108}{h^2}=\frac{6-108/h}{h-10}\Longrightarrow h^2-36h+180=0.$$
+因此 $h=6$ 或 $30$；由 $0<h<20$，舍去 $h=30$。当 $h=6$ 时斜率为 $3$，而切线通过 $(10,20)$，故
+$$y-20=3(x-10),\qquad L:3x-y-10=0.$$",source_provided,corrected_verified,0,切线与法线,"[""过指定点的切线"",""切点未知""]",3,需设未知切点、联立导数斜率与外点斜率并按定义域舍根，是标准的过指定点求切线多步骤题，定为 Level 3。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":2,""易错风险"":1,""条件处理"":1,""概念数"":2}",4,Joy 教学难度 Level 4/5,"[""微分的应用"",""微分以及微分公式"",""切线"",""斜率"",""外点切线"",""参数"",""有理函数""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""$\\frac{108}{h^{2}}=\\frac{(26-\\frac{108}{h})-20}{h-10}$"",""error_origin"":""mathpix_conversion"",""evidence"":""frozen_sources/M2Quick Drill-微分法的应用.mmd.zip 内 ab3a...mmd 第 359–380 行；extracted_reference/v116_import_snapshot.json 的 correction_id=ex-3.1-tangent-slope；独立联立后得 $h=6,30$。"",""field"":""solution_original"",""original"":""$\\frac{108}{h^{2}}=\\frac{26-\\frac{108}{h}}{h-1}$"",""reason"":""原式既没有减去外点的纵坐标 20，又把横坐标差误成 $h-1$；与下一行及后续推导不一致。当前抽取答案已采用正确式，审计在此补齐校订轨迹。""}]",new,,函数、外点、定义域及所求切线与 V1.15 比对总体中的题目均不同，未发现重复。,原始 MMD 的嵌入图片仅为“题解”页眉，不承载题目条件；总分 7 分与来源第 336 行一致。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,应试例题 3.1（完整题）,,,1
+M2QD-DA-EXAMPLE-Q2,M2QD-DIFFERENTIATION-APPLICATIONS,EXAMPLE-Q2,教材例题,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,89e164cded0a1b0f2bff25f8ea62b44dc7d689bf44efe5755cf8cf9845f508c1,questions MMD English lines 465; Chinese lines 466,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,Find the maximum point（s）of the graph of $y=\frac{x^{2}+3 x+3}{x+2}$ .,求 $y=\frac{x^{2}+3 x+3}{x+2}$ 的图像上的极大点。,求曲线 $y=\frac{x^2+3x+3}{x+2}$（$x\ne-2$）的极大点。,Find the maximum point（s）of the graph of $y=\frac{x^{2}+3 x+3}{x+2}$ .,,,[],"\begin{aligned}
+& y= \frac{x^{2}+3 x+3}{x+2} \\
+& \frac{d y}{d x}= \frac{(x+2)(2 x+3)-\left(x^{2}+3 x+3\right)(1)}{(x+2)^{2}} \\
+&= \frac{x^{2}+4 x+3}{(x+2)^{2}} \\
+& \frac{d y}{d x}=0 \\
+& x^{2}+4 x+3=0 \\
+& x=-3 \text { or }-1
+\end{aligned}
+$$
+
+由於 $\frac{d y}{d x}$ 已經是一個頗複雜的有理函數,再用二階導數判別法會更複雜,故此應用一階導數判別法。
+
+\begin{tabular}[t]{|l|l|l|l|l|l|l|l|}
+\hline $x$ & $x<-3$ & －3 & $-3<x<-2$ & －2 & $-2<x<-1$ & －1 & $x>-1$ \\
+\hline $\frac{d y}{d x}$ & ＋ & 0 & － & undefined未下定義 & － & 0 & ＋ \\
+\hline
+\end{tabular}
+
+Hence,（－3,－3）is a maximum point.
+由此,（－3,－3）為極大點。
+
+當 $x=-3$ 時,
+$$
+y=\frac{(-3)^{2}+3(-3)+3}{(-3)+2}=-3
+$$","设 $f(x)=\frac{x^2+3x+3}{x+2}$，则
+$$f'(x)=\frac{x^2+4x+3}{(x+2)^2}=\frac{(x+1)(x+3)}{(x+2)^2}.$$
+驻点的横坐标为 $x=-3,-1$。当 $x$ 递增经过 $-3$ 时，$f'(x)$ 由正变负，故 $x=-3$ 对应极大点；$f(-3)=-3$。所以极大点为 $(-3,-3)$。",source_provided,checked_pass,0,极值与曲线性质,"[""极大点""]",3,需对有理函数求导、处理 $x=-2$ 的断点并自行选择判别方法筛出极大点，属标准多步骤 Level 3。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":2,""易错风险"":1,""条件处理"":1,""概念数"":1}",3,Joy 教学难度 Level 3/5,"[""微分的应用"",""微分以及微分公式"",""极值"",""最大值"",""有理函数""]",checked_pass,checked_pass,not_required,checked_pass,none,[],new,,函数及所求极大点与 V1.15 比对总体中的题目不同，未发现重复。,来源第 465–466 行未提供整题或分项分值，因此 marks_total=null 合理，不能自行推断；HKDSE 教材语境中的 maximum point 对应局部极大点。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""unknown""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,应试例题 3.2（完整题）,,,2
+M2QD-DA-EXAMPLE-Q3,M2QD-DIFFERENTIATION-APPLICATIONS,EXAMPLE-Q3,教材例题,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,e10c0f3b18763f8c713b74a9442fe6e30d035936c4e064327e88f0eadb467449,questions MMD English lines 532; Chinese lines 533,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,Define $f(x)=5 x^{8}+56 x^{5}-160 x^{2}$ .Find the least value of $f(x)$ .,定义 $f(x)=5 x^{8}+56 x^{5}-160 x^{2}$ 。求 $f(x)$ 的最小值。,定义 $f(x)=5x^8+56x^5-160x^2$。求 $f(x)$ 的最小值。（4 分）,Define $f(x)=5 x^{8}+56 x^{5}-160 x^{2}$ .Find the least value of $f(x)$ .,4,,[],"f^{\prime}(x)=0
+$$
+$$
+\begin{aligned}
+40 x^{7}+280 x^{4}-320 x & =0 \\
+x^{7}+7 x^{4}-8 x & =0 \\
+x\left(x^{6}+7 x^{3}-8\right) & =0 \\
+x\left(x^{3}-1\right)\left(x^{3}+8\right) & =0
+\end{aligned}
+$$
+1M
+（1）提示
+Power rule 冪法則
+$$
+\frac{d}{d x}\left(x^{n}\right)=n x^{n-1}
+$$
+$$
+\therefore \quad x=0, x=1 \text { or } x=-2
+$$
+
+\begin{tabular}[t]{|l|l|l|l|l|l|l|l|}
+\hline $x$ & $x<-2$ & $x=-2$ & $-2<x<0$ & $x=0$ & $0<x<1$ & $x=1$ & $x>1$ \\
+\hline $f^{\prime}(x)$ & － & 0 & ＋ & 0 & － & 0 & ＋ \\
+\hline $f(x)$ & ↘ & －1152 & ↗ & 0 & ↘ & －99 & ↗ \\
+\hline
+\end{tabular}
+
+\begin{tabular}[t]{|l|}
+\hline 1M（for testing） \\
+\hline 1A \\
+\hline
+\end{tabular}
+
+因此,$f(x)$ 的最小值為 -1152 。
+（1）應試備忘
+－由上表,可知 $f(0)=0$ 是一個極大值,但它未必是最大值。
+事實上,當 $x \rightarrow \pm \infty$ 時,$f(x) \rightarrow+\infty$ 。
+$f(x)$ 沒有最大值。","$$f'(x)=40x^7+280x^4-320x=40x(x^3-1)(x^3+8).$$
+故驻点横坐标为 $x=-2,0,1$。由 $f'$ 的符号依次为负、正、负、正，可知 $x=-2$ 与 $x=1$ 为极小位置，$x=0$ 为极大位置。
+$$f(-2)=-1152,\qquad f(0)=0,\qquad f(1)=-99.$$
+又因 $x\to\pm\infty$ 时 $f(x)\to+\infty$，所以全局最小值为 $-1152$。",source_provided,checked_pass,0,最值与最优化,"[""全局最小值""]",4,关键在把六次式视为关于 $x^3$ 的二次式完成因式分解，并结合全域端行为判断全局最小值，含关键转换，定为 Level 4。,"{""代数负担"":2,""建模强度"":0,""推理链长度"":2,""易错风险"":2,""条件处理"":1,""概念数"":2}",4,Joy 教学难度 Level 4/5,"[""微分的应用"",""微分以及微分公式"",""全局极值"",""最小值"",""多项式""]",checked_pass,checked_pass,not_required,checked_pass,none,[],new,,高次多项式、临界点结构及数值均与 V1.15 比对总体不同，未发现重复。,"来源第 534 行给出 4 分；嵌入图片仅为“题解”页眉，不是必要题图。独立代入核得 $f(-2)=-1152,f(0)=0,f(1)=-99$。数学与内容检查通过，但标签词表缺口未决，故保留 audit_pending。 Task 4：词表V1.1加入全局最小值；题目要求在定义域内找全局最小值。","{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-08T20:00:00+08:00,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,应试例题 3.3（完整题）,2026-08-08T20:00:00+08:00,词表V1.1加入全局最小值；题目要求在定义域内找全局最小值。,3
+M2QD-DA-EXAMPLE-Q4,M2QD-DIFFERENTIATION-APPLICATIONS,EXAMPLE-Q4,教材例题,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,c7c8cd95d78d067297d789fe612601f5c50885f52f32ebf54cbe738039eaf3f3,"questions MMD English lines 637, 640, 642; Chinese lines 638, 641, 643",M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,"Let $y=\left(x-x^{2}\right) e^{-x}$ .
+(a) Find $\frac{d y}{d x}$ and $\frac{d^{2} y}{d x^{2}}$ .
+(b) Someone claims that there is only one point of inflexion of the graph of $y=\left(x-x^{2}\right) e^{-x}$ .Do you agree？Explain your answer.","设 $y=\left(x-x^{2}\right)e^{-x}$。
+(a) 求 $\frac{d y}{d x}$ 及 $\frac{d^{2}y}{d x^{2}}$。
+(b) 某人宣称 $y=\left(x-x^{2}\right)e^{-x}$ 的图像只有一个拐点。你是否同意？解释你的答案。","设 $y=(x-x^2)e^{-x}$。
+(a) 求 $\frac{dy}{dx}$ 及 $\frac{d^2y}{dx^2}$。
+(b) 某人声称 $y=(x-x^2)e^{-x}$ 的图像只有一个拐点。你是否同意？解释你的答案。（共 6 分）","Let $y=\left(x-x^{2}\right) e^{-x}$ .
+(a) Find $\frac{d y}{d x}$ and $\frac{d^{2} y}{d x^{2}}$ .
+(b) Someone claims that there is only one point of inflexion of the graph of $y=\left(x-x^{2}\right) e^{-x}$ .Do you agree？Explain your answer.",6,,[],"(a) 
+\[
+\begin{aligned}
+\frac{dy}{dx}
+&=(1-2x)e^{-x}+(x-x^{2})(-e^{-x}) \\
+&=(x^{2}-3x+1)e^{-x},\\
+\frac{d^{2}y}{dx^{2}}
+&=(2x-3)e^{-x}-(x^{2}-3x+1)e^{-x} \\
+&=\left(-x^{2}+5x-4\right)e^{-x}.
+\end{aligned}
+\]
+(b) 
+$$
+\begin{aligned}
+\frac{d^{2} y}{d x^{2}} & =0 \\
+\left(-x^{2}+5 x-4\right) e^{-x} & =0 \\
+-x^{2}+5 x-4 & =0 \\
+x & =1 \text { or } x=4
+\end{aligned}
+$$
+
+\begin{tabular}[t]{|l|l|l|l|l|l|}
+\hline $x$ & $(-\infty, 1)$ & 1 & $(1,4)$ & 4 & $(4, \infty)$ \\
+\hline $\frac{d^{2} y}{d x^{2}}$ & － & 0 & ＋ & 0 & － \\
+\hline
+\end{tabular}
+
+1M（for testing）
+There are two points of inflexion of the graph.Thus,the claim is disagreed.1A f.t.
+該圖像有兩個拐點。故此不同意該宣稱。","(a)
+$$\frac{dy}{dx}=(x^2-3x+1)e^{-x},\qquad \frac{d^2y}{dx^2}=(-x^2+5x-4)e^{-x}.$$
+(b) 因 $e^{-x}>0$，$\frac{d^2y}{dx^2}=0$ 等价于 $-x^2+5x-4=0$，故 $x=1,4$。二阶导数在 $(-\infty,1),(1,4),(4,\infty)$ 上的符号依次为负、正、负，两处均变号。因此图像有两个拐点：
+$$(1,0)\quad\text{及}\quad(4,-12e^{-4}).$$
+所以不同意该声称。",source_provided,corrected_verified,0,极值与曲线性质,"[""拐点""]",3,需连续两次使用乘积/链式法则，并以二阶导数变号验证两个拐点，属标准多步骤 Level 3。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":2,""易错风险"":1,""条件处理"":1,""概念数"":2}",4,Joy 教学难度 Level 4/5,"[""微分的应用"",""微分以及微分公式"",""二阶导数"",""拐点"",""证明题"",""指数函数""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""在 (a) 补上 $\\frac{d^2y}{dx^2}=(-x^2+5x-4)e^{-x}$。"",""error_origin"":""source_original"",""evidence"":""frozen_sources/M2Quick Drill-微分法的应用.mmd.zip 内 ab3a...mmd 第 648–656 行；extracted_reference/v116_import_snapshot.json 的 correction_id=ex-3.4-second-derivative。"",""field"":""solution_original"",""original"":""来源题解在 (a) 只印出 $\\frac{dy}{dx}=(x^2-3x+1)e^{-x}$，随后 (b) 直接令未印出的二阶导数为零。"",""reason"":""题目明确要求两个导数，原题解答案边界漏印二阶导数；当前抽取答案已补入并经独立求导验证。""}]",adapted,2022-Q4,与 2022-Q4 同属“指数函数乘二次式＋拐点声称”的题型骨架，但函数系数和结论数据不同。,总分 6 分与来源第 644 行一致；已进一步算出两个拐点坐标，以补足完整复核答案。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,应试例题 3.4（完整题）,,,4
+M2QD-DA-EXAMPLE-Q5,M2QD-DIFFERENTIATION-APPLICATIONS,EXAMPLE-Q5,教材例题,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,9571845d2fa766855d617b7d04e1521fde92b47faa44a75b0d62305aee8909b0,questions MMD English lines 720; Chinese lines 722,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,Define $f(x)=\frac{x^{2}+5 x+1}{x+2}$ for all $x \neq-2$ .Denote the graph of $y=f(x)$ by $C$ .Find the asymptote（s）of $C$ .,"对所有 $x \neq-2$ ,定义 $f(x)=\frac{x^{2}+5 x+1}{x+2}$ 。将 $y=f(x)$ 的图像记为 $C$ 。求 $C$ 的渐近线。",对所有 $x\ne-2$，定义 $f(x)=\frac{x^2+5x+1}{x+2}$，并把 $y=f(x)$ 的图像记为 $C$。求 $C$ 的所有渐近线。（3 分）,Define $f(x)=\frac{x^{2}+5 x+1}{x+2}$ for all $x \neq-2$ .Denote the graph of $y=f(x)$ by $C$ .Find the asymptote（s）of $C$ .,3,,[],"Note that $x=-2$ is the vertical asymptote.
+1A
+留意,$x=-2$ 為垂直漸近線。
+$$
+\begin{aligned}
+f(x) & =\frac{x^{2}+5 x+1}{x+2} \\
+& =\frac{x^{2}+2 x+3 x+1}{x+2} \\
+& =\frac{x^{2}+2 x+3 x+6-5}{x+2} \\
+& =\frac{x(x+2)+3(x+2)-5}{x+2} \\
+& =x+3-\frac{5}{x+2}
+\end{aligned}
+$$
+
+當 $x=-2$ 時,分母 $x+2=0$ 。
+
+1M
+Note that $\frac{5}{x+2} \rightarrow 0$ when $x \rightarrow \pm \infty$ .
+$\therefore y=x+3$ is the oblique asymptote.
+
+也可運用長除法：
+$$
+x + 2 \longdiv { x ^ { 2 } + 5 x + 1 } . 0
+$$
+$$
+\begin{aligned}
+\therefore \quad f(x) & =\frac{(x+3)(x+2)-5}{x+2} \\
+& =x+3-\frac{5}{x+2}
+\end{aligned}
+$$
+
+留意,當 $x \rightarrow \pm \infty$ 時,$\frac{5}{x+2} \rightarrow 0$ 。
+$\therefore y=x+3$ 為斜漸近線。","当 $x=-2$ 时分母为零而分子为 $-5\ne0$，故 $x=-2$ 是垂直渐近线。又
+$$f(x)=\frac{x^2+5x+1}{x+2}=x+3-\frac{5}{x+2}.$$
+当 $x\to\pm\infty$ 时，$-\frac{5}{x+2}\to0$，故 $y=x+3$ 是斜渐近线。答案为 $x=-2$ 及 $y=x+3$。",source_provided,checked_pass,0,极值与曲线性质,"[""渐近线""]",2,识别分母零点并作一次多项式除法即可得到垂直和斜渐近线，属 2–3 个常规步骤的 Level 2。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":1,""易错风险"":0,""条件处理"":1,""概念数"":1}",2,Joy 教学难度 Level 2/5,"[""微分的应用"",""微分以及微分公式"",""渐近线"",""有理函数""]",checked_pass,checked_pass,not_required,checked_pass,none,[],new,,有理函数及渐近线数据与 V1.15 比对总体不同，未发现重复。,来源第 723 行给出 3 分；嵌入图片仅为“题解”页眉，不是必要题图。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,应试例题 3.5（完整题）,,,5
+M2QD-DA-EXAMPLE-Q6,M2QD-DIFFERENTIATION-APPLICATIONS,EXAMPLE-Q6,教材例题,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,e197b336bcd53a906a18aaa739071c5f75c8c2ab9929fb8141923e36fa7d7515,"questions MMD English lines 1288, 1291, 1294, 1298; Chinese lines 1289, 1292, 1296, 1300",M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,"Consider the curve $C: y=\ln x$ ,where $x>1$ .Let $P$ be a moving point lying on $C . L$ is a line that passes through $P$ and is perpendicular to the tangent to $C$ at $P . L$ cuts the $x$－axis at the point $Q$ while the vertical line passing through $P$ cuts the $x$－axis at the point $R$ .
+(a) Denote the $x$－coordinate of $P$ by $p$ .Find the $x$－coordinate of $Q$ in terms of $p$ .
+(b) Find the greatest area of $\triangle P Q R$ .
+(c) Let $O$ be the origin.It is given that $O P$ increases at a rate not exceeding $2 e^{2}$ units per second.Someone claims that the area of $\triangle P Q R$ increases at a rate lower than 1 square unit per second when the $x$－coordinate of $P$ is $e$ .Is the claim correct？Explain your answer.","考虑曲线 $C:y=\ln x$，其中 $x>1$。设 $P$ 为 $C$ 上的一个动点。直线 $L$ 通过 $P$，并垂直于 $C$ 在 $P$ 处的切线。$L$ 与 $x$ 轴相交于点 $Q$，而通过 $P$ 的竖直线与 $x$ 轴相交于点 $R$。
+(a) 将 $P$ 的 $x$ 坐标记为 $p$。求 $Q$ 的 $x$ 坐标，答案以 $p$ 表示。
+(b) 求 $\triangle PQR$ 的最大面积。
+(c) 设 $O$ 为原点。已知 $OP$ 以不超过每秒 $2e^{2}$ 个单位的速率增加。某人宣称：当 $P$ 的 $x$ 坐标为 $e$ 时，$\triangle PQR$ 的面积以低于每秒 1 个平方单位的速率增加。该宣称是否正确？解释你的答案。","考虑曲线 $C:y=\ln x$，其中 $x>1$。设 $P$ 为 $C$ 上的一个动点。直线 $L$ 通过 $P$，并垂直于 $C$ 在 $P$ 处的切线。$L$ 与 $x$ 轴交于点 $Q$，过 $P$ 的竖直线与 $x$ 轴交于点 $R$。
+(a) 设 $P$ 的 $x$ 坐标为 $p$，以 $p$ 表示 $Q$ 的 $x$ 坐标。（3 分）
+(b) 求 $\triangle PQR$ 的最大面积。（5 分）
+(c) 设 $O$ 为原点。已知 $OP$ 以不超过每秒 $2e^2$ 个单位的速率增加。某人声称：当 $P$ 的 $x$ 坐标为 $e$ 时，$\triangle PQR$ 的面积以低于每秒 1 个平方单位的速率增加。该声称是否正确？解释你的答案。（4 分）","Consider the curve $C: y=\ln x$ ,where $x>1$ .Let $P$ be a moving point lying on $C . L$ is a line that passes through $P$ and is perpendicular to the tangent to $C$ at $P . L$ cuts the $x$－axis at the point $Q$ while the vertical line passing through $P$ cuts the $x$－axis at the point $R$ .
+(a) Denote the $x$－coordinate of $P$ by $p$ .Find the $x$－coordinate of $Q$ in terms of $p$ .
+(b) Find the greatest area of $\triangle P Q R$ .
+(c) Let $O$ be the origin.It is given that $O P$ increases at a rate not exceeding $2 e^{2}$ units per second.Someone claims that the area of $\triangle P Q R$ increases at a rate lower than 1 square unit per second when the $x$－coordinate of $P$ is $e$ .Is the claim correct？Explain your answer.",12,,[],"(a) $y=\ln x$
+$$
+\frac{d y}{d x}=\frac{1}{x}
+$$
+1M
+The slope of the tangent at $P$ is $\frac{1}{p}$ .
+The slope of $L$ is $-p$ .
+Let $a$ be the $x$－coordinate of $Q$ .
+於 $P$ 的切線之斜率為 $\frac{1}{p}$ 。
+$L$ 的斜率為 $-p$ 。
+設 $Q$ 的 $x$ 坐標為 $a$ 。
+$$
+\frac{0-\ln p}{a-p}=-p
+$$
+Thus,the $x$－coordinate of $Q$ is $\frac{p^{2}+\ln p}{p}$ . 1A
+因此,$Q$ 的 $x$ 坐標為 $\frac{p^{2}+\ln p}{p}$ 。
+－提示
+Slope 斜率
+$$
+m=\frac{y_{2}-y_{1}}{x_{2}-x_{1}}
+$$
+(b) Let $A$ square units be the area of $\triangle P Q R$ .
+設 $\triangle P Q R$ 的面積為 $A$ 平方單位。
+$$
+\begin{aligned}
+A & =\frac{1}{2}\left(\frac{p^{2}+\ln p}{p}-p\right) \ln p \\
+& =\frac{(\ln p)^{2}}{2 p}
+\end{aligned}
+$$
+分母中的2是常數,下一步求導數時不用理會。
+$$
+\begin{aligned}
+\frac{d A}{d p} & =\frac{p(2 \ln p) \frac{1}{p}-(\ln p)^{2}}{2 p^{2}} \\
+& =\frac{2 \ln p-(\ln p)^{2}}{2 p^{2}} \\
+& =\frac{(2-\ln p)(\ln p)}{2 p^{2}} \\
+\therefore \quad & \frac{d A}{d p}=0 \Leftrightarrow \ln p=2 \text { or } \ln p=0 \text { (rejected) } \\
+\therefore \quad & \frac{d A}{d p}=0 \Leftrightarrow p=e^{2}
+\end{aligned}
+$$
+
+\begin{tabular}[t]{|l|l|l|l|}
+\hline $p$ & $\left(1, e^{2}\right)$ & $e^{2}$ & $\left(e^{2}, \infty\right)$ \\
+\hline $\frac{d A}{d p}$ & ＋ & 0 & － \\
+\hline
+\end{tabular}
+
+1M for testing
+Therefore,$A$ attains its greatest value when $p=e^{2}$ .
+Thus,the greatest area of $\triangle P Q R$ is $\frac{2}{e^{2}}$ square units.
+因此,當 $p=e^{2}$ 時,$A$ 達至最大值。
+故此,$\triangle P Q R$ 的最大面積為 $\frac{2}{e^{2}}$ 平方單位。
+(c) Let $s=OP$. From part (b),
+\[
+A=\frac{(\ln p)^2}{2p},\qquad
+\frac{dA}{dp}=\frac{\ln p(2-\ln p)}{2p^2},\qquad
+\left.\frac{dA}{dp}\right|_{p=e}=\frac{1}{2e^{2}}.
+\]
+Also,
+\[
+s=\sqrt{p^2+(\ln p)^2},\qquad
+\frac{d(OP)}{dp}=\frac{p+(\ln p)/p}{\sqrt{p^2+(\ln p)^2}},\qquad
+\left.\frac{d(OP)}{dp}\right|_{p=e}=\frac{\sqrt{e^{2}+1}}{e}.
+\]
+Since $0\leq d(OP)/dt\leq 2e^{2}$,
+\[
+0\leq\left.\frac{dp}{dt}\right|_{p=e}
+=\left.\frac{d(OP)/dt}{d(OP)/dp}\right|_{p=e}
+\leq\frac{2e^3}{\sqrt{e^{2}+1}}.
+\]
+Therefore,
+\[
+0\leq\left.\frac{dA}{dt}\right|_{p=e}
+=\left.\frac{dA}{dp}\frac{dp}{dt}\right|_{p=e}
+\leq\frac{e}{\sqrt{e^{2}+1}}<1.
+\]
+Thus the claim is correct. 1A f.t.
+
+故此,該宣稱正確。","(a) $P=(p,\ln p)$，切线斜率为 $1/p$，故法线 $L$ 的斜率为 $-p$。设 $Q=(a,0)$，则
+$$\frac{-\ln p}{a-p}=-p\Longrightarrow a=\frac{p^2+\ln p}{p}.$$
+(b) 设三角形面积为 $A$，则
+$$A=\frac12(a-p)\ln p=\frac{(\ln p)^2}{2p},\qquad \frac{dA}{dp}=\frac{\ln p(2-\ln p)}{2p^2}.$$
+因 $p>1$，导数在 $1<p<e^2$ 为正、在 $p>e^2$ 为负，所以最大面积在 $p=e^2$ 取得，等于 $\frac{2}{e^2}$ 平方单位。
+(c) 令 $s=OP=\sqrt{p^2+(\ln p)^2}$。在 $p=e$ 时，
+$$\frac{dA}{dp}=\frac1{2e^2},\qquad \frac{ds}{dp}=\frac{\sqrt{e^2+1}}{e}.$$
+由 $0\le ds/dt\le2e^2$，得
+$$0\le\frac{dp}{dt}\le\frac{2e^3}{\sqrt{e^2+1}},\qquad 0\le\frac{dA}{dt}\le\frac{e}{\sqrt{e^2+1}}<1.$$
+因此该声称正确。",source_provided,corrected_verified,0,综合微分应用,"[""切点未知求法线"",""几何最优化"",""相关变化率"",""面积变化"",""建立变量关系"",""综合题目""]",5,整题串联法线截距、面积最优化及带上界的相关变化率，需自主建立多层变量关系并处理不等式，属高度综合 Level 5。,"{""代数负担"":2,""建模强度"":2,""推理链长度"":2,""易错风险"":2,""条件处理"":2,""概念数"":2}",5,Joy 教学难度 Level 5/5,"[""微分的应用"",""微分以及微分公式"",""法线"",""最优化"",""面积"",""相关变化率"",""变率"",""对数函数""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""Let $P$ be a moving point lying on $C$. $L$ is a line ..."",""error_origin"":""source_original"",""evidence"":""frozen_sources/M2Quick Drill-微分法的应用.mmd.zip 内 ab3a...mmd 第 1288–1289 行；complete_questions_45.json 的英文仍保留该错误定界。"",""field"":""question_text_original"",""original"":""Let $P$ be a moving point lying on $C . L$ is a line ..."",""reason"":""冻结 MMD 把曲线符号 $C$、句点及下一句的直线符号 $L$ 并入同一数学环境，造成英文与公式定界错误；中文行清楚表明应分为两句。缺少原扫描页，故不进一步归因于 Mathpix。""},{""corrected"":""$0\\le\\left.\\frac{dA}{dt}\\right|_{p=e}\\le\\frac{e}{\\sqrt{e^2+1}}<1$"",""error_origin"":""source_original"",""evidence"":""同一 MMD 第 1361–1365 行直接得到 $dA/dt<1$；当前 complete_questions_45.json 已补入完整链式推导；独立计算紧上界约为 0.938508。"",""field"":""solution_original"",""original"":""$0\\le\\left.\\frac{dA}{dt}\\right|_{p=e}<\\frac{e}{\\sqrt{e^2}}$"",""reason"":""原 MMD 的最终结论 $dA/dt<1$ 本身正确；审计答案补足中间推导，并给出可由题设推出的更紧精确上界 $dA/dt\\le e/\\sqrt{e^2+1}<1$。缺少原扫描页，不把 MMD 的简略写法判为数学错误或归因于 Mathpix。""}]",new,,未找到同时整合法线、面积最优化和速率上界判断的匹配题。,来源未印出例题标题，EX-3.6 为已有来源校订所定的编辑稳定标识；(a)(b)(c) 的 3+5+4=12 分与 marks_total 一致。英文定界错误尚未回写原题字段，因此保留 audit_pending。 Task 4：英文公式定界与变率上界已按校订记录确认。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-08T20:00:00+08:00,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,EX-3.6 (editorial stable identifier)（完整题）,2026-08-08T20:00:00+08:00,英文公式定界与变率上界已按校订记录确认。,6
+M2QD-DA-EXAMPLE-Q7,M2QD-DIFFERENTIATION-APPLICATIONS,EXAMPLE-Q7,教材例题,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,5caabd14b36bf1f4264d2c0d9c561d3d9d96e354456ca43dfe0da88a85b00502,questions MMD English lines 928; Chinese lines 929,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,"Consider the curve $C_{1}: y=2^{x-1}$ ,where $x>0$ .Denote the origin by $O$ .Let $P(u, v)$ be a moving point on $C_{1}$ such that the area of the circle with $O P$ as a radius decreases at a constant rate of $8 \pi$ square units per second.The vertical line passing through $P$ cuts the $x$－axis at the point $Q$ . Find the rate of change of the area of $\triangle O P Q$ when $u=2$ .","考虑曲线 $C_{1}: y=2^{x-1}$ ,其中 $x>0$ 。将原点记为 $O$ 。设 $P(u, v)$ 为 $C_{1}$ 上的一动点使得以$O P$ 为一半径的圆的面积以每秒 $8 \pi$ 平方单位的恒速率减少。通过 $P$ 的垂直线与 $x$ 轴相交于点 $Q$ 。求当 $u=2$ 时 $\triangle O P Q$ 面积的变率。","考虑曲线 $C_1:y=2^{x-1}$，其中 $x>0$。设 $O$ 为原点，$P(u,v)$ 为 $C_1$ 上的一个动点。以 $OP$ 为半径的圆，其面积以每秒 $8\pi$ 个平方单位的恒定速率减少。过 $P$ 的竖直线与 $x$ 轴交于点 $Q$。求当 $u=2$ 时 $\triangle OPQ$ 面积的变率。（6 分）","Consider the curve $C_{1}: y=2^{x-1}$ ,where $x>0$ .Denote the origin by $O$ .Let $P(u, v)$ be a moving point on $C_{1}$ such that the area of the circle with $O P$ as a radius decreases at a constant rate of $8 \pi$ square units per second.The vertical line passing through $P$ cuts the $x$－axis at the point $Q$ . Find the rate of change of the area of $\triangle O P Q$ when $u=2$ .",6,,[],"Let $A$ square units be the area of the circle with $O P$ as a radius.
+設 $A$ 平方單位為以 $O P$ 為半徑的圓的面積。
+\[
+A=\pi(u^{2}+v^{2}),\qquad
+\frac{dA}{dt}=\pi\left(2u\frac{du}{dt}+2v\frac{dv}{dt}\right)=-8\pi.
+\]
+Hence
+\[
+u\frac{du}{dt}+v\frac{dv}{dt}=-4,
+\qquad v=2^{u-1},
+\]
+and therefore
+\[
+\frac{du}{dt}=\frac{-4}{u+2^{2u-2}\ln 2}.
+\]
+At \(u=2\), \(\frac{du}{dt}=\frac{-2}{1+2\ln2}\).
+
+Let $S$ square units be the area of $\triangle O P Q$ .
+設 $S$ 平方單位為 $\triangle O P Q$ 的面積。
+$$
+\begin{gathered}
+S=\frac{1}{2} u v=\frac{1}{2} u\left(2^{u-1}\right)=u 2^{u-2} \\
+\frac{d S}{d t}=\left[u(\ln 2) 2^{u-2}+2^{u-2}\right] \frac{d u}{d t} \\
+=(1+u \ln 2) 2^{u-2} \frac{d u}{d t} \\
+\left.\frac{d S}{d t}\right|_{u=2}=\left.(1+2 \ln 2) \frac{d u}{d t}\right|_{u=2} \\
+=(1+2 \ln 2)\left(\frac{-2}{1+2 \ln 2}\right) \\
+=-2
+\end{gathered}
+$$
+$\therefore \quad$ The required rate of change is－2 square units per second.
+所求的變率為每秒－2平方單位。","设以 $OP$ 为半径的圆的面积为 $A$。因 $v=2^{u-1}$，
+$$A=\pi(u^2+v^2),\qquad \frac{dA}{dt}=2\pi\left(u\frac{du}{dt}+v\frac{dv}{dt}\right)=-8\pi,$$
+且 $\frac{dv}{dt}=v\ln2\frac{du}{dt}$。所以
+$$\frac{du}{dt}=\frac{-4}{u+2^{2u-2}\ln2},\qquad \left.\frac{du}{dt}\right|_{u=2}=\frac{-2}{1+2\ln2}.$$
+设 $\triangle OPQ$ 面积为 $S$，则
+$$S=\frac12uv=u2^{u-2},\qquad \frac{dS}{dt}=(1+u\ln2)2^{u-2}\frac{du}{dt}.$$
+代入 $u=2$ 得
+$$\left.\frac{dS}{dt}\right|_{u=2}=(1+2\ln2)\frac{-2}{1+2\ln2}=-2.$$
+因此所求变率为每秒 $-2$ 个平方单位，即面积正以每秒 2 个平方单位减少。",source_provided,corrected_verified,0,变率,"[""相关变化率"",""几何量变化"",""面积变化"",""链式法则建模"",""建立变量关系""]",4,需把圆面积的给定变率经 $v=2^{u-1}$ 转为 $du/dt$，再传递到三角形面积，属于复杂变量关系建模的 Level 4。,"{""代数负担"":1,""建模强度"":2,""推理链长度"":2,""易错风险"":2,""条件处理"":1,""概念数"":2}",4,Joy 教学难度 Level 4/5,"[""微分的应用"",""微分以及微分公式"",""相关变化率"",""变率"",""隐函数求导"",""指数函数""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""$\\frac{dA}{dt}=2\\pi\\left(u\\frac{du}{dt}+v\\frac{dv}{dt}\\right)=-8\\pi$，从而 $\\frac{du}{dt}=\\frac{-4}{u+2^{2u-2}\\ln2}$。"",""error_origin"":""mathpix_conversion"",""evidence"":""frozen_sources/M2Quick Drill-微分法的应用.mmd.zip 内 ab3a...mmd 第 934–949 行；extracted_reference/v116_import_snapshot.json 的 correction_id=ex-3.7-rate-equation；代入 $u=2$ 后得 $dS/dt=-2$。"",""field"":""solution_original"",""original"":""$\\frac{dA}{dt}=\\pi\\left(2u\\frac{du}{dt}+2v\\right.$（式子在此被截断）"",""reason"":""来源 MMD 的圆面积求导式被 OCR 截断，漏去 $dv/dt$ 及闭合结构；当前抽取答案已重建正确关系并经独立复算验证。""}]",historical_reference,DSE-2020-Q6,来源明确标注参考 2020 Q06；该历史题不在 V1.15 的 DSE 比对总体内，因此保留 historical_reference。,中文已自然化为“以 OP 为半径”；负变率的单位与结论一致。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,应试例题 3.7（完整题）,,,7
+M2QD-DA-EXAMPLE-Q8,M2QD-DIFFERENTIATION-APPLICATIONS,EXAMPLE-Q8,教材例题,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,97c4e2e158dbbc392db2a7bc64a1c8e9fbfa2adaa042e518a404c15dcca78e87,"questions MMD English lines 1213, 1216, 1218, 1220, 1223, 1225; Chinese lines 1214, 1217, 1219, 1221, 1224, 1226",M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,"Define $f(x)=e^{x} \sin x$ for all $x \in[0,2 \pi]$ .Denote the graph of $y=f(x)$ by $G$ .
+(a) Find $f^{\prime}(x)$ and $f^{\prime \prime}(x)$ .
+(b) Find the maximum point（s）and the minimum point（s）of $G$ .
+(c) Let $L$ be the tangent to $G$ at $x=\pi$ .
+(i) Find the equation of $L$ .
+(ii) By considering $f^{\prime \prime}(x)$ ,explain why $G$ lies below $L$ in the interval $\left(\frac{\pi}{2}, \frac{3 \pi}{2}\right)$ .","对所有 $x\in[0,2\pi]$，定义 $f(x)=e^{x}\sin x$。将 $y=f(x)$ 的图像记为 $G$。
+(a) 求 $f^{\prime}(x)$ 及 $f^{\prime\prime}(x)$。（3 分）
+(b) 求 $G$ 的极大点及极小点。（3 分）
+(c) 设 $L$ 为 $G$ 在 $x=\pi$ 处的切线。
+(i) 求 $L$ 的方程。
+(ii) 通过考察 $f^{\prime\prime}(x)$，解释为什么在区间 $\left(\frac{\pi}{2},\frac{3\pi}{2}\right)$ 内，$G$ 位于 $L$ 的下方。（3 分）","对所有 $x\in[0,2\pi]$，定义 $f(x)=e^x\sin x$，并把 $y=f(x)$ 的图像记为 $G$。
+(a) 求 $f'(x)$ 及 $f''(x)$。（3 分）
+(b) 求 $G$ 的极大点及极小点。（3 分）
+(c) 设 $L$ 为 $G$ 在 $x=\pi$ 处的切线。
+(i) 求 $L$ 的方程。
+(ii) 通过考察 $f''(x)$，解释为什么在区间 $\left(\frac{\pi}{2},\frac{3\pi}{2}\right)$ 内，$G$ 不高于 $L$，并且除切点 $(\pi,0)$ 外严格位于 $L$ 的下方。（3 分）","Define $f(x)=e^{x} \sin x$ for all $x \in[0,2 \pi]$ .Denote the graph of $y=f(x)$ by $G$ .
+(a) Find $f^{\prime}(x)$ and $f^{\prime \prime}(x)$ .
+(b) Find the maximum point（s）and the minimum point（s）of $G$ .
+(c) Let $L$ be the tangent to $G$ at $x=\pi$ .
+(i) Find the equation of $L$ .
+(ii) By considering $f^{\prime \prime}(x)$ ,explain why $G$ lies below $L$ in the interval $\left(\frac{\pi}{2}, \frac{3 \pi}{2}\right)$ .",9,,[],"(a) $f^{\prime}(x)=\underline{\underline{e^{x} \cos x+e^{x} \sin x}}$ 1A
+$$
+\begin{aligned}
+f^{\prime \prime}(x) & =e^{x}(-\sin x)+e^{x} \cos x+e^{x} \cos x+e^{x} \sin x \\
+& =\underline{\underline{2 e^{x} \cos x}}
+\end{aligned}
+$$
+1M 1A
+(b) 
+$$
+f^{\prime}(x)=0
+$$
+$$
+\begin{aligned}
+e^{x} \cos x+e^{x} \sin x & =0 \\
+\cos x+\sin x & =0 \\
+\sin x & =-\cos x \\
+\frac{\sin x}{\cos x} & =-1 \\
+\tan x & =-1
+\end{aligned}
+$$
+$\therefore \quad x=\frac{3 \pi}{4}$ or $\frac{7 \pi}{4}$
+1M
+$\because \quad f^{\prime \prime}\left(\frac{3 \pi}{4}\right)=-\sqrt{2} e^{\frac{3 \pi}{4}}<0$ and $f^{\prime \prime}\left(\frac{7 \pi}{4}\right)=\sqrt{2} e^{\frac{7 \pi}{4}}>0$
+1M for either one
+∴ The maximum point and the minimum point of $G$ are $\left(\frac{3 \pi}{4}, \frac{\sqrt{2}}{2} e^{\frac{3 \pi}{4}}\right)$ and $\left(\frac{7 \pi}{4},-\frac{\sqrt{2}}{2} e^{\frac{7 \pi}{4}}\right)$ respectively.
+1A for both correct
+$G$ 的極大點及極小點分別為 $\left(\frac{3 \pi}{4}, \frac{\sqrt{2}}{2} e^{\frac{3 \pi}{4}}\right)$ 及 $\left(\frac{7 \pi}{4},-\frac{\sqrt{2}}{2} e^{\frac{7 \pi}{4}}\right)$ 。
+(c) （i）$f^{\prime}(\pi)=-e^{\pi}$
+1M
+The equation of $L$ is
+$L$ 的方程為
+$$
+\begin{aligned}
+y-0 & =-e^{\pi}(x-\pi) \\
+y & =-e^{\pi} x+e^{\pi} \pi
+\end{aligned}
+$$
+1A
+(ii) Note that $L$ is the tangent to $G$ at the point $(\pi, 0)$ .
+Since $f^{\prime \prime}(x)=2 e^{x} \cos x<0$ in the interval
+$$
+\begin{aligned}
+& \left(\frac{\pi}{2}, \frac{3 \pi}{2}\right), G \text { lies below } L \text { in the interval } \\
+& \left(\frac{\pi}{2}, \frac{3 \pi}{2}\right)
+\end{aligned}
+$$
+留意 $L$ 為 $G$ 在點 $(\pi, 0)$ 的切線。
+因為在區間 $\left(\frac{\pi}{2}, \frac{3 \pi}{2}\right)$ 內
+$f^{\prime \prime}(x)=2 e^{x} \cos x<0$ ,所以在區間
+$\left(\frac{\pi}{2}, \frac{3 \pi}{2}\right)$ 內,$G$ 在 $L$ 之下。
+(當) $f^{\prime \prime}(x)<0$ 時,$y=f(x)$ 的圖像 concave downwards（凹向下）。","(a)
+$$f'(x)=e^x(\sin x+\cos x),\qquad f''(x)=2e^x\cos x.$$
+(b) $f'(x)=0$ 给出 $x=\frac{3\pi}{4},\frac{7\pi}{4}$。因
+$$f''\left(\frac{3\pi}{4}\right)<0,\qquad f''\left(\frac{7\pi}{4}\right)>0,$$
+极大点和极小点分别为
+$$\left(\frac{3\pi}{4},\frac{e^{3\pi/4}}{\sqrt2}\right),\qquad \left(\frac{7\pi}{4},-\frac{e^{7\pi/4}}{\sqrt2}\right).$$
+(c)(i) $f(\pi)=0$ 且 $f'(\pi)=-e^\pi$，故
+$$L:y=-e^\pi(x-\pi).$$
+(ii) 在 $\left(\frac{\pi}{2},\frac{3\pi}{2}\right)$ 内，$e^x>0$ 且 $\cos x<0$，故 $f''(x)<0$，图像严格凹向下。凹函数的图像不高于其任一切线，因此 $f(x)\le -e^\pi(x-\pi)$；只在切点 $x=\pi$ 取等号，其余点严格小于。",source_provided,corrected_verified,0,综合微分应用,"[""极大点"",""极小点"",""二阶导数判别法"",""已知切点求切线"",""凹凸性"",""综合题目""]",4,整题连续考查两阶导数、极值、切线及凹性支撑线性质，并须处理闭区间与切点等号，属多概念整合的 Level 4。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":2,""易错风险"":2,""条件处理"":2,""概念数"":2}",5,Joy 教学难度 Level 5/5,"[""微分的应用"",""微分以及微分公式"",""极值"",""切线"",""二阶导数"",""凹凸性"",""指数函数"",""三角函数""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""explain why $G$ lies on or below $L$ throughout the interval, and strictly below $L$ except at $x=\\pi$"",""error_origin"":""source_original"",""evidence"":""原始 MMD 第 1220–1226 行及 1273–1284 行；独立代入得 $f(\\pi)=L(\\pi)=0$，而严格凹性保证其他点 $f(x)<L(x)$。"",""field"":""question_text_original"",""original"":""explain why $G$ lies below $L$ in the interval $\\left(\\frac{\\pi}{2},\\frac{3\\pi}{2}\\right)$"",""reason"":""$L$ 是 $G$ 在区间内部 $x=\\pi$ 处的切线，故两图像在 $(\\pi,0)$ 必然相交；“整段严格在下方”不成立。""},{""corrected"":""解释为什么在该区间内 $G$ 不高于 $L$，且除切点 $(\\pi,0)$ 外严格位于 $L$ 下方。"",""error_origin"":""source_original"",""evidence"":""原始 MMD 第 1226、1281–1284 行；$f(\\pi)=L(\\pi)=0$。"",""field"":""question_text_zh"",""original"":""解释为什么在该区间内，$G$ 位于 $L$ 的下方。"",""reason"":""中文忠实翻译了英文的非严格表述问题，需把切点处等号明确写出。""},{""corrected"":""Since $f''(x)<0$, $G$ is strictly concave there, so it lies on or below $L$; equality holds only at $x=\\pi$."",""error_origin"":""source_original"",""evidence"":""原始 MMD 第 1273–1285 行；独立数值抽查 $L-f$ 在 $\\pi\\pm0.1$ 为正、在 $\\pi$ 为 0。"",""field"":""solution_original"",""original"":""Since $f''(x)<0$ in the interval, $G$ lies below $L$ in the interval."",""reason"":""来源结论漏掉切点处的等号；导数和切线计算本身正确。""}]",adapted,DSE-2023-Q9,与 2023-Q9 具有极值—切线—凹性说明的相似小问骨架，但函数和任务端点不同，属于改编而非完全重复。,(a)(b)(c) 的 3+3+3=9 分与 marks_total 一致。来源答案的导数、极值及切线均正确，唯一数学问题是 (c)(ii) 对切点等号的表述。 Task 4：采用严谨表述：图像不高于切线，且除切点外严格低于。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""revised"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-08T20:00:00+08:00,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,Section B Train-up Zone I 应试例题 1（完整题）,2026-08-08T20:00:00+08:00,采用严谨表述：图像不高于切线，且除切点外严格低于。,8
+M2QD-DA-PARTA-Q1,M2QD-DIFFERENTIATION-APPLICATIONS,PARTA-Q1,甲部特训,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,12bfcc0bd8a62a42431aa02b52af43c3062bdcd195ffb7017bd4187c8f09e0c2,questions MMD English lines 1009; Chinese lines 1010,微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,"Let $C$ be the curve $8 e^{x+y}=x^{2}+y^{2}$ .Find the equation of the tangent to $C$ at the point（2,－2）.","设 $C$ 为曲线 $8 e^{x+y}=x^{2}+y^{2}$ 。求 $C$ 于点 $(2,-2)$ 的切线方程。 （4 marks） （4 分）","设 $C$ 为曲线 $8e^{x+y}=x^2+y^2$。求曲线 $C$ 在点 $(2,-2)$ 处的切线方程。（4分）","Let $C$ be the curve $8 e^{x+y}=x^{2}+y^{2}$ .Find the equation of the tangent to $C$ at the point（2,－2）.",4,,[],"Reference：HKDSE Math M2 SP Q6
+Differentiating both sides of the equation with respect to $x$ ,we have
+$$
+\begin{align*}
+8 e^{x+y}\left(1+\frac{d y}{d x}\right) & =2 x+2 y \frac{d y}{d x} \\
+4 e^{x+y}+4 e^{x+y} \frac{d y}{d x} & =x+y \frac{d y}{d x} \\
+\left(4 e^{x+y}-y\right) \frac{d y}{d x} & =x-4 e^{x+y} \\
+\frac{d y}{d x} & =\frac{x-4 e^{x+y}}{4 e^{x+y}-y} \tag{1A}
+\end{align*}
+$$
+Slope of the tangent at $C$
+$$
+\begin{align*}
+& =\left.\frac{d y}{d x}\right|_{(2,-2)} \\
+& =\frac{2-4 e^{2-2}}{4 e^{2-2}-(-2)} \\
+& =-\frac{1}{3} \tag{1A}
+\end{align*}
+$$
+The equation of the tangent is
+$$
+\begin{align*}
+y-(-2) & =-\frac{1}{3}(x-2)  \tag{1M}\\
+x+3 y+4 & =0 \tag{1A}
+\end{align*}
+$$","对曲线方程两边关于 $x$ 求导：$8e^{x+y}(1+\frac{dy}{dx})=2x+2y\frac{dy}{dx}$，故 $\frac{dy}{dx}=\frac{x-4e^{x+y}}{4e^{x+y}-y}$。在 $(2,-2)$ 处，切线斜率为 $-\frac13$，所以 $y+2=-\frac13(x-2)$，即 $x+3y+4=0$。",source_provided,checked_pass,0,切线与法线,"[""已知切点求切线"",""隐函数求导""]",2,已知切点后作隐函数求导并写点斜式，属于数步直接应用。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":1,""易错风险"":1,""条件处理"":0,""概念数"":1}",3,Joy 教学难度 Level 3/5,"[""微分的应用"",""微分以及微分公式"",""切线"",""隐函数求导""]",checked_pass,checked_pass,not_required,checked_pass,none,[],historical_reference,HKDSE Math M2 SP Q6,答案原始MMD第452行明确标注 Reference：HKDSE Math M2 SP Q6。,题目MMD第1009–1010行与答案MMD第452–475行对应；独立代入复算斜率与方程均正确。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,甲部应试特训 3 Q1（完整题）,,,23
+M2QD-DA-PARTA-Q10,M2QD-DIFFERENTIATION-APPLICATIONS,PARTA-Q10,甲部特训,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,fbcab8e85959bed56af83575074232be00eec7d6f5f2c5314b0544e254cf4f35,"questions MMD English lines 1070, 1072–1073; Chinese lines 1076, 1078–1079",微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,"10.Let $f(x)=(2-x)(x-8)^{2}$ .
+(a) Find the turning point（s）and the point（s）of inflexion of the graph of $y=f(x)$ .
+(b) Sketch the graph of $y=f(x)$ for $0 \leq x \leq 10$ .","设 $f(x)=(2-x)(x-8)^{2}$ 。
+(a) 求 $y=f(x)$ 的图像的所有转向点及拐点。
+(b) 描绘 $y=f(x)$ 的图像,其中 $0 \leq x \leq 10$ 。","设 $f(x)=(2-x)(x-8)^2$。
+(a) 求 $y=f(x)$ 图像上的所有转向点及拐点。
+(b) 描绘 $0\le x\le10$ 时 $y=f(x)$ 的图像。（6分）","10.Let $f(x)=(2-x)(x-8)^{2}$ .
+(a) Find the turning point（s）and the point（s）of inflexion of the graph of $y=f(x)$ .
+(b) Sketch the graph of $y=f(x)$ for $0 \leq x \leq 10$ .",6,,[],"10.（a）$f(x)=(2-x)(x-8)^{2}$
+$$
+\begin{aligned}
+f^{\prime}(x) & =(2-x)(2)(x-8)+(-1)(x-8)^{2} \\
+& =-3(x-4)(x-8) \\
+\therefore \quad & f^{\prime}(x)=0 \Leftrightarrow x=4 \text { or } x=8
+\end{aligned}
+$$
+
+1M（either one）
+
+\begin{tabular}[t]{|l|l|l|l|l|l|}
+\hline $x$ & $0 \leq x<4$ & $x=4$ & $4<x<8$ & $x=8$ & $8<x \leq 10$ \\
+\hline $f^{\prime}(x)$ & － & 0 & ＋ & 0 & － \\
+\hline
+\end{tabular}
+
+1M（for testing）
+$f(4)=(2-4)(4-8)^{2}=-32$
+$f(8)=(2-8)(8-8)^{2}=0$
+$\therefore(4,-32)$ is the minimum point and $(8,0)$ is the maximum point.
+1A（for both）
+$f^{\prime \prime}(x)=-3[(x-4)(1)+(1)(x-8)]=-6(x-6)$
+$\therefore \quad f^{\prime \prime}(x)=0 \quad \Leftrightarrow \quad x=6$
+
+\begin{tabular}[t]{|l|l|l|l|}
+\hline $x$ & $0 \leq x<6$ & $x=6$ & $6<x \leq 10$ \\
+\hline $f^{\prime \prime}(x)$ & ＋ & 0 & － \\
+\hline
+\end{tabular}
+$f(6)=(2-6)(6-8)^{2}=-16$
+$\therefore(6,-16)$ is the point of inflexion.
+1A
+(b) 
+1A（for the shape）
+1A（for all correct）
+（6）","(a) $f'(x)=-3(x-4)(x-8)$。导数符号依次为负、正、负，故 $(4,-32)$ 为极小点，$(8,0)$ 为极大点。又 $f''(x)=-6(x-6)$ 在 $x=6$ 处变号，故拐点为 $(6,-16)$。(b) 图像从端点 $(0,128)$ 下降，经过 $(2,0)$ 后到 $(4,-32)$；继而上升，经拐点 $(6,-16)$ 到 $(8,0)$（在此与 $x$ 轴相切）；之后下降到 $(10,-32)$。区间 $[0,6)$ 凹向上，$(6,10]$ 凹向下。",source_provided,checked_pass,0,极值与曲线性质,"[""极大点"",""极小点"",""拐点"",""曲线作图""]",3,在限定区间内连续完成转向点、拐点与图像整合，属于多步骤标准曲线分析。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":2,""易错风险"":1,""条件处理"":1,""概念数"":2}",4,Joy 教学难度 Level 4/5,"[""微分的应用"",""微分以及微分公式"",""极值"",""拐点"",""曲线作图"",""多项式""]",checked_pass,checked_pass,not_required,checked_pass,none,[],new,,未发现同一三次函数、区间及作图要求的重复题。,题目MMD第1070–1081行与答案MMD第731–770行对应；已查看解答图 c2e...-13_608_699_242_347.jpg，关键点、形状和独立复算一致。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,甲部应试特训 3 Q10（完整题）,,,32
+M2QD-DA-PARTA-Q11,M2QD-DIFFERENTIATION-APPLICATIONS,PARTA-Q11,甲部特训,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,13b44ec720217bdf48a0be3f670f814a6ded9344c2d053555a01658e2a627bf0,"questions MMD English lines 1083, 1085–1088; Chinese lines 1091, 1093–1096",微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,"11.Define $f(x)=\frac{m x+n}{2 x-1}$ for all real numbers $x \neq \frac{1}{2}$ ,where $m$ and $n$ are non－zero constants. Denote the graph of $y=f(x)$ by $C$ .It is given that the $y$－intercept of $C$ is -9 and $y+4=0$ is a horizontal asymptote of $C$ .
+(a) Find the other asymptote（s）of $C$ .
+(b) Prove that $f(x)$ is decreasing.
+(c) Prove that $C$ does not have any points of inflexion.
+(d) Sketch $C$ .","对所有实数 $x \neq \frac{1}{2}$ ,定义 $f(x)=\frac{m x+n}{2 x-1}$ 其中 $m$ 及 $n$ 均为非零常数。将 $y=f(x)$ 的图像记为 $C$ 。已知 $C$ 的 $y$ 截距为 -9 且 $y+4=0$ 为 $C$ 的水平渐近线。
+(a) 求 $C$ 其余的渐近线。
+(b) 证明 $f(x)$ 递减。
+(c) 证明 $C$ 没有拐点。
+(d) 描绘 $C$ 。","对所有实数 $x\ne\frac12$，定义 $f(x)=\frac{mx+n}{2x-1}$，其中 $m,n$ 均为非零常数。将 $y=f(x)$ 的图像记为 $C$。已知 $C$ 的 $y$ 截距为 $-9$，且 $y+4=0$ 是 $C$ 的水平渐近线。
+(a) 求 $C$ 的其他渐近线。
+(b) 证明 $f(x)$ 为递减函数。
+(c) 证明 $C$ 没有拐点。
+(d) 描绘 $C$。（7分）","11.Define $f(x)=\frac{m x+n}{2 x-1}$ for all real numbers $x \neq \frac{1}{2}$ ,where $m$ and $n$ are non－zero constants. Denote the graph of $y=f(x)$ by $C$ .It is given that the $y$－intercept of $C$ is -9 and $y+4=0$ is a horizontal asymptote of $C$ .
+(a) Find the other asymptote（s）of $C$ .
+(b) Prove that $f(x)$ is decreasing.
+(c) Prove that $C$ does not have any points of inflexion.
+(d) Sketch $C$ .",7,,[],"11.（a）$x=\frac{1}{2}$ is the vertical asymptote of $C$ . 1A
+(b) $\quad y$－intercept $=-9$
+$$
+\begin{aligned}
+\frac{m(0)+n}{2(0)-1} & =-9 \\
+n & =9
+\end{aligned}
+$$
+1A（for both）
+$$
+\begin{aligned}
+& \lim _{x \rightarrow \infty} \frac{m x+n}{2 x-1} \\
+& =\lim _{x \rightarrow \infty} \frac{m+\frac{n}{x}}{2-\frac{1}{x}} \\
+& =\frac{m+0}{2-0} \\
+& =\frac{m}{2}
+\end{aligned}
+$$
+i.e.$y=\frac{m}{2}$ is the horizontal asymptote.
+$$
+\begin{aligned}
+& \therefore \quad \frac{m}{2}=-4 \\
+& m=-8 \\
+& y=\frac{-8 x+9}{2 x-1} \\
+& \frac{d y}{d x}=\frac{(2 x-1)(-8)-(-8 x+9)(2)}{(2 x-1)^{2}} \\
+& =\frac{-10}{(2 x-1)^{2}}<0
+\end{aligned}
+$$
+1M
+$$
+\therefore \quad f(x) \text { is decreasing. }
+$$
+1
+(c) $\frac{d^{2} y}{d x^{2}}=\frac{40}{(2 x-1)^{3}}$
+$$
+\because \quad \frac{d^{2} y}{d x^{2}} \neq 0 \text { for all } x \neq \frac{1}{2}
+$$
+$\therefore \quad C$ does not have any points of inflexion.
+1
+(d) 
+1A（for the shape）
+1A（for all correct）
+（7）","(a) 分母为零时 $x=\frac12$，故其他渐近线为 $x=\frac12$。(b) 由 $f(0)=-9$ 得 $n=9$；水平渐近线为 $y=\frac m2=-4$，故 $m=-8$。于是 $f(x)=\frac{-8x+9}{2x-1}$，且 $f'(x)=-\frac{10}{(2x-1)^2}<0$，所以在定义域的两个区间上均递减。(c) $f''(x)=\frac{40}{(2x-1)^3}$，在定义域内不为零；唯一不定义处 $x=\frac12$ 不在曲线上，故没有拐点。(d) 图像的渐近线为 $x=\frac12,y=-4$，经过 $(0,-9)$ 并在 $(\frac98,0)$ 穿过 $x$ 轴；左支位于 $y=-4$ 下方并递减至 $-\infty$，右支由 $+\infty$ 递减并从上方趋近 $y=-4$。",source_provided,checked_pass,0,极值与曲线性质,"[""渐近线"",""拐点"",""曲线作图""]",4,需先由截距和渐近线反求参数，再整合单调性、拐点定义域与双支图像。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":2,""易错风险"":1,""条件处理"":2,""概念数"":2}",5,Joy 教学难度 Level 5/5,"[""微分的应用"",""微分以及微分公式"",""参数"",""单调性"",""证明题"",""拐点"",""渐近线"",""曲线作图"",""有理函数""]",checked_pass,checked_pass,not_required,checked_pass,none,[],new,,未发现同一分式线性函数参数条件与证明、作图组合的重复题。,题目MMD第1083–1098行与答案MMD第772–818行对应；已查看解答图 c2e...-14_525_610_242_345.jpg，渐近线、截点和分支方向正确。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,甲部应试特训 3 Q11（完整题）,,,33
+M2QD-DA-PARTA-Q12,M2QD-DIFFERENTIATION-APPLICATIONS,PARTA-Q12,甲部特训,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,bae6f218d4aa80f9cb74d4e3d8f2137a96fd5c9d08be70c787bebda3eec14a5c,"questions MMD English lines 1102, 1104–1105; Chinese lines 1109, 1112–1113",微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,"A container in the form of an inverted right circular cone is held vertically.The height and the slant height of the container are 32 cm and 40 cm respectively.Initially,the container is full of water.Then,water is leaked from the apex of the conical container.
+(a) Let $A \mathrm{~cm}^{2}$ be the wet curved surface area of the container and $h$ cm be the depth of water in the container.Express $A$ in terms of $h$ .
+(b) The volume of water in the container decreases at a constant rate of $9 \pi \mathrm{~cm}^{3} / \mathrm{s}$ .Find the rate of change of the wet curved surface area of the container when the depth of water in the container is 2 cm.","将一倒置直立圆锥形的容器垂直放置。该容器的高度及斜高分别为32cm 及40 cm 。起初,该容器装满了水。随后,水由该圆锥形容器的顶点漏出。
+(a) 设 $A \mathrm{~cm}^{2}$ 为该容器被浸湿的曲面面积及 $h \mathrm{~cm}$ 为容器内的水深。以 $h$ 表 $A$ 。
+(b) 该容器内的水的体积以恒速率 $9 \pi \mathrm{~cm}^{3} / \mathrm{s}$ 减少。求当该容器内的水深为 2 cm 时该容器被浸湿的曲面面积的变率。","一倒置的直圆锥形容器竖直放置，其高和斜高分别为 $32\text{ cm}$ 和 $40\text{ cm}$。起初容器盛满水，随后水从圆锥顶点漏出。
+(a) 设 $A\text{ cm}^2$ 为容器被水浸湿的曲面面积，$h\text{ cm}$ 为水深。以 $h$ 表示 $A$。
+(b) 容器内水的体积以恒定速率 $9\pi\text{ cm}^3/\text{s}$ 减少。求水深为 $2\text{ cm}$ 时，被浸湿曲面面积的变率。（7分）","A container in the form of an inverted right circular cone is held vertically.The height and the slant height of the container are 32 cm and 40 cm respectively.Initially,the container is full of water.Then,water is leaked from the apex of the conical container.
+(a) Let $A \mathrm{~cm}^{2}$ be the wet curved surface area of the container and $h$ cm be the depth of water in the container.Express $A$ in terms of $h$ .
+(b) The volume of water in the container decreases at a constant rate of $9 \pi \mathrm{~cm}^{3} / \mathrm{s}$ .Find the rate of change of the wet curved surface area of the container when the depth of water in the container is 2 cm.",7,,[],"12.Reference：HKDSE Math M2 2017 Q6
+(a) Base radius of the container
+$$
+\begin{aligned}
+& =\sqrt{40^{2}-32^{2}} \mathrm{~cm} \quad \text { (Pyth. theorem) } \\
+& =24 \mathrm{~cm}
+\end{aligned}
+$$
+Curved surface of the container $=\pi(24)(40)=960 \pi$ 1M
+$$
+\begin{aligned}
+A & =960 \pi\left(\frac{h}{32}\right)^{2} \\
+& =\frac{15}{16} \pi h^{2}
+\end{aligned}
+$$
+1M
+1A
+(b) Let $V \mathrm{~cm}^{3}$ be the volume of water in the container.
+$$
+\text { Note that } V=\frac{1}{3} \pi\left(\frac{3 h}{4}\right)^{2} h=\frac{3 \pi h^{3}}{16}
+$$
+1M
+$$
+\frac{d V}{d t}=\frac{9 \pi h^{2}}{16} \cdot \frac{d h}{d t}
+$$
+When $h=2$ ,
+$$
+-9 \pi=\left.\frac{9 \pi(2)^{2}}{16} \cdot \frac{d h}{d t}\right|_{h=2}
+$$
+$$
+\left.\frac{d h}{d t}\right|_{h=2}=-4
+$$
+1A
+$$
+\begin{aligned}
+& \text { By (a), } \\
+& A=\frac{15}{16} \pi h^{2} \\
+& \begin{aligned}
+& \frac{d A}{d t}=\frac{15}{8} \pi h \frac{d h}{d t} \\
+&\left.\therefore \quad \frac{d A}{d t}\right|_{h=2}=\frac{15}{8} \pi(2)(-4) \\
+&=-15 \pi
+\end{aligned}
+\end{aligned}
+$$
+Thus,the required rate of change is $-15 \pi \mathrm{~cm}^{2} / \mathrm{s}$ .",由勾股定理，容器底面半径为 $24\text{ cm}$。相似圆锥给出水面半径 $r=\frac34h$、水的斜高 $l=\frac54h$。(a) $A=\pi rl=\frac{15}{16}\pi h^2$。(b) 水体积 $V=\frac13\pi r^2h=\frac3{16}\pi h^3$，故 $\frac{dV}{dt}=\frac9{16}\pi h^2\frac{dh}{dt}$。当 $h=2$ 且 $\frac{dV}{dt}=-9\pi$ 时，$\frac{dh}{dt}=-4\text{ cm/s}$。又 $\frac{dA}{dt}=\frac{15}{8}\pi h\frac{dh}{dt}$，所以所求变率为 $-15\pi\text{ cm}^2/\text{s}$。,source_provided,checked_pass,0,变率,"[""相关变化率"",""几何量变化"",""面积变化"",""体积变化"",""建立变量关系""]",4,需以相似圆锥同时建立面积与体积关系，再串联两个相关变率。,"{""代数负担"":1,""建模强度"":2,""推理链长度"":2,""易错风险"":2,""条件处理"":1,""概念数"":2}",4,Joy 教学难度 Level 4/5,"[""微分的应用"",""微分以及微分公式"",""相关变化率"",""变率"",""圆锥"",""面积"",""体积""]",checked_pass,checked_pass,not_required,checked_pass,none,[],historical_reference,DSE-2017-Q6,题目原始MMD第1117行及答案MMD第820行均标注2017 Q06/Q6。,题目MMD第1102–1117行与答案MMD第820–866行对应；半径、相似比例、面积和体积变率及单位均已复算。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,甲部应试特训 3 Q12（完整题）,,,34
+M2QD-DA-PARTA-Q13,M2QD-DIFFERENTIATION-APPLICATIONS,PARTA-Q13,甲部特训,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,2f45848db7b31aae39d556a891285be7ccbf534f33b24fd6f9c78fdab9ff96af,"questions MMD English lines 1121, 1123–1124; Chinese lines 1128, 1131–1132",微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,"Consider the curve $C: y=\frac{1}{x}+x$ .
+(a) Find $\frac{d y}{d x}$ from first principles.
+(b) Find the range of values of $x$ when the slope of tangent to $C$ is positive.","考虑曲线 $C: y=\frac{1}{x}+x$ 。
+(a) 从基本原理求 $\frac{d y}{d x}$ 。
+(b) 求当 $C$ 的切线斜率为正数时 $x$ 的取值范围。","考虑曲线 $C:y=\frac1x+x$。
+(a) 从基本原理求 $\frac{dy}{dx}$。
+(b) 求曲线 $C$ 的切线斜率为正时 $x$ 的取值范围。（4分）","Consider the curve $C: y=\frac{1}{x}+x$ .
+(a) Find $\frac{d y}{d x}$ from first principles.
+(b) Find the range of values of $x$ when the slope of tangent to $C$ is positive.",4,,[],"Reference：HKDSE Math M2 2014 Q2
+(a) 
+
+$$
+\frac{d y}{d x}=\lim _{h \rightarrow 0} \frac{\left(\frac{1}{x+h}+x+h\right)-\left(\frac{1}{x}+x\right)}{h}
+$$
+1M
+1A
+(b) When $\frac{d y}{d x}>0$ ,
+$$
+\begin{gathered}
+1-\frac{1}{x^{2}}>0 \\
+\frac{x^{2}-1}{x^{2}}>0 \\
+(x+1)(x-1)>0 \\
+\therefore \quad x<-1 \text { or } x>1
+\end{gathered}
+$$
+
+1M
+
+Tips
+Since $x^{2}>0$ ,multiply both signs by $x^{2}$ does not change the inequality sign.
+
+1A
+（4）",定义域为 $x\ne0$。(a) 由基本原理，$\frac{dy}{dx}=\lim_{h\to0}\frac{[\frac1{x+h}+x+h]-[\frac1x+x]}h=\lim_{h\to0}\left(1-\frac1{x(x+h)}\right)=1-\frac1{x^2}$。(b) 要求 $1-\frac1{x^2}>0$，即 $\frac{(x-1)(x+1)}{x^2}>0$。因 $x^2>0$，故 $x<-1$ 或 $x>1$。,source_provided,corrected_verified,0,极值与曲线性质,"[""从基本原理求导"",""导数为正区间""]",3,需从极限定义完整化简导数，再处理含定义域的有理不等式；受控标签表没有“基本原理求导/单调区间”专标签。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":2,""易错风险"":1,""条件处理"":2,""概念数"":1}",3,Joy 教学难度 Level 3/5,"[""微分的应用"",""微分以及微分公式"",""基本原理求导"",""切线"",""斜率"",""不等式""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""补全差商化简：$\\lim_{h\\to0}(1-1/[x(x+h)])=1-1/x^2$，并注明 $x\\ne0$。"",""error_origin"":""source_original"",""evidence"":""答案原始MMD第868–880行后直接跳至(b)第881行；独立按导数定义化简得 $1-1/x^2$。"",""field"":""solution_original"",""original"":""\\begin{figure}\n$$\n\\frac{d y}{d x}=\\lim _{h \\rightarrow 0} \\frac{\\left(\\frac{1}{x+h}+x+h\\right)-\\left(\\frac{1}{x}+x\\right)}{h}\n$$\n\\captionsetup{labelformat=empty}\n\\caption{1M}\n\\end{figure}\n\\item[] 1M\n\\begin{itemize}\n\\item[] 1A\n\\item[（b）] When $\\frac{d y}{d x}>0$ ，"",""reason"":""题目明确要求从基本原理求导；只列初始差商没有完成推导或回答。""}]",historical_reference,DSE-2014-Q2,题目原始MMD第1136行及答案MMD第868行均标注2014 Q02/Q2。,题目MMD第1121–1136行与答案MMD第868–898行对应；来源(a)答案不完整，已补全并复核(b)不等式。数学订正已关闭，但受控标签缺口保留为Joy决策项。 Task 4：补全基本原理差商推导，并加入两项精确标签。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-08T20:00:00+08:00,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,综合 应试技巧 Q13（完整题）,2026-08-08T20:00:00+08:00,补全基本原理差商推导，并加入两项精确标签。,35
+M2QD-DA-PARTA-Q14,M2QD-DIFFERENTIATION-APPLICATIONS,PARTA-Q14,甲部特训,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,9aed805722479a5e49959584e17ddc6cfe402f502a8b934ab6613738e1893e12,"questions MMD English lines 1138, 1140–1141; Chinese lines 1143–1145",微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,"Let $f(x)$ be a continuous function defined on $\mathbf{R}$ .It is given that the graph of $y=f^{\prime}(x)$ is a straight line with $x$－intercept -8 and $y$－intercept 6 .
+(a) Find the slope of the tangent to the curve $y=f(x)$ at $x=2$ .
+(b) Find the $x$－coordinate（s）of all the turning point（s）of the curve $y=f(x)$ .For each turning point,determine whether it is a minimum point or a maximum point.","设 $f(x)$ 为一定义在 $\mathbf{R}$ 上的连续函数。已知 $y=f^{\prime}(x)$ 的图像为一直线,其 $x$ 截距为 -8 及 $y$ 截距为6。
+(a) 求曲线 $y=f(x)$ 于 $x=2$ 时的切线的斜率。
+(b) 求曲线 $y=f(x)$ 的所有转向点的 $x$ 坐标。对各转向点,判别是极小点还是极大点。","设 $f(x)$ 为定义在 $\mathbb R$ 上的连续函数。已知 $y=f'(x)$ 的图像是一条直线，其 $x$ 截距为 $-8$，$y$ 截距为 $6$。
+(a) 求曲线 $y=f(x)$ 在 $x=2$ 处的切线斜率。
+(b) 求曲线 $y=f(x)$ 所有转向点的 $x$ 坐标，并分别判定为极小点还是极大点。（5分）","Let $f(x)$ be a continuous function defined on $\mathbf{R}$ .It is given that the graph of $y=f^{\prime}(x)$ is a straight line with $x$－intercept -8 and $y$－intercept 6 .
+(a) Find the slope of the tangent to the curve $y=f(x)$ at $x=2$ .
+(b) Find the $x$－coordinate（s）of all the turning point（s）of the curve $y=f(x)$ .For each turning point,determine whether it is a minimum point or a maximum point.",5,,[],"（a）Note that the required slope is equal to $f^{\prime}(2)$ .
+$$
+\begin{aligned}
+\frac{f^{\prime}(2)-6}{2-0} & =\frac{0-6}{-8-0} \\
+\frac{f^{\prime}(2)-6}{2} & =\frac{3}{4} \\
+f^{\prime}(2) & =\frac{3}{4} \times 2+6 \\
+& =\frac{15}{2}
+\end{aligned}
+$$
+$\therefore \quad$ The required slope is $\frac{15}{2}$ .
+
+(b) $\quad \because \quad$ The $x$－intercept of the straight line $y=f^{\prime}(x)$ is－8.
+$\therefore \quad$ There is one turning point,with $x$－coordinate－8.
+$$
+\begin{aligned}
+f^{\prime \prime}(x) & =\frac{d}{d x} f^{\prime}(x) \\
+& =\text { Slope of the straight line } y=f^{\prime}(x) \\
+& =\frac{3}{4}
+\end{aligned}
+$$
+$\therefore \quad f^{\prime \prime}(-8)=\frac{3}{4}>0$ 1M（for testing）
+$\therefore \quad$ The $x$－coordinate of the minimum point is -8 .1A
+（5）","直线 $y=f'(x)$ 通过 $(-8,0)$ 与 $(0,6)$，故 $f'(x)=\frac34x+6$。(a) 切线斜率为 $f'(2)=\frac{15}{2}$。(b) $f'(x)=0$ 只有 $x=-8$。又 $f''(x)=\frac34>0$，故该转向点为极小点，其 $x$ 坐标为 $-8$。",source_provided,checked_pass,0,极值与曲线性质,"[""极小点""]",2,由两截距直接写出导函数直线，再代入及作一次二阶导数判定。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":1,""易错风险"":1,""条件处理"":1,""概念数"":1}",3,Joy 教学难度 Level 3/5,"[""微分的应用"",""微分以及微分公式"",""导数图像"",""切线"",""斜率"",""转向点"",""极值""]",checked_pass,checked_pass,not_required,checked_pass,none,[],new,,未发现相同导函数直线截距资料与两问组合的重复题。,题目MMD第1138–1148行与答案MMD第900–930行对应；已查看解答图 c2e...-15_334_509_1549_1208.jpg 及其1M碎片图，直线资料与复算一致。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,综合 应试技巧 Q14（完整题）,,,36
+M2QD-DA-PARTA-Q15,M2QD-DIFFERENTIATION-APPLICATIONS,PARTA-Q15,甲部特训,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,eb50e5c88c4cb52915805afaee2748e537aab5d4d0c8728bbbf14eecd730e436,"questions MMD English lines 1150, 1152–1156; Chinese lines 1161–1162, 1165–1169",微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,"Let $g(x)$ be a continuous function defined on $\mathbf{R}^{+}$,where $\mathbf{R}^{+}$is the set of positive real numbers.It is given that $g^{\prime}(x)=\frac{4 x^{2}-5 x+36}{x}$ for all $x>0$ .
+(a) Is $g(x)$ an increasing function？Explain your answer.
+(b) Denote the curve $y=g(x)$ by $G$ .It is given that $P(p, 0)$ is the point of inflexion of $G$ . Let $L$ be the tangent to $G$ at $P$ .
+(i) Find the equation of $L$ .
+(ii) By considering $g^{\prime \prime}(x)$ ,explain why $G$ lies above $L$ in the interval $(p, \infty)$ .","设 $g(x)$ 为一定义在 $\mathbf{R}^{+}$上的连续函数,其中 $\mathbf{R}^{+}$为正实数集。
+已知对所有 $x>0, g^{\prime}(x)=\frac{4 x^{2}-5 x+36}{x}$ 。
+(a) $g(x)$ 是否一递增函数？解释你的答案。
+(b) 将曲线 $y=g(x)$ 记为 $G$ 。已知 $P(p, 0)$ 为 $G$ 的拐点。设 $L$ 为 $G$ 于 $P$ 的切线。
+(i) 求 $L$ 的方程。
+(ii) 藉考虑 $g^{\prime \prime}(x)$ ,解释为甚么在区间 $(p, \infty)$ 内,$G$ 在 $L$ 之上。","设 $g(x)$ 为定义在正实数集 $\mathbb R^+$ 上的连续函数。已知对所有 $x>0$，$g'(x)=\frac{4x^2-5x+36}{x}$。
+(a) $g(x)$ 是否为递增函数？解释你的答案。
+(b) 将曲线 $y=g(x)$ 记为 $G$。已知 $P(p,0)$ 为 $G$ 的拐点，设 $L$ 为 $G$ 在 $P$ 处的切线。
+(i) 求 $L$ 的方程。
+(ii) 通过考察 $g''(x)$，解释为什么在区间 $(p,\infty)$ 内 $G$ 位于 $L$ 上方。（8分）","Let $g(x)$ be a continuous function defined on $\mathbf{R}^{+}$,where $\mathbf{R}^{+}$is the set of positive real numbers.It is given that $g^{\prime}(x)=\frac{4 x^{2}-5 x+36}{x}$ for all $x>0$ .
+(a) Is $g(x)$ an increasing function？Explain your answer.
+(b) Denote the curve $y=g(x)$ by $G$ .It is given that $P(p, 0)$ is the point of inflexion of $G$ . Let $L$ be the tangent to $G$ at $P$ .
+(i) Find the equation of $L$ .
+(ii) By considering $g^{\prime \prime}(x)$ ,explain why $G$ lies above $L$ in the interval $(p, \infty)$ .",8,,[],"（a）For all $x>0$ ,
+$$
+\begin{aligned}
+g^{\prime}(x) & =\frac{4 x^{2}-5 x+36}{x} \\
+& =\frac{4\left(x^{2}-\frac{5}{4} x\right)+36}{x} \\
+& =\frac{4\left(x^{2}-\frac{5}{4} x+\left(\frac{5}{8}\right)^{2}-\left(\frac{5}{8}\right)^{2}\right)+36}{x} \\
+& =\frac{4\left(x-\frac{5}{8}\right)^{2}-4\left(\frac{5}{8}\right)^{2}+36}{x} \\
+& =\frac{4\left(x-\frac{5}{8}\right)^{2}+\frac{551}{16}}{x}>0
+\end{aligned}
+$$
+$$
+\therefore g(x) \text { is an increasing function. }
+$$
+
+\begin{tabular}[t]{|l|l|l|l|}
+\hline $x$ & $0<x<3$ & $x=3$ & $x>3$ \\
+\hline $g^{\prime \prime}(x)$ & － & 0 & ＋ \\
+\hline
+\end{tabular}
+$$
+\therefore \quad g(x) \text { attains its point of inflexion at } x=3 \text {, i.e. } p=3 \text {. }
+$$
+$$
+\begin{aligned}
+\frac{y-0}{x-3} & =\frac{4(3)^{2}-5(3)+36}{3} \\
+\frac{y}{x-3} & =19 \\
+y & =19 x-57
+\end{aligned}
+$$
+1M (for testing)
+$$
+1 \mathrm{M}
+$$
+1A
+(ii) Note that $L$ is the tangent to $G$ at the point $P(3,0)$ .
+$$
+\begin{array}{ll}
+\because & g^{\prime \prime}(x)>0 \text { in the interval }(3, \infty) . \\
+\therefore & G \text { lies above } L \text { in the interval }(3, \infty) .
+\end{array}
+$$
+$$
+1
+$$
+(8)","(a) 对 $x>0$，$g'(x)=\frac{4(x-5/8)^2+551/16}{x}>0$，故 $g$ 为递增函数。(b) $g'(x)=4x-5+\frac{36}{x}$，所以 $g''(x)=4-\frac{36}{x^2}$。在正实数域内，$g''$ 只在 $x=3$ 为零，且由负变正，故 $p=3$。(i) $P=(3,0)$ 且 $g'(3)=19$，所以 $L:y=19(x-3)=19x-57$。(ii) 在 $(3,\infty)$ 内 $g''(x)>0$，曲线 $G$ 凹向上，因此该区间内曲线位于其在 $P$ 处的切线 $L$ 上方。",source_provided,checked_pass,0,极值与曲线性质,"[""切点未知"",""拐点"",""凹凸性""]",4,需从给定一阶导数证明单调、反求拐点、建立切线并用凹性作全区间解释。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":2,""易错风险"":2,""条件处理"":1,""概念数"":2}",5,Joy 教学难度 Level 5/5,"[""微分的应用"",""微分以及微分公式"",""单调性"",""证明题"",""二阶导数"",""拐点"",""切线"",""凹凸性""]",checked_pass,checked_pass,not_required,checked_pass,none,[],new,,未发现相同导函数、拐点切线及曲线在切线上方证明的重复题。,题目MMD第1150–1173行与答案MMD第934–981行对应；配方常数、$p=3$、斜率19和凹性结论均已复算。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,综合 应试技巧 Q15（完整题）,,,37
+M2QD-DA-PARTA-Q16,M2QD-DIFFERENTIATION-APPLICATIONS,PARTA-Q16,甲部特训,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,e0e63dba3a8e145720d62ce1211feb4ef2c1084e1c864d25c2ca06b4799ff29f,"questions MMD English lines 1175, 1177–1180; Chinese lines 1184, 1187–1190",微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,"Let \(f(x)=\frac{(x+5)^3}{(x-2)^2}\) for all real numbers \(x\ne2\). Denote the graph of \(y=f(x)\) by \(H\).
+
+(a) Find the asymptote(s) of \(H\).
+
+(b) Find \(f^{\prime}(x)\).
+
+(c) Find the turning point(s) of \(H\).
+
+(d) Find the point(s) of inflexion of \(H\).","对所有实数 \(x\ne2\)，设 \(f(x)=\frac{(x+5)^3}{(x-2)^2}\)。将 \(y=f(x)\) 的图像记为 \(H\)。
+
+(a) 求 \(H\) 的渐近线。
+
+(b) 求 \(f^{\prime}(x)\)。
+
+(c) 求 \(H\) 的转向点。
+
+(d) 求 \(H\) 的拐点。","对所有实数 $x\ne2$，设 $f(x)=\frac{(x+5)^3}{(x-2)^2}$，并将 $y=f(x)$ 的图像记为 $H$。
+(a) 求 $H$ 的渐近线。
+(b) 求 $f'(x)$。
+(c) 求 $H$ 的转向点。
+(d) 求 $H$ 的拐点。（9分）","Let \(f(x)=\frac{(x+5)^3}{(x-2)^2}\) for all real numbers \(x\ne2\). Denote the graph of \(y=f(x)\) by \(H\).
+
+(a) Find the asymptote(s) of \(H\).
+
+(b) Find \(f^{\prime}(x)\).
+
+(c) Find the turning point(s) of \(H\).
+
+(d) Find the point(s) of inflexion of \(H\).",9,,[],"16.Reference：HKDSE Math M2 2020 Q9
+(a) The equation of the vertical asymptote is $x-2=0$ . 1A Put $u=x-2$ ：
+$$
+\frac{(x+5)^{3}}{(x-2)^{2}}=\frac{(u+7)^{3}}{u^{2}}=u+21+\frac{g(u)}{u^{2}}=x+19+\frac{g(x-2)}{(x-2)^{2}},
+$$
+where $\mathrm{g}(u)$ is a polynomial of degree 1 . 1M
+Thus,the equation of the oblique asymptote is $y=x+19$ .1A
+(b) 
+$$
+\begin{aligned}
+f^{\prime}(x) & =\frac{(x-2)^{2} \cdot 3(x+5)^{2}-(x+5)^{3} \cdot 2(x-2)}{(x-2)^{4}} \\
+& =\frac{(x+5)^{2}[3(x-2)-2(x+5)]}{(x-2)^{3}} \\
+& =\frac{(x+5)^{2}(x-16)}{(x-2)^{3}}
+\end{aligned}
+$$
+1M 1A
+(c) By（b）,we have $f^{\prime}(x)=\frac{(x+5)^{2}(x-16)}{(x-2)^{3}}$ .
+So,we have $f^{\prime}(x)=0$ when $x=-5$ or $x=16$ .
+
+\begin{tabular}[t]{|l|l|l|l|l|l|l|}
+\hline $x$ & $x<-5$ & $x=-5$ & $-5<x<2$ & $2<x<16$ & $x=16$ & $x>16$ \\
+\hline $f^{\prime}(x)$ & ＋ & 0 & ＋ & － & 0 & ＋ \\
+\hline
+\end{tabular}
+1M（for testing）
+$$
+f(16)=\frac{(16+5)^{3}}{(16-2)^{2}}=\frac{189}{4}
+$$
+$\therefore \quad$ The minimum point of $H$ is $\left(16, \frac{189}{4}\right)$. 1A
+(d) By（b）,we have $f^{\prime \prime}(x)=\frac{294(x+5)}{(x-2)^{4}}$ .
+So,we have $f^{\prime \prime}(x)=0$ when $x=-5$ .
+
+\begin{tabular}[t]{|l|l|l|l|}
+\hline $x$ & $x<-5$ & $x=-5$ & $-5<x<2$ \\
+\hline $f^{\prime \prime}(x)$ & － & 0 & ＋ \\
+\hline
+\end{tabular}
+1M（for testing）
+1A
+（9）","(a) 垂直渐近线为 $x=2$。多项式除法给出 $f(x)=x+19+\frac{147}{x-2}+\frac{343}{(x-2)^2}$，故斜渐近线为 $y=x+19$。(b) $f'(x)=\frac{(x+5)^2(x-16)}{(x-2)^3}$。(c) 驻点横坐标为 $-5,16$；$f'$ 在 $x=-5$ 两侧不变号，在 $x=16$ 两侧由负变正，故唯一转向点为极小点 $(16,\frac{189}{4})$。(d) $f''(x)=\frac{294(x+5)}{(x-2)^4}$，在 $x=-5$ 两侧由负变正，且 $f(-5)=0$，故唯一拐点为 $(-5,0)$。",source_provided,corrected_verified,0,极值与曲线性质,"[""渐近线"",""极小点"",""拐点""]",4,整合有理函数除法、导数因式符号、非转向驻点、渐近线与拐点，条件处理密集。,"{""代数负担"":2,""建模强度"":0,""推理链长度"":2,""易错风险"":2,""条件处理"":2,""概念数"":2}",5,Joy 教学难度 Level 5/5,"[""微分的应用"",""微分以及微分公式"",""渐近线"",""一阶导数"",""二阶导数"",""转向点"",""拐点"",""有理函数""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""(b) Find $f^{\\prime}(x)$."",""error_origin"":""source_original"",""evidence"":""题目原始MMD第1175–1180行；答案原始MMD第991–1001行及第1013行。当前45题JSON亦已采用 $f'(x)$，但未保留校订证据。"",""field"":""question_text_original"",""original"":""\\item[（b）] Find $f^{\\prime \\prime}(x)$ ．"",""reason"":""来源答案(b)实际求 $f'(x)$，且(c)明确写“By (b), we have $f'(x)=...$”；若(b)要求 $f''$，题答与后续引用均不成立。""},{""corrected"":""(b) 求 $f'(x)$。"",""error_origin"":""source_original"",""evidence"":""题目原始MMD第1184–1190行与答案原始MMD第991–1013行对照。"",""field"":""question_text_zh"",""original"":""\\item[（b）] 求 $f^{\\prime \\prime}(x)$ 。"",""reason"":""与英文疑点相同；应使中文题干与可验证的题答链一致。""},{""corrected"":""补充 $f(-5)=0$，故拐点为 $(-5,0)$。"",""error_origin"":""source_original"",""evidence"":""答案原始MMD第1013–1023行；独立代入 $f(-5)=0$。"",""field"":""solution_original"",""original"":""\\item[（d）] By（b），we have $f^{\\prime \\prime}(x)=\\frac{294(x+5)}{(x-2)^{4}}$ ．\nSo，we have $f^{\\prime \\prime}(x)=0$ when $x=-5$ ．\n\n\\begin{tabular}[t]{|l|l|l|l|}\n\\hline $x$ & $x<-5$ & $x=-5$ & $-5<x<2$ \\\\\n\\hline $f^{\\prime \\prime}(x)$ & － & 0 & ＋ \\\\\n\\hline\n\\end{tabular}\n1M（for testing）\n1A\n（9）"",""reason"":""题目要求拐点而非只求横坐标；答案缺少最终坐标结论。""}]",historical_reference,DSE-2020-Q9,题目原始MMD第1194行及答案MMD第983行均标注2020 Q09/Q9。,"Q16存在明确的原始MMD导数阶数题答冲突；答案链支持(b)应为一阶导数。拐点坐标亦已独立补全，需在正式入库前保留校订记录。 Task 4：确认(b)应求f'(x)，并补全拐点(-5,0)。","{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""revised"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-08T20:00:00+08:00,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,综合 应试技巧 Q16（完整题）,2026-08-08T20:00:00+08:00,"确认(b)应求f'(x)，并补全拐点(-5,0)。",38
+M2QD-DA-PARTA-Q17,M2QD-DIFFERENTIATION-APPLICATIONS,PARTA-Q17,甲部特训,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,93ee9e8a497054398396bbb1cd3610a32b2321c9d1350278009ab61ca2b245d4,"questions MMD English lines 1196, 1198–1199; Chinese lines 1201–1203",微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,"Consider the curve $C: y=\ln x$ ,where $x>1$ .Let $P$ be a moving point lying on $C$ .The tangent to $C$ at $P$ cuts the $x$－axis at the point $Q$ .
+(a) Denote the $x$－coordinate of $P$ by $r$ .Find the coordinates of $Q$ in terms of $r$ .
+(b) Let $O$ be the origin.It is given that $O P$ increases at a constant rate of 2 units per minute.Find,correct to 3 significant figures,the rate of change of the area of $\triangle O P Q$ when the $x$－coordinate of $P$ is $\sqrt{e}$ .","考虑曲线 $C: y=\ln x$ ,其中 $x>1$ 。设 $P$ 为 $C$ 上的一动点。 $C$ 在 $P$ 的切线与 $x$ 轴相交于点 $Q$ 。
+(a) 将 $P$ 的 $x$ 坐标记为 $r$ 。求 $Q$ 的坐标,答案以 $r$ 表示。
+(b) 设 $O$ 为原点。已知 $O P$ 以每分钟2单位的恒速率增加。求当 $P$ 的 $x$ 坐标为 $\sqrt{e}$时,$\triangle O P Q$ 的面积的变率,答案须准确至三位有效数字。","考虑曲线 $C:y=\ln x$，其中 $x>1$。设 $P$ 为 $C$ 上的动点，曲线 $C$ 在 $P$ 处的切线与 $x$ 轴相交于点 $Q$。
+(a) 以 $r$ 表示 $P$ 的 $x$ 坐标，求 $Q$ 的坐标，答案以 $r$ 表示。
+(b) 设 $O$ 为原点。已知 $OP$ 以每分钟 $2$ 个单位的恒定速率增加。求当 $P$ 的 $x$ 坐标为 $\sqrt e$ 时，$\triangle OPQ$ 面积的变率，答案准确至三位有效数字。（8分）","Consider the curve $C: y=\ln x$ ,where $x>1$ .Let $P$ be a moving point lying on $C$ .The tangent to $C$ at $P$ cuts the $x$－axis at the point $Q$ .
+(a) Denote the $x$－coordinate of $P$ by $r$ .Find the coordinates of $Q$ in terms of $r$ .
+(b) Let $O$ be the origin.It is given that $O P$ increases at a constant rate of 2 units per minute.Find,correct to 3 significant figures,the rate of change of the area of $\triangle O P Q$ when the $x$－coordinate of $P$ is $\sqrt{e}$ .",8,,[],"17.Reference：HKDSE Math M2 2018 Q9
+(a) $y=\ln x$
+$$
+\frac{d y}{d x}=\frac{1}{x}
+$$
+The slope of the tangent at $P$ is $\frac{1}{r}$ .
+Let $a$ be the $x$－coordinate of $Q$ .
+$$
+\begin{equation*}
+\frac{0-\ln r}{a-r}=\frac{1}{r} \tag{1M}
+\end{equation*}
+$$
+$$
+\begin{aligned}
+a-r & =-r \ln r \\
+a & =r-r \ln r
+\end{aligned}
+$$
+$$
+\begin{equation*}
+\therefore \quad \text { The coordinates of } Q \text { are }(r-r \ln r, 0) \tag{1A}
+\end{equation*}
+$$
+(b) $O P=\sqrt{r^{2}+(\ln r)^{2}}$
+$$
+\begin{aligned}
+\frac{d O P}{d t} & =\frac{2 r+2(\ln r) \cdot \frac{1}{r}}{2 \sqrt{r^{2}+(\ln r)^{2}}} \cdot \frac{d r}{d t} \\
+& =\frac{r^{2}+\ln r}{r \sqrt{r^{2}+(\ln r)^{2}}} \cdot \frac{d r}{d t}
+\end{aligned}
+$$
+Tips
+We need to find the rate of change when $r=\sqrt{e}$ .
+Since $1<\sqrt{e}<e$ ,the $x$－coordinate of $Q>0$ ,
+hence $O Q$ is equal to the $x$－coordinate of $Q$ .
+For $1<r<\sqrt{e}$ ,note that the $x$－coordinate of $Q=r(1-\ln r)>0$ .
+Let $A$ be the area of $\triangle O P Q$ .
+$$
+\begin{aligned}
+A & =\frac{1}{2}(r-r \ln r)(\ln r) \\
+& =\frac{1}{2}\left[r \ln r-r(\ln r)^{2}\right]
+\end{aligned}
+$$
+When $r=\sqrt{e}, \frac{d O P}{d t}=2$ .
+$$
+\begin{align*}
+\left.\therefore \quad \frac{d A}{d t}\right|_{r=\sqrt{e}} & =\frac{1}{2}\left[1-\ln \sqrt{e}-(\ln \sqrt{e})^{2}\right] \cdot \frac{\sqrt{e} \sqrt{(\sqrt{e})^{2}+(\ln \sqrt{e})^{2}}}{(\sqrt{e})^{2}+\ln \sqrt{e}} \cdot  \tag{2}\\
+& =\frac{1}{2}\left[1-\frac{1}{2}-\left(\frac{1}{2}\right)^{2}\right] \cdot \frac{\sqrt{e} \cdot \sqrt{e+\frac{1}{4}}}{e+\frac{1}{2}} \cdot(2)  \tag{2}\\
+& =\frac{\sqrt{4 e^{2}+e}}{4(2 e+1)} \\
+& =0.221 \quad \text { (cor. to } 3 \text { sig. fig.) } \tag{1A}
+\end{align*}
+$$
+∴ The required rate of change is 0.221 square unit per minute.","(a) $P=(r,\ln r)$，切线斜率为 $1/r$。设 $Q=(a,0)$，则 $\frac{-\ln r}{a-r}=\frac1r$，故 $Q=(r-r\ln r,0)$。(b) $OP=\sqrt{r^2+(\ln r)^2}$，所以 $\frac{d(OP)}{dt}=\frac{r^2+\ln r}{r\sqrt{r^2+(\ln r)^2}}\frac{dr}{dt}$。在 $r=\sqrt e$ 时令左边为 $2$，可得 $\frac{dr}{dt}=\frac{2\sqrt e\sqrt{e+1/4}}{e+1/2}$。此时 $Q$ 的横坐标为正，面积 $A=\frac12r(1-\ln r)\ln r$，故 $\frac{dA}{dr}=\frac12[1-\ln r-(\ln r)^2]$。代入 $r=\sqrt e$ 得 $\frac{dA}{dt}=\frac{\sqrt{4e^2+e}}{4(2e+1)}\approx0.221$ 平方单位/分钟。",source_provided,checked_pass,0,综合微分应用,"[""相关变化率"",""面积变化"",""链式法则建模"",""建立变量关系"",""综合题目""]",4,先以切线建立动态截点，再联立距离速率和三角形面积速率，跨切线与变率两板块。,"{""代数负担"":1,""建模强度"":2,""推理链长度"":2,""易错风险"":2,""条件处理"":1,""概念数"":2}",5,Joy 教学难度 Level 5/5,"[""微分的应用"",""微分以及微分公式"",""切线"",""相关变化率"",""变率"",""面积"",""对数函数""]",checked_pass,checked_pass,not_required,checked_pass,none,[],historical_reference,DSE-2018-Q9,题目原始MMD第1205行及答案MMD第1026行均标注2018 Q09/Q9。,题目MMD第1196–1205行与答案MMD第1026–1079行对应；独立数值复算得0.220656...，三位有效数字为0.221，单位正确。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,综合 应试技巧 Q17（完整题）,,,39
+M2QD-DA-PARTA-Q2,M2QD-DIFFERENTIATION-APPLICATIONS,PARTA-Q2,甲部特训,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,8cd06d3715d995c528f473cb962f372ce2debb258e8c1b0a0bc3e5c2d7a8f7dd,questions MMD English lines 1011; Chinese lines 1012,微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,Consider the curve $C: y=x^{3}-4 x^{2}+8 x-7$ .Find the equations of the two tangents to the curve $C$ which are parallel to the line $L: 6 x-2 y+7=0$ . （4 marks）,考虑曲线 $C: y=x^{3}-4 x^{2}+8 x-7$ 。求曲线 $C$ 的两条与直线 $L: 6 x-2 y+7=0$ 平行的切线的方程。 （4 分）,考虑曲线 $C:y=x^3-4x^2+8x-7$。求曲线 $C$ 的两条与直线 $L:6x-2y+7=0$ 平行的切线方程。（4分）,Consider the curve $C: y=x^{3}-4 x^{2}+8 x-7$ .Find the equations of the two tangents to the curve $C$ which are parallel to the line $L: 6 x-2 y+7=0$ . （4 marks）,4,,[],"Reference：HKDSE Math M2 PP Q9
+$$
+\begin{equation*}
+\frac{d y}{d x}=3 x^{2}-8 x+8 \tag{1A}
+\end{equation*}
+$$
+Slope of $L=-\frac{6}{-2}=3$
+When $\frac{d y}{d x}=3$ ,
+$$
+\begin{align*}
+3 x^{2}-8 x+5 & =0  \tag{1M}\\
+(3 x-5)(x-1) & =0 \\
+x & =1 \text { or } \frac{5}{3}
+\end{align*}
+$$
+When $x=1, y=-2$ ;when $x=\frac{5}{3}, y=-\frac{4}{27}$ .
+∴ The equations of the two tangents are $y+2=3(x-1)$ and $y+\frac{4}{27}=3\left(x-\frac{5}{3}\right)$ ,
+$$
+\begin{equation*}
+\text { i.e., } 3 x-y-5=0 \text { and } 81 x-27 y-139=0 \text {. } \tag{1A}
+\end{equation*}
+$$","$L$ 的斜率为 $3$。由 $y'=3x^2-8x+8=3$，得 $(3x-5)(x-1)=0$，故切点横坐标为 $1$ 或 $\frac53$。相应切点为 $(1,-2)$、$(\frac53,-\frac4{27})$。两条切线分别为 $y+2=3(x-1)$ 与 $y+\frac4{27}=3(x-\frac53)$，即 $3x-y-5=0$ 与 $81x-27y-139=0$。",source_provided,checked_pass,0,切线与法线,"[""与指定直线平行的切线"",""切点未知""]",3,需由平行条件求出两个未知切点，再分别写出两条切线，属于多步骤标准题。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":2,""易错风险"":1,""条件处理"":1,""概念数"":1}",3,Joy 教学难度 Level 3/5,"[""微分的应用"",""微分以及微分公式"",""切线"",""平行切线"",""多项式""]",checked_pass,checked_pass,not_required,checked_pass,none,[],historical_reference,HKDSE Math M2 PP Q9,答案原始MMD第477行明确标注 Reference：HKDSE Math M2 PP Q9。,题目MMD第1011–1012行与答案MMD第477–498行对应；两个切点及一般式均已独立复算。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,甲部应试特训 3 Q2（完整题）,,,24
+M2QD-DA-PARTA-Q3,M2QD-DIFFERENTIATION-APPLICATIONS,PARTA-Q3,甲部特训,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,77c0c30d620e09cb2f3255341740c71771ac77050877473bff3218f8ba980cc2,questions MMD English lines 1013; Chinese lines 1014,微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,Consider the curve $C: y=\frac{16-4 x^{2}}{3+x^{2}}$ .Find the equations of the two tangents to the curve $C$ with $y$－intercept $\frac{13}{2}$ . （6 marks）,考虑曲线 $C: y=\frac{16-4 x^{2}}{3+x^{2}}$ 。求曲线 $C$ 的两条 $y$ 截距均为 $\frac{13}{2}$ 的切线之方程。 （6 分）,考虑曲线 $C:y=\frac{16-4x^2}{3+x^2}$。求曲线 $C$ 的两条 $y$ 截距均为 $\frac{13}{2}$ 的切线方程。（6分）,Consider the curve $C: y=\frac{16-4 x^{2}}{3+x^{2}}$ .Find the equations of the two tangents to the curve $C$ with $y$－intercept $\frac{13}{2}$ . （6 marks）,6,,[],"$y=\frac{16-4 x^{2}}{3+x^{2}}$
+$$
+\begin{align*}
+\frac{d y}{d x} & =\frac{\left(3+x^{2}\right)(-8 x)-\left(16-4 x^{2}\right)(2 x)}{\left(3+x^{2}\right)^{2}} \\
+& =\frac{-56 x}{\left(3+x^{2}\right)^{2}} \tag{1A}
+\end{align*}
+$$
+
+Let $(a, b)$ be the point of contact.
+$$
+\begin{aligned}
+\frac{b-\frac{13}{2}}{a-0} & =\frac{-56 a}{\left(3+a^{2}\right)^{2}} \\
+b & =\frac{-56 a^{2}}{\left(3+a^{2}\right)^{2}}+\frac{13}{2} \\
+\frac{16-4 a^{2}}{3+a^{2}} & =\frac{-56 a^{2}}{\left(3+a^{2}\right)^{2}}+\frac{13}{2} \\
+2\left(16-4 a^{2}\right)\left(3+a^{2}\right) & =-112 a^{2}+13\left(3+a^{2}\right)^{2} \\
+-8 a^{4}+8 a^{2}+96 & =13 a^{4}-34 a^{2}+117 \\
+21 a^{4}-42 a^{2}+21 & =0 \\
+\left(a^{2}-1\right)^{2} & =0 \\
+a^{2} & =1 \\
+a & = \pm 1
+\end{aligned}
+$$
+When $a= \pm 1, b=\frac{16-4( \pm 1)^{2}}{3+( \pm 1)^{2}}=3$ .
+$\left.\frac{d y}{d x}\right|_{x= \pm 1}=\frac{-56( \pm 1)}{\left[3+( \pm 1)^{2}\right]^{2}}=\mp \frac{7}{2}$
+At（1,3）,the equation of the tangent is
+$$
+\frac{y-3}{x-1}=-\frac{7}{2}
+$$
+$7 x+2 y-13=0$
+At（－1,3）,the equation of the tangent is
+$$
+\frac{y-3}{x-(-1)}=\frac{7}{2}
+$$
+$7 x-2 y+13=0$","$y'=-\frac{56x}{(3+x^2)^2}$。设切点为 $(a,b)$，则切线通过 $(0,\frac{13}{2})$，所以 $\frac{b-13/2}{a}=-\frac{56a}{(3+a^2)^2}$，且 $b=\frac{16-4a^2}{3+a^2}$。消去 $b$ 得 $(a^2-1)^2=0$，故 $a=\pm1$，两切点均有纵坐标 $3$。在 $(1,3)$ 处斜率为 $-\frac72$，在 $(-1,3)$ 处斜率为 $\frac72$，故两条切线为 $7x+2y-13=0$ 与 $7x-2y+13=0$。",source_provided,checked_pass,0,切线与法线,"[""过指定点的切线"",""切点未知""]",4,需把给定截距转化为过定点条件，以未知切点建立切线约束并处理四次代数式。,"{""代数负担"":2,""建模强度"":1,""推理链长度"":2,""易错风险"":2,""条件处理"":1,""概念数"":1}",5,Joy 教学难度 Level 5/5,"[""微分的应用"",""微分以及微分公式"",""切线"",""截距"",""有理函数""]",checked_pass,checked_pass,not_required,checked_pass,none,[],new,,未发现同一有理曲线及固定 $y$ 截距切线条件的重复题；来源答案亦未标历史题号。,题目MMD第1013–1014行与答案MMD第499–533行对应；导数、消元方程及两条切线均正确。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,甲部应试特训 3 Q3（完整题）,,,25
+M2QD-DA-PARTA-Q4,M2QD-DIFFERENTIATION-APPLICATIONS,PARTA-Q4,甲部特训,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,e306ea05f1509ee5105ea5699550bf623c6c0b5d7e26171e49aa21d35fa553da,questions MMD English lines 1019; Chinese lines 1021,微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,"Consider the continuous function $f(x)=x+2 \sin x$ ,where $0<x<2 \pi$ .Find all the maximum point（s）of the graph of $y=f(x)$ .","考虑连续函数 $f(x)=x+2 \sin x$ ,其中 $0<x<2 \pi$ 。求 $y=f(x)$ 的图像的所有极大点。",考虑连续函数 $f(x)=x+2\sin x$，其中 $0<x<2\pi$。求 $y=f(x)$ 图像上的所有极大点。（3分）,"Consider the continuous function $f(x)=x+2 \sin x$ ,where $0<x<2 \pi$ .Find all the maximum point（s）of the graph of $y=f(x)$ .",3,,[],"4.Reference：HKDSE Math M2 2012 Q5
+$$
+\begin{aligned}
+& y=x+2 \sin x \\
+& \frac{d y}{d x}=1+2 \cos x
+\end{aligned}
+$$
+For $\frac{d y}{d x}=0$ ,
+$$
+\begin{aligned}
+1+2 \cos x & =0 \\
+\cos x & =\frac{-1}{2} \\
+x & =\frac{2 \pi}{3} \text { or } \frac{4 \pi}{3}
+\end{aligned}
+$$
+\begin{tabular}{|c|c|c|c|c|c|}
+\hline$x$ & $0<x<\frac{2 \pi}{3}$ & $x=\frac{2 \pi}{3}$ & $\frac{2 \pi}{3}<x<\frac{4 \pi}{3}$ & $x=\frac{4 \pi}{3}$ & $\frac{4 \pi}{3}<x<2 \pi$ \\
+\hline$\frac{d y}{d x}$ & + & 0 & - & 0 & + \\
+\hline
+\end{tabular}
+$$
+\begin{aligned}
+& \text { When } x=\frac{2 \pi}{3}, y=\frac{2 \pi}{3}+2 \sin \frac{2 \pi}{3}=\frac{2 \pi}{3}+\sqrt{3} \\
+& \therefore \quad\left(\frac{2 \pi}{3}, \frac{2 \pi}{3}+\sqrt{3}\right) \text { is a maximum point. }
+\end{aligned}
+$$
+1M（for testing）
+1A
+（3）","$f'(x)=1+2\cos x$。在 $0<x<2\pi$ 内，$f'(x)=0$ 给出 $x=\frac{2\pi}{3}$ 或 $x=\frac{4\pi}{3}$。导数在 $x=\frac{2\pi}{3}$ 两侧由正变负，故该处为极大点；在另一驻点两侧由负变正。所求极大点为 $(\frac{2\pi}{3},\frac{2\pi}{3}+\sqrt3)$。",source_provided,checked_pass,0,极值与曲线性质,"[""极大点""]",2,求导、解标准三角方程并作一次符号判别即可。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":1,""易错风险"":1,""条件处理"":1,""概念数"":1}",3,Joy 教学难度 Level 3/5,"[""微分的应用"",""微分以及微分公式"",""极值"",""最大值"",""三角函数""]",checked_pass,checked_pass,not_required,checked_pass,none,[],historical_reference,DSE-2012-Q5,题目原始MMD第1023行及答案MMD第534行均标注2012 Q05/Q5。,题目MMD第1019–1023行与答案MMD第534–562行对应；开区间内两驻点的符号变化已复核。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,甲部应试特训 3 Q4（完整题）,,,26
+M2QD-DA-PARTA-Q5,M2QD-DIFFERENTIATION-APPLICATIONS,PARTA-Q5,甲部特训,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,3650fcd61ee37b67367d5858a5d6c4abdc323308fc0a8788b49e3fc476bc7870,questions MMD English lines 1024; Chinese lines 1026,微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,Consider the continuous function $f(x)=e^{2 x}-4 e^{x}+5$ .Find all the turning point（s）of the graph of $y=f(x)$ .,考虑连续函数 $f(x)=e^{2 x}-4 e^{x}+5$ 。求 $y=f(x)$ 的图像的所有转向点。,考虑连续函数 $f(x)=e^{2x}-4e^x+5$。求 $y=f(x)$ 图像上的所有转向点。（3分）,Consider the continuous function $f(x)=e^{2 x}-4 e^{x}+5$ .Find all the turning point（s）of the graph of $y=f(x)$ .,3,,[],"Reference：HKDSE Math M2 2012 Q5
+$$
+\begin{aligned}
+& y=e^{2 x}-4 e^{x}+5 \\
+& \frac{d y}{d x}=2 e^{2 x}-4 e^{x}
+\end{aligned}
+$$
+For $\frac{d y}{d x}=0$ ,
+$$
+\begin{aligned}
+2 e^{2 x}-4 e^{x} & =0 \\
+2 e^{x}\left(e^{x}-2\right) & =0 \\
+e^{x}-2 & =0 \\
+e^{x} & =2 \\
+x & =\ln 2
+\end{aligned}
+$$
+Tips
+
+\begin{tabular}[t]{|l|l|l|l|}
+\hline $x$ & $x<\ln 2$ & $x=\ln 2$ & $x>\ln 2$ \\
+\hline $\frac{d y}{d x}$ & － & 0 & ＋ \\
+\hline
+\end{tabular}
+We need to state whether the turning point is a maximum point or a minimum point.
+1M（for testing）
+When $x=\ln 2, y=e^{2 \ln 2}-4 e^{\ln 2}+5=2^{2}-4(2)+5=1$
+$\therefore \quad(\ln 2,1)$ is a minimum point.
+1A
+（3）","$f'(x)=2e^{2x}-4e^x=2e^x(e^x-2)$。因 $e^x>0$，唯一驻点为 $x=\ln2$。导数在该点两侧由负变正，且 $f(\ln2)=1$，故唯一转向点为极小点 $(\ln2,1)$。",source_provided,checked_pass,0,极值与曲线性质,"[""极小点""]",2,指数式求导后解一个直接驻点方程并分类，步骤常规。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":1,""易错风险"":1,""条件处理"":0,""概念数"":1}",3,Joy 教学难度 Level 3/5,"[""微分的应用"",""微分以及微分公式"",""转向点"",""最小值"",""指数函数""]",checked_pass,checked_pass,not_required,checked_pass,none,[],historical_reference,DSE-2012-Q5,题目原始MMD第1028行及答案MMD第564行均标注2012 Q05/Q5。,题目MMD第1024–1028行与答案MMD第564–593行对应；唯一驻点及其极小性质正确。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,甲部应试特训 3 Q5（完整题）,,,27
+M2QD-DA-PARTA-Q6,M2QD-DIFFERENTIATION-APPLICATIONS,PARTA-Q6,甲部特训,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,276736ef5bb7e76208e627b7f63d60d0379a76ee2dcd1d73e8d9b8fa9517731c,questions MMD English lines 1033; Chinese lines 1035,微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,"Define $f(x)=x^{2} e^{-3 x}$ ,where $-1 \leq x \leq 1$ .Find the least value and the greatest value of $f(x)$ .","定义 $f(x)=x^{2} e^{-3 x}$ ,其中 $-1 \leq x \leq 1$ 。求 $f(x)$ 的最小值及最大值。",定义 $f(x)=x^2e^{-3x}$，其中 $-1\le x\le1$。求 $f(x)$ 的最小值及最大值。（5分）,"Define $f(x)=x^{2} e^{-3 x}$ ,where $-1 \leq x \leq 1$ .Find the least value and the greatest value of $f(x)$ .",5,,[],"(6.) 
+$$
+\begin{aligned}
+f^{\prime}(x) & =0 \\
+x^{2}\left(-3 e^{-3 x}\right)+2 x\left(e^{-3 x}\right) & =0 \\
+2 x-3 x^{2} & =0 \\
+x(2-3 x) & =0 \\
+x & =0 \text { or } x=\frac{2}{3}
+\end{aligned}
+$$
+1M
+1M
+
+\begin{tabular}[t]{|l|l|l|l|l|l|}
+\hline $x$ & $-1 \leq x<0$ & $x=0$ & $0<x<\frac{2}{3}$ & $x=\frac{2}{3}$ & $\frac{2}{3}<x \leq 1$ \\
+\hline $f^{\prime}(x)$ & － & 0 & ＋ & 0 & － \\
+\hline $f(x)$ & ↘ & 0 & ↗ & $\frac{4}{9 e^{2}}$ & ↘ \\
+\hline
+\end{tabular}
+1M（for testing）
+$$
+\begin{aligned}
+& f(-1)=e^{3} \approx 20.1 \\
+& f(1)=e^{-3} \approx 0.0498 \\
+& f(0)=0 \\
+& f\left(\frac{2}{3}\right)=\frac{4}{9 e^{2}} \approx 0.0601
+\end{aligned}
+$$
+Tips
+The greatest values and the least values are global extreme values.In a closed interval,a global extreme value may be the maximum value,minimum value or
+$\therefore \quad$ Least value of $f(x)=0$ the function value at an end－point of the interval.
+1A
+1A
+（5）",$f'(x)=e^{-3x}x(2-3x)$，故区间内驻点为 $x=0$ 与 $x=\frac23$。比较驻点及端点：$f(-1)=e^3$、$f(0)=0$、$f(\frac23)=\frac4{9e^2}$、$f(1)=e^{-3}$。因此最小值为 $0$（在 $x=0$ 处取得），最大值为 $e^3$（在 $x=-1$ 处取得）。,source_provided,corrected_verified,0,最值与最优化,"[""区间最值"",""端点比较""]",3,需找两个驻点并与闭区间两端点的函数值完整比较。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":2,""易错风险"":1,""条件处理"":2,""概念数"":1}",4,Joy 教学难度 Level 4/5,"[""微分的应用"",""微分以及微分公式"",""全局极值"",""闭区间"",""指数函数""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""补充：最大值为 $e^3$，在 $x=-1$ 处取得。"",""error_origin"":""source_original"",""evidence"":""答案原始MMD第614–626行；独立比较 $e^3,0,4/(9e^2),e^{-3}$ 得最大值 $e^3$。"",""field"":""solution_original"",""original"":""$$\n\\begin{aligned}\n& f(-1)=e^{3} \\approx 20.1 \\\\\n& f(1)=e^{-3} \\approx 0.0498 \\\\\n& f(0)=0 \\\\\n& f\\left(\\frac{2}{3}\\right)=\\frac{4}{9 e^{2}} \\approx 0.0601\n\\end{aligned}\n$$\nThe greatest values and the least values are global extreme values．In a closed interval，a global extreme value may be the maximum value，minimum value or\n$\\therefore \\quad$ Least value of $f(x)=0$ the function value at an end－point of the interval．"",""reason"":""题目同时要求最小值和最大值；来源答案虽已算出端点值，但缺少最大值结论。""}]",new,,未发现同一区间及同一指数多项式的重复题，来源未标历史题号。,题目MMD第1033–1036行与答案MMD第594–627行对应；来源答案缺最大值结论，已独立补足并复核。 Task 4：补全最大值e^3及其取得点x=-1。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-08T20:00:00+08:00,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,甲部应试特训 3 Q6（完整题）,2026-08-08T20:00:00+08:00,补全最大值e^3及其取得点x=-1。,28
+M2QD-DA-PARTA-Q7,M2QD-DIFFERENTIATION-APPLICATIONS,PARTA-Q7,甲部特训,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,c3835219e7d3f84763bd42b943eaebc23b2c36734b294bbe71cb96886e60fa9b,questions MMD English lines 1037; Chinese lines 1039,微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,"Define $f(x)=x^{2} \ln x$ ,where $\frac{1}{2} \leq x \leq 1$ .Find the least value and the greatest value of $f(x)$ .","定义 $f(x)=x^{2} \ln x$ ,其中 $\frac{1}{2} \leq x \leq 1$ 。求 $f(x)$ 的最小值及最大值。",定义 $f(x)=x^2\ln x$，其中 $\frac12\le x\le1$。求 $f(x)$ 的最小值及最大值。（5分）,"Define $f(x)=x^{2} \ln x$ ,where $\frac{1}{2} \leq x \leq 1$ .Find the least value and the greatest value of $f(x)$ .",5,,[],"(7.) 
+$$
+\begin{aligned}
+f^{\prime}(x) & =0 \\
+x^{2}\left(\frac{1}{x}\right)+2 x(\ln x) & =0 \\
+x(1+2 \ln x) & =0 \\
+\ln x & =\frac{-1}{2} \quad \text { or } \quad x=0 \text { (rejected) } \\
+x & =e^{\frac{-1}{2}}
+\end{aligned}
+$$
+1M
+1M
+
+\begin{tabular}[t]{|l|l|l|l|}
+\hline $x$ & $\frac{1}{2} \leq x<e^{\frac{-1}{2}}$ & $x=e^{\frac{-1}{2}}$ & $e^{\frac{-1}{2}}<x \leq 1$ \\
+\hline $f^{\prime}(x)$ & － & 0 & ＋ \\
+\hline $f(x)$ & ↘ & $\frac{-1}{2 e}$ & ↗ \\
+\hline
+\end{tabular}
+
+1M（for testing）
+∴ Least value of $f(x)=\frac{-1}{\underline{\underline{2 e}}}$
+1A
+$f(1)=1^{2} \ln 1=0$
+$f\left(\frac{1}{2}\right)=\frac{1}{4} \ln \frac{1}{2}<0$
+∴ Greatest value of $f(x)=\underline{\underline{0}}$
+1A
+（5）",$f'(x)=x(1+2\ln x)$。在给定区间内，唯一驻点为 $x=e^{-1/2}$；导数在该点两侧由负变正，所以该处给出最小值 $f(e^{-1/2})=-\frac1{2e}$。再比较端点，$f(1)=0$，$f(\frac12)=\frac14\ln\frac12<0$，故最大值为 $0$（在 $x=1$ 处取得）。,source_provided,checked_pass,0,最值与最优化,"[""区间最值"",""端点比较""]",3,需处理对数函数驻点、闭区间条件及端点比较，属于标准多步骤最值题。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":2,""易错风险"":1,""条件处理"":2,""概念数"":1}",4,Joy 教学难度 Level 4/5,"[""微分的应用"",""微分以及微分公式"",""全局极值"",""闭区间"",""对数函数""]",checked_pass,checked_pass,not_required,checked_pass,none,[],adapted,2026-Q1,同一 $x^2\ln x$ 函数族见于2026-Q1，但彼题只要求从基本原理求导，本题改为闭区间最值。,题目MMD第1037–1040行与答案MMD第628–656行对应；驻点与两端点值已独立比较。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,甲部应试特训 3 Q7（完整题）,,,29
+M2QD-DA-PARTA-Q8,M2QD-DIFFERENTIATION-APPLICATIONS,PARTA-Q8,甲部特训,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,a35cac2134d0c9d3494893c407ff26eda061ea2d093d5a4539614c384798b008,"questions MMD English lines 1045, 1047–1048; Chinese lines 1052, 1055–1056",微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,"Define $f(x)=\frac{k}{x^{2}-8 x+21}$ for all real numbers $x$ ,where $k$ is a constant.It is given that the extreme value of $f(x)$ is 1 .
+(a) Find $f^{\prime}(x)$ .
+(b) Does the graph of $y=f(x)$ have exactly two points of inflexion？Explain your answer.","对所有实数 $x$ ,定义 $f(x)=\frac{k}{x^{2}-8 x+21}$ ,其中 $k$ 为一常数。已知 $f(x)$ 的极值为1。
+(a) 求 $f^{\prime}(x)$ 。
+(b) $y=f(x)$ 的图像是否恰有两拐点？解释你的答案。","对所有实数 $x$，定义 $f(x)=\frac{k}{x^2-8x+21}$，其中 $k$ 为常数。已知 $f(x)$ 的极值为 $1$。
+(a) 求 $f'(x)$。
+(b) $y=f(x)$ 的图像是否恰有两个拐点？解释你的答案。（6分）","Define $f(x)=\frac{k}{x^{2}-8 x+21}$ for all real numbers $x$ ,where $k$ is a constant.It is given that the extreme value of $f(x)$ is 1 .
+(a) Find $f^{\prime}(x)$ .
+(b) Does the graph of $y=f(x)$ have exactly two points of inflexion？Explain your answer.",6,,[],"8.Reference：HKDSE Math M2 2018 Q8
+(a) Note that $k \neq 0$ .
+$f^{\prime}(x)=\frac{-k(2 x-8)}{\left(x^{2}-8 x+21\right)^{2}}$
+1M
+$\therefore \quad f^{\prime}(x)=0 \quad \Leftrightarrow \quad x=4$
+1M
+Since the equation $f^{\prime}(x)=0$ has only one solution $x=4$
+and the extreme value of $f(x)$ is 1 ,we have $f(4)=1$ .
+Hence,we have $\frac{k}{4^{2}-8(4)+21}=1$ .
+Therefore,we have $k=5$ .
+$\therefore \quad f^{\prime}(x)=\underline{\underline{\frac{10(4-x)}{\left(x^{2}-8 x+21\right)^{2}}}}$
+1A
+（b）$f^{\prime \prime}(x)$
+$=\frac{10\left[\left(x^{2}-8 x+21\right)^{2}(-1)-(4-x)(2)\left(x^{2}-8 x+21\right)(2 x-8)\right]}{\left(x^{2}-8 x+21\right)^{4}}$
+1M
+$=\frac{10\left[-x^{2}+8 x-21+(2 x-8)^{2}\right]}{\left(x^{2}-8 x+21\right)^{3}}$
+$=\frac{10\left(3 x^{2}-24 x+43\right)}{\left(x^{2}-8 x+21\right)^{3}}$
+$\therefore \quad f^{\prime \prime}(x)=0 \quad \Leftrightarrow \quad x=5.29 \quad$ or $\quad x=2.71$（cor.to 3 sig.fig.）
+
+\begin{tabular}[t]{|l|l|l|l|l|l|}
+\hline $x$ & （ $-\infty$ ,2.71） & 2.71 & （2.71,5.29） & 5.29 & （5.29,$\infty$ ） \\
+\hline $f^{\prime \prime}(x)$ & ＋ & 0 & － & 0 & ＋ \\
+\hline
+\end{tabular}
+1M（for testing）
+Thus,the graph of $y=f(x)$ has exactly two points of inflexion.
+1A
+（6）","因 $x^2-8x+21=(x-4)^2+5>0$，且极值为 $1$，有 $k\ne0$。$f'(x)=-\frac{k(2x-8)}{(x^2-8x+21)^2}$，其唯一驻点为 $x=4$；由 $f(4)=1$ 得 $k=5$，故 (a) $f'(x)=\frac{10(4-x)}{(x^2-8x+21)^2}$。(b) $f''(x)=\frac{10(3x^2-24x+43)}{(x^2-8x+21)^3}$，其零点为 $x=4\pm\frac{\sqrt{15}}3$（约 $2.71,5.29$）。分母恒正而分子在两根外为正、两根间为负，故 $f''$ 在两处均变号；图像恰有两个拐点。",source_provided,checked_pass,0,极值与曲线性质,"[""拐点""]",3,先由极值反求参数，再以二阶导数变号判定两个拐点，符合多步骤标准DSE题。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":2,""易错风险"":1,""条件处理"":1,""概念数"":2}",4,Joy 教学难度 Level 4/5,"[""微分的应用"",""微分以及微分公式"",""参数"",""极值"",""二阶导数"",""拐点"",""证明题"",""有理函数""]",checked_pass,checked_pass,not_required,checked_pass,none,[],historical_reference,DSE-2018-Q8,题目原始MMD第1060行及答案MMD第658行均标注2018 Q08/Q8。,题目MMD第1045–1060行与答案MMD第658–686行对应；二阶导数的两个精确根及变号已复算。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,甲部应试特训 3 Q8（完整题）,,,30
+M2QD-DA-PARTA-Q9,M2QD-DIFFERENTIATION-APPLICATIONS,PARTA-Q9,甲部特训,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,8990692f12232410c8c07bc35436c4e91e3f18695ef107dc397b3646d58d1c9f,questions MMD English lines 1064; Chinese lines 1066,微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,"It is given that the graph of $y=A x+\frac{1}{x+B}$ intersects the $x$－axis at the point $(1,0)$ and has the vertical asymptote $x=2$ ,where $A$ and $B$ are constants.Find the local extreme point（s）and the other asymptote（s）of the graph.","已知 $y=A x+\frac{1}{x+B}$ 的图像与 $x$ 轴相交于点 $(1,0)$ ,且有垂直渐近线 $x=2$ ,其中 $A$及 $B$ 均为常数。求该图像的局部极值点及其他渐近线。","已知 $y=Ax+\frac1{x+B}$ 的图像与 $x$ 轴相交于点 $(1,0)$，且有垂直渐近线 $x=2$，其中 $A,B$ 为常数。求该图像的局部极值点及其他渐近线。（7分）","It is given that the graph of $y=A x+\frac{1}{x+B}$ intersects the $x$－axis at the point $(1,0)$ and has the vertical asymptote $x=2$ ,where $A$ and $B$ are constants.Find the local extreme point（s）and the other asymptote（s）of the graph.",7,,[],"∵ The graph has the vertical asymptote $x=2$ .
+$\therefore \quad B=-2$
+1A
+Substituting $(1,0)$ into $y=A x+\frac{1}{x-2}$ ,
+$$
+\begin{aligned}
+0 & =A(1)+\frac{1}{1-2} \\
+A & =1 \\
+\therefore \quad y & =x+\frac{1}{x-2}
+\end{aligned}
+$$
+1A
+
+When $x \rightarrow \pm \infty, \frac{1}{x-2} \rightarrow 0$ .
+$\therefore y=x$ is an oblique asymptote.
+1A
+$\frac{d y}{d x}=1-\frac{1}{(x-2)^{2}}$
+When $\frac{d y}{d x}=0$ ,
+$$
+\begin{aligned}
+1-\frac{1}{(x-2)^{2}} & =0 \\
+(x-2)^{2} & =1 \\
+x-2 & = \pm 1 \\
+x & =1 \text { or } 3
+\end{aligned}
+$$
+
+1M
+
+\begin{tabular}[t]{|l|l|l|l|l|l|l|l|}
+\hline $x$ & $x<1$ & $x=1$ & $1<x<2$ & $x=2$ & $2<x<3$ & $x=3$ & $x>3$ \\
+\hline $\frac{d y}{d x}$ & ＋ & 0 & － & Undefined & － & 0 & ＋ \\
+\hline
+\end{tabular}
+
+When $x=1, y=0$
+When $x=3, y=3+\frac{1}{3-2}=4$
+$\therefore(1,0)$ is the maximum point.
+1A
+$(3,4)$ is the minimum point.
+1A
+（7）","垂直渐近线 $x=2$ 给出 $B=-2$。代入 $(1,0)$ 得 $A=1$，故 $y=x+\frac1{x-2}$。当 $x\to\pm\infty$ 时 $\frac1{x-2}\to0$，所以另一条渐近线为 $y=x$。$y'=1-\frac1{(x-2)^2}$，驻点横坐标为 $1,3$。导数在 $x=1$ 两侧由正变负、在 $x=3$ 两侧由负变正，因此局部极大点为 $(1,0)$，局部极小点为 $(3,4)$。",source_provided,checked_pass,0,极值与曲线性质,"[""极大点"",""极小点"",""渐近线""]",3,需由渐近线和截点反求参数，再连续处理斜渐近线与局部极值。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":2,""易错风险"":1,""条件处理"":1,""概念数"":2}",4,Joy 教学难度 Level 4/5,"[""微分的应用"",""微分以及微分公式"",""参数"",""极值"",""渐近线"",""有理函数""]",checked_pass,checked_pass,not_required,checked_pass,none,[],new,,未发现相同参数模型、截点、极值与渐近线组合的重复题。,题目MMD第1064–1067行与答案MMD第687–729行对应；参数、斜渐近线和两极值点均已复核。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,甲部应试特训 3 Q9（完整题）,,,31
+M2QD-DA-PARTB-Q1,M2QD-DIFFERENTIATION-APPLICATIONS,PARTB-Q1,乙部特训,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,61f0b0a9177ee196b289c8bd52ee66aa4b1bc7f6577bc39a046c4fc675b851e0,"questions MMD English lines 1372, 1374, 1379, 1383, 1385–1386; Chinese lines 1390, 1392, 1394, 1398, 1400–1401",微分应用乙部答案.mmd.zip,d6fb2fbd-e521-4477-bb10-ce3f58210ca8.mmd,07fc2301afd0be972275dfb9dd23aada19a327919e603017a8ab45b004cf546d,"Let $f(x)=\frac{x^{4}}{x^{3}+2}$ ,where $x \neq-2^{\frac{1}{3}}$ .
+(a) Find the $x$－and $y$－intercept（s）of the graph of $y=f(x)$ .
+(b) Find $f^{\prime}(x)$ and prove that $f^{\prime \prime}(x)=\frac{12 x^{2}\left(4-x^{3}\right)}{\left(x^{3}+2\right)^{3}}$ .
+(c) （i）For the graph of $y=f(x)$ ,find all the extreme point（s）and point（s）of inflexion.
+(ii) Find all the asymptote（s）of the graph of $y=f(x)$ .
+(iii) Sketch the graph of $y=f(x)$ .","设 $f(x)=\frac{x^{4}}{x^{3}+2}$ ,其中 $x \neq-2^{\frac{1}{3}}$ 。
+(a) 求 $y=f(x)$ 的图像的 $x$ 截距及 $y$ 截距。
+(b) 求 $f^{\prime}(x)$ 及证明 $f^{\prime \prime}(x)=\frac{12 x^{2}\left(4-x^{3}\right)}{\left(x^{3}+2\right)^{3}}$ 。
+(c) （i）求 $y=f(x)$ 的图像的所有极值点及拐点。
+(ii) 求 $y=f(x)$ 的图像的所有渐近线。
+(iii) 描绘 $y=f(x)$ 的图像。","设 $f(x)=\frac{x^{4}}{x^{3}+2}$，其中 $x\ne-2^{1/3}$。
+(a) 求曲线 $y=f(x)$ 与 $x$ 轴及 $y$ 轴的截距。（1分）
+(b) 求 $f'(x)$，并证明 $f''(x)=\frac{12x^{2}(4-x^{3})}{(x^{3}+2)^{3}}$。（4分）
+(c) (i) 求曲线 $y=f(x)$ 的所有极值点及拐点；(ii) 求所有渐近线；(iii) 描绘曲线。（8分）","Let $f(x)=\frac{x^{4}}{x^{3}+2}$ ,where $x \neq-2^{\frac{1}{3}}$ .
+(a) Find the $x$－and $y$－intercept（s）of the graph of $y=f(x)$ .
+(b) Find $f^{\prime}(x)$ and prove that $f^{\prime \prime}(x)=\frac{12 x^{2}\left(4-x^{3}\right)}{\left(x^{3}+2\right)^{3}}$ .
+(c) （i）For the graph of $y=f(x)$ ,find all the extreme point（s）and point（s）of inflexion.
+(ii) Find all the asymptote（s）of the graph of $y=f(x)$ .
+(iii) Sketch the graph of $y=f(x)$ .",13,,[],"1.Reference：HKDSE.Math M2 2022 Q9
+(a) When $x=0, y=0$ .
+When $y=0, x=0$ .
+$\therefore \quad$ The $x$－intercept is 0 and the $y$－intercept is 0 .
+1A
+
+(b)
+\[
+f'(x)=\frac{4x^{3}(x^{3}+2)-3x^{6}}{(x^{3}+2)^{2}}
+=\frac{x^{6}+8x^{3}}{(x^{3}+2)^{2}}.
+\]
+Award 1M for applying the quotient rule and 1A for the correctly simplified first derivative.
+Differentiating the last quotient again,
+\[
+\begin{aligned}
+f''(x)
+&=\frac{(6x^{5}+24x^{2})(x^{3}+2)^{2}-(x^{6}+8x^{3})2(x^{3}+2)(3x^{2})}{(x^{3}+2)^{4}} \\
+&=\frac{12x^{2}(4-x^{3})}{(x^{3}+2)^{3}}.
+\end{aligned}
+\]
+Award 1M for a valid second quotient-rule differentiation and 1A for the required simplified result.
+Tips
+Tips
+Note that when $f^{\prime}(a)=0$ and $f^{\prime \prime}(a)=0$ ,we
+Note that when $f^{\prime}(a)=0$ and $f^{\prime \prime}(a)=0$ ,we cannot apply the second derivative test to cannot apply the second derivative test to
+(c) （i）When $f^{\prime}(x)=0$ ,
+（c）（i）When $f^{\prime}(x)=0$ , $x^{6}+8 x^{3}=0$ $x^{3}\left(x^{3}+8\right)=0$ $x^{3}=0$ or $x^{3}=-8$ $x=0$ or -2
+check whether $f(x)$ attains a local extreme check whether $f(x)$ attains a local extreme value at $x=a$ . value at $x=a$ .
+Here,$f^{\prime}(0)=0$ and $f^{\prime \prime}(0)=0$ .We must
+Here,$f^{\prime}(0)=0$ and $f^{\prime \prime}(0)=0$ .We must apply the first derivative test. apply the first derivative test.
+1M
+
+\begin{tabular}[t]{|l|l|l|l|l|l|l|}
+\hline $x$ & $x<-2$ & $x=-2$ & $-2<x<-2^{\frac{1}{3}}$ & $-2^{\frac{1}{3}}<x<0$ & $x=0$ & $x>0$ \\
+\hline $f^{\prime}(x)$ & ＋ & 0 & － & － & 0 & ＋ \\
+\hline
+\end{tabular}
+$f(0)=0$
+$$
+f(-2)=-\frac{8}{3}
+$$
+∴ The maximum point is $\left(-2,-\frac{8}{3}\right)$ ,the minimum point is $(0,0)$ .
+
+1A
+When $f^{\prime \prime}(x)=0$ ,
+$$
+\begin{aligned}
+12 x^{2}\left(4-x^{3}\right) & =0 \\
+x & =0 \text { or } 2^{\frac{2}{3}}
+\end{aligned}
+$$
+
+\begin{tabular}[t]{|l|l|l|l|l|l|}
+\hline $x$ & $-2^{\frac{1}{3}}<x<0$ & $x=0$ & $0<x<2^{\frac{2}{3}}$ & $x=2^{\frac{2}{3}}$ & $x>2^{\frac{2}{3}}$ \\
+\hline $f^{\prime \prime}(x)$ & ＋ & 0 & ＋ & 0 & － \\
+\hline
+\end{tabular}
+$f\left(2^{\frac{2}{3}}\right)=\frac{2^{\frac{5}{3}}}{3}$
+∴ The point of inflexion is $\left(2^{\frac{2}{3}}, \frac{2^{\frac{5}{3}}}{3}\right)$ .
+
+1A
+(ii) ∵ The denominator $x^{3}+2$ is 0 when $x=-2^{\frac{1}{3}}$ .
+∴ The vertical asymptote is $x=-2^{\frac{1}{3}}$ . 1A
+$f(x)=\frac{x^{4}}{x^{3}+2}=\frac{x^{4}+2 x-2 x}{x^{3}+2}=x-\frac{2 x}{x^{3}+2}$
+Note that $\lim _{x \rightarrow \infty} \frac{2 x}{x^{3}+2}=0$
+∴ The oblique asymptote is $y=x$ . 1A
+(iii) 
+1A for the shape of the graph 1A for the asymptotes 1A for all correct （8）","(a) 两个截距均对应点 $(0,0)$。
+(b) $f'(x)=\frac{x^{3}(x^{3}+8)}{(x^{3}+2)^{2}}$，再次求导得 $f''(x)=\frac{12x^{2}(4-x^{3})}{(x^{3}+2)^{3}}$。
+(c)(i) $f'(x)=0$ 给出 $x=-2,0$。由一阶导数符号，极大点为 $(-2,-8/3)$，极小点为 $(0,0)$。$f''$ 在垂直渐近线 $x=-2^{1/3}$ 两侧异号，但该点不在定义域；在定义域内，$f''$ 于 $x=2^{2/3}$ 处改变符号，故唯一拐点为 $(2^{2/3},2^{5/3}/3)$；$x=0$ 不是拐点。(ii) 垂直渐近线为 $x=-2^{1/3}$；由 $f(x)=x-\frac{2x}{x^{3}+2}$，斜渐近线为 $y=x$。(iii) 草图应显示上述渐近线、极值点、拐点，并在 $x=-2^{1/3}$ 两侧分别趋于 $-\infty$ 与 $+\infty$。",source_provided,corrected_verified,0,极值与曲线性质,"[""驻点"",""极大点"",""极小点"",""一阶导数判别法"",""拐点"",""渐近线"",""曲线作图"",""综合题目""]",4,需在间断点两侧完成一阶、二阶导数符号分析并整合极值、拐点、渐近线与草图，属于高负担的标准综合曲线分析，但核心关系均已给出，评为L4。,"{""代数负担"":2,""建模强度"":0,""推理链长度"":2,""易错风险"":2,""条件处理"":2,""概念数"":2}",5,Joy 教学难度 Level 5/5,"[""微分的应用"",""微分以及微分公式"",""极值"",""拐点"",""渐近线"",""曲线作图"",""有理函数""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""清理重复与错位段落，保留正确的一、二阶导数推导，并用经复核的文字条件补全草图答案。"",""error_origin"":""source_original"",""evidence"":""微分应用乙部答案MMD第13–34行及第79行；独立有限差分复算通过。"",""field"":""solution_original"",""original"":""答案MMD第17行含 `\\frac{\\frac{x^{6}+8x^{3}}{(x^{3}+2)^{2}}}{(x^{\\prime\\prime}(x)` 的错位拼接；第25–34行重复 `Tips`、`cannot apply the second derivative test` 及(c)(i)起句；第79行仅保留草图图片引用。"",""reason"":""冻结来源文本存在重复及错位，无法直接作为教师答案使用；现有材料不足以进一步断言错误发生于原版还是转换阶段。""},{""corrected"":""求曲线与x轴及y轴的截距；求所有极值点及拐点，并补回各小问分值。"",""error_origin"":""translation"",""evidence"":""题目MMD第1372–1404行。"",""field"":""question_text_zh"",""original"":""求图像的x截距及y截距；所有极值点及拐点。"",""reason"":""统一DSE书面表达并使分值结构完整。""}]",adapted,DSE-2022-Q9,来源答案明确标注 HKDSE Mathematics M2 2022 Q9，数据库登记为改编题。,题目不依赖外部图；答案草图的源图片未作为题目图片关联，但已用关键特征补全复核答案。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""revised"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,乙部应试特训 1 Q1（完整题）,,,40
+M2QD-DA-PARTB-Q2,M2QD-DIFFERENTIATION-APPLICATIONS,PARTB-Q2,乙部特训,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,d327cade6acf7c9f9c62d64f53afe612a3d5f09a8bee771ee7e145512aff32e5,"questions MMD English lines 1406, 1408, 1414, 1416, 1418, 1420; Chinese lines 1423, 1425, 1427, 1429, 1431, 1433",微分应用乙部答案.mmd.zip,d6fb2fbd-e521-4477-bb10-ce3f58210ca8.mmd,07fc2301afd0be972275dfb9dd23aada19a327919e603017a8ab45b004cf546d,"Let $C_{1}$ be the curve $y=\frac{p x+q}{2 x+r}$ ,where $p, q$ and $r$ are constants with $p \neq 0$ and $x \neq-\frac{r}{2}$ . It is given that $C_{1}$ passes through $(0,0)$ and it has a vertical asymptote $x=-\frac{3}{2}$ and a horizontal asymptote $y+1=0$ .Let $C_{2}$ be the curve $y=\frac{2 x+r}{p x+q}$ ,where $x \neq-\frac{q}{p}$ .
+(a) Find the equation of $C_{1}$ .
+(b) Find the coordinates of the point（s）of intersection of $C_{1}$ and $C_{2}$ .
+(c) Show that $\frac{d}{d x}\left(\frac{p x+q}{2 x+r}\right)<0$ for $x \neq-\frac{r}{2}$ and $\frac{d}{d x}\left(\frac{2 x+r}{p x+q}\right)>0$ for $x \neq-\frac{q}{p}$ .
+(d) Write down all the asymptotes of $C_{2}$ .
+(e) Sketch the curves $C_{1}$ and $C_{2}$ on the same diagram,indicating their asymptotes, intercepts and their point（s）of intersection.","(设) $C_{1}$ 为曲线 $y=\frac{p x+q}{2 x+r}$ ,其中 $p 、 q$ 及 $r$ 均为常数,$p \neq 0$ 及 $x \neq-\frac{r}{2}$ 。已知 $C_{1}$通过 $(0,0)$ ,且有一垂直渐近线 $x=-\frac{3}{2}$ 及一水平渐近线 $y+1=0$ 。已知 $C_{2}$ 为曲线$y=\frac{2 x+r}{p x+q}$ ,其中 $x \neq-\frac{q}{p}$ 。
+(a) 求 $C_{1}$ 的方程。
+(b) 求 $C_{1}$ 及 $C_{2}$ 的交点的坐标。
+(c) 证明对 $x \neq-\frac{r}{2}, \frac{d}{d x}\left(\frac{p x+q}{2 x+r}\right)<0$ 及对 $x \neq-\frac{q}{p}, \frac{d}{d x}\left(\frac{2 x+r}{p x+q}\right)>0$ 。
+(d) 写出 $C_{2}$ 的所有渐近线。
+(e) 在同一幅图中描绘曲线 $C_{1}$ 及 $C_{2}$ ,并显示其渐近线、截距及它们的交点。","设 $C_1$ 为曲线 $y=\frac{px+q}{2x+r}$，其中 $p,q,r$ 为常数、$p\ne0$ 且 $x\ne-r/2$。已知 $C_1$ 经过 $(0,0)$，垂直渐近线为 $x=-3/2$，水平渐近线为 $y=-1$。另设 $C_2$ 为曲线 $y=\frac{2x+r}{px+q}$，其中 $x\ne-q/p$。
+(a) 求 $C_1$ 的方程。（4分）
+(b) 求 $C_1$ 与 $C_2$ 的交点。（2分）
+(c) 证明在各自定义域内，$\frac{d}{dx}(\frac{px+q}{2x+r})<0$ 且 $\frac{d}{dx}(\frac{2x+r}{px+q})>0$。（3分）
+(d) 写出 $C_2$ 的所有渐近线。（2分）
+(e) 在同一坐标系中描绘 $C_1$ 与 $C_2$，标明渐近线、截距及交点。（3分）","Let $C_{1}$ be the curve $y=\frac{p x+q}{2 x+r}$ ,where $p, q$ and $r$ are constants with $p \neq 0$ and $x \neq-\frac{r}{2}$ . It is given that $C_{1}$ passes through $(0,0)$ and it has a vertical asymptote $x=-\frac{3}{2}$ and a horizontal asymptote $y+1=0$ .Let $C_{2}$ be the curve $y=\frac{2 x+r}{p x+q}$ ,where $x \neq-\frac{q}{p}$ .
+(a) Find the equation of $C_{1}$ .
+(b) Find the coordinates of the point（s）of intersection of $C_{1}$ and $C_{2}$ .
+(c) Show that $\frac{d}{d x}\left(\frac{p x+q}{2 x+r}\right)<0$ for $x \neq-\frac{r}{2}$ and $\frac{d}{d x}\left(\frac{2 x+r}{p x+q}\right)>0$ for $x \neq-\frac{q}{p}$ .
+(d) Write down all the asymptotes of $C_{2}$ .
+(e) Sketch the curves $C_{1}$ and $C_{2}$ on the same diagram,indicating their asymptotes, intercepts and their point（s）of intersection.",14,,[],"（a）Since $C_{1}$ passes through $(0,0), 0=\frac{p(0)+q}{2(0)+r}$ , 1M i.e.,$q=0$ .
+When $2 x+r=0, x=-\frac{r}{2}$ .
+The equation of the vertical asymptote of $C_{1}$ is $x=-\frac{r}{2}$ .
+Since it is given that the vertical asymptote of $C_{1}$ is $x=-\frac{3}{2}$ , 1M
+$-\frac{r}{2}=-\frac{3}{2}$
+$\therefore \quad r=3$
+$\therefore \quad r=3$
+$y=\frac{p x}{2 x+3}$
+$=\frac{\frac{p}{2}(2 x+3)-\frac{3 p}{2}}{2 x+3}$
+$=\frac{p}{2}-\frac{\frac{3 p}{2}}{2 x+3}$
+∴ The horizontal asymptote is $y=\frac{p}{2}$ .
+$\therefore \quad \frac{p}{2}=-1$ 1M
+$p=-2$
+$p=-2$
+1A
+（4）
+(b) The equation $C_{2}$ is $y=\frac{2 x+3}{-2 x}$ .
+$$
+\begin{aligned}
+\frac{-2 x}{2 x+3} & =\frac{2 x+3}{-2 x} \\
+4 x^{2}+12 x+9 & =4 x^{2} \\
+4 x+3 & =0 \\
+x & =-\frac{3}{4}
+\end{aligned}
+$$
+When $x=-\frac{3}{4}, y=1$ .
+$$
+\text { ∴ The coordinates of the point of intersection are }\left(-\frac{3}{4}, 1\right) \text {. }
+$$
+1A
+（2）
+(c) 
+$$
+\begin{aligned}
+\frac{d}{d x}\left(\frac{-2 x}{2 x+3}\right) & =\frac{(2 x+3)(-2)-(-2 x)(2)}{(2 x+3)^{2}} \\
+& =-\frac{6}{(2 x+3)^{2}}<0 \text { for } x \neq-\frac{3}{2} \\
+\frac{d}{d x}\left(\frac{2 x+3}{-2 x}\right) & =\frac{(-2 x)(2)-(2 x+3)(-2)}{(-2 x)^{2}} \\
+& =\frac{3}{2 x^{2}}>0 \text { for } x \neq 0
+\end{aligned}
+$$
+1M
+1
+1
+（3）
+(d) Since the equation of $C_{2}$ is $y=\frac{2 x+3}{-2 x}$ ,
+$$
+y=\frac{2 x+3}{-2 x}=-1-\frac{3}{2 x}
+$$
+The vertical asymptote of $C_{2}$ is $x=0$ .
+The horizontal asymptote of $C_{2}$ is $y=-1$ .
+（2）
+(e) 
+1A for the correct shapes of $C_{1}$ and $C_{2}$ 1 A for the correct asymptotes,intercepts and points of intersection 1A for all correct
+（3）","(a) 由经过原点得 $q=0$；垂直渐近线给出 $r=3$；水平渐近线给出 $p/2=-1$，故 $p=-2$，$C_1:y=-2x/(2x+3)$。
+(b) $C_2:y=(2x+3)/(-2x)$。联立两式得唯一交点 $(-3/4,1)$。
+(c) $C_1'=-6/(2x+3)^2<0$（$x\ne-3/2$）；$C_2'=3/(2x^2)>0$（$x\ne0$）。
+(d) $C_2$ 的垂直渐近线为 $x=0$，水平渐近线为 $y=-1$。
+(e) 草图应显示：$C_1$ 的两截距均为原点，渐近线 $x=-3/2,y=-1$；$C_2$ 的 $x$ 截距为 $(-3/2,0)$、无 $y$ 截距，渐近线 $x=0,y=-1$；两曲线交于 $(-3/4,1)$，且分别单调递减、单调递增。",source_provided,corrected_verified,0,极值与曲线性质,"[""渐近线"",""曲线作图"",""综合题目""]",4,需由截距及两类渐近线反推三个参数，再处理互为倒数的曲线、导数符号和联合草图，概念整合与条件处理均较强，评为L4。,"{""代数负担"":1,""建模强度"":1,""推理链长度"":2,""易错风险"":2,""条件处理"":2,""概念数"":2}",5,Joy 教学难度 Level 5/5,"[""微分的应用"",""微分以及微分公式"",""参数"",""渐近线"",""交点"",""曲线作图"",""有理函数""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""删除多余括号，并把“已知C2”改为“另设C2”，统一标点与数学间距。"",""error_origin"":""translation"",""evidence"":""题目MMD第1406–1435行。"",""field"":""question_text_zh"",""original"":""(设) $C_{1}$ 为曲线……已知 $C_{2}$ 为曲线……"",""reason"":""改善中文语法而不改变数学条件。""},{""corrected"":""删除重复行，并以截距、渐近线、交点及单调性完整说明草图。"",""error_origin"":""source_original"",""evidence"":""微分应用乙部答案MMD第82–137行。"",""field"":""solution_original"",""original"":""答案MMD第87–88行逐行重复 `$\\therefore\\ r=3$`，第94–95行逐行重复 `$p=-2$`，第136行仅保留草图图片引用 `![](./images/d6fb2fbd-e521-4477-bb10-ce3f58210ca8-3_752_1019_1551_336.jpg)`。"",""reason"":""冻结来源存在重复行且草图仅以图片呈现；清理后教师答案可独立阅读和核对。现有材料不足以进一步判断这些现象发生于原版还是转换阶段。""}]",new,,来源未标注公开试题编号，在本45题范围内未发现同题。,参数 p 为一次函数分子系数，不应误贴“参数方程”标签。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""revised"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,乙部应试特训 1 Q2（完整题）,,,41
+M2QD-DA-PARTB-Q3,M2QD-DIFFERENTIATION-APPLICATIONS,PARTB-Q3,乙部特训,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,7e7779ca37d579b17d6cd121dbf4cae2dee2a6ba0f17a94854547275033b478e,"questions MMD English lines 1438, 1440, 1444–1445, 1449, 1453; Chinese lines 1456, 1458, 1462–1464, 1469, 1473",微分应用乙部答案.mmd.zip,d6fb2fbd-e521-4477-bb10-ce3f58210ca8.mmd,07fc2301afd0be972275dfb9dd23aada19a327919e603017a8ab45b004cf546d,"3.Let $f(x)=x-\frac{x}{x+1}$ ,where $x \neq-1$ .
+(a) Find $f^{\prime}(x)$ and $f^{\prime \prime}(x)$ ,where $x \neq-1$ .
+(b) （i）Find the relative extreme point（s）of the graph of $y=f(x)$ .
+(ii) Show that the graph of $y=f(x)$ does not have any point of inflexion.
+(c) Find the asymptote（s）of the graph of $y=f(x)$ .
+(d) Sketch the graph of $y=f(x)$ .","设 $f(x)=x-\frac{x}{x+1}$ ,其中 $x \neq-1$ 。
+(a) 求 $f^{\prime}(x)$ 及 $f^{\prime \prime}(x)$ ,其中 $x \neq-1$ 。
+(b) （i）求 $y=f(x)$ 的图像的相对极值点。
+(ii) 证明 $y=f(x)$ 的图像没有任何拐点。
+(c) 求 $y=f(x)$ 的图像的渐近线。
+(d) 描绘 $y=f(x)$ 的图像。","设 $f(x)=x-\frac{x}{x+1}$，其中 $x\ne-1$。
+(a) 求 $f'(x)$ 及 $f''(x)$。（2分）
+(b) (i) 求曲线 $y=f(x)$ 的所有局部极值点；(ii) 证明曲线没有拐点。（6分）
+(c) 求曲线的所有渐近线。（2分）
+(d) 描绘曲线。（3分）","3.Let $f(x)=x-\frac{x}{x+1}$ ,where $x \neq-1$ .
+(a) Find $f^{\prime}(x)$ and $f^{\prime \prime}(x)$ ,where $x \neq-1$ .
+(b) （i）Find the relative extreme point（s）of the graph of $y=f(x)$ .
+(ii) Show that the graph of $y=f(x)$ does not have any point of inflexion.
+(c) Find the asymptote（s）of the graph of $y=f(x)$ .
+(d) Sketch the graph of $y=f(x)$ .",13,,[],"3.Reference：HKALE P.Math 2006 Paper 2 Q7
+(a) $f(x)=x-\frac{x}{x+1}$
+$$
+\begin{aligned}
+f^{\prime}(x) & =1-\frac{(x+1)(1)-(x)(1)}{(x+1)^{2}}-1 \mathrm{M} \\
+& =1-\frac{1}{(x+1)^{2}}-1 \mathrm{~A} \\
+f^{\prime \prime}(x) & =-\frac{(x+1)^{2}(0)-(1)(2)(x+1)}{(x+1)^{4}}- \\
+& =\frac{2}{\underline{\underline{(x+1)^{3}}}}
+\end{aligned}
+$$
+（2）
+（b）（i）When $f^{\prime}(x)=0$ ,
+$$
+\begin{aligned}
+1-\frac{1}{(x+1)^{2}} & =0 \\
+\frac{1}{(x+1)^{2}} & =1 \\
+(x+1)^{2} & =1 \\
+x+1 & = \pm 1 \\
+x & =-2 \text { or } 0
+\end{aligned}
+$$
+
+\begin{tabular}[t]{|l|l|l|l|l|l|l|l|}
+\hline $x$ & $x<-2$ & $x=-2$ & $-2<x<-1$ & $x=-1$ & $-1<x<0$ & $x=0$ & $x>0$ \\
+\hline $f^{\prime}(x)$ & ＋ & 0 & － & undefined & － & 0 & ＋ \\
+\hline $f^{\prime \prime}(x)$ & － & － & － & undefined & ＋ & ＋ & ＋ \\
+\hline
+\end{tabular}
+
+1M
+$$
+\begin{aligned}
+& f(-2)=-2-\frac{-2}{-2+1}=-4 \\
+& f(0)=0-\frac{0}{0+1}=0
+\end{aligned}
+$$
+From the table,the maximum point is（－2,－4） and the minimum point is $(0,0)$ .
+(ii) When $f^{\prime \prime}(x)=0$ ,
+$$
+\frac{2}{(x+1)^{3}}=0, \text { which is impossible }
+$$
+∴ There is no solutions for $f^{\prime \prime}(x)=0$ .
+∴ The graph does not have any points of inflexion.
+(c) The denominator \(x+1\) is zero when \(x=-1\). Hence x=-1 is a vertical asymptote.
+Moreover,
+\[
+f(x)=x-\frac{x}{x+1}=x-1+\frac{1}{x+1}.
+\]
+As \(x\to\pm\infty\), \(\frac{1}{x+1}\to0\), so \(y=x-1\) is an oblique asymptote.
+
+Tips
+From the table,$f^{\prime \prime}(x)$ changes from negative to positive when $x$ increases through $x=-1$ ,but $f(-1)$ is undefined.Hence,$f(x)$ does not have a point of inflexion at $x=-1$ .
+
+1
+（6）
+
+1A
+
+1A
+（2）
+(d) 
+1A for the correct shape 1A for the correct asymptotes and extreme points 1A for all correct","(a) $f'(x)=1-1/(x+1)^2$，$f''(x)=2/(x+1)^3$。
+(b)(i) $f'(x)=0$ 给出 $x=-2,0$。由一阶导数符号，局部极大点为 $(-2,-4)$，局部极小点为 $(0,0)$。(ii) $f''(x)=0$ 无解；虽然凹凸性在 $x=-1$ 两侧改变，但 $f(-1)$ 无定义，故没有拐点。
+(c) 由 $f(x)=x-1+1/(x+1)$，垂直渐近线为 $x=-1$，斜渐近线为 $y=x-1$。
+(d) 草图应显示上述两条渐近线及两个局部极值点，并符合各区间的单调性与凹凸性。",source_provided,corrected_verified,0,极值与曲线性质,"[""驻点"",""极大点"",""极小点"",""一阶导数判别法"",""拐点"",""渐近线"",""曲线作图"",""综合题目""]",4,需识别间断点处凹凸性改变并不构成拐点，同时完成极值、斜渐近线和草图分析，条件辨析是主要难点，评为L4。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":2,""易错风险"":2,""条件处理"":2,""概念数"":2}",5,Joy 教学难度 Level 5/5,"[""微分的应用"",""微分以及微分公式"",""极值"",""拐点"",""渐近线"",""曲线作图"",""有理函数""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""局部极值点"",""error_origin"":""translation"",""evidence"":""题目MMD第1438–1475行。"",""field"":""question_text_zh"",""original"":""相对极值点"",""reason"":""采用更常见且清晰的DSE数学术语，并补回小问分值。""},{""corrected"":""曲线标签应为 $y=x-\\frac{x}{x+1}=x-1+\\frac{1}{x+1}$；保留渐近线 $x=-1$、$y=x-1$ 及极值点 $(-2,-4)$、$(0,0)$。"",""error_origin"":""source_original"",""evidence"":""乙部答案MMD第141–215行及图片 d6fb2fbd-e521-4477-bb10-ce3f58210ca8-5_925_784_249_350.jpg；独立代数复算。"",""field"":""solution_original"",""original"":""答案草图图片将曲线标为 $y=x-\\frac{1}{x+1}$，但题目与答案推导的函数为 $f(x)=x-\\frac{x}{x+1}$。"",""reason"":""图片中的函数标签与题目不一致；图形形状、渐近线和极值点对应正确函数。""},{""corrected"":""恢复干净导数公式，并用渐近线、极值点、单调性与凹凸性补全草图要求。"",""error_origin"":""source_original"",""evidence"":""微分应用乙部答案MMD第141–215行；独立有限差分复算通过。"",""field"":""solution_original"",""original"":""答案MMD第146–149行的一、二阶导数混入 `1M`、`1A` 及孤立减号，草图只以图片引用出现。"",""reason"":""冻结来源文本不能直接复用；另将草图中的错误函数标签独立记录。""}]",historical_reference,HKALE Pure Mathematics 2006 Paper 2 Q7,来源答案明确标注 HKALE Pure Mathematics 2006 Paper 2 Q7。,原题编号“3.”属于来源题号，不作为小问拆分；来源答案草图的函数标签与题目不一致，已记录订正并待 Joy 确认。 Task 4：采用正确函数标签并保留正确渐近线、极值点及草图信息。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""revised"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-08T20:00:00+08:00,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,乙部应试特训 1 Q3（完整题）,2026-08-08T20:00:00+08:00,采用正确函数标签并保留正确渐近线、极值点及草图信息。,42
+M2QD-DA-PARTB-Q4,M2QD-DIFFERENTIATION-APPLICATIONS,PARTB-Q4,乙部特训,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,7340583de6e3d8cd7d284d578d63484f07f5e8beb7809c41cb25bc848f5eff61,"questions MMD English lines 1477, 1479, 1485; Chinese lines 1496, 1498, 1503",微分应用乙部答案.mmd.zip,d6fb2fbd-e521-4477-bb10-ce3f58210ca8.mmd,07fc2301afd0be972275dfb9dd23aada19a327919e603017a8ab45b004cf546d,"Figure 1 shows a rail $A O B$ with $\angle A O B=\frac{2 \pi}{3}$ and $A O$ lying on the horizontal plane.$A$ rod $M N$ of length 14 m is connected to the centres of two identical spheres of radius $\sqrt{3} \mathrm{~m}$ . The two spheres are free to slide on the rail and they touch $O A$ and $O B$ at $P$ and $Q$ respectively.It is given that the points $A, B, O, P, Q, M$ and $N$ lie on the same vertical plane.Let $O P=x \mathrm{~m}$ and $O Q=y \mathrm{~m}$ .
+(a) Show that $\frac{d y}{d x}=-\frac{2 x+y-3}{x+2 y-3}$ .
+(b) The sphere with centre $N$ is moving towards $O$ at a constant speed of $2 \mathrm{~m} \mathrm{~s}^{-1}$ and the angle between the rod $M N$ and the horizontal plane is $\theta$（in radians）.When $x=11$ , find the rate of increase of $\theta$ .","图1中,$A O B$ 为一轨道,其中 $\angle A O B=\frac{2 \pi}{3}$ ,而 $A O$ 位于水平面上。 $M N$ 为一长14 m的棒,两端连接到两个半径为 $\sqrt{3} \mathrm{~m}$ 的完全相同的球体的球心。两个球体可以在轨道上自由滑动,且分别与 $O A$ 和 $O B$ 相切于 $P$ 和 $Q$ 。已知点 $A 、 B 、 O 、 P 、 Q$ 、$M$ 和 $N$ 位于同一垂直平面上。设 $O P=x \mathrm{~m}$ 和 $O Q=y \mathrm{~m}$ 。
+(a) 证明 $\frac{d y}{d x}=-\frac{2 x+y-3}{x+2 y-3}$ 。
+(b) 以 $N$ 为球心的球体以 $2 \mathrm{~m} \mathrm{~s}^{-1}$ 的固定速率移向 $O$ 而棒 $M N$ 和水平面所成的角为$\theta$（以弧度为单位）。求当 $x=11$ 时 $\theta$ 增加的速率。","图1所示的轨道 $AOB$ 满足 $\angle AOB=2\pi/3$，且 $AO$ 位于水平面上。长 $14\,\mathrm{m}$ 的棒 $MN$ 连接两个半径均为 $\sqrt3\,\mathrm{m}$ 的相同球体的球心。两球可沿轨道自由滑动，并分别与 $OA$、$OB$ 相切于 $P$、$Q$。点 $A,B,O,P,Q,M,N$ 位于同一竖直平面内。设 $OP=x\,\mathrm{m}$、$OQ=y\,\mathrm{m}$。
+(a) 证明 $\frac{dy}{dx}=-\frac{2x+y-3}{x+2y-3}$。（4分）
+(b) 以 $N$ 为球心的球体以 $2\,\mathrm{m\,s^{-1}}$ 的恒定速率移向 $O$。设棒 $MN$ 与水平面的夹角为 $\theta$（弧度）。当 $x=11$ 时，求 $\theta$ 的增加率。（9分）","Figure 1 shows a rail $A O B$ with $\angle A O B=\frac{2 \pi}{3}$ and $A O$ lying on the horizontal plane.$A$ rod $M N$ of length 14 m is connected to the centres of two identical spheres of radius $\sqrt{3} \mathrm{~m}$ . The two spheres are free to slide on the rail and they touch $O A$ and $O B$ at $P$ and $Q$ respectively.It is given that the points $A, B, O, P, Q, M$ and $N$ lie on the same vertical plane.Let $O P=x \mathrm{~m}$ and $O Q=y \mathrm{~m}$ .
+(a) Show that $\frac{d y}{d x}=-\frac{2 x+y-3}{x+2 y-3}$ .
+(b) The sphere with centre $N$ is moving towards $O$ at a constant speed of $2 \mathrm{~m} \mathrm{~s}^{-1}$ and the angle between the rod $M N$ and the horizontal plane is $\theta$（in radians）.When $x=11$ , find the rate of increase of $\theta$ .",13,,"[{""path"":""extracted_reference/source_images/M2QD_DA_PARTB_Q4_Figure1.jpg"",""role"":""required_question_figure"",""sha256"":""eeddd1592eba7c505e3ac6fb484da4fa695b328dce5de4888ea340936869b9ae""}]","（a）
+Construct rectangles QMSR and PNST as shown in the figure.
+In $\triangle S R O$ and $\triangle S T O$ ,
+$$
+\begin{array}{ll}
+& \angle S R O=\angle S T O=90^{\circ} \quad(\text { given }) \\
+& R S=T S=\sqrt{3} \mathrm{~m} \quad(\text { given }) \\
+& O S=O S \\
+\therefore & \triangle S R O \cong \triangle S T O \quad(\text { common side }) \\
+\therefore & O R=O T=\frac{\sqrt{3}}{\tan \frac{\pi}{3}} \mathrm{~m}=1 \mathrm{~m}
+\end{array}
+$$
+
+Consider $\triangle M N S$ .
+$$
+\begin{aligned}
+& N S=(x-1) \mathrm{m} \\
+& M S=(y-1) \mathrm{m}
+\end{aligned}
+$$
+By the cosine formula,
+$$
+\begin{align*}
+(x-1)^{2}+(y-1)^{2}-2(x-1)(y-1) \cos \frac{2 \pi}{3} & =14^{2}  \tag{1M}\\
+x^{2}-2 x+1+y^{2}-2 y+1+x y-x-y+1 & =196 \\
+x^{2}+y^{2}-3 x-3 y+x y & =193
+\end{align*}
+$$
+Differentiating（1）with respect to $x$ ,we have
+$$
+\begin{align*}
+2 x+2 y \frac{d y}{d x}-3-3 \frac{d y}{d x}+x \frac{d y}{d x}+y & =0  \tag{1M}\\
+\frac{d y}{d x} & =-\frac{2 x+y-3}{x+2 y-3} \tag{1}
+\end{align*}
+$$
+（b）When $x=11$ ,
+$$
+\begin{align*}
+11^{2}+y^{2}-3(11)-3 y+11 y & =193  \tag{1M}\\
+y^{2}+8 y-105 & =0 \\
+(y-7)(y+15) & =0
+\end{align*}
+$$
+$$
+y=7 \text { or }-15 \text { (rejected) }
+$$
+1A
+By the sine formula,we have
+$$
+\begin{align*}
+\frac{y-1}{\sin \theta} & =\frac{14}{\sin \frac{2 \pi}{3}} \\
+y & =\frac{28}{\sqrt{3}} \sin \theta+1 \tag{2}
+\end{align*}
+$$
+When $y=7, \sin \theta=\frac{3 \sqrt{3}}{14}$ and
+$$
+\begin{align*}
+\cos \theta & =\sqrt{1-\left(\frac{3 \sqrt{3}}{14}\right)^{2}}=\frac{13}{14}  \tag{1A}\\
+\frac{d y}{d t} & =\frac{d y}{d x} \times \frac{d x}{d t} \\
+& =-\frac{2 x+y-3}{x+2 y-3} \times(-2) \tag{1M}
+\end{align*}
+$$
+When $x=11$ and $y=7$ ,
+$$
+\begin{align*}
+\frac{d y}{d t} & =-\frac{2(11)+7-3}{11+2(7)-3} \times(-2) \\
+& =\frac{26}{11} \tag{1A}
+\end{align*}
+$$
+
+Differentiating（2）with respect to $t$ ,we have
+$$
+\begin{equation*}
+\frac{d y}{d t}=\frac{28}{\sqrt{3}} \cos \theta \frac{d \theta}{d t} \tag{1M}
+\end{equation*}
+$$
+When $y=7$ ,
+$$
+\begin{aligned}
+\frac{d y}{d t}=\frac{28}{\sqrt{3}} & \times \frac{13}{14} \times \frac{d \theta}{d t}=\frac{26}{\sqrt{3}} \times \frac{d \theta}{d t} \\
+\therefore \quad \frac{26}{\sqrt{3}} \times \frac{d \theta}{d t} & =\frac{26}{11} \\
+\frac{d \theta}{d t} & =\frac{\sqrt{3}}{11}
+\end{aligned}
+$$
+∴ The rate of increase of $\theta$ is $\frac{\sqrt{3}}{11}$ radian per second.","由球的半径及几何关系可得三角形两边为 $x-1$、$y-1$，夹角为 $2\pi/3$。余弦定理给出 $x^2+y^2+xy-3x-3y=193$。
+(a) 对 $x$ 求导：$2x+2y\,dy/dx+y+x\,dy/dx-3-3\,dy/dx=0$，故 $dy/dx=-(2x+y-3)/(x+2y-3)$。
+(b) 当 $x=11$ 时，关系式给出 $y=7$。球心 $N$ 移向 $O$，所以 $dx/dt=-2$，从而 $dy/dt=(-13/11)(-2)=26/11$。由正弦定理，$y=1+\frac{28}{\sqrt3}\sin\theta$；当 $y=7$ 时，$\sin\theta=3\sqrt3/14$、$\cos\theta=13/14$。求导并代入得 $d\theta/dt=\sqrt3/11\,\mathrm{rad\,s^{-1}}$。",source_provided,checked_pass,0,变率,"[""相关变化率"",""几何量变化"",""链式法则建模"",""隐函数求导"",""建立变量关系"",""综合题目""]",5,必须从复杂相切几何中自行构造余弦关系，再连接两层变化率与三角函数关系，建模和推导链均达到最高档，评为L5。,"{""代数负担"":2,""建模强度"":2,""推理链长度"":2,""易错风险"":2,""条件处理"":2,""概念数"":2}",5,Joy 教学难度 Level 5/5,"[""微分的应用"",""微分以及微分公式"",""相关变化率"",""变率"",""隐函数求导"",""几何"",""角度""]",checked_pass,checked_pass,checked_pass,checked_pass,corrected_verified,"[{""corrected"":""恒定速率；棒MN与水平面的夹角，并规范单位为 m s^{-1}。"",""error_origin"":""translation"",""evidence"":""题目MMD第1477–1506行。"",""field"":""question_text_zh"",""original"":""固定速率；棒MN和水平面所成的角"",""reason"":""改善术语、语法与单位书写，不改变数学条件。""}]",new,,来源未标注公开试题编号，在本45题范围内未发现同题。,题目图 M2QD_DA_PARTB_Q4_Figure1.jpg 已人工查看，A、B、O、P、Q、M、N及14 m、2π/3标注均与题干一致；SHA-256与记录一致。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""revised"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""pass"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,乙部应试特训 1 Q4（完整题）,,,43
+M2QD-DA-PARTB-Q5,M2QD-DIFFERENTIATION-APPLICATIONS,PARTB-Q5,乙部特训,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,8b3504ca3f536d3219681cdb5df7074f69a2177b473bac5bf1b04fdab1115db9,"questions MMD English lines 1508, 1510, 1516, 1522, 1524; Chinese lines 1526–1533",微分应用乙部答案.mmd.zip,d6fb2fbd-e521-4477-bb10-ce3f58210ca8.mmd,07fc2301afd0be972275dfb9dd23aada19a327919e603017a8ab45b004cf546d,"The curve $y=1-x^{2}$ intersects the horizontal line $y=k$（where $0<k<1$ ）at two points $P$ and $Q$ .Let $O$ be the origin.
+(a) Express the area of $\triangle O P Q$ in terms of $k$ .
+(b) Find the greatest area of $\triangle O P Q$ .
+(c) It is given that $O P$ increases at a rate of 2 units per second.Find the rate of change of the area of $\triangle O P Q$ when the $y$－coordinate of $P$ is $\frac{1}{3}$ .
+(d) A student guesses that when the area of $\triangle O P Q$ attains its greatest value,$O P$ will also attain its greatest value.Explain whether the student＇s guess is correct or not.","曲线 $y=1-x^{2}$ 与水平线 $y=k$（其中 $0<k<1$ ）相交于两点 $P$ 和 $Q$ 。设 $O$ 为原点。
+(a) 以 $k$ 表 $\triangle O P Q$ 的面积。
+（3 分）
+(b) 求 $\triangle O P Q$ 的最大面积。
+（3 分）
+(c) 已知 $O P$ 以每秒2单位的速率增加。求当 $P$ 的 $y$ 坐标为 $\frac{1}{3}$ 时 $\triangle O P Q$ 的面积的变率。
+（4 分）
+(d) 某学生猜想当 $\triangle O P Q$ 的面积达至其最大值时,$O P$ 亦达至其最大值。解释其猜想是否正确。","曲线 $y=1-x^2$ 与水平线 $y=k$（$0<k<1$）相交于 $P,Q$ 两点，$O$ 为原点。
+(a) 用 $k$ 表示 $\triangle OPQ$ 的面积。（3分）
+(b) 求 $\triangle OPQ$ 的最大面积。（3分）
+(c) 已知 $OP$ 以每秒2单位的速率增加。当 $P$ 的 $y$ 坐标为 $1/3$ 时，求 $\triangle OPQ$ 面积的变化率。（4分）
+(d) 某学生猜想：当 $\triangle OPQ$ 的面积达到最大值时，$OP$ 也达到最大值。说明该猜想是否正确。（2分）","The curve $y=1-x^{2}$ intersects the horizontal line $y=k$（where $0<k<1$ ）at two points $P$ and $Q$ .Let $O$ be the origin.
+(a) Express the area of $\triangle O P Q$ in terms of $k$ .
+(b) Find the greatest area of $\triangle O P Q$ .
+(c) It is given that $O P$ increases at a rate of 2 units per second.Find the rate of change of the area of $\triangle O P Q$ when the $y$－coordinate of $P$ is $\frac{1}{3}$ .
+(d) A student guesses that when the area of $\triangle O P Q$ attains its greatest value,$O P$ will also attain its greatest value.Explain whether the student＇s guess is correct or not.",12,,[],"5.Reference：HKDSE Math M2 2018 Q9
+(a) Put $y=k$ into $y=1-x^{2}$ ：
+$$
+\begin{aligned}
+& k=1-x^{2} \\
+& x= \pm \sqrt{1-k}
+\end{aligned}
+$$
+Area of $\triangle O P Q$
+$$
+\begin{aligned}
+& =\frac{1}{2}[\sqrt{1-k}-(-\sqrt{1-k})] k \text { square units } \\
+& =k \sqrt{1-k} \text { square units }
+\end{aligned}
+$$
+(b) Let $A$ square units be the area of $\triangle O P Q$ .
+$$
+\begin{aligned}
+& \text { By (a), } A=k\sqrt{1-k} \\
+& \frac{d A}{d k}=\frac{2 k-3 k^{2}}{2 \sqrt{k^{2}-k^{3}}}
+\end{aligned}
+$$
+So,we have $\frac{d A}{d k}=0 \Leftrightarrow k=\frac{2}{3}$ or $k=0$（rejected）.
+
+\begin{tabular}[t]{|l|l|l|l|}
+\hline $k$ & $\left(0, \frac{2}{3}\right)$ & $\frac{2}{3}$ & $\left(\frac{2}{3}, 1\right)$ \\
+\hline $\frac{d A}{d k}$ & ＋ & 0 & － \\
+\hline
+\end{tabular}
+$\therefore \quad A$ attains its greatest value when $k=\frac{2}{3}$ .
+When $k=\frac{2}{3}, A=\frac{2}{3} \sqrt{1-\frac{2}{3}}=\frac{2}{3 \sqrt{3}}=\frac{2 \sqrt{3}}{9}$
+∴ The greatest area of $\triangle O P Q$ is $\frac{2 \sqrt{3}}{9}$ square units.
+(c) 
+$$
+\begin{align*}
+O P & =\sqrt{k^{2}+( \pm \sqrt{1-k})^{2}}  \tag{1M}\\
+& =\sqrt{k^{2}-k+1}
+\end{align*}
+$$
+1M
+$\frac{d A}{d t}=\left(\frac{d A}{d k}\right)\left(\frac{d k}{d t}\right)$
+$$
+\begin{aligned}
+& =\frac{2 k-3 k^{2}}{2 \sqrt{k^{2}-k^{3}}} \cdot \frac{d k}{d t} \quad(\text { by }(\mathrm{b})) \\
+& =\frac{2 k-3 k^{2}}{2 \sqrt{k^{2}-k^{3}}} \cdot\left(\frac{2 \sqrt{k^{2}-k+1}}{2 k-1}\right)\left(\frac{d O P}{d t}\right) \\
+& =\left(\frac{(2-3 k) \sqrt{k^{2}-k+1}}{(2 k-1) \sqrt{1-k}}\right)\left(\frac{d O P}{d t}\right)
+\end{aligned}
+$$
+Tips
+From the question,we need to find $\left.\frac{d A}{d t}\right|_{k=\frac{1}{3}}$ given that $k=\frac{1}{3}$ and $\frac{d O P}{d t}=2$ .Although $\frac{d k}{d t}$ is not known,we can express it in terms of $k$ and $\frac{d O P}{d t}$ .
+1M
+$\therefore \quad$ The required rate of change is $-\sqrt{42} \quad$ square units per second.
+1A
+
+(d) 
+$$
+\begin{aligned}
+\left.\frac{d O P}{d k}\right|_{k=\frac{2}{3}} & =\frac{2\left(\frac{2}{3}\right)-1}{2 \sqrt{\left(\frac{2}{3}\right)^{2}-\left(\frac{2}{3}\right)+1}} \\
+& \approx 0.189 \\
+& \neq 0
+\end{aligned}
+$$
+1M
+$\therefore \quad O P$ will not attain its greatest value when the area of $\triangle \mathrm{OPQ}$ attains its greatest value.
+$\therefore$ The student is incorrect.
+1A","(a) $P,Q$ 的横坐标为 $\pm\sqrt{1-k}$，故面积 $A=k\sqrt{1-k}$。
+(b) $dA/dk=(2-3k)/(2\sqrt{1-k})$，在 $0<k<1$ 上于 $k=2/3$ 取得最大值 $2\sqrt3/9$。
+(c) $OP=\sqrt{k^2-k+1}$。由 $d(OP)/dt=2$ 得 $dk/dt=\frac{2\sqrt{k^2-k+1}}{2k-1}\cdot2$。当 $k=1/3$ 时，$dA/dt=-\sqrt{42}$ 平方单位/秒。
+(d) 在面积最大时 $k=2/3$，但 $d(OP)/dk=\frac{2k-1}{2\sqrt{k^2-k+1}}\ne0$，故 $OP$ 当时并非极值，猜想不正确。",source_provided,corrected_verified,0,综合微分应用,"[""区间最值"",""几何最优化"",""相关变化率"",""面积变化"",""链式法则建模"",""建立变量关系"",""综合题目""]",5,同题连续考查面积建模、区间最大值、由OP反求参数变化率及反例判断，需跨最优化与变率组织长推导，评为L5。,"{""代数负担"":1,""建模强度"":2,""推理链长度"":2,""易错风险"":2,""条件处理"":2,""概念数"":2}",5,Joy 教学难度 Level 5/5,"[""微分的应用"",""微分以及微分公式"",""最优化"",""相关变化率"",""变率"",""面积"",""证明题"",""抛物线""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""A=k\\sqrt{1-k}。"",""error_origin"":""source_original"",""evidence"":""微分应用乙部答案MMD第314–327行；独立代数与数值复算得到 dA/dt=-√42。"",""field"":""solution_original"",""original"":""答案MMD第325行呈现为 $A=\\sqrt{k^2-1}$。"",""reason"":""由(a)的底乘高直接得到，且后一行导数与后续结果也对应此正确表达式；冻结MMD明确呈现错误式，但现有材料不足以进一步断言错误发生于原版还是转换阶段。现数据库答案已使用正确式但此前未保存校订记录。""},{""corrected"":""达到最大值；面积的变化率，并补全(d)的2分标记。"",""error_origin"":""translation"",""evidence"":""题目MMD第1508–1535行。"",""field"":""question_text_zh"",""original"":""达至其最大值；面积的变率"",""reason"":""统一简体中文书面表达并完整呈现分值。""}]",historical_reference,DSE-2018-Q9,题目MMD与答案均标注参考2018 Q9。,冻结MMD存在一处明确公式错误，已在校订记录中保留原文与证据；错误发生阶段未作超出证据的归因。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""revised"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,乙部应试特训 1 Q5（完整题）,,,44
+M2QD-DA-PARTB-Q6,M2QD-DIFFERENTIATION-APPLICATIONS,PARTB-Q6,乙部特训,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,6182439978390421e7ac5e39cf365cd7ef844a55bda9d11d128a498d45063c60,"questions MMD English lines 1539, 1541, 1547, 1549; Chinese lines 1554, 1557, 1563, 1565",微分应用乙部答案.mmd.zip,d6fb2fbd-e521-4477-bb10-ce3f58210ca8.mmd,07fc2301afd0be972275dfb9dd23aada19a327919e603017a8ab45b004cf546d,"Denote the graph of $y=-\sqrt{x^{2}+4}$ and the graph of $y=\sqrt{(x-10)^{2}+9}$ by $G$ and $H$ respectively,where $0<x<10$ .Let $P$ be a moving point on $G$ .The vertical line passing through $P$ cuts $H$ at the point $Q$ .Denote the $x$－coordinate of $P$ by $p$ .It is given that the length of $P Q$ attains its minimum value when $p=a$ .
+(a) Find $a$ .
+(b) （i）Someone claims that the area of $\triangle O P Q$ attains its minimum value when $p=a$ . Do you agree？Explain your answer.
+(ii) The length of $O P$ increases at a constant rate of 2 units per second.Find the rate of change of the perimeter of $\triangle O P Q$ when $p=a$ .","将 $y=-\sqrt{x^{2}+4}$ 的图像及 $y=\sqrt{(x-10)^{2}+9}$ 的图像分别记为 $G$ 及 $H$ ,其中$0<x<10$ 。设 $P$ 为 $G$ 上的一动点。通过 $P$ 的垂直线与 $H$ 相交于点 $Q$ 。将 $P$ 的 $x$ 坐标记为 $p$ 。已知当 $p=a$ 时,$P Q$ 的长度达至其极小值。
+(a) 求 $a$ 。
+(b) （i）某人宣称当 $p=a$ 时,$\triangle O P Q$ 的面积达至其极小值。你是否同意？解释你的答案。
+(ii) $O P$ 的长度以每秒2单位的恒速率增加。求当 $p=a$ 时 $\triangle O P Q$ 的周界的变率。","将曲线 $y=-\sqrt{x^2+4}$ 与 $y=\sqrt{(x-10)^2+9}$ 的图像分别记为 $G,H$，其中 $0<x<10$。点 $P$ 在 $G$ 上移动，过 $P$ 的竖直线与 $H$ 相交于 $Q$。设 $P$ 的横坐标为 $p$。已知当 $p=a$ 时，$PQ$ 的长度取得最小值。
+(a) 求 $a$。（4分）
+(b) (i) 有人声称当 $p=a$ 时，$\triangle OPQ$ 的面积也取得最小值。你是否同意？说明理由；(ii) $OP$ 以每秒2单位的恒定速率增加，求当 $p=a$ 时 $\triangle OPQ$ 周长的变化率。（9分）","Denote the graph of $y=-\sqrt{x^{2}+4}$ and the graph of $y=\sqrt{(x-10)^{2}+9}$ by $G$ and $H$ respectively,where $0<x<10$ .Let $P$ be a moving point on $G$ .The vertical line passing through $P$ cuts $H$ at the point $Q$ .Denote the $x$－coordinate of $P$ by $p$ .It is given that the length of $P Q$ attains its minimum value when $p=a$ .
+(a) Find $a$ .
+(b) （i）Someone claims that the area of $\triangle O P Q$ attains its minimum value when $p=a$ . Do you agree？Explain your answer.
+(ii) The length of $O P$ increases at a constant rate of 2 units per second.Find the rate of change of the perimeter of $\triangle O P Q$ when $p=a$ .",13,,[],"6.Reference：HKDSE Math M2 2021 Q10
+(a) $P Q=\sqrt{(p-10)^{2}+9}+\sqrt{p^{2}+4}$ 1M
+$$
+\frac{d P Q}{d p}=\frac{p-10}{\sqrt{(p-10)^{2}+9}}+\frac{p}{\sqrt{p^{2}+4}}
+$$
+1M
+For $\frac{d P Q}{d p}=0$ ,we have
+$$
+\begin{aligned}
+\frac{p-10}{\sqrt{(p-10)^{2}+9}} & =-\frac{p}{\sqrt{p^{2}+4}} \\
+\frac{(p-10)^{2}}{(p-10)^{2}+9} & =\frac{p^{2}}{p^{2}+4} \\
+p^{2}(p-10)^{2}+4(p-10)^{2} & =p^{2}(p-10)^{2}+9 p^{2} \\
+4(p-10)^{2}-9 p^{2} & =0 \\
+(5 p-20)(-p-20) & =0
+\end{aligned}
+$$
+$$
+\begin{equation*}
+p=4 \quad \text { or } \quad p=-20(\text { rejected }) \tag{1 M}
+\end{equation*}
+$$
+$$
+\begin{equation*}
+\therefore \quad a=4 \tag{1A}
+\end{equation*}
+$$
+(b) （i）Let $A$ square units be the area of $\triangle O P Q$ .
+$$
+\begin{align*}
+& A=\frac{1}{2} p\left[\sqrt{(p-10)^{2}+9}+\sqrt{p^{2}+4}\right]  \tag{1 M}\\
+& \frac{d A}{d p}=\frac{1}{2} p\left[\frac{p-10}{\sqrt{(p-10)^{2}+9}}+\frac{p}{\sqrt{p^{2}+4}}\right]+\frac{1}{2}\left[\sqrt{(p-10)^{2}+9}+\sqrt{p^{2}+4}\right]  \tag{1 M}\\
+& \left.\therefore \quad \frac{d A}{d p}\right|_{p=4}=2\left(\frac{-6}{\sqrt{45}}+\frac{4}{\sqrt{20}}\right)+\frac{1}{2}(\sqrt{45}+\sqrt{20})=\frac{5 \sqrt{5}}{2} \neq 0 . \tag{1 M}
+\end{align*}
+$$
+Hence,$A$ does not attain its minimum value when $p=4$ .
+Thus,the claim is disagreed.
+(ii) Since $O P=\sqrt{p^{2}+\left(-\sqrt{p^{2}+4}\right)^{2}}$ ,we have $O P=\sqrt{2 p^{2}+4}$ .
+At time $t$ seconds,we have $\frac{d O P}{d t}=\frac{2 p}{\sqrt{2 p^{2}+4}}\left(\frac{d p}{d t}\right)$ .
+As $2=\frac{2(4)}{\sqrt{2\left(4^{2}\right)+4}}\left(\left.\frac{d p}{d t}\right|_{p=4}\right)$ ,we have $\left.\frac{d p}{d t}\right|_{p=4}=\frac{3}{2}$ .
+Let $w$ units be the perimeter of $\triangle O P Q$ .
+$$
+\begin{align*}
+& w=O P+O Q+P Q=O P+\sqrt{p^{2}+(p-10)^{2}+9}+P Q  \tag{1 M}\\
+& \frac{d w}{d t}=\frac{d O P}{d t}+\left[\frac{p+(p-10)}{\sqrt{p^{2}+(p-10)^{2}+9}}+\frac{d P Q}{d p}\right]\left(\frac{d p}{d t}\right)  \tag{1M}\\
+& \left.\therefore \quad \frac{d w}{d t}\right|_{p=4}=2+\left(\frac{-2}{\sqrt{61}}+0\right)\left(\frac{3}{2}\right)=2-\frac{3 \sqrt{61}}{61}
+\end{align*}
+$$
+Thus,the required rate of change is $\left(2-\frac{3 \sqrt{61}}{61}\right)$ units per second.","(a) $PQ=\sqrt{(p-10)^2+9}+\sqrt{p^2+4}$。令导数为0并利用 $0<p<10$，得 $p=4$，故 $a=4$。
+(b)(i) 面积 $A=\frac12p\,PQ$。在 $p=4$ 时 $d(PQ)/dp=0$，但 $dA/dp=PQ/2=5\sqrt5/2\ne0$，所以不同意。(ii) $OP=\sqrt{2p^2+4}$；在 $p=4$ 且 $d(OP)/dt=2$ 时，$dp/dt=3/2$。又 $OQ=\sqrt{p^2+(p-10)^2+9}$。设周长为 $w=OP+OQ+PQ$，则在 $p=4$ 时 $d(PQ)/dp=0$、$d(OQ)/dp=-2/\sqrt{61}$，故 $dw/dt=2-3/\sqrt{61}=2-3\sqrt{61}/61$ 单位/秒。",source_provided,checked_pass,0,综合微分应用,"[""几何最优化"",""相关变化率"",""几何量变化"",""链式法则建模"",""建立变量关系"",""综合题目""]",5,先最小化两根式距离，再反驳面积结论，最后把OP的给定变化率转换为参数变化率并合成三边周长变化率，推导链与整合度均最高，评为L5。,"{""代数负担"":2,""建模强度"":2,""推理链长度"":2,""易错风险"":2,""条件处理"":2,""概念数"":2}",5,Joy 教学难度 Level 5/5,"[""微分的应用"",""微分以及微分公式"",""最优化"",""相关变化率"",""变率"",""距离"",""面积"",""周界"",""证明题""]",checked_pass,checked_pass,not_required,checked_pass,corrected_verified,"[{""corrected"":""取得最小值；声称；周长的变化率。"",""error_origin"":""translation"",""evidence"":""题目MMD第1539–1569行。"",""field"":""question_text_zh"",""original"":""达至其极小值；宣称；周界的变率"",""reason"":""使用更自然、统一的简体数学表达。""}]",adapted,DSE-2021-Q10,来源答案明确标注 HKDSE Mathematics M2 2021 Q10，数据库登记为改编题。,平方求驻点时已用定义域0<p<10排除p=-20，并用导数两侧符号确认p=4为最小值点。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""revised"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-03,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,乙部应试特训 1 Q6（完整题）,,,45
+M2QD-DA-TRAIN-Q1,M2QD-DIFFERENTIATION-APPLICATIONS,TRAIN-Q1,应试训练,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,f10f475bfc743c80938b3840f078b357a10d90e7d134de4fd160cd619149498e,questions MMD English lines 410; Chinese lines 412,微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,It is given that the curve $x \ln y^{2}+y^{2}=9$ cuts the $y$－axis at two points.Find the equations of the tangents to the curve at these two points.,已知曲线 $x \ln y^{2}+y^{2}=9$ 与 $y$ 轴相交于两点。求该曲线于该两点的切线方程。,已知曲线 $x\ln y^{2}+y^{2}=9$ 与 $y$ 轴相交于两点。求曲线在这两个交点处的切线方程。,It is given that the curve $x \ln y^{2}+y^{2}=9$ cuts the $y$－axis at two points.Find the equations of the tangents to the curve at these two points.,6,,[],"Reference：HKDSE Math M2 2014 Q3
+When $x=0, y= \pm 3$ .
+1A
+Differentiate both sides of the equation of the curve with respect to $x$ ,
+$$
+x\left(\frac{2 y}{y^{2}} \times \frac{d y}{d x}\right)+\ln y^{2}+2 y \frac{d y}{d x}=0
+$$
+$1 \mathrm{M}+1 \mathrm{M}$
+$$
+\begin{aligned}
+\frac{d y}{d x} & =-\frac{\ln y^{2}}{\frac{2 x}{y}+2 y} \\
+& =-\frac{y \ln y^{2}}{2 x+2 y^{2}}
+\end{aligned}
+$$
+$$
+\begin{aligned}
+\left.\frac{d y}{d x}\right|_{(0,3)} & =-\frac{3 \ln 9}{18}=-\frac{\ln 3}{3} \\
+\left.\frac{d y}{d x}\right|_{(0,-3)} & =-\frac{(-3) \ln 9}{18}=\frac{\ln 3}{3}
+\end{aligned}
+$$
+$\therefore \quad$ At $(0,3)$ ,the equation of the tangent is $y=-\frac{x \ln 3}{3}+3$. $\_\_\_\_$ 1A
+At（0,－3）,the equation of the tangent is $y=\frac{x \ln 3}{3}-3$ .","令 $x=0$，得 $y=\pm3$。对 $x\ln y^2+y^2=9$ 关于 $x$ 隐式求导：$\ln y^2+(2x/y+2y)\,dy/dx=0$，故 $dy/dx=-y\ln y^2/(2x+2y^2)$。在 $(0,3)$ 处斜率为 $-\ln3/3$，切线为 $y=-(\ln3)x/3+3$；在 $(0,-3)$ 处斜率为 $\ln3/3$，切线为 $y=(\ln3)x/3-3$。",source_provided,corrected_verified,0,切线与法线,"[""切点未知"",""隐函数求导""]",3,须先求两个未知切点，再作隐式求导并分别写出切线，属多步骤标准题。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":2,""易错风险"":1,""条件处理"":1,""概念数"":1}",3,Joy 教学难度 Level 3/5,"[""微分的应用"",""微分以及微分公式"",""切线"",""隐函数求导""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd"",""error_origin"":""database_mapping"",""evidence"":""甲部答案 MMD 第5–30行完整出现本题答案；该成员 SHA-256 为 bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0。"",""field"":""solution_source_file/solution_source_member"",""original"":""M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd"",""reason"":""当前成员只含题面，出版社答案实际来自甲部答案 MMD。""},{""corrected"":""bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0"",""error_origin"":""database_mapping"",""evidence"":""对微分的应用甲部.mmd.zip内c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd直接解压计算SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第5–30行。"",""field"":""solution_source_member_sha256"",""original"":""4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5"",""reason"":""答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。""}]",historical_reference,DSE-2014-Q3,来源明确标注为 HKDSE M2 2014 Q3；不属于本批45题内重复。,题界、两种语言、6分总分及两条切线均与原题和独立复算一致。 Task 4：已按Task 4核验并关闭来源映射、分值或内容待决项。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-08T20:00:00+08:00,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,应试训练 3 Q1（完整题）,2026-08-08T20:00:00+08:00,已按Task 4核验并关闭来源映射、分值或内容待决项。,9
+M2QD-DA-TRAIN-Q10,M2QD-DIFFERENTIATION-APPLICATIONS,TRAIN-Q10,应试训练,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,017c0d456cd153f9b85f40ceff8e47f4cdd7a6669ca6c77448b49e2a3ff6df33,"questions MMD English lines 781, 783–785; Chinese lines 788, 790–792",微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,"10.Define $r(x)=\frac{x^{3}-3 x^{2}+3 x+11}{(x-1)^{2}}$ for all real numbers $x \neq 1$ .
+(a) Find the asymptote（s）of the graph of $y=r(x)$ .
+(b) Find $\frac{d}{d x} r(x)$ .
+(c) Find the number of point（s）of inflexion of the graph of $y=r(x)$ .","对所有实数 $x \neq 1$ ,定义 $r(x)=\frac{x^{3}-3 x^{2}+3 x+11}{(x-1)^{2}}$ 。
+(a) 求 $y=r(x)$ 的图像的渐近线。
+(b) 求 $\frac{d}{d x} r(x)$ 。
+(c) 求 $y=r(x)$ 的图像的拐点的数目。","对所有实数 $x\ne1$，定义 $r(x)=\dfrac{x^3-3x^2+3x+11}{(x-1)^2}$。
+(a) 求曲线 $y=r(x)$ 的渐近线。
+(b) 求 $r'(x)$。
+(c) 求曲线 $y=r(x)$ 的拐点数目。","10.Define $r(x)=\frac{x^{3}-3 x^{2}+3 x+11}{(x-1)^{2}}$ for all real numbers $x \neq 1$ .
+(a) Find the asymptote（s）of the graph of $y=r(x)$ .
+(b) Find $\frac{d}{d x} r(x)$ .
+(c) Find the number of point（s）of inflexion of the graph of $y=r(x)$ .",6,,[],"10.Reference：HKDSE Math M2 2021 Q5
+(a) The equation of the vertical asymptote is $x=1$ . 1A
+Note that $r(x)=\frac{x^{3}-3 x^{2}+3 x+11}{(x-1)^{2}}$
+$$
+\begin{aligned}
+& =\frac{x^{3}-3 x^{2}+3 x-1+12}{(x-1)^{2}} \\
+& =\frac{(x-1)^{3}+12}{(x-1)^{2}} \\
+& =x-1+\frac{12}{(x-1)^{2}}
+\end{aligned}
+$$
+1M
+Thus,the equation of the oblique asymptote is $y=x-1$ . 1A f.t.
+(b) $\frac{d}{d x} r(x)=\frac{d}{d x}\left[x-1+\frac{12}{(x-1)^{2}}\right]$
+$$
+=\underline{\underline{\underline{1-\frac{24}{(x-1)^{3}}}}}
+$$
+1A
+(c) Note that $r^{\prime \prime}(x)=\frac{72}{(x-1)^{4}}>0$ for all $x$ .
+i.e.$\quad r^{\prime \prime}(x)$ does not change sign for all $x$ . 1M
+Therefore,the graph of $y=r(x)$ does not have any point of inflexion. 1A f.t. （6）","先化为 $r(x)=x-1+12/(x-1)^2$。
+(a) 垂直渐近线为 $x=1$，斜渐近线为 $y=x-1$。
+(b) $r'(x)=1-24/(x-1)^3$。
+(c) $r''(x)=72/(x-1)^4>0$（$x\ne1$），曲线在定义域各区间内均凹向上；$x=1$ 又不在定义域内，故没有拐点，数目为0。",source_provided,corrected_verified,0,极值与曲线性质,"[""渐近线"",""拐点"",""凹凸性""]",4,须识别立方展开作关键化简，并跨渐近线、一阶导数、二阶导数及定义域整合判断。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":2,""易错风险"":1,""条件处理"":2,""概念数"":2}",4,Joy 教学难度 Level 4/5,"[""微分的应用"",""微分以及微分公式"",""渐近线"",""二阶导数"",""拐点"",""有理函数""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd"",""error_origin"":""database_mapping"",""evidence"":""甲部答案 MMD 第313–334行完整出现本题答案。"",""field"":""solution_source_file/solution_source_member"",""original"":""M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd"",""reason"":""当前成员只含题面，出版社答案实际来自甲部答案 MMD。""},{""corrected"":""bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0"",""error_origin"":""database_mapping"",""evidence"":""直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第313–334行。"",""field"":""solution_source_member_sha256"",""original"":""4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5"",""reason"":""答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。""}]",adapted,DSE-2021-Q5,保留2021-Q5的三小问有理函数分析结构，但函数数据经改编。,6分三小问全部复算通过，特别核实了不连续点不能构成拐点。 Task 4：已按Task 4核验并关闭来源映射、分值或内容待决项。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-08T20:00:00+08:00,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,应试训练 3 Q10（完整题）,2026-08-08T20:00:00+08:00,已按Task 4核验并关闭来源映射、分值或内容待决项。,18
+M2QD-DA-TRAIN-Q11,M2QD-DIFFERENTIATION-APPLICATIONS,TRAIN-Q11,应试训练,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,c1cdb8b11557e1b14be88b0b70af0b5bfef750e4ee89b68dd7bae1e35828b90a,"questions MMD English lines 847, 849–859; Chinese lines 863, 865–877",微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,"Consider a rational function $f(x)=\frac{x^{2}+6 x-3}{x-1}$ .It is given that
+\begin{tabular}[t]{|l|l|l|l|l|l|l|l|}
+\hline $x$ & $x<-1$ & －1 & $-1<x<1$ & 1 & $1<x<3$ & 3 & $x>3$ \\
+\hline $f^{\prime}(x)$ & ＋ & 0 & － & undefined & － & 0 & ＋ \\
+\hline $f^{\prime \prime}(x)$ & － & － & － & undefined & ＋ & ＋ & ＋ \\
+\hline
+\end{tabular}
+（＇＋＇and＇－＇denote＇positive value＇and＇negative value＇respectively.）
+(a) Find all the maximum and／or minimum point（s）of the graph of $y=f(x)$ ,and determine whether the graph of $y=f(x)$ has point（s）of inflexion.
+(b) Find the asymptote（s）of the graph of $y=f(x)$ .
+(c) Sketch the graph of $y=f(x)$ .","考虑一有理函数 $f(x)=\frac{x^{2}+6 x-3}{x-1}$ 。已知
+\begin{tabular}[t]{|l|l|l|l|l|l|l|l|}
+\hline $x$ & $x<-1$ & －1 & $-1<x<1$ & 1 & $1<x<3$ & 3 & $x>3$ \\
+\hline $f^{\prime}(x)$ & ＋ & 0 & － & 未下定义 & － & 0 & ＋ \\
+\hline $f^{\prime \prime}(x)$ & － & － & － & 未下定义 & ＋ & ＋ & ＋ \\
+\hline
+\end{tabular}
+（ “+”和“−”分别表示“正值”和“负值”。）
+(a) 求 $y=f(x)$ 的图像的所有极大及／或极小点,并判断 $y=f(x)$ 的图像是否有拐点。
+(b) 求 $y=f(x)$ 的图像的渐近线。
+(c) 描绘 $y=f(x)$ 的图像。","考虑有理函数 $f(x)=\dfrac{x^2+6x-3}{x-1}$。已知符号表各列依次为 $x<-1$、$x=-1$、$-1<x<1$、$x=1$、$1<x<3$、$x=3$、$x>3$；相应的 $f'(x)$ 符号为 $+$、$0$、$-$、未定义、$-$、$0$、$+$，$f''(x)$ 符号为 $-$、$-$、$-$、未定义、$+$、$+$、$+$。（“+”和“−”分别表示正值和负值。）
+(a) 求曲线 $y=f(x)$ 的所有极大点及／或极小点，并判断曲线是否有拐点。
+(b) 求曲线的渐近线。
+(c) 描绘曲线。","Consider a rational function $f(x)=\frac{x^{2}+6 x-3}{x-1}$ .It is given that
+\begin{tabular}[t]{|l|l|l|l|l|l|l|l|}
+\hline $x$ & $x<-1$ & －1 & $-1<x<1$ & 1 & $1<x<3$ & 3 & $x>3$ \\
+\hline $f^{\prime}(x)$ & ＋ & 0 & － & undefined & － & 0 & ＋ \\
+\hline $f^{\prime \prime}(x)$ & － & － & － & undefined & ＋ & ＋ & ＋ \\
+\hline
+\end{tabular}
+（＇＋＇and＇－＇denote＇positive value＇and＇negative value＇respectively.）
+(a) Find all the maximum and／or minimum point（s）of the graph of $y=f(x)$ ,and determine whether the graph of $y=f(x)$ has point（s）of inflexion.
+(b) Find the asymptote（s）of the graph of $y=f(x)$ .
+(c) Sketch the graph of $y=f(x)$ .",8,,[],"11.Reference：HKDSE Math M2 2013 Q5
+(a) $f(x)=\frac{x^{2}+6 x-3}{x-1}$
+$$
+\therefore \quad f(-1)=4 \text { and } f(3)=12
+$$
+There is a maximum point $(-1,4)$ . 1A
+There is a minimum point $(3,12)$ . 1A
+From the table,there is no point of inflexion. 1A
+(b) The vertical asymptote is $x=1$ . 1A
+$$
+\begin{aligned}
+f(x) & =\frac{x^{2}+6 x-3}{x-1} \\
+& =\frac{x^{2}-x+7 x-3}{x-1} \\
+& =\frac{x^{2}-x+7 x-7+4}{x-1} \\
+& =\frac{x(x-1)+7(x-1)+4}{x-1} \\
+& =x+7+\frac{4}{x-1}
+\end{aligned}
+$$
+1M
+$\lim _{x \rightarrow+\infty} \frac{4}{x-1}=0 \quad$ and $\quad \lim _{x \rightarrow-\infty} \frac{4}{x-1}=0$
+∴ The oblique asymptote is $y=x+7$ . 1A
+(c) 
+1A（for the shape）
+1A（for all correct）
+（8）
+
+[Publisher sketch (text transcription)]
+The vertical asymptote is (x=1) and the oblique asymptote is (y=x+7).
+For (x<1), the branch approaches (y=x+7) from below, passes through the local maximum ((-1,4)), and tends to (-\infty) as (x\to1^{-}).
+For (x>1), the branch tends to (+\infty) as (x\to1^{+}), passes through the local minimum ((3,12)), and approaches (y=x+7) from above.","(a) $f(-1)=4$、$f(3)=12$。由一阶导数变号，极大点为 $(-1,4)$，极小点为 $(3,12)$。二阶导数只在 $x=1$ 两侧变号，但 $x=1$ 不在定义域内，故没有拐点。
+(b) $f(x)=x+7+4/(x-1)$，故垂直渐近线为 $x=1$，斜渐近线为 $y=x+7$。
+(c) $x<1$ 的分支在斜渐近线下方，经过极大点 $(-1,4)$，并在 $x\to1^-$ 时趋于 $-\infty$；$x>1$ 的分支在斜渐近线上方，在 $x\to1^+$ 时趋于 $+\infty$，经过极小点 $(3,12)$ 后趋近 $y=x+7$。此描述与出版社图像一致。",source_provided,corrected_verified,0,极值与曲线性质,"[""极大点"",""极小点"",""拐点"",""渐近线"",""曲线作图""]",4,须综合两阶导数符号、间断点、斜渐近线和极值信息完成整幅曲线。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":2,""易错风险"":2,""条件处理"":2,""概念数"":2}",5,Joy 教学难度 Level 5/5,"[""微分的应用"",""微分以及微分公式"",""极值"",""渐近线"",""拐点"",""曲线作图"",""有理函数""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""（“+”和“−”分别表示“正值”和“负值”。）"",""error_origin"":""mathpix_conversion"",""evidence"":""题目 MMD 第871行；英文对应说明见第855行，符号表见第849–854行。"",""field"":""question_text_zh"",""original"":""（ ↑＋與 －－」分別標示 「正值」與「負值」。）"",""reason"":""原始MMD的引号及正负号被OCR破坏；输入记录已作语义正确的规范化，但未保存校订证据。""},{""corrected"":""微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd"",""error_origin"":""database_mapping"",""evidence"":""甲部答案 MMD 第336–365行；曲线图为 c2e97ff4-9258-43ff-802f-ac95d2c5c0e2-06_644_1010_242_343.jpg，SHA-256 0b12a704a1a6765e08d8f5ec77562a1f157fcfaab2739cf9b11f656ffc103814。"",""field"":""solution_source_file/solution_source_member"",""original"":""M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd"",""reason"":""当前成员只含题面，出版社答案及曲线图实际来自甲部答案 MMD。""},{""corrected"":""bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0"",""error_origin"":""database_mapping"",""evidence"":""直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第336–365行。"",""field"":""solution_source_member_sha256"",""original"":""4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5"",""reason"":""答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。""}]",adapted,DSE-2013-Q5,采用2013-Q5的符号表—极值—渐近线—作图结构，但函数及结果有改编。,8分题答及出版社曲线图已逐项核对；题目无需输入图，答案图已用原图验证。 Task 4：已按Task 4核验并关闭来源映射、分值或内容待决项。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""revised"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-08T20:00:00+08:00,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,应试训练 3 Q11（完整题）,2026-08-08T20:00:00+08:00,已按Task 4核验并关闭来源映射、分值或内容待决项。,19
+M2QD-DA-TRAIN-Q12,M2QD-DIFFERENTIATION-APPLICATIONS,TRAIN-Q12,应试训练,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,7bee5d5d8d1e0a2ab48746fb5a4f838f3e7222fea242099ab3df1ba3c1ff399d,"questions MMD English lines 881, 883–894; Chinese lines 897, 899–911",微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,"Consider a rational function $f(x)=\frac{x^{2}+2}{x^{2}-1}$ .It is given that
+\begin{tabular}[t]{|l|l|l|l|l|l|l|l|}
+\hline $x$ & $x<-1$ & －1 & $-1<x<0$ & 0 & $0<x<1$ & 1 & $x>1$ \\
+\hline $f^{\prime}(x)$ & ＋ & undefined & ＋ & 0 & － & undefined & － \\
+\hline $f^{\prime \prime}(x)$ & ＋ & undefined & － & － & － & undefined & ＋ \\
+\hline
+\end{tabular}
+（＇＋＇and＇－＇denote＇positive value＇and＇negative value＇respectively.）
+(a) Find all the maximum and／or minimum point（s）of the graph of $y=f(x)$ ,and determine whether the graph of $y=f(x)$ has point（s）of inflexion.
+(b) Find the asymptote（s）of the graph of $y=f(x)$ .
+(c) Sketch the graph of $y=f(x)$ .","考虑一有理函数 $f(x)=\frac{x^{2}+2}{x^{2}-1}$ 。已知
+\begin{tabular}[t]{|l|l|l|l|l|l|l|l|}
+\hline $x$ & $x<-1$ & －1 & $-1<x<0$ & 0 & $0<x<1$ & 1 & $x>1$ \\
+\hline $f^{\prime}(x)$ & ＋ & 未下定义 & ＋ & 0 & － & 未下定义 & － \\
+\hline $f^{\prime \prime}(x)$ & ＋ & 未下定义 & － & － & － & 未下定义 & ＋ \\
+\hline
+\end{tabular}
+（ “+”和“−”分别表示“正值”和“负值”。）
+(a) 求 $y=f(x)$ 的图像的所有极大及／或极小点,并判断 $y=f(x)$ 的图像是否有拐点。
+(b) 求 $y=f(x)$ 的图像的渐近线。
+(c) 描绘 $y=f(x)$ 的图像。","考虑有理函数 $f(x)=\dfrac{x^2+2}{x^2-1}$。已知符号表各列依次为 $x<-1$、$x=-1$、$-1<x<0$、$x=0$、$0<x<1$、$x=1$、$x>1$；相应的 $f'(x)$ 符号为 $+$、未定义、$+$、$0$、$-$、未定义、$-$，$f''(x)$ 符号为 $+$、未定义、$-$、$-$、$-$、未定义、$+$。（“+”和“−”分别表示正值和负值。）
+(a) 求曲线 $y=f(x)$ 的所有极大点及／或极小点，并判断曲线是否有拐点。
+(b) 求曲线的渐近线。
+(c) 描绘曲线。","Consider a rational function $f(x)=\frac{x^{2}+2}{x^{2}-1}$ .It is given that
+\begin{tabular}[t]{|l|l|l|l|l|l|l|l|}
+\hline $x$ & $x<-1$ & －1 & $-1<x<0$ & 0 & $0<x<1$ & 1 & $x>1$ \\
+\hline $f^{\prime}(x)$ & ＋ & undefined & ＋ & 0 & － & undefined & － \\
+\hline $f^{\prime \prime}(x)$ & ＋ & undefined & － & － & － & undefined & ＋ \\
+\hline
+\end{tabular}
+（＇＋＇and＇－＇denote＇positive value＇and＇negative value＇respectively.）
+(a) Find all the maximum and／or minimum point（s）of the graph of $y=f(x)$ ,and determine whether the graph of $y=f(x)$ has point（s）of inflexion.
+(b) Find the asymptote（s）of the graph of $y=f(x)$ .
+(c) Sketch the graph of $y=f(x)$ .",8,,[],"12.Reference：HKDSE Math M2 2013 Q5
+(a) $f(x)=\frac{x^{2}+2}{x^{2}-1}$
+$$
+\therefore \quad f(0)=-2
+$$
+There is a maximum point（0,－2）. 1A
+From the table,there is no point of inflexion. 1A
+(b) The vertical asymptotes are $x=1$ and $x=-1$ . 1A＋1A
+$\lim _{x \rightarrow \infty} \frac{x^{2}+2}{x^{2}-1}=\lim _{x \rightarrow \infty} \frac{1+\frac{2}{x^{2}}}{1-\frac{1}{x^{2}}}=1$ 1M
+$\therefore \quad$ The horizontal asymptote is $y=1$ . 1A
+(c) 
+1A（for the shape）
+1A（for all correct）
+（8）
+
+[Publisher sketch (text transcription)]
+The graph is even, with vertical asymptotes (x=-1) and (x=1), and horizontal asymptote (y=1).
+The two outer branches lie above (y=1), tend to (+\infty) beside the vertical asymptotes, and approach (y=1) as (|x|\to\infty).
+The inner branch tends to (-\infty) at both vertical asymptotes and has local maximum ((0,-2)).","(a) $f(0)=-2$，一阶导数在 $x=0$ 由正变负，故极大点为 $(0,-2)$，没有极小点。二阶导数只在不属于定义域的 $x=\pm1$ 两侧变号，故没有拐点。
+(b) 垂直渐近线为 $x=-1$、$x=1$；因 $f(x)=1+3/(x^2-1)$，水平渐近线为 $y=1$。
+(c) 曲线为偶函数；两条外侧分支均在 $y=1$ 上方，靠近垂直渐近线时趋于 $+\infty$，当 $|x|\to\infty$ 时从上方趋近 $y=1$；内侧分支在 $x=\pm1$ 附近趋于 $-\infty$，并在 $(0,-2)$ 取得极大值。此描述与出版社图像一致。",source_provided,corrected_verified,0,极值与曲线性质,"[""极大点"",""极小点"",""拐点"",""渐近线"",""曲线作图""]",4,须综合间断点、两阶导数符号、三条渐近线与偶对称性完成曲线全局分析。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":2,""易错风险"":2,""条件处理"":2,""概念数"":2}",5,Joy 教学难度 Level 5/5,"[""微分的应用"",""微分以及微分公式"",""极值"",""渐近线"",""拐点"",""曲线作图"",""有理函数""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""（“+”和“−”分别表示“正值”和“负值”。）"",""error_origin"":""mathpix_conversion"",""evidence"":""题目 MMD 第905行；英文对应说明见第889行，符号表见第883–888行。"",""field"":""question_text_zh"",""original"":""（ $\\lceil+\\rfloor$ 與 $\\Gamma-$ 」分別標示 「正值」與「負值」。）"",""reason"":""原始MMD的引号及正负号被OCR误识为LaTeX符号；输入记录已规范化但未保存校订证据。""},{""corrected"":""微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd"",""error_origin"":""database_mapping"",""evidence"":""甲部答案 MMD 第367–383行；曲线图为 c2e97ff4-9258-43ff-802f-ac95d2c5c0e2-06_402_804_1622_347.jpg，SHA-256 23990703bb7a2d8b7da866001b01a80da8a3292cdd7f92d5a7872434996792ac。"",""field"":""solution_source_file/solution_source_member"",""original"":""M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd"",""reason"":""当前成员只含题面，出版社答案及曲线图实际来自甲部答案 MMD。""},{""corrected"":""bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0"",""error_origin"":""database_mapping"",""evidence"":""直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第367–383行。"",""field"":""solution_source_member_sha256"",""original"":""4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5"",""reason"":""答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。""}]",historical_reference,DSE-2013-Q5,来源明确标注为 HKDSE M2 2013 Q5；不属于本批45题内重复。,8分题答及出版社曲线图已逐项核对；题目无需输入图，答案图已用原图验证。 Task 4：已按Task 4核验并关闭来源映射、分值或内容待决项。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""revised"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-08T20:00:00+08:00,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,应试训练 3 Q12（完整题）,2026-08-08T20:00:00+08:00,已按Task 4核验并关闭来源映射、分值或内容待决项。,20
+M2QD-DA-TRAIN-Q13,M2QD-DIFFERENTIATION-APPLICATIONS,TRAIN-Q13,应试训练,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,b73548eb4c4c4ef962e05f75173543e397d89f6c9bb295f5cadbd4ab9b4c941a,questions MMD English lines 971; Chinese lines 974,微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,"The volume $V \mathrm{~cm}^{3}$ of water in a glass is given by $V=\frac{\pi\left(h^{3}+3 h^{2}+3 h\right)}{12}(0 \leq h \leq 4)$ , where $h$ cm is the depth of water in the glass.Initially,the glass is full of water.There is a small hole at the bottom and water leaks out at a constant rate of $\pi \mathrm{cm}^{3} \mathrm{~s}^{-1}$ .Find the rate of change of the depth of water when the depth of water is 3 cm.","一玻璃杯中水的体积 $V \mathrm{~cm}^{3}$ 可用公式 $V=\frac{\pi\left(h^{3}+3 h^{2}+3 h\right)}{12}(0 \leq h \leq 4)$ 算出,其中$h \mathrm{~cm}$ 为杯中水的深度。最初,杯里装满了水。杯的底部有一个小孔,水以 $\pi \mathrm{cm}^{3} \mathrm{~s}^{-1}$的恒速率漏出。求当水的深度为 3 cm 时水的深度的变率。","玻璃杯中水的体积 $V\,\mathrm{cm}^3$ 由 $V=\dfrac{\pi(h^3+3h^2+3h)}{12}$ 给出，其中 $0\le h\le4$，$h\,\mathrm{cm}$ 为水深。起初杯中装满水；杯底有一小孔，水以恒定速率 $\pi\,\mathrm{cm}^3\,\mathrm{s}^{-1}$ 漏出。求水深为 $3\,\mathrm{cm}$ 时水深的变化率。","The volume $V \mathrm{~cm}^{3}$ of water in a glass is given by $V=\frac{\pi\left(h^{3}+3 h^{2}+3 h\right)}{12}(0 \leq h \leq 4)$ , where $h$ cm is the depth of water in the glass.Initially,the glass is full of water.There is a small hole at the bottom and water leaks out at a constant rate of $\pi \mathrm{cm}^{3} \mathrm{~s}^{-1}$ .Find the rate of change of the depth of water when the depth of water is 3 cm.",3,,[],"(13.) 
+$$
+\begin{aligned}
+\frac{d V}{d t} & =\frac{\pi}{12}\left(3 h^{2}+6 h+3\right) \frac{d h}{d t} \\
+& =\frac{\pi}{4}\left(h^{2}+2 h+1\right) \frac{d h}{d t}
+\end{aligned}
+$$
+1A
+Since water leaks out at a constant rate of $\pi \mathrm{cm}^{3} \mathrm{~s}^{-1}, \frac{d V}{d t}=-\pi$ .
+When $h=3$ ,
+$$
+\begin{aligned}
+-\pi & =\left.\frac{\pi}{4}\left[3^{2}+2(3)+1\right] \frac{d h}{d t}\right|_{h=3} \\
+\left.\frac{d h}{d t}\right|_{h=3} & =-\frac{1}{4}
+\end{aligned}
+$$
+$\therefore \quad$ The rate of change of water level is $-\frac{1}{4} \mathrm{~cm} \mathrm{~s}^{-1}$ .
+1M
+1A
+（3）","$dV/dh=\pi(h+1)^2/4$，而漏水表示 $dV/dt=-\pi\,\mathrm{cm}^3\,\mathrm{s}^{-1}$。由链式法则 $dV/dt=[\pi(h+1)^2/4]dh/dt$。当 $h=3$ 时，$-\pi=4\pi\,dh/dt$，故 $dh/dt=-1/4\,\mathrm{cm}\,\mathrm{s}^{-1}$。负号表示水深下降。",source_provided,corrected_verified,0,变率,"[""相关变化率"",""体积变化""]",2,体积关系及即时数据均已给出，只需一次链式相关变化率并处理漏出负号。,"{""代数负担"":0,""建模强度"":1,""推理链长度"":1,""易错风险"":1,""条件处理"":1,""概念数"":1}",3,Joy 教学难度 Level 3/5,"[""微分的应用"",""微分以及微分公式"",""相关变化率"",""变率"",""水深""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""3"",""error_origin"":""database_mapping"",""evidence"":""甲部答案 MMD 第385–405行；第392、402、403行各1分，第404行为（3）。"",""field"":""marks_total"",""original"":""null（未记录）"",""reason"":""题面未印分值，但出版社答案的分项标记合计3分且末行明确标示（3）。""},{""corrected"":""微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd"",""error_origin"":""database_mapping"",""evidence"":""甲部答案 MMD 第385–405行完整出现本题答案。"",""field"":""solution_source_file/solution_source_member"",""original"":""M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd"",""reason"":""当前成员只含题面，出版社答案实际来自甲部答案 MMD。""},{""corrected"":""bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0"",""error_origin"":""database_mapping"",""evidence"":""直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第385–405行。"",""field"":""solution_source_member_sha256"",""original"":""4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5"",""reason"":""答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。""}]",new,,漏水体积模型及数值与本批其他变率题不同。,单位和负号复核通过；题面起初装满的信息不影响所问瞬时变化率。 Task 4：已按Task 4核验并关闭来源映射、分值或内容待决项。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-08T20:00:00+08:00,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,应试训练 3 Q13（完整题）,2026-08-08T20:00:00+08:00,已按Task 4核验并关闭来源映射、分值或内容待决项。,21
+M2QD-DA-TRAIN-Q14,M2QD-DIFFERENTIATION-APPLICATIONS,TRAIN-Q14,应试训练,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,f4cf8969334c6f4b33eb5ab101101a2b051325c97ad8dc730aefd5f794b0d16f,"questions MMD English lines 976, 978–979; Chinese lines 983, 986–987",微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,"Consider the curve $C: y=4 \ln x$ ,where $x>1$ .Let $O$ be the origin and $P$ be a point lying on $C$ .The vertical line which passes through $P$ cuts the $x$－axis at the point $Q$ .Denote the $x$－coordinate of $Q$ by $u$ .
+(a) Express the area of $\triangle O P Q$ in terms of $u$ .
+(b) If $P$ moves along $C$ such that $P Q$ decreases at a constant rate of 4 units per second, find the rate of change of the area of $\triangle O P Q$ when $u=e$ .","考虑曲线 $C: y=4 \ln x$ ,其中 $x>1$ 。设 $O$ 为原点及 $P$ 为 $C$ 上的一点。通过 $P$ 的垂直线与 $x$ 轴相交于点 $Q$ 。将 $Q$ 的 $x$ 坐标记为 $u$ 。
+(a) 以 $u$ 表 $\triangle O P Q$ 的面积。
+(b) 若 $P$ 沿 $C$ 移动使得 $P Q$ 以每秒4单位的恒速率减少,求当 $u=e$ 时 $\triangle O P Q$ 的面积的变率。","考虑曲线 $C:y=4\ln x$，其中 $x>1$。设 $O$ 为原点，$P$ 为 $C$ 上一点。过 $P$ 的竖直线与 $x$ 轴交于 $Q$，并以 $u$ 表示 $Q$ 的 $x$ 坐标。
+(a) 用 $u$ 表示 $\triangle OPQ$ 的面积。
+(b) 若 $P$ 沿 $C$ 移动，使 $PQ$ 以每秒4单位的恒定速率缩短，求当 $u=e$ 时 $\triangle OPQ$ 面积的变化率。","Consider the curve $C: y=4 \ln x$ ,where $x>1$ .Let $O$ be the origin and $P$ be a point lying on $C$ .The vertical line which passes through $P$ cuts the $x$－axis at the point $Q$ .Denote the $x$－coordinate of $Q$ by $u$ .
+(a) Express the area of $\triangle O P Q$ in terms of $u$ .
+(b) If $P$ moves along $C$ such that $P Q$ decreases at a constant rate of 4 units per second, find the rate of change of the area of $\triangle O P Q$ when $u=e$ .",5,,[],"14.Reference：HKDSE Math M2 2016 Q3
+(a) 
+$$
+\begin{aligned}
+\text { Area } & =\frac{1}{2}(u)(4 \ln u) \text { square units } \\
+& =\underline{\underline{2 u \ln u \text { square units }}}
+\end{aligned}
+$$
+1A
+(b) Let $v$ units be the length of $P Q$ and $A$ square units be the area of $\triangle O P Q$ .
+$$
+\begin{aligned}
+& v=4 \ln u \\
+& \therefore \quad \frac{d v}{d t}=\frac{4}{u} \times \frac{d u}{d t}
+\end{aligned}
+$$
+Note that $\frac{d v}{d t}=-4$ .When $u=e$ ,we have
+$$
+-4=\frac{4}{e} \times\left.\frac{d u}{d t}\right|_{u=e}
+$$
+i.e.
+$$
+\left.\frac{d u}{d t}\right|_{u=e}=-e
+$$
+1A
+$A=2 u \ln u$
+$$
+\begin{aligned}
+\frac{d A}{d t} & =\left(2 u \times \frac{1}{u}+2 \ln u\right) \times \frac{d u}{d t} \\
+& =(2+2 \ln u) \frac{d u}{d t}
+\end{aligned}
+$$
+$\left.\frac{d A}{d t}\right|_{u=e}=(2+2 \ln e)(-e)$
+$$
+=-4 e
+$$
+$\therefore \quad$ The rate of change of the area of $\triangle O P Q$ is $-4 e$ square units per second. 1A","(a) $P=(u,4\ln u)$、$Q=(u,0)$，故面积 $A=\tfrac12(u)(4\ln u)=2u\ln u$ 平方单位。
+(b) 令 $v=PQ=4\ln u$，则 $dv/dt=(4/u)du/dt$。已知 $dv/dt=-4$，所以当 $u=e$ 时 $du/dt=-e$。又 $dA/dt=(2+2\ln u)du/dt$，故在 $u=e$ 时 $dA/dt=-4e$ 平方单位每秒。",source_provided,corrected_verified,0,变率,"[""相关变化率"",""面积变化"",""建立变量关系""]",3,须先建立面积及边长关于 $u$ 的两个关系，再连续转换两次变化率。,"{""代数负担"":1,""建模强度"":1,""推理链长度"":2,""易错风险"":1,""条件处理"":1,""概念数"":1}",4,Joy 教学难度 Level 4/5,"[""微分的应用"",""微分以及微分公式"",""相关变化率"",""变率"",""面积"",""对数函数""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd"",""error_origin"":""database_mapping"",""evidence"":""甲部答案 MMD 第407–448行完整出现本题答案。"",""field"":""solution_source_file/solution_source_member"",""original"":""M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd"",""reason"":""当前成员只含题面，出版社答案实际来自甲部答案 MMD。""},{""corrected"":""bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0"",""error_origin"":""database_mapping"",""evidence"":""直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第407–448行。"",""field"":""solution_source_member_sha256"",""original"":""4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5"",""reason"":""答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。""}]",historical_reference,DSE-2016-Q3,来源明确标注为 HKDSE M2 2016 Q3；不属于本批45题内重复。,5分两小问、几何关系、速率符号及单位均复算无误；题目不依赖附图。 Task 4：已按Task 4核验并关闭来源映射、分值或内容待决项。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-08T20:00:00+08:00,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,应试训练 3 Q14（完整题）,2026-08-08T20:00:00+08:00,已按Task 4核验并关闭来源映射、分值或内容待决项。,22
+M2QD-DA-TRAIN-Q2,M2QD-DIFFERENTIATION-APPLICATIONS,TRAIN-Q2,应试训练,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,ea1dfaf0e30079aad0707bc25f4d8892a4c1ad3ed09d31d2f418d8c8fe8e6fb3,questions MMD English lines 433; Chinese lines 436,微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,"Find the equations of the two tangents to the curve $C: x^{2}+2 x y-y^{2}=1$ which pass through the point $A(0,-1)$ .","求曲线 $C: x^{2}+2 x y-y^{2}=1$ 的两条通过点 $A(0,-1)$ 的切线的方程。","求曲线 $C:x^{2}+2xy-y^{2}=1$ 的两条经过点 $A(0,-1)$ 的切线方程。","Find the equations of the two tangents to the curve $C: x^{2}+2 x y-y^{2}=1$ which pass through the point $A(0,-1)$ .",6,,[],"Reference：HKDSE Math M2 PP Q9
+$x^{2}+2 x y-y^{2}=1$
+Differentiating both sides with respect to $x$ ,
+$$
+\begin{aligned}
+2 x+2 x \frac{d y}{d x}+2 y-2 y \frac{d y}{d x} & =0 \\
+\frac{d y}{d x} & =\frac{x+y}{y-x}
+\end{aligned}
+$$
+1M
+Let $P(a, b)$ be the point of contact.
+$$
+\begin{align*}
+\left.\frac{d y}{d x}\right|_{(a, b)} & =\text { Slope of } P A \\
+\frac{a+b}{b-a} & =\frac{b+1}{a} \\
+a^{2}+a b & =b^{2}-a b+b-a \\
+a^{2}+2 a b-b^{2} & =b-a \tag{()}
+\end{align*}
+$$
+Since $P(a, b)$ is a point on $C$ ,we have
+$$
+\begin{equation*}
+a^{2}+2 a b-b^{2}=1 \tag{2}
+\end{equation*}
+$$
+（1）－（2）：
+$$
+\begin{align*}
+& 0=b-a-1 \\
+& b=a+1 \ldots \ldots . \tag{3}
+\end{align*}
+$$
+1M
+Substituting（3）into（2）,
+$$
+\begin{aligned}
+a^{2}+2 a(a+1)-(a+1)^{2} & =1 \\
+2 a^{2} & =2 \\
+a & =1 \text { or }-1
+\end{aligned}
+$$
+1A
+
+When $a=1, b=1+1=2$ .
+The equation of the tangent is
+$$
+\begin{aligned}
+y-2 & =\frac{2+1}{1}(x-1) \\
+3 x-y-1 & =0
+\end{aligned}
+$$
+
+1A
+When $a=-1, b=-1+1=0$ .
+The equation of the tangent is
+$$
+\begin{aligned}
+y-0 & =\frac{0+1}{-1}[x-(-1)] \\
+x+y+1 & =0
+\end{aligned}
+$$
+
+1A
+（6）","隐式求导得 $dy/dx=(x+y)/(y-x)$。设切点为 $P(a,b)$，则 $P$ 在曲线上，且切线经过 $A$，所以 $(a+b)/(b-a)=(b+1)/a$。结合 $a^2+2ab-b^2=1$ 得 $b=a+1$，继而 $a=1$ 或 $a=-1$。相应切点为 $(1,2)$、$(-1,0)$，两条切线分别为 $3x-y-1=0$ 和 $x+y+1=0$。可能的竖直切线不经过 $A$，故没有遗漏。",source_provided,corrected_verified,0,切线与法线,"[""过指定点的切线"",""切点未知"",""隐函数求导""]",4,须以未知切点建立切线斜率条件并联立隐式曲线方程，还要排查斜率分母情形。,"{""代数负担"":2,""建模强度"":0,""推理链长度"":2,""易错风险"":2,""条件处理"":2,""概念数"":2}",4,Joy 教学难度 Level 4/5,"[""微分的应用"",""微分以及微分公式"",""切线"",""隐函数求导"",""外点切线"",""参数""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd"",""error_origin"":""database_mapping"",""evidence"":""甲部答案 MMD 第31–96行完整出现本题答案。"",""field"":""solution_source_file/solution_source_member"",""original"":""M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd"",""reason"":""当前成员只含题面，出版社答案实际来自甲部答案 MMD。""},{""corrected"":""bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0"",""error_origin"":""database_mapping"",""evidence"":""直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第31–96行。"",""field"":""solution_source_member_sha256"",""original"":""4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5"",""reason"":""答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。""}]",historical_reference,HKDSE-M2-PP-Q9,来源答案明确标注 HKDSE Math M2 Practice Paper Q9；不属于本批45题内重复。,6分总分及两条切线均核对无误；独立检查了被原解斜率等式除去的特殊情形。 Task 4：已按Task 4核验并关闭来源映射、分值或内容待决项。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-08T20:00:00+08:00,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,应试训练 3 Q2（完整题）,2026-08-08T20:00:00+08:00,已按Task 4核验并关闭来源映射、分值或内容待决项。,10
+M2QD-DA-TRAIN-Q3,M2QD-DIFFERENTIATION-APPLICATIONS,TRAIN-Q3,应试训练,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,bf5cdf423c3a5e21bdb9035947118a066d4cca1c06aea09d544ed90d08d053ec,questions MMD English lines 494; Chinese supplied by reviewed translation,微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,Consider the continuous function $f(x)=\frac{x^{2}-1}{x^{2}+3}$ .Find all the extreme point（s）of the graph of $y=f(x)$ .,考虑连续函数 \(f(x)=\frac{x^{2}-1}{x^{2}+3}\)。求图像 \(y=f(x)\) 的所有极值点。,考虑连续函数 $f(x)=\dfrac{x^{2}-1}{x^{2}+3}$。求曲线 $y=f(x)$ 的所有极值点。,Consider the continuous function $f(x)=\frac{x^{2}-1}{x^{2}+3}$ .Find all the extreme point（s）of the graph of $y=f(x)$ .,4,,[],"3.$f(x)=\frac{x^{2}-1}{x^{2}+3}$
+$$
+\begin{aligned}
+f^{\prime}(x) & =\frac{\left(x^{2}+3\right)(2 x)-\left(x^{2}-1\right)(2 x)}{\left(x^{2}+3\right)^{2}} \\
+& =\frac{8 x}{\left(x^{2}+3\right)^{2}}
+\end{aligned}
+$$
+
+1M
+
+1A
+When $f^{\prime}(x)=0, x=0$ .
+
+\begin{tabular}[t]{|l|l|l|l|}
+\hline $x$ & $x<0$ & $x=0$ & $x>0$ \\
+\hline $f^{\prime}(x)$ & － & 0 & ＋ \\
+\hline
+\end{tabular}
+
+1M（for testing）
+$$
+\begin{aligned}
+& f(0)=\frac{0^{2}-1}{0^{2}+3}=-\frac{1}{3} \\
+& \therefore \quad\left(0,-\frac{1}{3}\right) \text { is the minimum point. }
+\end{aligned}
+$$
+
+1A
+（4）","$f'(x)=8x/(x^2+3)^2$。由于分母恒正，$f'(x)<0$（$x<0$），$f'(0)=0$，$f'(x)>0$（$x>0$），故函数在 $x=0$ 处由减转增。又 $f(0)=-1/3$，所以唯一极值点为极小点 $(0,-1/3)$。",source_provided,corrected_verified,0,极值与曲线性质,"[""极小点""]",2,求导、解唯一驻点并作一次符号判别即可完成。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":1,""易错风险"":1,""条件处理"":0,""概念数"":1}",3,Joy 教学难度 Level 3/5,"[""微分的应用"",""微分以及微分公式"",""极值"",""有理函数""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""4"",""error_origin"":""database_mapping"",""evidence"":""甲部答案 MMD 第98–126行；第106、108、117、125行各1分，第126行为（4）。"",""field"":""marks_total"",""original"":""null（未记录）"",""reason"":""题面未印分值，但出版社答案的分项标记合计4分且末行明确标示（4）。""},{""corrected"":""微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd"",""error_origin"":""database_mapping"",""evidence"":""甲部答案 MMD 第98–126行完整出现本题答案。"",""field"":""solution_source_file/solution_source_member"",""original"":""M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd"",""reason"":""当前成员只含题面，出版社答案实际来自甲部答案 MMD。""},{""corrected"":""bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0"",""error_origin"":""database_mapping"",""evidence"":""直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第98–126行。"",""field"":""solution_source_member_sha256"",""original"":""4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5"",""reason"":""答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。""}]",adapted,M2QD-DA-TRAIN-Q7,与Q7使用完全相同的函数及开首句，但本题考极值，Q7考拐点，并非整题重复。,数学答案正确；原题档第494行没有题面分值，4分由出版社答案页可靠恢复。 Task 4：已按Task 4核验并关闭来源映射、分值或内容待决项。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-08T20:00:00+08:00,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,应试训练 3 Q3（完整题）,2026-08-08T20:00:00+08:00,已按Task 4核验并关闭来源映射、分值或内容待决项。,11
+M2QD-DA-TRAIN-Q4,M2QD-DIFFERENTIATION-APPLICATIONS,TRAIN-Q4,应试训练,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,a5eb8dea0f52ef9101ee87549bc6937eacf3b9b776230b870325b0a1552bb100,"questions MMD English lines 511, 513–514; Chinese lines 517, 519–520",微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,"4.Let $f(x)=\frac{\ln x}{x}$ ,where $x>0$ .
+(a) Find the extreme value of $f(x)$ .
+(b) Using the result of（a）,show that $e^{x} \geq x^{e}$ for $x>0$ .","设 $f(x)=\frac{\ln x}{x}$ ,其中 $x>0$ 。
+(a) 求 $f(x)$ 的极值。
+(b) 利用（a）的结果,证明对 $x>0, e^{x} \geq x^{e}$ 。","设 $f(x)=\dfrac{\ln x}{x}$，其中 $x>0$。
+(a) 求 $f(x)$ 的极值。
+(b) 利用(a)的结果，证明对于 $x>0$，$e^x\ge x^e$。","4.Let $f(x)=\frac{\ln x}{x}$ ,where $x>0$ .
+(a) Find the extreme value of $f(x)$ .
+(b) Using the result of（a）,show that $e^{x} \geq x^{e}$ for $x>0$ .",6,,[],"4.
+$$
+\text { (a) } \begin{aligned}
+f^{\prime}(x) & =\frac{(x)\left(\frac{1}{x}\right)-(\ln x)(1)}{x^{2}} \\
+& =\frac{1-\ln x}{x^{2}}
+\end{aligned}
+$$
+
+1M
+When $f^{\prime}(x)=0$ ,
+$$
+\begin{aligned}
+\frac{1-\ln x}{x^{2}} & =0 \\
+\ln x & =1 \\
+x & =e
+\end{aligned}
+$$
+
+1M
+$$
+\begin{array}{|c|c|c|c|}
+\hline x & 0<x<e & x=e & x>e \\
+\hline f^{\prime}(x) & + & 0 & - \\
+\hline
+\end{array}
+$$
+$\therefore \quad$ When $x=e, f(x)$ is maximum.
+1M
+∴ The maximum value of $f(x)=f(e)$
+$$
+\begin{aligned}
+& =\frac{\ln e}{e} \\
+& =\frac{1}{\underline{\underline{e}}}
+\end{aligned}
+$$
+
+1A
+(b) By（a）,$f(e) \geq f(x)$ for $x>0$ .
+$$
+\begin{aligned}
+\therefore \quad \frac{\ln x}{x} & \leq \frac{1}{e} \\
+e \ln x & \leq x \\
+\ln x^{e} & \leq x \\
+e^{x} & \geq x^{e}
+\end{aligned}
+$$
+1M
+1
+（6）","(a) $f'(x)=(1-\ln x)/x^2$。当 $0<x<e$ 时 $f'(x)>0$，当 $x>e$ 时 $f'(x)<0$，故 $x=e$ 时取得最大值 $f(e)=1/e$。
+(b) 对一切 $x>0$，由(a)得 $\ln x/x\le1/e$，即 $e\ln x\le x$。两边取指数得 $x^e\le e^x$；等号在 $x=e$ 时成立。",source_provided,corrected_verified,0,极值与曲线性质,"[""极大点""]",3,先作极值判别，再把最大值不等式转换为指数不等式，推理链跨两个小问。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":2,""易错风险"":1,""条件处理"":1,""概念数"":2}",4,Joy 教学难度 Level 4/5,"[""微分的应用"",""微分以及微分公式"",""极值"",""证明题"",""对数函数""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd"",""error_origin"":""database_mapping"",""evidence"":""甲部答案 MMD 第127–176行完整出现本题答案。"",""field"":""solution_source_file/solution_source_member"",""original"":""M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd"",""reason"":""当前成员只含题面，出版社答案实际来自甲部答案 MMD。""},{""corrected"":""bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0"",""error_origin"":""database_mapping"",""evidence"":""直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第127–176行。"",""field"":""solution_source_member_sha256"",""original"":""4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5"",""reason"":""答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。""}]",new,,未发现本批记录中有相同函数、两小问要求及不等式结论的整题。,6分结构及证明方向均正确，并补明等号条件。 Task 4：已按Task 4核验并关闭来源映射、分值或内容待决项。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-08T20:00:00+08:00,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,应试训练 3 Q4（完整题）,2026-08-08T20:00:00+08:00,已按Task 4核验并关闭来源映射、分值或内容待决项。,12
+M2QD-DA-TRAIN-Q5,M2QD-DIFFERENTIATION-APPLICATIONS,TRAIN-Q5,应试训练,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,235b20bd0917163d5c5721d31482f8ea6e0377df3b4ded16e4983e9afdab76cc,questions MMD English lines 580; Chinese lines 582,微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,Define $f(x)=36 x^{2}+4 x^{3}-3 x^{4}$ .Find the greatest value of $f(x)$ .,定义 $f(x)=36 x^{2}+4 x^{3}-3 x^{4}$ 。求 $f(x)$ 的最大值。,定义 $f(x)=36x^2+4x^3-3x^4$。求 $f(x)$ 的最大值。,Define $f(x)=36 x^{2}+4 x^{3}-3 x^{4}$ .Find the greatest value of $f(x)$ .,4,,[],"(5.) 
+$$
+\begin{aligned}
+f^{\prime}(x) & =0 \\
+-12 x^{3}+12 x^{2}+72 x & =0 \\
+x^{3}-x^{2}-6 x & =0 \\
+x\left(x^{2}-x-6\right) & =0 \\
+x(x-3)(x+2) & =0 \\
+\therefore \quad x=0 \quad \text { or } \quad x & =3 \quad \text { or } \quad x=-2
+\end{aligned}
+$$
+1M
+1M
+
+\begin{tabular}[t]{|l|l|l|l|l|l|l|l|}
+\hline $x$ & $x<-2$ & $x=-2$ & $-2<x<0$ & $x=0$ & $0<x<3$ & $x=3$ & $x>3$ \\
+\hline $f^{\prime}(x)$ & ＋ & 0 & － & 0 & ＋ & 0 & － \\
+\hline $f(x)$ & ↗ & 64 & ↘ & 0 & ↗ & 189 & ↘ \\
+\hline
+\end{tabular}
+1M（for testing）
+$\therefore \quad$ The greatest value of $f(x)$ is 189. 1A
+（4）","$f'(x)=-12x(x-3)(x+2)$，驻点为 $x=-2,0,3$。导数符号依次为 $+,-,+,-$，所以 $x=-2$ 和 $x=3$ 为极大点，且 $f(-2)=64$、$f(3)=189$。由于 $x\to\pm\infty$ 时 $f(x)\to-\infty$，故全局最大值为 $189$。",source_provided,corrected_verified,0,最值与最优化,"[""极大点""]",3,须处理三个驻点、比较两个局部极大值，并确认无穷远行为以判定全局最大值。,"{""代数负担"":2,""建模强度"":0,""推理链长度"":2,""易错风险"":1,""条件处理"":1,""概念数"":1}",3,Joy 教学难度 Level 3/5,"[""微分的应用"",""微分以及微分公式"",""全局极值"",""最大值"",""多项式""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd"",""error_origin"":""database_mapping"",""evidence"":""甲部答案 MMD 第177–199行完整出现本题答案。"",""field"":""solution_source_file/solution_source_member"",""original"":""M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd"",""reason"":""当前成员只含题面，出版社答案实际来自甲部答案 MMD。""},{""corrected"":""bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0"",""error_origin"":""database_mapping"",""evidence"":""直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第177–199行。"",""field"":""solution_source_member_sha256"",""original"":""4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5"",""reason"":""答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。""}]",new,,未发现本批记录中有相同多项式及相同全局最大值要求的整题。,4分答案数值与导数符号表复算一致。 Task 4：已按Task 4核验并关闭来源映射、分值或内容待决项。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-08T20:00:00+08:00,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,应试训练 3 Q5（完整题）,2026-08-08T20:00:00+08:00,已按Task 4核验并关闭来源映射、分值或内容待决项。,13
+M2QD-DA-TRAIN-Q6,M2QD-DIFFERENTIATION-APPLICATIONS,TRAIN-Q6,应试训练,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,5f98293667ca76a7a73af0d14c15eafb53a7dea8893cce41d53dd70070364a9b,questions MMD English lines 603; Chinese lines 603,微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,"Define \(f(x)=2x^{3}-3x^{2}-12x\), where \(x\geq-3\). Find the least value of \(f(x)\).",定义 \(f(x)=2x^{3}-3x^{2}-12x\)，其中 \(x\geq-3\)。求 \(f(x)\) 的最小值。,定义 $f(x)=2x^3-3x^2-12x$，其中 $x\ge-3$。求 $f(x)$ 的最小值。,"Define \(f(x)=2x^{3}-3x^{2}-12x\), where \(x\geq-3\). Find the least value of \(f(x)\).",4,,[],"(6.) 
+$$
+\begin{aligned}
+f^{\prime}(x) & =0 \\
+6 x^{2}-6 x-12 & =0 \\
+x^{2}-x-2 & =0 \\
+(x-2)(x+1) & =0 \\
+x=2 \text { or } x=-1 &
+\end{aligned}
+$$
+1M
+1M
+
+\begin{tabular}[t]{|l|l|l|l|l|l|}
+\hline $x$ & $-3 \leq x<-1$ & $x=-1$ & $-1<x<2$ & $x=2$ & $x>2$ \\
+\hline $f^{\prime}(x)$ & ＋ & 0 & － & 0 & ＋ \\
+\hline
+\end{tabular}
+1 M （for testing）
+$$
+\begin{aligned}
+& f(2)=2(2)^{3}-3(2)^{2}-12(2)=-20 \\
+& f(-3)=2(-3)^{3}-3(-3)^{2}-12(-3)=-45 \\
+& \therefore \quad \text { The least value of } f(x) \text { is }-45
+\end{aligned}
+$$
+1A
+（4）","$f'(x)=6(x-2)(x+1)$，驻点为 $x=-1,2$。在定义域 $[-3,\infty)$ 上，$f$ 先增、后减、再增；候选最小值为端点 $f(-3)=-45$ 与局部极小值 $f(2)=-20$。比较得全局最小值为 $-45$。",source_provided,corrected_verified,0,最值与最优化,"[""极小点"",""区间最值"",""端点比较""]",3,除驻点判别外，还必须处理半闭定义域的端点并比较候选值。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":2,""易错风险"":1,""条件处理"":2,""概念数"":1}",4,Joy 教学难度 Level 4/5,"[""微分的应用"",""微分以及微分公式"",""全局极值"",""最小值"",""端点检验"",""多项式""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd"",""error_origin"":""database_mapping"",""evidence"":""甲部答案 MMD 第200–227行完整出现本题答案。"",""field"":""solution_source_file/solution_source_member"",""original"":""M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd"",""reason"":""当前成员只含题面，出版社答案实际来自甲部答案 MMD。""},{""corrected"":""bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0"",""error_origin"":""database_mapping"",""evidence"":""直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第200–227行。"",""field"":""solution_source_member_sha256"",""original"":""4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5"",""reason"":""答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。""}]",new,,未发现本批记录中有相同多项式、同一定义域端点及最小值要求的整题。,4分题面及端点比较无误；来源答案虽未计算局部极大值，仍不影响最小值结论。 Task 4：已按Task 4核验并关闭来源映射、分值或内容待决项。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-08T20:00:00+08:00,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,应试训练 3 Q6（完整题）,2026-08-08T20:00:00+08:00,已按Task 4核验并关闭来源映射、分值或内容待决项。,14
+M2QD-DA-TRAIN-Q7,M2QD-DIFFERENTIATION-APPLICATIONS,TRAIN-Q7,应试训练,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,bfeebfb622277a8564a36b0f455997c381e11ecda94ea4422187bffd11814242,questions MMD English lines 675; Chinese lines 677,微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,Consider the continuous function $f(x)=\frac{x^{2}-1}{x^{2}+3}$ .Find all the point（s）of inflexion of the graph of $y=f(x)$ .,考虑连续函数 $f(x)=\frac{x^{2}-1}{x^{2}+3}$ 。求 $y=f(x)$ 的图像的所有拐点。,考虑连续函数 $f(x)=\dfrac{x^2-1}{x^2+3}$。求曲线 $y=f(x)$ 的所有拐点。,Consider the continuous function $f(x)=\frac{x^{2}-1}{x^{2}+3}$ .Find all the point（s）of inflexion of the graph of $y=f(x)$ .,6,,[],"$f(x)=\frac{x^{2}-1}{x^{2}+3}$
+$$
+\begin{align*}
+f^{\prime}(x) & =\frac{\left(x^{2}+3\right)(2 x)-\left(x^{2}-1\right)(2 x)}{\left(x^{2}+3\right)^{2}}  \tag{1 M}\\
+& =\frac{8 x}{\left(x^{2}+3\right)^{2}} \\
+f^{\prime \prime}(x) & =\frac{\left(x^{2}+3\right)^{2}(8)-8 x \times 2\left(x^{2}+3\right)(2 x)}{\left(x^{2}+3\right)^{4}} \\
+& =\frac{8\left(x^{2}+3\right)\left[\left(x^{2}+3\right)-4 x^{2}\right]}{\left(x^{2}+3\right)^{4}} \\
+& =-\frac{24(x-1)(x+1)}{\left(x^{2}+3\right)^{3}}
+\end{align*}
+$$
+1A
+1A
+
+When $f^{\prime \prime}(x)=0, x=-1$ or 1 . 1M
+
+\begin{tabular}[t]{|l|l|l|l|l|l|}
+\hline $x$ & $x<-1$ & $x=-1$ & $-1<x<1$ & $x=1$ & $x>1$ \\
+\hline $f^{\prime \prime}(x)$ & － & 0 & ＋ & 0 & － \\
+\hline
+\end{tabular}
+
+1M（for testing）
+$$
+\begin{aligned}
+& f(-1)=\frac{(-1)^{2}-1}{(-1)^{2}+3}=0 \\
+& f(1)=\frac{1^{2}-1}{1^{2}+3}=0
+\end{aligned}
+$$
+1A
+（6）","$f'(x)=8x/(x^2+3)^2$，$f''(x)=-24(x-1)(x+1)/(x^2+3)^3$。因此 $f''(x)=0$ 给出 $x=-1,1$；其符号在 $x=-1$ 处由负变正，在 $x=1$ 处由正变负，凹凸性均发生改变。又 $f(-1)=f(1)=0$，故全部拐点为 $(-1,0)$ 与 $(1,0)$。",source_provided,corrected_verified,0,极值与曲线性质,"[""拐点"",""凹凸性""]",3,须连续求两阶导数、因式分解，并验证二阶导数在两个候选点均变号。,"{""代数负担"":2,""建模强度"":0,""推理链长度"":2,""易错风险"":1,""条件处理"":0,""概念数"":1}",3,Joy 教学难度 Level 3/5,"[""微分的应用"",""微分以及微分公式"",""二阶导数"",""拐点"",""有理函数""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""6"",""error_origin"":""database_mapping"",""evidence"":""甲部答案 MMD 第228–258行；各评分标记合计6分，第258行为（6）。"",""field"":""marks_total"",""original"":""null（未记录）"",""reason"":""题面未印分值，但出版社答案的分项标记合计6分且末行明确标示（6）。""},{""corrected"":""全部拐点为 $(-1,0)$ 与 $(1,0)$。"",""error_origin"":""source_original"",""evidence"":""甲部答案 MMD 第251–258行在两个函数值后直接进入评分及下一题；独立复算 $f''$ 在 $x=\\pm1$ 两处均变号。"",""field"":""solution_original"",""original"":""答案在算得 $f(-1)=f(1)=0$ 后结束，没有写出所求拐点结论。"",""reason"":""题目要求点的坐标；只列函数值而不把横、纵坐标组成最终答案不完整。""},{""corrected"":""微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd"",""error_origin"":""database_mapping"",""evidence"":""甲部答案 MMD 第228–258行完整出现本题答案。"",""field"":""solution_source_file/solution_source_member"",""original"":""M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd"",""reason"":""当前成员只含题面，出版社答案实际来自甲部答案 MMD。""},{""corrected"":""bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0"",""error_origin"":""database_mapping"",""evidence"":""直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第228–258行。"",""field"":""solution_source_member_sha256"",""original"":""4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5"",""reason"":""答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。""}]",adapted,M2QD-DA-TRAIN-Q3,与Q3使用完全相同的函数及开首句，但本题考拐点，Q3考极值，并非整题重复。,来源推导和坐标计算正确，但答案文本漏写最终的两个拐点。 Task 4：已按Task 4核验并关闭来源映射、分值或内容待决项。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-08T20:00:00+08:00,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,应试训练 3 Q7（完整题）,2026-08-08T20:00:00+08:00,已按Task 4核验并关闭来源映射、分值或内容待决项。,15
+M2QD-DA-TRAIN-Q8,M2QD-DIFFERENTIATION-APPLICATIONS,TRAIN-Q8,应试训练,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,6c4e308a22b834b7d2f941233260bec1335df586109233a2567ba54a8f1e049e,"questions MMD English lines 689, 691–692; Chinese lines 694–696",微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,"8.Let $y=\left(7 x+x^{2}\right) e^{-x}$ .
+(a) Find $\frac{d y}{d x}$ and $\frac{d^{2} y}{d x^{2}}$ .
+(b) Someone claims that there are two points of inflexion of the graph of $y=\left(7 x+x^{2}\right) e^{-x}$ . Do you agree？Explain your answer.","设 $y=\left(7 x+x^{2}\right) e^{-x}$ 。
+(a) 求 $\frac{d y}{d x}$ 及 $\frac{d^{2} y}{d x^{2}}$ 。
+(b) 某人宣称 $y=\left(7 x+x^{2}\right) e^{-x}$ 的图像有两拐点。你是否同意？解释你的答案。","设 $y=(7x+x^2)e^{-x}$。
+(a) 求 $dy/dx$ 及 $d^2y/dx^2$。
+(b) 某人声称曲线 $y=(7x+x^2)e^{-x}$ 有两个拐点。你是否同意？解释你的答案。","8.Let $y=\left(7 x+x^{2}\right) e^{-x}$ .
+(a) Find $\frac{d y}{d x}$ and $\frac{d^{2} y}{d x^{2}}$ .
+(b) Someone claims that there are two points of inflexion of the graph of $y=\left(7 x+x^{2}\right) e^{-x}$ . Do you agree？Explain your answer.",6,,[],"8.
+(a) 
+$$
+\begin{aligned}
+\frac{d y}{d x} & =(7+2 x) e^{-x}+\left(7 x+x^{2}\right)\left(e^{-x}\right)(-1) \\
+& =\underline{\left(-x^{2}-5 x+7\right) e^{-x}}
+\end{aligned}
+$$
+1M 1A
+$$
+\begin{aligned}
+\frac{d^{2} y}{d x^{2}} & =(-2 x-5) e^{-x}+\left(-x^{2}-5 x+7\right)\left(e^{-x}\right)(-1) \\
+& =\underline{\underline{\left(x^{2}+3 x-12\right) e^{-x}}}
+\end{aligned}
+$$
+1A
+(b) 
+$$
+\begin{aligned}
+\frac{d^{2} y}{d x^{2}} & =0 \\
+\left(x^{2}+3 x-12\right) e^{-x} & =0 \\
+x^{2}+3 x-12 & =0 \\
+\therefore \quad x=\frac{-3+\sqrt{57}}{2} & \text { or } x=\frac{-3-\sqrt{57}}{2}
+\end{aligned}
+$$
+1M
+
+\begin{tabular}[t]{|l|l|l|l|l|l|}
+\hline $x$ & $\left(-\infty, \frac{-3-\sqrt{57}}{2}\right)$ & $\frac{-3-\sqrt{57}}{2}$ & $\left(\frac{-3-\sqrt{57}}{2}, \frac{-3+\sqrt{57}}{2}\right)$ & $\frac{-3+\sqrt{57}}{2}$ & $\left(\frac{-3+\sqrt{57}}{2}, \infty\right)$ \\
+\hline $\frac{d^{2} y}{d x^{2}}$ & ＋ & 0 & － & 0 & ＋ \\
+\hline
+\end{tabular}
+
+1M（for testing）
+Therefore,there are two points of inflexion of the graph.
+Thus,the claim is agreed. 1A f.t.
+（6）","(a) $dy/dx=(-x^2-5x+7)e^{-x}$，$d^2y/dx^2=(x^2+3x-12)e^{-x}$。
+(b) 因 $e^{-x}>0$，二阶导数的零点为 $\alpha=(-3-\sqrt{57})/2$、$\beta=(-3+\sqrt{57})/2$，且其符号在两点外为正、两点之间为负，故两处均为拐点。因此同意该声称；两点可写成 $(\alpha,(7\alpha+\alpha^2)e^{-\alpha})$ 与 $(\beta,(7\beta+\beta^2)e^{-\beta})$。",source_provided,corrected_verified,0,极值与曲线性质,"[""拐点"",""凹凸性""]",3,须两次使用乘积及链式法则，再解二次方程并用变号判定两处拐点。,"{""代数负担"":2,""建模强度"":0,""推理链长度"":2,""易错风险"":1,""条件处理"":1,""概念数"":1}",4,Joy 教学难度 Level 4/5,"[""微分的应用"",""微分以及微分公式"",""二阶导数"",""拐点"",""证明题"",""指数函数""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""求得两个根的步骤只保留一个1M，使(a)3分、(b)3分，总分为6分。"",""error_origin"":""source_original"",""evidence"":""甲部答案 MMD 第259–298行；v116_import_snapshot.json 的 train-q08-duplicate-mark-token 亦记录同一出版社评分标记校订。"",""field"":""solution_original"",""original"":""甲部答案 MMD 第285–286行在求得两个根后连续出现两个1M。"",""reason"":""保留两个相邻1M会令可见评分标记合计7分，与题面及答案总分6冲突。""},{""corrected"":""微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd"",""error_origin"":""database_mapping"",""evidence"":""甲部答案 MMD 第259–298行完整出现本题答案。"",""field"":""solution_source_file/solution_source_member"",""original"":""M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd"",""reason"":""当前成员只含题面，出版社答案实际来自甲部答案 MMD。""},{""corrected"":""bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0"",""error_origin"":""database_mapping"",""evidence"":""直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第259–298行。"",""field"":""solution_source_member_sha256"",""original"":""4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5"",""reason"":""答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。""}]",adapted,DSE-2022-Q4,与2022-Q4同属“二阶导数—拐点声称”结构，但函数系数及结论数据不同。,数学答案无误；输入的solution_original已删除重复1M，但原记录没有保留该校订证据，本审计已补记。 Task 4：已按Task 4核验并关闭来源映射、分值或内容待决项。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-08T20:00:00+08:00,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,应试训练 3 Q8（完整题）,2026-08-08T20:00:00+08:00,已按Task 4核验并关闭来源映射、分值或内容待决项。,16
+M2QD-DA-TRAIN-Q9,M2QD-DIFFERENTIATION-APPLICATIONS,TRAIN-Q9,应试训练,M2Quick Drill-微分法的应用.mmd.zip,ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd,c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749,4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5,27ca3e6a5ed002ea6fc6169ec639a52f15c8b45b742c538027e73bfa2ad17ac3,questions MMD English lines 759; Chinese lines 761,微分的应用甲部.mmd.zip,c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd,bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0,Define $f(x)=\frac{4 x^{2}-5 x+1}{x+4}$ for all real numbers $x \neq-4$ .Find all the asymptotes of the graph of $y=f(x)$ .,"对所有实数 $x \neq-4$ ,定义 $f(x)=\frac{4 x^{2}-5 x+1}{x+4}$ 。求 $y=f(x)$ 的图像的所有渐近线。",对所有实数 $x\ne-4$，定义 $f(x)=\dfrac{4x^2-5x+1}{x+4}$。求曲线 $y=f(x)$ 的所有渐近线。,Define $f(x)=\frac{4 x^{2}-5 x+1}{x+4}$ for all real numbers $x \neq-4$ .Find all the asymptotes of the graph of $y=f(x)$ .,3,,[],"9.The equation of the vertical asymptote is $x=-4$ . 1A
+$$
+\begin{aligned}
+f(x) & =\frac{4 x^{2}-5 x+1}{x+4} \\
+& =\frac{4\left(x^{2}+4 x\right)-21 x+1}{x+4} \\
+& =\frac{4 x(x+4)-21(x+4)+1+84}{x+4} \\
+& =4 x-21+\frac{85}{x+4}
+\end{aligned}
+$$
+1M
+Thus,the equation of the oblique asymptote is $y=4 x-21$ . 1A
+（3）",因分母在 $x=-4$ 为零而分子值为85，故垂直渐近线为 $x=-4$。多项式除法得 $f(x)=4x-21+85/(x+4)$，余项在 $x\to\pm\infty$ 时趋于0，故斜渐近线为 $y=4x-21$。,source_provided,corrected_verified,0,极值与曲线性质,"[""渐近线""]",2,检查分母零点并作一次多项式除法即可得到两条渐近线。,"{""代数负担"":1,""建模强度"":0,""推理链长度"":1,""易错风险"":0,""条件处理"":1,""概念数"":1}",2,Joy 教学难度 Level 2/5,"[""微分的应用"",""微分以及微分公式"",""渐近线"",""有理函数""]",checked_pass,checked_pass,not_required,corrected_verified,corrected_verified,"[{""corrected"":""微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd"",""error_origin"":""database_mapping"",""evidence"":""甲部答案 MMD 第300–311行完整出现本题答案。"",""field"":""solution_source_file/solution_source_member"",""original"":""M2Quick Drill-微分法的应用.mmd.zip / ab3a3800-3b11-4cb8-af40-46ce05caf9f6.mmd"",""reason"":""当前成员只含题面，出版社答案实际来自甲部答案 MMD。""},{""corrected"":""bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0"",""error_origin"":""database_mapping"",""evidence"":""直接解压计算甲部答案成员SHA-256，结果为bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0；本题答案见第300–311行。"",""field"":""solution_source_member_sha256"",""original"":""4b963982fc5f5b0c4efc94ab64c76b6421c8f0389e7025f110783799b2c1fac5"",""reason"":""答案来源成员改为甲部答案MMD后，成员哈希必须同步改为该成员的SHA-256，才能保持来源追溯一致。""}]",new,,未发现本批记录中有相同有理函数及同组渐近线的整题。,3分题答、余数85及两条渐近线均复算无误。 Task 4：已按Task 4核验并关闭来源映射、分值或内容待决项。,"{""answer_mathematics"":""pass"",""answer_pairing"":""pass"",""chinese_text"":""pass"",""english_text"":""pass"",""formula_symbols_units"":""pass"",""necessary_images"":""not_required"",""question_boundary"":""pass"",""subparts_and_marks"":""pass""}",[],published,approved_by_joy,2026-08-08T20:00:00+08:00,2026-08-08T20:00:00+08:00,complete-question-v1.0,1,应试训练 3 Q9（完整题）,2026-08-08T20:00:00+08:00,已按Task 4核验并关闭来源映射、分值或内容待决项。,17

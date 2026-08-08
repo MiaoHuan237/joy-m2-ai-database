@@ -1,0 +1,22 @@
+{
+  "approved_at": "2026-08-08T20:00:00+08:00",
+  "approved_by": "Joy",
+  "approved_question_count": 45,
+  "artifact_sha256": {
+    "Joy_M2_Complete_Question_DB_V1_17.sqlite3": "58f32e547c4ff0cdd2ae25a9368ea288cbaa70af52869b779d698233aee93fab",
+    "Joy_M2_Complete_Questions_V1_17.csv": "308728abb9936cd0feb84ac7e30922833b60565a2942656311aa9e23aed1e2ba",
+    "Joy_M2_V1.17_正式入库报告.md": "cbe8ba91ea9dcca7501408a4bbf480a6c04ba845acf7c94a7d46766e3fddcb31",
+    "Joy_M2_微分应用45题_知识文档_V1.17.md": "b98cd00688cb5cfaf8b89a10f10e5cbdead085a1914e0c874ba6d9004a1a3ee2",
+    "PROJECT_STATE.md": "9294622f3c436b8ebfe791f6ccc6f3415b658856896db0eaa14f17577bb805ba",
+    "complete_questions_45_approved_v1_17.json": "f8d4ab5db3275308c570ad44c09f5c784267f26c38552193725c683f5fc0edbc",
+    "differentiation_application_taxonomy_v1_1.json": "6010077380a772bbf856b9b2ee4ccf970308113005079a06da8486ac0b2c7926"
+  },
+  "baseline_v116_sqlite_sha256": "d647244f54e9e54b25ec4885f16c47171c7521552876a5fa925a16d65d8c7714",
+  "baseline_v116_zip_sha256": "5f73f541f5c2da5bf3e5540daf7dbfb40566a339eaee79ef3e25d8eabd0404ae",
+  "release_model": "transitional-dual-layer",
+  "release_status": "formal",
+  "release_version": "V1.17",
+  "remaining_unmigrated_complete_questions": 452,
+  "schema_version": "complete-question-v1.0",
+  "task4_candidate_sha256": "5145b3da050d510cf6cf052a66cddf20ce2939ae3879618d3341f8399f48b97d"
+}

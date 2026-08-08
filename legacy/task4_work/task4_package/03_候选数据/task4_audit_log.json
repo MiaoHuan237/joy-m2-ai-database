@@ -1,0 +1,354 @@
+[
+  {
+    "question_id": "M2QD-DA-EXAMPLE-Q3",
+    "source_section": "教材例题",
+    "changed_fields": [
+      "tags",
+      "unresolved_issues",
+      "record_status"
+    ],
+    "resolution": "词表V1.1加入全局最小值；题目要求在定义域内找全局最小值。",
+    "before_status": "audit_pending",
+    "after_status": "audit_passed",
+    "formal_import_approved": false
+  },
+  {
+    "question_id": "M2QD-DA-EXAMPLE-Q6",
+    "source_section": "教材例题",
+    "changed_fields": [
+      "review_checks",
+      "record_status",
+      "correction_status",
+      "question_review_status",
+      "formula_review_status"
+    ],
+    "resolution": "英文公式定界与变率上界已按校订记录确认。",
+    "before_status": "audit_pending",
+    "after_status": "audit_passed",
+    "formal_import_approved": false
+  },
+  {
+    "question_id": "M2QD-DA-EXAMPLE-Q8",
+    "source_section": "教材例题",
+    "changed_fields": [
+      "review_checks",
+      "unresolved_issues",
+      "record_status",
+      "correction_status",
+      "question_review_status"
+    ],
+    "resolution": "采用严谨表述：图像不高于切线，且除切点外严格低于。",
+    "before_status": "audit_pending",
+    "after_status": "audit_passed",
+    "formal_import_approved": false
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q1",
+    "source_section": "应试训练",
+    "changed_fields": [
+      "solution_source_file",
+      "solution_source_member",
+      "solution_source_member_sha256",
+      "unresolved_issues",
+      "record_status",
+      "correction_status",
+      "answer_verification_status",
+      "answer_review_status"
+    ],
+    "resolution": "已按Task 4核验并关闭来源映射、分值或内容待决项。",
+    "before_status": "audit_pending",
+    "after_status": "audit_passed",
+    "formal_import_approved": false
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q2",
+    "source_section": "应试训练",
+    "changed_fields": [
+      "solution_source_file",
+      "solution_source_member",
+      "solution_source_member_sha256",
+      "unresolved_issues",
+      "record_status",
+      "correction_status",
+      "answer_verification_status",
+      "answer_review_status"
+    ],
+    "resolution": "已按Task 4核验并关闭来源映射、分值或内容待决项。",
+    "before_status": "audit_pending",
+    "after_status": "audit_passed",
+    "formal_import_approved": false
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q3",
+    "source_section": "应试训练",
+    "changed_fields": [
+      "solution_source_file",
+      "solution_source_member",
+      "solution_source_member_sha256",
+      "marks_total",
+      "review_checks",
+      "unresolved_issues",
+      "record_status",
+      "correction_status",
+      "answer_verification_status",
+      "answer_review_status",
+      "question_review_status"
+    ],
+    "resolution": "已按Task 4核验并关闭来源映射、分值或内容待决项。",
+    "before_status": "audit_pending",
+    "after_status": "audit_passed",
+    "formal_import_approved": false
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q4",
+    "source_section": "应试训练",
+    "changed_fields": [
+      "solution_source_file",
+      "solution_source_member",
+      "solution_source_member_sha256",
+      "unresolved_issues",
+      "record_status",
+      "correction_status",
+      "answer_verification_status",
+      "answer_review_status"
+    ],
+    "resolution": "已按Task 4核验并关闭来源映射、分值或内容待决项。",
+    "before_status": "audit_pending",
+    "after_status": "audit_passed",
+    "formal_import_approved": false
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q5",
+    "source_section": "应试训练",
+    "changed_fields": [
+      "solution_source_file",
+      "solution_source_member",
+      "solution_source_member_sha256",
+      "unresolved_issues",
+      "record_status",
+      "correction_status",
+      "answer_verification_status",
+      "answer_review_status"
+    ],
+    "resolution": "已按Task 4核验并关闭来源映射、分值或内容待决项。",
+    "before_status": "audit_pending",
+    "after_status": "audit_passed",
+    "formal_import_approved": false
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q6",
+    "source_section": "应试训练",
+    "changed_fields": [
+      "solution_source_file",
+      "solution_source_member",
+      "solution_source_member_sha256",
+      "unresolved_issues",
+      "record_status",
+      "correction_status",
+      "answer_verification_status",
+      "answer_review_status"
+    ],
+    "resolution": "已按Task 4核验并关闭来源映射、分值或内容待决项。",
+    "before_status": "audit_pending",
+    "after_status": "audit_passed",
+    "formal_import_approved": false
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q7",
+    "source_section": "应试训练",
+    "changed_fields": [
+      "solution_source_file",
+      "solution_source_member",
+      "solution_source_member_sha256",
+      "marks_total",
+      "review_checks",
+      "unresolved_issues",
+      "record_status",
+      "correction_status",
+      "question_review_status"
+    ],
+    "resolution": "已按Task 4核验并关闭来源映射、分值或内容待决项。",
+    "before_status": "audit_pending",
+    "after_status": "audit_passed",
+    "formal_import_approved": false
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q8",
+    "source_section": "应试训练",
+    "changed_fields": [
+      "solution_source_file",
+      "solution_source_member",
+      "solution_source_member_sha256",
+      "unresolved_issues",
+      "record_status",
+      "correction_status"
+    ],
+    "resolution": "已按Task 4核验并关闭来源映射、分值或内容待决项。",
+    "before_status": "audit_pending",
+    "after_status": "audit_passed",
+    "formal_import_approved": false
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q9",
+    "source_section": "应试训练",
+    "changed_fields": [
+      "solution_source_file",
+      "solution_source_member",
+      "solution_source_member_sha256",
+      "unresolved_issues",
+      "record_status",
+      "correction_status",
+      "answer_verification_status",
+      "answer_review_status"
+    ],
+    "resolution": "已按Task 4核验并关闭来源映射、分值或内容待决项。",
+    "before_status": "audit_pending",
+    "after_status": "audit_passed",
+    "formal_import_approved": false
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q10",
+    "source_section": "应试训练",
+    "changed_fields": [
+      "solution_source_file",
+      "solution_source_member",
+      "solution_source_member_sha256",
+      "unresolved_issues",
+      "record_status",
+      "correction_status",
+      "answer_verification_status",
+      "answer_review_status"
+    ],
+    "resolution": "已按Task 4核验并关闭来源映射、分值或内容待决项。",
+    "before_status": "audit_pending",
+    "after_status": "audit_passed",
+    "formal_import_approved": false
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q11",
+    "source_section": "应试训练",
+    "changed_fields": [
+      "solution_source_file",
+      "solution_source_member",
+      "solution_source_member_sha256",
+      "unresolved_issues",
+      "record_status",
+      "correction_status",
+      "answer_verification_status",
+      "answer_review_status"
+    ],
+    "resolution": "已按Task 4核验并关闭来源映射、分值或内容待决项。",
+    "before_status": "audit_pending",
+    "after_status": "audit_passed",
+    "formal_import_approved": false
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q12",
+    "source_section": "应试训练",
+    "changed_fields": [
+      "solution_source_file",
+      "solution_source_member",
+      "solution_source_member_sha256",
+      "unresolved_issues",
+      "record_status",
+      "correction_status",
+      "answer_verification_status",
+      "answer_review_status"
+    ],
+    "resolution": "已按Task 4核验并关闭来源映射、分值或内容待决项。",
+    "before_status": "audit_pending",
+    "after_status": "audit_passed",
+    "formal_import_approved": false
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q13",
+    "source_section": "应试训练",
+    "changed_fields": [
+      "solution_source_file",
+      "solution_source_member",
+      "solution_source_member_sha256",
+      "marks_total",
+      "review_checks",
+      "unresolved_issues",
+      "record_status",
+      "correction_status",
+      "answer_verification_status",
+      "answer_review_status",
+      "question_review_status"
+    ],
+    "resolution": "已按Task 4核验并关闭来源映射、分值或内容待决项。",
+    "before_status": "audit_pending",
+    "after_status": "audit_passed",
+    "formal_import_approved": false
+  },
+  {
+    "question_id": "M2QD-DA-TRAIN-Q14",
+    "source_section": "应试训练",
+    "changed_fields": [
+      "solution_source_file",
+      "solution_source_member",
+      "solution_source_member_sha256",
+      "unresolved_issues",
+      "record_status",
+      "correction_status",
+      "answer_verification_status",
+      "answer_review_status"
+    ],
+    "resolution": "已按Task 4核验并关闭来源映射、分值或内容待决项。",
+    "before_status": "audit_pending",
+    "after_status": "audit_passed",
+    "formal_import_approved": false
+  },
+  {
+    "question_id": "M2QD-DA-PARTA-Q6",
+    "source_section": "甲部特训",
+    "changed_fields": [
+      "review_checks",
+      "record_status"
+    ],
+    "resolution": "补全最大值e^3及其取得点x=-1。",
+    "before_status": "audit_pending",
+    "after_status": "audit_passed",
+    "formal_import_approved": false
+  },
+  {
+    "question_id": "M2QD-DA-PARTA-Q13",
+    "source_section": "甲部特训",
+    "changed_fields": [
+      "tags",
+      "review_checks",
+      "unresolved_issues",
+      "record_status"
+    ],
+    "resolution": "补全基本原理差商推导，并加入两项精确标签。",
+    "before_status": "audit_pending",
+    "after_status": "audit_passed",
+    "formal_import_approved": false
+  },
+  {
+    "question_id": "M2QD-DA-PARTA-Q16",
+    "source_section": "甲部特训",
+    "changed_fields": [
+      "review_checks",
+      "record_status",
+      "question_review_status",
+      "formula_review_status"
+    ],
+    "resolution": "确认(b)应求f'(x)，并补全拐点(-5,0)。",
+    "before_status": "audit_pending",
+    "after_status": "audit_passed",
+    "formal_import_approved": false
+  },
+  {
+    "question_id": "M2QD-DA-PARTB-Q3",
+    "source_section": "乙部特训",
+    "changed_fields": [
+      "review_checks",
+      "record_status"
+    ],
+    "resolution": "采用正确函数标签并保留正确渐近线、极值点及草图信息。",
+    "before_status": "audit_pending",
+    "after_status": "audit_passed",
+    "formal_import_approved": false
+  }
+]

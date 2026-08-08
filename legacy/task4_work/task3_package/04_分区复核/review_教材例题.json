@@ -1,0 +1,408 @@
+[
+  {
+    "question_id": "M2QD-DA-EXAMPLE-Q1",
+    "source_section": "教材例题",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "pass",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "pass",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "考虑曲线 $C:y=26-\\frac{108}{x}$，其中 $0<x<20$。\n(a) 求 $\\frac{dy}{dx}$。\n(b) 若曲线 $C$ 的一条切线 $L$ 通过点 $(10,20)$，求 $L$ 的方程。（共 7 分）",
+    "solution_verified": "(a) $y=26-108x^{-1}$，故 $\\frac{dy}{dx}=108x^{-2}=\\frac{108}{x^2}$。\n(b) 设切点为 $\\left(h,26-\\frac{108}{h}\\right)$。切线斜率同时为 $\\frac{108}{h^2}$ 及 $\\frac{(26-108/h)-20}{h-10}$，所以\n$$\\frac{108}{h^2}=\\frac{6-108/h}{h-10}\\Longrightarrow h^2-36h+180=0.$$\n因此 $h=6$ 或 $30$；由 $0<h<20$，舍去 $h=30$。当 $h=6$ 时斜率为 $3$，而切线通过 $(10,20)$，故\n$$y-20=3(x-10),\\qquad L:3x-y-10=0.$$",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "corrected_verified",
+    "primary_type": "切线与法线",
+    "tags": [
+      "过指定点的切线",
+      "切点未知"
+    ],
+    "difficulty_level": 3,
+    "difficulty_dimensions": {
+      "概念数": 2,
+      "推理链长度": 2,
+      "建模强度": 0,
+      "代数负担": 1,
+      "条件处理": 1,
+      "易错风险": 1
+    },
+    "difficulty_evidence": "需设未知切点、联立导数斜率与外点斜率并按定义域舍根，是标准的过指定点求切线多步骤题，定为 Level 3。",
+    "correction_status": "corrected_verified",
+    "corrections": [
+      {
+        "field": "solution_original",
+        "error_origin": "mathpix_conversion",
+        "original": "$\\frac{108}{h^{2}}=\\frac{26-\\frac{108}{h}}{h-1}$",
+        "corrected": "$\\frac{108}{h^{2}}=\\frac{(26-\\frac{108}{h})-20}{h-10}$",
+        "reason": "原式既没有减去外点的纵坐标 20，又把横坐标差误成 $h-1$；与下一行及后续推导不一致。当前抽取答案已采用正确式，审计在此补齐校订轨迹。",
+        "evidence": "frozen_sources/M2Quick Drill-微分法的应用.mmd.zip 内 ab3a...mmd 第 359–380 行；extracted_reference/v116_import_snapshot.json 的 correction_id=ex-3.1-tangent-slope；独立联立后得 $h=6,30$。"
+      }
+    ],
+    "duplicate_status": "new",
+    "duplicate_reference": "",
+    "duplicate_evidence": "函数、外点、定义域及所求切线与 V1.15 比对总体中的题目均不同，未发现重复。",
+    "unresolved_issues": [],
+    "audit_notes": "原始 MMD 的嵌入图片仅为“题解”页眉，不承载题目条件；总分 7 分与来源第 336 行一致。",
+    "record_status": "audit_passed"
+  },
+  {
+    "question_id": "M2QD-DA-EXAMPLE-Q2",
+    "source_section": "教材例题",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "pass",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "unknown",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "求曲线 $y=\\frac{x^2+3x+3}{x+2}$（$x\\ne-2$）的极大点。",
+    "solution_verified": "设 $f(x)=\\frac{x^2+3x+3}{x+2}$，则\n$$f'(x)=\\frac{x^2+4x+3}{(x+2)^2}=\\frac{(x+1)(x+3)}{(x+2)^2}.$$\n驻点的横坐标为 $x=-3,-1$。当 $x$ 递增经过 $-3$ 时，$f'(x)$ 由正变负，故 $x=-3$ 对应极大点；$f(-3)=-3$。所以极大点为 $(-3,-3)$。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "checked_pass",
+    "primary_type": "极值与曲线性质",
+    "tags": [
+      "极大点"
+    ],
+    "difficulty_level": 3,
+    "difficulty_dimensions": {
+      "概念数": 1,
+      "推理链长度": 2,
+      "建模强度": 0,
+      "代数负担": 1,
+      "条件处理": 1,
+      "易错风险": 1
+    },
+    "difficulty_evidence": "需对有理函数求导、处理 $x=-2$ 的断点并自行选择判别方法筛出极大点，属标准多步骤 Level 3。",
+    "correction_status": "none",
+    "corrections": [],
+    "duplicate_status": "new",
+    "duplicate_reference": "",
+    "duplicate_evidence": "函数及所求极大点与 V1.15 比对总体中的题目不同，未发现重复。",
+    "unresolved_issues": [],
+    "audit_notes": "来源第 465–466 行未提供整题或分项分值，因此 marks_total=null 合理，不能自行推断；HKDSE 教材语境中的 maximum point 对应局部极大点。",
+    "record_status": "audit_passed"
+  },
+  {
+    "question_id": "M2QD-DA-EXAMPLE-Q3",
+    "source_section": "教材例题",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "pass",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "pass",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "定义 $f(x)=5x^8+56x^5-160x^2$。求 $f(x)$ 的最小值。（4 分）",
+    "solution_verified": "$$f'(x)=40x^7+280x^4-320x=40x(x^3-1)(x^3+8).$$\n故驻点横坐标为 $x=-2,0,1$。由 $f'$ 的符号依次为负、正、负、正，可知 $x=-2$ 与 $x=1$ 为极小位置，$x=0$ 为极大位置。\n$$f(-2)=-1152,\\qquad f(0)=0,\\qquad f(1)=-99.$$\n又因 $x\\to\\pm\\infty$ 时 $f(x)\\to+\\infty$，所以全局最小值为 $-1152$。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "checked_pass",
+    "primary_type": "最值与最优化",
+    "tags": [],
+    "difficulty_level": 4,
+    "difficulty_dimensions": {
+      "概念数": 2,
+      "推理链长度": 2,
+      "建模强度": 0,
+      "代数负担": 2,
+      "条件处理": 1,
+      "易错风险": 2
+    },
+    "difficulty_evidence": "关键在把六次式视为关于 $x^3$ 的二次式完成因式分解，并结合全域端行为判断全局最小值，含关键转换，定为 Level 4。",
+    "correction_status": "none",
+    "corrections": [],
+    "duplicate_status": "new",
+    "duplicate_reference": "",
+    "duplicate_evidence": "高次多项式、临界点结构及数值均与 V1.15 比对总体不同，未发现重复。",
+    "unresolved_issues": [
+      "受控词表缺少全局最值/全局最小值标签，需 Joy 决定扩词或接受空标签。"
+    ],
+    "audit_notes": "来源第 534 行给出 4 分；嵌入图片仅为“题解”页眉，不是必要题图。独立代入核得 $f(-2)=-1152,f(0)=0,f(1)=-99$。数学与内容检查通过，但标签词表缺口未决，故保留 audit_pending。",
+    "record_status": "audit_pending"
+  },
+  {
+    "question_id": "M2QD-DA-EXAMPLE-Q4",
+    "source_section": "教材例题",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "pass",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "pass",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "设 $y=(x-x^2)e^{-x}$。\n(a) 求 $\\frac{dy}{dx}$ 及 $\\frac{d^2y}{dx^2}$。\n(b) 某人声称 $y=(x-x^2)e^{-x}$ 的图像只有一个拐点。你是否同意？解释你的答案。（共 6 分）",
+    "solution_verified": "(a)\n$$\\frac{dy}{dx}=(x^2-3x+1)e^{-x},\\qquad \\frac{d^2y}{dx^2}=(-x^2+5x-4)e^{-x}.$$\n(b) 因 $e^{-x}>0$，$\\frac{d^2y}{dx^2}=0$ 等价于 $-x^2+5x-4=0$，故 $x=1,4$。二阶导数在 $(-\\infty,1),(1,4),(4,\\infty)$ 上的符号依次为负、正、负，两处均变号。因此图像有两个拐点：\n$$(1,0)\\quad\\text{及}\\quad(4,-12e^{-4}).$$\n所以不同意该声称。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "corrected_verified",
+    "primary_type": "极值与曲线性质",
+    "tags": [
+      "拐点"
+    ],
+    "difficulty_level": 3,
+    "difficulty_dimensions": {
+      "概念数": 2,
+      "推理链长度": 2,
+      "建模强度": 0,
+      "代数负担": 1,
+      "条件处理": 1,
+      "易错风险": 1
+    },
+    "difficulty_evidence": "需连续两次使用乘积/链式法则，并以二阶导数变号验证两个拐点，属标准多步骤 Level 3。",
+    "correction_status": "corrected_verified",
+    "corrections": [
+      {
+        "field": "solution_original",
+        "error_origin": "source_original",
+        "original": "来源题解在 (a) 只印出 $\\frac{dy}{dx}=(x^2-3x+1)e^{-x}$，随后 (b) 直接令未印出的二阶导数为零。",
+        "corrected": "在 (a) 补上 $\\frac{d^2y}{dx^2}=(-x^2+5x-4)e^{-x}$。",
+        "reason": "题目明确要求两个导数，原题解答案边界漏印二阶导数；当前抽取答案已补入并经独立求导验证。",
+        "evidence": "frozen_sources/M2Quick Drill-微分法的应用.mmd.zip 内 ab3a...mmd 第 648–656 行；extracted_reference/v116_import_snapshot.json 的 correction_id=ex-3.4-second-derivative。"
+      }
+    ],
+    "duplicate_status": "adapted",
+    "duplicate_reference": "2022-Q4",
+    "duplicate_evidence": "与 2022-Q4 同属“指数函数乘二次式＋拐点声称”的题型骨架，但函数系数和结论数据不同。",
+    "unresolved_issues": [],
+    "audit_notes": "总分 6 分与来源第 644 行一致；已进一步算出两个拐点坐标，以补足完整复核答案。",
+    "record_status": "audit_passed"
+  },
+  {
+    "question_id": "M2QD-DA-EXAMPLE-Q5",
+    "source_section": "教材例题",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "pass",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "pass",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "对所有 $x\\ne-2$，定义 $f(x)=\\frac{x^2+5x+1}{x+2}$，并把 $y=f(x)$ 的图像记为 $C$。求 $C$ 的所有渐近线。（3 分）",
+    "solution_verified": "当 $x=-2$ 时分母为零而分子为 $-5\\ne0$，故 $x=-2$ 是垂直渐近线。又\n$$f(x)=\\frac{x^2+5x+1}{x+2}=x+3-\\frac{5}{x+2}.$$\n当 $x\\to\\pm\\infty$ 时，$-\\frac{5}{x+2}\\to0$，故 $y=x+3$ 是斜渐近线。答案为 $x=-2$ 及 $y=x+3$。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "checked_pass",
+    "primary_type": "极值与曲线性质",
+    "tags": [
+      "渐近线"
+    ],
+    "difficulty_level": 2,
+    "difficulty_dimensions": {
+      "概念数": 1,
+      "推理链长度": 1,
+      "建模强度": 0,
+      "代数负担": 1,
+      "条件处理": 1,
+      "易错风险": 0
+    },
+    "difficulty_evidence": "识别分母零点并作一次多项式除法即可得到垂直和斜渐近线，属 2–3 个常规步骤的 Level 2。",
+    "correction_status": "none",
+    "corrections": [],
+    "duplicate_status": "new",
+    "duplicate_reference": "",
+    "duplicate_evidence": "有理函数及渐近线数据与 V1.15 比对总体不同，未发现重复。",
+    "unresolved_issues": [],
+    "audit_notes": "来源第 723 行给出 3 分；嵌入图片仅为“题解”页眉，不是必要题图。",
+    "record_status": "audit_passed"
+  },
+  {
+    "question_id": "M2QD-DA-EXAMPLE-Q6",
+    "source_section": "教材例题",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "issue",
+      "chinese_text": "pass",
+      "formula_symbols_units": "issue",
+      "subparts_and_marks": "pass",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "考虑曲线 $C:y=\\ln x$，其中 $x>1$。设 $P$ 为 $C$ 上的一个动点。直线 $L$ 通过 $P$，并垂直于 $C$ 在 $P$ 处的切线。$L$ 与 $x$ 轴交于点 $Q$，过 $P$ 的竖直线与 $x$ 轴交于点 $R$。\n(a) 设 $P$ 的 $x$ 坐标为 $p$，以 $p$ 表示 $Q$ 的 $x$ 坐标。（3 分）\n(b) 求 $\\triangle PQR$ 的最大面积。（5 分）\n(c) 设 $O$ 为原点。已知 $OP$ 以不超过每秒 $2e^2$ 个单位的速率增加。某人声称：当 $P$ 的 $x$ 坐标为 $e$ 时，$\\triangle PQR$ 的面积以低于每秒 1 个平方单位的速率增加。该声称是否正确？解释你的答案。（4 分）",
+    "solution_verified": "(a) $P=(p,\\ln p)$，切线斜率为 $1/p$，故法线 $L$ 的斜率为 $-p$。设 $Q=(a,0)$，则\n$$\\frac{-\\ln p}{a-p}=-p\\Longrightarrow a=\\frac{p^2+\\ln p}{p}.$$\n(b) 设三角形面积为 $A$，则\n$$A=\\frac12(a-p)\\ln p=\\frac{(\\ln p)^2}{2p},\\qquad \\frac{dA}{dp}=\\frac{\\ln p(2-\\ln p)}{2p^2}.$$\n因 $p>1$，导数在 $1<p<e^2$ 为正、在 $p>e^2$ 为负，所以最大面积在 $p=e^2$ 取得，等于 $\\frac{2}{e^2}$ 平方单位。\n(c) 令 $s=OP=\\sqrt{p^2+(\\ln p)^2}$。在 $p=e$ 时，\n$$\\frac{dA}{dp}=\\frac1{2e^2},\\qquad \\frac{ds}{dp}=\\frac{\\sqrt{e^2+1}}{e}.$$\n由 $0\\le ds/dt\\le2e^2$，得\n$$0\\le\\frac{dp}{dt}\\le\\frac{2e^3}{\\sqrt{e^2+1}},\\qquad 0\\le\\frac{dA}{dt}\\le\\frac{e}{\\sqrt{e^2+1}}<1.$$\n因此该声称正确。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "corrected_verified",
+    "primary_type": "综合微分应用",
+    "tags": [
+      "切点未知求法线",
+      "几何最优化",
+      "相关变化率",
+      "面积变化",
+      "建立变量关系",
+      "综合题目"
+    ],
+    "difficulty_level": 5,
+    "difficulty_dimensions": {
+      "概念数": 2,
+      "推理链长度": 2,
+      "建模强度": 2,
+      "代数负担": 2,
+      "条件处理": 2,
+      "易错风险": 2
+    },
+    "difficulty_evidence": "整题串联法线截距、面积最优化及带上界的相关变化率，需自主建立多层变量关系并处理不等式，属高度综合 Level 5。",
+    "correction_status": "confirmed",
+    "corrections": [
+      {
+        "field": "question_text_original",
+        "error_origin": "source_original",
+        "original": "Let $P$ be a moving point lying on $C . L$ is a line ...",
+        "corrected": "Let $P$ be a moving point lying on $C$. $L$ is a line ...",
+        "reason": "冻结 MMD 把曲线符号 $C$、句点及下一句的直线符号 $L$ 并入同一数学环境，造成英文与公式定界错误；中文行清楚表明应分为两句。缺少原扫描页，故不进一步归因于 Mathpix。",
+        "evidence": "frozen_sources/M2Quick Drill-微分法的应用.mmd.zip 内 ab3a...mmd 第 1288–1289 行；complete_questions_45.json 的英文仍保留该错误定界。"
+      },
+      {
+        "field": "solution_original",
+        "error_origin": "source_original",
+        "original": "$0\\le\\left.\\frac{dA}{dt}\\right|_{p=e}<\\frac{e}{\\sqrt{e^2}}$",
+        "corrected": "$0\\le\\left.\\frac{dA}{dt}\\right|_{p=e}\\le\\frac{e}{\\sqrt{e^2+1}}<1$",
+        "reason": "原 MMD 的最终结论 $dA/dt<1$ 本身正确；审计答案补足中间推导，并给出可由题设推出的更紧精确上界 $dA/dt\\le e/\\sqrt{e^2+1}<1$。缺少原扫描页，不把 MMD 的简略写法判为数学错误或归因于 Mathpix。",
+        "evidence": "同一 MMD 第 1361–1365 行直接得到 $dA/dt<1$；当前 complete_questions_45.json 已补入完整链式推导；独立计算紧上界约为 0.938508。"
+      }
+    ],
+    "duplicate_status": "new",
+    "duplicate_reference": "",
+    "duplicate_evidence": "未找到同时整合法线、面积最优化和速率上界判断的匹配题。",
+    "unresolved_issues": [],
+    "audit_notes": "来源未印出例题标题，EX-3.6 为已有来源校订所定的编辑稳定标识；(a)(b)(c) 的 3+5+4=12 分与 marks_total 一致。英文定界错误尚未回写原题字段，因此保留 audit_pending。",
+    "record_status": "audit_pending"
+  },
+  {
+    "question_id": "M2QD-DA-EXAMPLE-Q7",
+    "source_section": "教材例题",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "pass",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "pass",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "考虑曲线 $C_1:y=2^{x-1}$，其中 $x>0$。设 $O$ 为原点，$P(u,v)$ 为 $C_1$ 上的一个动点。以 $OP$ 为半径的圆，其面积以每秒 $8\\pi$ 个平方单位的恒定速率减少。过 $P$ 的竖直线与 $x$ 轴交于点 $Q$。求当 $u=2$ 时 $\\triangle OPQ$ 面积的变率。（6 分）",
+    "solution_verified": "设以 $OP$ 为半径的圆的面积为 $A$。因 $v=2^{u-1}$，\n$$A=\\pi(u^2+v^2),\\qquad \\frac{dA}{dt}=2\\pi\\left(u\\frac{du}{dt}+v\\frac{dv}{dt}\\right)=-8\\pi,$$\n且 $\\frac{dv}{dt}=v\\ln2\\frac{du}{dt}$。所以\n$$\\frac{du}{dt}=\\frac{-4}{u+2^{2u-2}\\ln2},\\qquad \\left.\\frac{du}{dt}\\right|_{u=2}=\\frac{-2}{1+2\\ln2}.$$\n设 $\\triangle OPQ$ 面积为 $S$，则\n$$S=\\frac12uv=u2^{u-2},\\qquad \\frac{dS}{dt}=(1+u\\ln2)2^{u-2}\\frac{du}{dt}.$$\n代入 $u=2$ 得\n$$\\left.\\frac{dS}{dt}\\right|_{u=2}=(1+2\\ln2)\\frac{-2}{1+2\\ln2}=-2.$$\n因此所求变率为每秒 $-2$ 个平方单位，即面积正以每秒 2 个平方单位减少。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "corrected_verified",
+    "primary_type": "变率",
+    "tags": [
+      "相关变化率",
+      "几何量变化",
+      "面积变化",
+      "链式法则建模",
+      "建立变量关系"
+    ],
+    "difficulty_level": 4,
+    "difficulty_dimensions": {
+      "概念数": 2,
+      "推理链长度": 2,
+      "建模强度": 2,
+      "代数负担": 1,
+      "条件处理": 1,
+      "易错风险": 2
+    },
+    "difficulty_evidence": "需把圆面积的给定变率经 $v=2^{u-1}$ 转为 $du/dt$，再传递到三角形面积，属于复杂变量关系建模的 Level 4。",
+    "correction_status": "corrected_verified",
+    "corrections": [
+      {
+        "field": "solution_original",
+        "error_origin": "mathpix_conversion",
+        "original": "$\\frac{dA}{dt}=\\pi\\left(2u\\frac{du}{dt}+2v\\right.$（式子在此被截断）",
+        "corrected": "$\\frac{dA}{dt}=2\\pi\\left(u\\frac{du}{dt}+v\\frac{dv}{dt}\\right)=-8\\pi$，从而 $\\frac{du}{dt}=\\frac{-4}{u+2^{2u-2}\\ln2}$。",
+        "reason": "来源 MMD 的圆面积求导式被 OCR 截断，漏去 $dv/dt$ 及闭合结构；当前抽取答案已重建正确关系并经独立复算验证。",
+        "evidence": "frozen_sources/M2Quick Drill-微分法的应用.mmd.zip 内 ab3a...mmd 第 934–949 行；extracted_reference/v116_import_snapshot.json 的 correction_id=ex-3.7-rate-equation；代入 $u=2$ 后得 $dS/dt=-2$。"
+      }
+    ],
+    "duplicate_status": "historical_reference",
+    "duplicate_reference": "DSE-2020-Q6",
+    "duplicate_evidence": "来源明确标注参考 2020 Q06；该历史题不在 V1.15 的 DSE 比对总体内，因此保留 historical_reference。",
+    "unresolved_issues": [],
+    "audit_notes": "中文已自然化为“以 OP 为半径”；负变率的单位与结论一致。",
+    "record_status": "audit_passed"
+  },
+  {
+    "question_id": "M2QD-DA-EXAMPLE-Q8",
+    "source_section": "教材例题",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "issue",
+      "chinese_text": "revised",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "pass",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "needs_correction"
+    },
+    "question_text_zh_reviewed": "对所有 $x\\in[0,2\\pi]$，定义 $f(x)=e^x\\sin x$，并把 $y=f(x)$ 的图像记为 $G$。\n(a) 求 $f'(x)$ 及 $f''(x)$。（3 分）\n(b) 求 $G$ 的极大点及极小点。（3 分）\n(c) 设 $L$ 为 $G$ 在 $x=\\pi$ 处的切线。\n(i) 求 $L$ 的方程。\n(ii) 通过考察 $f''(x)$，解释为什么在区间 $\\left(\\frac{\\pi}{2},\\frac{3\\pi}{2}\\right)$ 内，$G$ 不高于 $L$，并且除切点 $(\\pi,0)$ 外严格位于 $L$ 的下方。（3 分）",
+    "solution_verified": "(a)\n$$f'(x)=e^x(\\sin x+\\cos x),\\qquad f''(x)=2e^x\\cos x.$$\n(b) $f'(x)=0$ 给出 $x=\\frac{3\\pi}{4},\\frac{7\\pi}{4}$。因\n$$f''\\left(\\frac{3\\pi}{4}\\right)<0,\\qquad f''\\left(\\frac{7\\pi}{4}\\right)>0,$$\n极大点和极小点分别为\n$$\\left(\\frac{3\\pi}{4},\\frac{e^{3\\pi/4}}{\\sqrt2}\\right),\\qquad \\left(\\frac{7\\pi}{4},-\\frac{e^{7\\pi/4}}{\\sqrt2}\\right).$$\n(c)(i) $f(\\pi)=0$ 且 $f'(\\pi)=-e^\\pi$，故\n$$L:y=-e^\\pi(x-\\pi).$$\n(ii) 在 $\\left(\\frac{\\pi}{2},\\frac{3\\pi}{2}\\right)$ 内，$e^x>0$ 且 $\\cos x<0$，故 $f''(x)<0$，图像严格凹向下。凹函数的图像不高于其任一切线，因此 $f(x)\\le -e^\\pi(x-\\pi)$；只在切点 $x=\\pi$ 取等号，其余点严格小于。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "corrected_verified",
+    "primary_type": "综合微分应用",
+    "tags": [
+      "极大点",
+      "极小点",
+      "二阶导数判别法",
+      "已知切点求切线",
+      "凹凸性",
+      "综合题目"
+    ],
+    "difficulty_level": 4,
+    "difficulty_dimensions": {
+      "概念数": 2,
+      "推理链长度": 2,
+      "建模强度": 0,
+      "代数负担": 1,
+      "条件处理": 2,
+      "易错风险": 2
+    },
+    "difficulty_evidence": "整题连续考查两阶导数、极值、切线及凹性支撑线性质，并须处理闭区间与切点等号，属多概念整合的 Level 4。",
+    "correction_status": "confirmed",
+    "corrections": [
+      {
+        "field": "question_text_original",
+        "error_origin": "source_original",
+        "original": "explain why $G$ lies below $L$ in the interval $\\left(\\frac{\\pi}{2},\\frac{3\\pi}{2}\\right)$",
+        "corrected": "explain why $G$ lies on or below $L$ throughout the interval, and strictly below $L$ except at $x=\\pi$",
+        "reason": "$L$ 是 $G$ 在区间内部 $x=\\pi$ 处的切线，故两图像在 $(\\pi,0)$ 必然相交；“整段严格在下方”不成立。",
+        "evidence": "原始 MMD 第 1220–1226 行及 1273–1284 行；独立代入得 $f(\\pi)=L(\\pi)=0$，而严格凹性保证其他点 $f(x)<L(x)$。"
+      },
+      {
+        "field": "question_text_zh",
+        "error_origin": "source_original",
+        "original": "解释为什么在该区间内，$G$ 位于 $L$ 的下方。",
+        "corrected": "解释为什么在该区间内 $G$ 不高于 $L$，且除切点 $(\\pi,0)$ 外严格位于 $L$ 下方。",
+        "reason": "中文忠实翻译了英文的非严格表述问题，需把切点处等号明确写出。",
+        "evidence": "原始 MMD 第 1226、1281–1284 行；$f(\\pi)=L(\\pi)=0$。"
+      },
+      {
+        "field": "solution_original",
+        "error_origin": "source_original",
+        "original": "Since $f''(x)<0$ in the interval, $G$ lies below $L$ in the interval.",
+        "corrected": "Since $f''(x)<0$, $G$ is strictly concave there, so it lies on or below $L$; equality holds only at $x=\\pi$.",
+        "reason": "来源结论漏掉切点处的等号；导数和切线计算本身正确。",
+        "evidence": "原始 MMD 第 1273–1285 行；独立数值抽查 $L-f$ 在 $\\pi\\pm0.1$ 为正、在 $\\pi$ 为 0。"
+      }
+    ],
+    "duplicate_status": "adapted",
+    "duplicate_reference": "DSE-2023-Q9",
+    "duplicate_evidence": "与 2023-Q9 具有极值—切线—凹性说明的相似小问骨架，但函数和任务端点不同，属于改编而非完全重复。",
+    "unresolved_issues": [
+      "需 Joy 决定是否沿用教材把“lies below”宽松解释为允许在切点相等；严谨数学版本应采用本审计给出的“不高于，且除切点外严格低于”。"
+    ],
+    "audit_notes": "(a)(b)(c) 的 3+3+3=9 分与 marks_total 一致。来源答案的导数、极值及切线均正确，唯一数学问题是 (c)(ii) 对切点等号的表述。",
+    "record_status": "audit_pending"
+  }
+]

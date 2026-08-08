@@ -1,0 +1,504 @@
+{
+  "status": "PASS_WITH_REVIEW",
+  "summary": {
+    "total": 45,
+    "p0": 0,
+    "p1": 66,
+    "p2": 0
+  },
+  "issues": [
+    {
+      "rule_id": "P1-AUDIT-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-EXAMPLE-Q3",
+      "evidence": "record_status=audit_pending",
+      "action": "关闭校订或待确认问题后再改为audit_passed。"
+    },
+    {
+      "rule_id": "P1-UNRESOLVED-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-EXAMPLE-Q3",
+      "evidence": "受控词表缺少全局最值/全局最小值标签，需 Joy 决定扩词或接受空标签。",
+      "action": "由Joy确认或退回修订。"
+    },
+    {
+      "rule_id": "P1-CLASS-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-EXAMPLE-Q3",
+      "evidence": "tags为空，现有受控词表可能缺少适用标签",
+      "action": "补充准确受控标签或经Joy确认扩展词表。"
+    },
+    {
+      "rule_id": "P1-AUDIT-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-EXAMPLE-Q6",
+      "evidence": "record_status=audit_pending",
+      "action": "关闭校订或待确认问题后再改为audit_passed。"
+    },
+    {
+      "rule_id": "P1-CHECK-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-EXAMPLE-Q6",
+      "evidence": "english_text=issue, formula_symbols_units=issue",
+      "action": "按逐题校订记录关闭对应检查项后再入库。"
+    },
+    {
+      "rule_id": "P1-AUDIT-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-EXAMPLE-Q8",
+      "evidence": "record_status=audit_pending",
+      "action": "关闭校订或待确认问题后再改为audit_passed。"
+    },
+    {
+      "rule_id": "P1-UNRESOLVED-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-EXAMPLE-Q8",
+      "evidence": "需 Joy 决定是否沿用教材把“lies below”宽松解释为允许在切点相等；严谨数学版本应采用本审计给出的“不高于，且除切点外严格低于”。",
+      "action": "由Joy确认或退回修订。"
+    },
+    {
+      "rule_id": "P1-CHECK-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-EXAMPLE-Q8",
+      "evidence": "answer_mathematics=needs_correction, english_text=issue",
+      "action": "按逐题校订记录关闭对应检查项后再入库。"
+    },
+    {
+      "rule_id": "P1-AUDIT-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q1",
+      "evidence": "record_status=audit_pending",
+      "action": "关闭校订或待确认问题后再改为audit_passed。"
+    },
+    {
+      "rule_id": "P1-UNRESOLVED-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q1",
+      "evidence": "答案来源档案及成员映射尚未在正式记录中改正。",
+      "action": "由Joy确认或退回修订。"
+    },
+    {
+      "rule_id": "P1-SOURCE-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q1",
+      "evidence": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd；bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+      "action": "Joy确认后再将正确来源映射写入候选入库记录。"
+    },
+    {
+      "rule_id": "P1-AUDIT-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q2",
+      "evidence": "record_status=audit_pending",
+      "action": "关闭校订或待确认问题后再改为audit_passed。"
+    },
+    {
+      "rule_id": "P1-UNRESOLVED-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q2",
+      "evidence": "答案来源档案及成员映射尚未在正式记录中改正。",
+      "action": "由Joy确认或退回修订。"
+    },
+    {
+      "rule_id": "P1-SOURCE-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q2",
+      "evidence": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd；bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+      "action": "Joy确认后再将正确来源映射写入候选入库记录。"
+    },
+    {
+      "rule_id": "P1-AUDIT-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q3",
+      "evidence": "record_status=audit_pending",
+      "action": "关闭校订或待确认问题后再改为audit_passed。"
+    },
+    {
+      "rule_id": "P1-UNRESOLVED-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q3",
+      "evidence": "正式记录仍缺总分4及正确答案来源映射。",
+      "action": "由Joy确认或退回修订。"
+    },
+    {
+      "rule_id": "P1-CHECK-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q3",
+      "evidence": "subparts_and_marks=issue",
+      "action": "按逐题校订记录关闭对应检查项后再入库。"
+    },
+    {
+      "rule_id": "P1-MARKS-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q3",
+      "evidence": "subparts_and_marks=issue",
+      "action": "依据冻结来源补录或订正分值，并保留证据。"
+    },
+    {
+      "rule_id": "P1-SOURCE-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q3",
+      "evidence": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd；bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+      "action": "Joy确认后再将正确来源映射写入候选入库记录。"
+    },
+    {
+      "rule_id": "P1-AUDIT-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q4",
+      "evidence": "record_status=audit_pending",
+      "action": "关闭校订或待确认问题后再改为audit_passed。"
+    },
+    {
+      "rule_id": "P1-UNRESOLVED-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q4",
+      "evidence": "答案来源档案及成员映射尚未在正式记录中改正。",
+      "action": "由Joy确认或退回修订。"
+    },
+    {
+      "rule_id": "P1-SOURCE-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q4",
+      "evidence": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd；bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+      "action": "Joy确认后再将正确来源映射写入候选入库记录。"
+    },
+    {
+      "rule_id": "P1-AUDIT-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q5",
+      "evidence": "record_status=audit_pending",
+      "action": "关闭校订或待确认问题后再改为audit_passed。"
+    },
+    {
+      "rule_id": "P1-UNRESOLVED-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q5",
+      "evidence": "答案来源档案及成员映射尚未在正式记录中改正。",
+      "action": "由Joy确认或退回修订。"
+    },
+    {
+      "rule_id": "P1-SOURCE-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q5",
+      "evidence": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd；bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+      "action": "Joy确认后再将正确来源映射写入候选入库记录。"
+    },
+    {
+      "rule_id": "P1-AUDIT-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q6",
+      "evidence": "record_status=audit_pending",
+      "action": "关闭校订或待确认问题后再改为audit_passed。"
+    },
+    {
+      "rule_id": "P1-UNRESOLVED-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q6",
+      "evidence": "答案来源档案及成员映射尚未在正式记录中改正。",
+      "action": "由Joy确认或退回修订。"
+    },
+    {
+      "rule_id": "P1-SOURCE-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q6",
+      "evidence": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd；bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+      "action": "Joy确认后再将正确来源映射写入候选入库记录。"
+    },
+    {
+      "rule_id": "P1-AUDIT-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q7",
+      "evidence": "record_status=audit_pending",
+      "action": "关闭校订或待确认问题后再改为audit_passed。"
+    },
+    {
+      "rule_id": "P1-UNRESOLVED-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q7",
+      "evidence": "正式记录仍缺总分6、完整最终结论及正确答案来源映射。",
+      "action": "由Joy确认或退回修订。"
+    },
+    {
+      "rule_id": "P1-CHECK-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q7",
+      "evidence": "answer_mathematics=needs_correction, subparts_and_marks=issue",
+      "action": "按逐题校订记录关闭对应检查项后再入库。"
+    },
+    {
+      "rule_id": "P1-MARKS-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q7",
+      "evidence": "subparts_and_marks=issue",
+      "action": "依据冻结来源补录或订正分值，并保留证据。"
+    },
+    {
+      "rule_id": "P1-SOURCE-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q7",
+      "evidence": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd；bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+      "action": "Joy确认后再将正确来源映射写入候选入库记录。"
+    },
+    {
+      "rule_id": "P1-AUDIT-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q8",
+      "evidence": "record_status=audit_pending",
+      "action": "关闭校订或待确认问题后再改为audit_passed。"
+    },
+    {
+      "rule_id": "P1-UNRESOLVED-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q8",
+      "evidence": "答案来源档案及成员映射尚未在正式记录中改正。",
+      "action": "由Joy确认或退回修订。"
+    },
+    {
+      "rule_id": "P1-SOURCE-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q8",
+      "evidence": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd；bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+      "action": "Joy确认后再将正确来源映射写入候选入库记录。"
+    },
+    {
+      "rule_id": "P1-AUDIT-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q9",
+      "evidence": "record_status=audit_pending",
+      "action": "关闭校订或待确认问题后再改为audit_passed。"
+    },
+    {
+      "rule_id": "P1-UNRESOLVED-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q9",
+      "evidence": "答案来源档案及成员映射尚未在正式记录中改正。",
+      "action": "由Joy确认或退回修订。"
+    },
+    {
+      "rule_id": "P1-SOURCE-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q9",
+      "evidence": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd；bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+      "action": "Joy确认后再将正确来源映射写入候选入库记录。"
+    },
+    {
+      "rule_id": "P1-AUDIT-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q10",
+      "evidence": "record_status=audit_pending",
+      "action": "关闭校订或待确认问题后再改为audit_passed。"
+    },
+    {
+      "rule_id": "P1-UNRESOLVED-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q10",
+      "evidence": "答案来源档案及成员映射尚未在正式记录中改正。",
+      "action": "由Joy确认或退回修订。"
+    },
+    {
+      "rule_id": "P1-SOURCE-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q10",
+      "evidence": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd；bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+      "action": "Joy确认后再将正确来源映射写入候选入库记录。"
+    },
+    {
+      "rule_id": "P1-AUDIT-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q11",
+      "evidence": "record_status=audit_pending",
+      "action": "关闭校订或待确认问题后再改为audit_passed。"
+    },
+    {
+      "rule_id": "P1-UNRESOLVED-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q11",
+      "evidence": "答案来源档案及成员映射尚未在正式记录中改正。",
+      "action": "由Joy确认或退回修订。"
+    },
+    {
+      "rule_id": "P1-SOURCE-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q11",
+      "evidence": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd；bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+      "action": "Joy确认后再将正确来源映射写入候选入库记录。"
+    },
+    {
+      "rule_id": "P1-AUDIT-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q12",
+      "evidence": "record_status=audit_pending",
+      "action": "关闭校订或待确认问题后再改为audit_passed。"
+    },
+    {
+      "rule_id": "P1-UNRESOLVED-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q12",
+      "evidence": "答案来源档案及成员映射尚未在正式记录中改正。",
+      "action": "由Joy确认或退回修订。"
+    },
+    {
+      "rule_id": "P1-SOURCE-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q12",
+      "evidence": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd；bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+      "action": "Joy确认后再将正确来源映射写入候选入库记录。"
+    },
+    {
+      "rule_id": "P1-AUDIT-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q13",
+      "evidence": "record_status=audit_pending",
+      "action": "关闭校订或待确认问题后再改为audit_passed。"
+    },
+    {
+      "rule_id": "P1-UNRESOLVED-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q13",
+      "evidence": "正式记录仍缺总分3及正确答案来源映射。",
+      "action": "由Joy确认或退回修订。"
+    },
+    {
+      "rule_id": "P1-CHECK-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q13",
+      "evidence": "subparts_and_marks=issue",
+      "action": "按逐题校订记录关闭对应检查项后再入库。"
+    },
+    {
+      "rule_id": "P1-MARKS-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q13",
+      "evidence": "subparts_and_marks=issue",
+      "action": "依据冻结来源补录或订正分值，并保留证据。"
+    },
+    {
+      "rule_id": "P1-SOURCE-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q13",
+      "evidence": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd；bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+      "action": "Joy确认后再将正确来源映射写入候选入库记录。"
+    },
+    {
+      "rule_id": "P1-AUDIT-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q14",
+      "evidence": "record_status=audit_pending",
+      "action": "关闭校订或待确认问题后再改为audit_passed。"
+    },
+    {
+      "rule_id": "P1-UNRESOLVED-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q14",
+      "evidence": "答案来源档案及成员映射尚未在正式记录中改正。",
+      "action": "由Joy确认或退回修订。"
+    },
+    {
+      "rule_id": "P1-SOURCE-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-TRAIN-Q14",
+      "evidence": "微分的应用甲部.mmd.zip / c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd；bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0",
+      "action": "Joy确认后再将正确来源映射写入候选入库记录。"
+    },
+    {
+      "rule_id": "P1-AUDIT-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-PARTA-Q6",
+      "evidence": "record_status=audit_pending",
+      "action": "关闭校订或待确认问题后再改为audit_passed。"
+    },
+    {
+      "rule_id": "P1-CHECK-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-PARTA-Q6",
+      "evidence": "answer_mathematics=needs_correction, answer_pairing=issue",
+      "action": "按逐题校订记录关闭对应检查项后再入库。"
+    },
+    {
+      "rule_id": "P1-AUDIT-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-PARTA-Q13",
+      "evidence": "record_status=audit_pending",
+      "action": "关闭校订或待确认问题后再改为audit_passed。"
+    },
+    {
+      "rule_id": "P1-UNRESOLVED-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-PARTA-Q13",
+      "evidence": "受控标签词表缺少“从基本原理求导”和“切线斜率为正的取值区间”对应标签；需Joy决定保持 tags=[]，或在后续词表版本增补受控标签。",
+      "action": "由Joy确认或退回修订。"
+    },
+    {
+      "rule_id": "P1-CLASS-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-PARTA-Q13",
+      "evidence": "tags为空，现有受控词表可能缺少适用标签",
+      "action": "补充准确受控标签或经Joy确认扩展词表。"
+    },
+    {
+      "rule_id": "P1-CHECK-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-PARTA-Q13",
+      "evidence": "answer_mathematics=needs_correction, answer_pairing=issue",
+      "action": "按逐题校订记录关闭对应检查项后再入库。"
+    },
+    {
+      "rule_id": "P1-AUDIT-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-PARTA-Q16",
+      "evidence": "record_status=audit_pending",
+      "action": "关闭校订或待确认问题后再改为audit_passed。"
+    },
+    {
+      "rule_id": "P1-CHECK-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-PARTA-Q16",
+      "evidence": "answer_mathematics=needs_correction, answer_pairing=issue, english_text=issue, formula_symbols_units=issue",
+      "action": "按逐题校订记录关闭对应检查项后再入库。"
+    },
+    {
+      "rule_id": "P1-AUDIT-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-PARTB-Q3",
+      "evidence": "record_status=audit_pending",
+      "action": "关闭校订或待确认问题后再改为audit_passed。"
+    },
+    {
+      "rule_id": "P1-CHECK-001",
+      "severity": "P1",
+      "question_id": "M2QD-DA-PARTB-Q3",
+      "evidence": "answer_mathematics=needs_correction, answer_pairing=issue",
+      "action": "按逐题校订记录关闭对应检查项后再入库。"
+    }
+  ],
+  "distribution": {
+    "total": 45,
+    "record_status": {
+      "audit_passed": 24,
+      "audit_pending": 21
+    },
+    "difficulty_level": {
+      "2": 8,
+      "3": 17,
+      "4": 16,
+      "5": 4
+    },
+    "primary_type": {
+      "切线与法线": 6,
+      "变率": 5,
+      "最值与最优化": 5,
+      "极值与曲线性质": 24,
+      "综合微分应用": 5
+    },
+    "answer_status": {
+      "source_provided": 45
+    },
+    "duplicate_status": {
+      "adapted": 10,
+      "historical_reference": 16,
+      "new": 19
+    },
+    "correction_records": 28,
+    "correction_items": 59,
+    "unresolved_question_count": 17
+  }
+}

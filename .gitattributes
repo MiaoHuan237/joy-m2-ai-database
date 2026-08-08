@@ -1,0 +1,3 @@
+# Frozen and legacy artifacts must retain their original bytes.
+releases/V1.18/** -text -whitespace
+legacy/** -text -whitespace

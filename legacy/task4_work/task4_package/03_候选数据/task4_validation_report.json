@@ -1,0 +1,14 @@
+{
+  "status": "TECHNICALLY_READY_FOR_JOY_APPROVAL",
+  "summary": {
+    "total": 45,
+    "unique_ids": 45,
+    "audit_passed": 45,
+    "approved_for_import": 0,
+    "p0": 0,
+    "p1": 0,
+    "formal_import_approved": false
+  },
+  "issues": [],
+  "boundary": "Task 4仅关闭技术审计项；仍需Joy明确批准后才能生成正式导入候选。"
+}

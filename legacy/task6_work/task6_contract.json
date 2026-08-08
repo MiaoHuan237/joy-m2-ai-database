@@ -1,0 +1,9 @@
+{
+  "excluded_source_id": "M2QD-DIFFERENTIATION-APPLICATIONS",
+  "expected_existing_v2_questions": 45,
+  "expected_legacy_complete_questions": 497,
+  "expected_task6_questions": 452,
+  "expected_task6_sources": 23,
+  "release_version": "V1.18",
+  "schema_version": "complete-question-v1.0"
+}

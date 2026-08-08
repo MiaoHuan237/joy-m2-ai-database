@@ -1,0 +1,201 @@
+{
+  "statuses": [
+    "PASS",
+    "PASS_WITH_REVIEW",
+    "FAIL"
+  ],
+  "rules": [
+    {
+      "rule_id": "P0-COUNT-001",
+      "severity": "P0",
+      "name": "完整题总数",
+      "condition": "记录数必须为45。"
+    },
+    {
+      "rule_id": "P0-COUNT-002",
+      "severity": "P0",
+      "name": "题号唯一",
+      "condition": "question_id不得重复。"
+    },
+    {
+      "rule_id": "P0-MODEL-001",
+      "severity": "P0",
+      "name": "完整题模型",
+      "condition": "不得出现父题字段、小问路径或小问后缀。"
+    },
+    {
+      "rule_id": "P0-SOURCE-001",
+      "severity": "P0",
+      "name": "来源追溯",
+      "condition": "source_id、文件、成员、SHA-256和片段哈希必须完整。"
+    },
+    {
+      "rule_id": "P0-CONTENT-001",
+      "severity": "P0",
+      "name": "英文原题",
+      "condition": "question_text_original不得为空。"
+    },
+    {
+      "rule_id": "P0-CLASS-001",
+      "severity": "P0",
+      "name": "难度合法",
+      "condition": "audit_passed或approved_for_import记录的Level必须为1–5。"
+    },
+    {
+      "rule_id": "P0-CLASS-002",
+      "severity": "P0",
+      "name": "主类型合法",
+      "condition": "audit_passed或approved_for_import记录的主类型必须在词表中。"
+    },
+    {
+      "rule_id": "P0-CLASS-003",
+      "severity": "P0",
+      "name": "标签合法",
+      "condition": "audit_passed或approved_for_import记录不得含非法标签。"
+    },
+    {
+      "rule_id": "P0-ANSWER-001",
+      "severity": "P0",
+      "name": "来源答案一致",
+      "condition": "source_provided必须有solution_original。"
+    },
+    {
+      "rule_id": "P0-ANSWER-002",
+      "severity": "P0",
+      "name": "缺答案状态一致",
+      "condition": "missing_from_source不得伪装为来源答案。"
+    },
+    {
+      "rule_id": "P0-ANSWER-003/004",
+      "severity": "P0",
+      "name": "答案状态枚举",
+      "condition": "answer_status与answer_verification_status必须使用逐题复核契约枚举。"
+    },
+    {
+      "rule_id": "P0-CORRECTION-001/002",
+      "severity": "P0",
+      "name": "校订契约",
+      "condition": "correction_status、corrections[]必须与受控字段、错误来源和必填证据一致。"
+    },
+    {
+      "rule_id": "P0-DUPLICATE-001",
+      "severity": "P0",
+      "name": "重复状态枚举",
+      "condition": "duplicate_status必须使用new、adapted、historical_reference或exact_duplicate。"
+    },
+    {
+      "rule_id": "P0-IMAGE-001",
+      "severity": "P0",
+      "name": "图片可用",
+      "condition": "所列图片必须存在且SHA-256一致。"
+    },
+    {
+      "rule_id": "P0-OFFICIAL-001",
+      "severity": "P0",
+      "name": "官方答案标识",
+      "condition": "非HKEAA来源不得标official_marking_available=true。"
+    },
+    {
+      "rule_id": "P0-LIFE-001",
+      "severity": "P0",
+      "name": "Joy审批",
+      "condition": "approved_for_import必须有Joy明确确认。"
+    },
+    {
+      "rule_id": "P0-NONMUTATION-001",
+      "severity": "P0",
+      "name": "正式文件不变",
+      "condition": "受保护SQLite/CSV的字节数与SHA-256必须保持不变。"
+    },
+    {
+      "rule_id": "P1-AUDIT-001",
+      "severity": "P1",
+      "name": "分类待审",
+      "condition": "audit_pending记录允许新分类为空，但必须进入人工复核。"
+    },
+    {
+      "rule_id": "P1-CONTENT-001",
+      "severity": "P1",
+      "name": "题答对应",
+      "condition": "变量、数值、分支和结论需人工复核。"
+    },
+    {
+      "rule_id": "P1-BILINGUAL-001",
+      "severity": "P1",
+      "name": "英中一致",
+      "condition": "公式、数值、单位和小问结构需人工复核。"
+    },
+    {
+      "rule_id": "P1-MARKS-001",
+      "severity": "P1",
+      "name": "分值一致",
+      "condition": "整题总分需与小问分值核对。"
+    },
+    {
+      "rule_id": "P1-IMAGE-001",
+      "severity": "P1",
+      "name": "必要图片",
+      "condition": "几何/曲线指代需确认必要图片已关联。"
+    },
+    {
+      "rule_id": "P1-CORRECTION-001",
+      "severity": "P1",
+      "name": "校订证据",
+      "condition": "订正必须保留原文、理由和证据。"
+    },
+    {
+      "rule_id": "P1-SOURCE-001",
+      "severity": "P1",
+      "name": "来源映射待修",
+      "condition": "题目或答案来源文件/成员映射的建议订正必须在Joy确认后再写入候选记录。"
+    },
+    {
+      "rule_id": "P1-CHECK-001",
+      "severity": "P1",
+      "name": "逐题检查未关闭",
+      "condition": "任一逐题检查为issue、missing、needs_correction、blocked或not_checked时不得正式入库。"
+    },
+    {
+      "rule_id": "P1-UNRESOLVED-001",
+      "severity": "P1",
+      "name": "未关闭疑点",
+      "condition": "unresolved_issues非空时必须由Joy确认或退回修订。"
+    },
+    {
+      "rule_id": "P1-CLASS-001",
+      "severity": "P1",
+      "name": "标签覆盖缺口",
+      "condition": "标签为空时须确认词表缺口或经Joy批准扩展词表，不得硬贴近似标签。"
+    },
+    {
+      "rule_id": "P1-DUPLICATE-001",
+      "severity": "P1",
+      "name": "重复关系引用",
+      "condition": "adapted、historical_reference或exact_duplicate记录必须填写可追溯duplicate_reference。"
+    },
+    {
+      "rule_id": "P2-LANGUAGE-001",
+      "severity": "P2",
+      "name": "中文表述",
+      "condition": "检查DSE常用书面表达。"
+    },
+    {
+      "rule_id": "P2-PAGE-001",
+      "severity": "P2",
+      "name": "来源页码",
+      "condition": "页码为空时记录原因。"
+    },
+    {
+      "rule_id": "P2-TAGS-001",
+      "severity": "P2",
+      "name": "标签数量",
+      "condition": "标签异常多时提示复核。"
+    },
+    {
+      "rule_id": "P2-DUPLICATE-001",
+      "severity": "P2",
+      "name": "重复关系",
+      "condition": "高相似题须明确重复状态。"
+    }
+  ]
+}

@@ -1,0 +1,115 @@
+{
+  "decision_version": "Task4-V1.0",
+  "decision_date": "2026-08-08",
+  "formal_import_approved": false,
+  "target_question_ids": [
+    "M2QD-DA-EXAMPLE-Q3",
+    "M2QD-DA-EXAMPLE-Q6",
+    "M2QD-DA-EXAMPLE-Q8",
+    "M2QD-DA-TRAIN-Q1",
+    "M2QD-DA-TRAIN-Q2",
+    "M2QD-DA-TRAIN-Q3",
+    "M2QD-DA-TRAIN-Q4",
+    "M2QD-DA-TRAIN-Q5",
+    "M2QD-DA-TRAIN-Q6",
+    "M2QD-DA-TRAIN-Q7",
+    "M2QD-DA-TRAIN-Q8",
+    "M2QD-DA-TRAIN-Q9",
+    "M2QD-DA-TRAIN-Q10",
+    "M2QD-DA-TRAIN-Q11",
+    "M2QD-DA-TRAIN-Q12",
+    "M2QD-DA-TRAIN-Q13",
+    "M2QD-DA-TRAIN-Q14",
+    "M2QD-DA-PARTA-Q6",
+    "M2QD-DA-PARTA-Q13",
+    "M2QD-DA-PARTA-Q16",
+    "M2QD-DA-PARTB-Q3"
+  ],
+  "solution_mapping": {
+    "question_ids": [
+      "M2QD-DA-TRAIN-Q1",
+      "M2QD-DA-TRAIN-Q2",
+      "M2QD-DA-TRAIN-Q3",
+      "M2QD-DA-TRAIN-Q4",
+      "M2QD-DA-TRAIN-Q5",
+      "M2QD-DA-TRAIN-Q6",
+      "M2QD-DA-TRAIN-Q7",
+      "M2QD-DA-TRAIN-Q8",
+      "M2QD-DA-TRAIN-Q9",
+      "M2QD-DA-TRAIN-Q10",
+      "M2QD-DA-TRAIN-Q11",
+      "M2QD-DA-TRAIN-Q12",
+      "M2QD-DA-TRAIN-Q13",
+      "M2QD-DA-TRAIN-Q14"
+    ],
+    "solution_source_file": "微分的应用甲部.mmd.zip",
+    "solution_source_member": "c2e97ff4-9258-43ff-802f-ac95d2c5c0e2.mmd",
+    "solution_source_member_sha256": "bfd75702b5abff3f604bfeb722f6ab7cd6c23566d15ea550bbf05be1b4dbbeb0"
+  },
+  "marks": {
+    "M2QD-DA-TRAIN-Q3": 4,
+    "M2QD-DA-TRAIN-Q7": 6,
+    "M2QD-DA-TRAIN-Q13": 3
+  },
+  "taxonomy_additions": [
+    "全局最小值",
+    "从基本原理求导",
+    "导数为正区间"
+  ],
+  "tag_assignments": {
+    "M2QD-DA-EXAMPLE-Q3": [
+      "全局最小值"
+    ],
+    "M2QD-DA-PARTA-Q13": [
+      "从基本原理求导",
+      "导数为正区间"
+    ]
+  },
+  "check_closures": {
+    "M2QD-DA-EXAMPLE-Q6": {
+      "english_text": "pass",
+      "formula_symbols_units": "pass"
+    },
+    "M2QD-DA-EXAMPLE-Q8": {
+      "english_text": "pass",
+      "answer_mathematics": "pass"
+    },
+    "M2QD-DA-TRAIN-Q3": {
+      "subparts_and_marks": "pass"
+    },
+    "M2QD-DA-TRAIN-Q7": {
+      "subparts_and_marks": "pass",
+      "answer_mathematics": "pass"
+    },
+    "M2QD-DA-TRAIN-Q13": {
+      "subparts_and_marks": "pass"
+    },
+    "M2QD-DA-PARTA-Q6": {
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "M2QD-DA-PARTA-Q13": {
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "M2QD-DA-PARTA-Q16": {
+      "english_text": "pass",
+      "formula_symbols_units": "pass",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "M2QD-DA-PARTB-Q3": {
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    }
+  },
+  "resolution_notes": {
+    "M2QD-DA-EXAMPLE-Q3": "词表V1.1加入全局最小值；题目要求在定义域内找全局最小值。",
+    "M2QD-DA-EXAMPLE-Q6": "英文公式定界与变率上界已按校订记录确认。",
+    "M2QD-DA-EXAMPLE-Q8": "采用严谨表述：图像不高于切线，且除切点外严格低于。",
+    "M2QD-DA-PARTA-Q6": "补全最大值e^3及其取得点x=-1。",
+    "M2QD-DA-PARTA-Q13": "补全基本原理差商推导，并加入两项精确标签。",
+    "M2QD-DA-PARTA-Q16": "确认(b)应求f'(x)，并补全拐点(-5,0)。",
+    "M2QD-DA-PARTB-Q3": "采用正确函数标签并保留正确渐近线、极值点及草图信息。"
+  }
+}

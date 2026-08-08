@@ -1,0 +1,282 @@
+[
+  {
+    "question_id": "M2QD-DA-PARTB-Q1",
+    "source_section": "乙部特训",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "revised",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "pass",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "设 $f(x)=\\frac{x^{4}}{x^{3}+2}$，其中 $x\\ne-2^{1/3}$。\n(a) 求曲线 $y=f(x)$ 与 $x$ 轴及 $y$ 轴的截距。（1分）\n(b) 求 $f'(x)$，并证明 $f''(x)=\\frac{12x^{2}(4-x^{3})}{(x^{3}+2)^{3}}$。（4分）\n(c) (i) 求曲线 $y=f(x)$ 的所有极值点及拐点；(ii) 求所有渐近线；(iii) 描绘曲线。（8分）",
+  "solution_verified": "(a) 两个截距均对应点 $(0,0)$。\n(b) $f'(x)=\\frac{x^{3}(x^{3}+8)}{(x^{3}+2)^{2}}$，再次求导得 $f''(x)=\\frac{12x^{2}(4-x^{3})}{(x^{3}+2)^{3}}$。\n(c)(i) $f'(x)=0$ 给出 $x=-2,0$。由一阶导数符号，极大点为 $(-2,-8/3)$，极小点为 $(0,0)$。$f''$ 在垂直渐近线 $x=-2^{1/3}$ 两侧异号，但该点不在定义域；在定义域内，$f''$ 于 $x=2^{2/3}$ 处改变符号，故唯一拐点为 $(2^{2/3},2^{5/3}/3)$；$x=0$ 不是拐点。(ii) 垂直渐近线为 $x=-2^{1/3}$；由 $f(x)=x-\\frac{2x}{x^{3}+2}$，斜渐近线为 $y=x$。(iii) 草图应显示上述渐近线、极值点、拐点，并在 $x=-2^{1/3}$ 两侧分别趋于 $-\\infty$ 与 $+\\infty$。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "corrected_verified",
+    "primary_type": "极值与曲线性质",
+    "tags": ["驻点", "极大点", "极小点", "一阶导数判别法", "拐点", "渐近线", "曲线作图", "综合题目"],
+    "difficulty_level": 4,
+    "difficulty_dimensions": {"概念数": 2, "推理链长度": 2, "建模强度": 0, "代数负担": 2, "条件处理": 2, "易错风险": 2},
+    "difficulty_evidence": "需在间断点两侧完成一阶、二阶导数符号分析并整合极值、拐点、渐近线与草图，属于高负担的标准综合曲线分析，但核心关系均已给出，评为L4。",
+    "correction_status": "corrected_verified",
+    "corrections": [
+      {
+        "field": "solution_original",
+      "error_origin": "source_original",
+      "original": "答案MMD第17行含 `\\frac{\\frac{x^{6}+8x^{3}}{(x^{3}+2)^{2}}}{(x^{\\prime\\prime}(x)` 的错位拼接；第25–34行重复 `Tips`、`cannot apply the second derivative test` 及(c)(i)起句；第79行仅保留草图图片引用。",
+        "corrected": "清理重复与错位段落，保留正确的一、二阶导数推导，并用经复核的文字条件补全草图答案。",
+      "reason": "冻结来源文本存在重复及错位，无法直接作为教师答案使用；现有材料不足以进一步断言错误发生于原版还是转换阶段。",
+        "evidence": "微分应用乙部答案MMD第13–34行及第79行；独立有限差分复算通过。"
+      },
+      {
+        "field": "question_text_zh",
+        "error_origin": "translation",
+        "original": "求图像的x截距及y截距；所有极值点及拐点。",
+        "corrected": "求曲线与x轴及y轴的截距；求所有极值点及拐点，并补回各小问分值。",
+        "reason": "统一DSE书面表达并使分值结构完整。",
+        "evidence": "题目MMD第1372–1404行。"
+      }
+    ],
+    "duplicate_status": "adapted",
+    "duplicate_reference": "DSE-2022-Q9",
+    "duplicate_evidence": "来源答案明确标注 HKDSE Mathematics M2 2022 Q9，数据库登记为改编题。",
+    "unresolved_issues": [],
+    "audit_notes": "题目不依赖外部图；答案草图的源图片未作为题目图片关联，但已用关键特征补全复核答案。",
+    "record_status": "audit_passed"
+  },
+  {
+  "question_id": "M2QD-DA-PARTB-Q2",
+    "source_section": "乙部特训",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "revised",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "pass",
+      "necessary_images": "not_required",
+    "answer_pairing": "pass",
+    "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "设 $C_1$ 为曲线 $y=\\frac{px+q}{2x+r}$，其中 $p,q,r$ 为常数、$p\\ne0$ 且 $x\\ne-r/2$。已知 $C_1$ 经过 $(0,0)$，垂直渐近线为 $x=-3/2$，水平渐近线为 $y=-1$。另设 $C_2$ 为曲线 $y=\\frac{2x+r}{px+q}$，其中 $x\\ne-q/p$。\n(a) 求 $C_1$ 的方程。（4分）\n(b) 求 $C_1$ 与 $C_2$ 的交点。（2分）\n(c) 证明在各自定义域内，$\\frac{d}{dx}(\\frac{px+q}{2x+r})<0$ 且 $\\frac{d}{dx}(\\frac{2x+r}{px+q})>0$。（3分）\n(d) 写出 $C_2$ 的所有渐近线。（2分）\n(e) 在同一坐标系中描绘 $C_1$ 与 $C_2$，标明渐近线、截距及交点。（3分）",
+    "solution_verified": "(a) 由经过原点得 $q=0$；垂直渐近线给出 $r=3$；水平渐近线给出 $p/2=-1$，故 $p=-2$，$C_1:y=-2x/(2x+3)$。\n(b) $C_2:y=(2x+3)/(-2x)$。联立两式得唯一交点 $(-3/4,1)$。\n(c) $C_1'=-6/(2x+3)^2<0$（$x\\ne-3/2$）；$C_2'=3/(2x^2)>0$（$x\\ne0$）。\n(d) $C_2$ 的垂直渐近线为 $x=0$，水平渐近线为 $y=-1$。\n(e) 草图应显示：$C_1$ 的两截距均为原点，渐近线 $x=-3/2,y=-1$；$C_2$ 的 $x$ 截距为 $(-3/2,0)$、无 $y$ 截距，渐近线 $x=0,y=-1$；两曲线交于 $(-3/4,1)$，且分别单调递减、单调递增。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "corrected_verified",
+    "primary_type": "极值与曲线性质",
+    "tags": ["渐近线", "曲线作图", "综合题目"],
+    "difficulty_level": 4,
+    "difficulty_dimensions": {"概念数": 2, "推理链长度": 2, "建模强度": 1, "代数负担": 1, "条件处理": 2, "易错风险": 2},
+    "difficulty_evidence": "需由截距及两类渐近线反推三个参数，再处理互为倒数的曲线、导数符号和联合草图，概念整合与条件处理均较强，评为L4。",
+    "correction_status": "corrected_verified",
+    "corrections": [
+      {
+      "field": "question_text_zh",
+      "error_origin": "translation",
+      "original": "(设) $C_{1}$ 为曲线……已知 $C_{2}$ 为曲线……",
+        "corrected": "删除多余括号，并把“已知C2”改为“另设C2”，统一标点与数学间距。",
+        "reason": "改善中文语法而不改变数学条件。",
+        "evidence": "题目MMD第1406–1435行。"
+      },
+      {
+      "field": "solution_original",
+      "error_origin": "source_original",
+      "original": "答案MMD第87–88行逐行重复 `$\\therefore\\ r=3$`，第94–95行逐行重复 `$p=-2$`，第136行仅保留草图图片引用 `![](./images/d6fb2fbd-e521-4477-bb10-ce3f58210ca8-3_752_1019_1551_336.jpg)`。",
+        "corrected": "删除重复行，并以截距、渐近线、交点及单调性完整说明草图。",
+      "reason": "冻结来源存在重复行且草图仅以图片呈现；清理后教师答案可独立阅读和核对。现有材料不足以进一步判断这些现象发生于原版还是转换阶段。",
+        "evidence": "微分应用乙部答案MMD第82–137行。"
+      }
+    ],
+    "duplicate_status": "new",
+    "duplicate_reference": "",
+    "duplicate_evidence": "来源未标注公开试题编号，在本45题范围内未发现同题。",
+    "unresolved_issues": [],
+    "audit_notes": "参数 p 为一次函数分子系数，不应误贴“参数方程”标签。",
+    "record_status": "audit_passed"
+  },
+  {
+  "question_id": "M2QD-DA-PARTB-Q3",
+    "source_section": "乙部特训",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "revised",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "pass",
+      "necessary_images": "not_required",
+    "answer_pairing": "issue",
+    "answer_mathematics": "needs_correction"
+    },
+    "question_text_zh_reviewed": "设 $f(x)=x-\\frac{x}{x+1}$，其中 $x\\ne-1$。\n(a) 求 $f'(x)$ 及 $f''(x)$。（2分）\n(b) (i) 求曲线 $y=f(x)$ 的所有局部极值点；(ii) 证明曲线没有拐点。（6分）\n(c) 求曲线的所有渐近线。（2分）\n(d) 描绘曲线。（3分）",
+    "solution_verified": "(a) $f'(x)=1-1/(x+1)^2$，$f''(x)=2/(x+1)^3$。\n(b)(i) $f'(x)=0$ 给出 $x=-2,0$。由一阶导数符号，局部极大点为 $(-2,-4)$，局部极小点为 $(0,0)$。(ii) $f''(x)=0$ 无解；虽然凹凸性在 $x=-1$ 两侧改变，但 $f(-1)$ 无定义，故没有拐点。\n(c) 由 $f(x)=x-1+1/(x+1)$，垂直渐近线为 $x=-1$，斜渐近线为 $y=x-1$。\n(d) 草图应显示上述两条渐近线及两个局部极值点，并符合各区间的单调性与凹凸性。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "corrected_verified",
+    "primary_type": "极值与曲线性质",
+    "tags": ["驻点", "极大点", "极小点", "一阶导数判别法", "拐点", "渐近线", "曲线作图", "综合题目"],
+    "difficulty_level": 4,
+    "difficulty_dimensions": {"概念数": 2, "推理链长度": 2, "建模强度": 0, "代数负担": 1, "条件处理": 2, "易错风险": 2},
+    "difficulty_evidence": "需识别间断点处凹凸性改变并不构成拐点，同时完成极值、斜渐近线和草图分析，条件辨析是主要难点，评为L4。",
+    "correction_status": "corrected_verified",
+    "corrections": [
+      {
+        "field": "question_text_zh",
+        "error_origin": "translation",
+        "original": "相对极值点",
+        "corrected": "局部极值点",
+        "reason": "采用更常见且清晰的DSE数学术语，并补回小问分值。",
+        "evidence": "题目MMD第1438–1475行。"
+      },
+    {
+      "field": "solution_original",
+      "error_origin": "source_original",
+      "original": "答案草图图片将曲线标为 $y=x-\\frac{1}{x+1}$，但题目与答案推导的函数为 $f(x)=x-\\frac{x}{x+1}$。",
+      "corrected": "曲线标签应为 $y=x-\\frac{x}{x+1}=x-1+\\frac{1}{x+1}$；保留渐近线 $x=-1$、$y=x-1$ 及极值点 $(-2,-4)$、$(0,0)$。",
+      "reason": "图片中的函数标签与题目不一致；图形形状、渐近线和极值点对应正确函数。",
+      "evidence": "乙部答案MMD第141–215行及图片 d6fb2fbd-e521-4477-bb10-ce3f58210ca8-5_925_784_249_350.jpg；独立代数复算。"
+    },
+    {
+      "field": "solution_original",
+      "error_origin": "source_original",
+      "original": "答案MMD第146–149行的一、二阶导数混入 `1M`、`1A` 及孤立减号，草图只以图片引用出现。",
+      "corrected": "恢复干净导数公式，并用渐近线、极值点、单调性与凹凸性补全草图要求。",
+      "reason": "冻结来源文本不能直接复用；另将草图中的错误函数标签独立记录。",
+      "evidence": "微分应用乙部答案MMD第141–215行；独立有限差分复算通过。"
+      }
+    ],
+    "duplicate_status": "historical_reference",
+    "duplicate_reference": "HKALE Pure Mathematics 2006 Paper 2 Q7",
+    "duplicate_evidence": "来源答案明确标注 HKALE Pure Mathematics 2006 Paper 2 Q7。",
+  "unresolved_issues": [],
+  "audit_notes": "原题编号“3.”属于来源题号，不作为小问拆分；来源答案草图的函数标签与题目不一致，已记录订正并待 Joy 确认。",
+  "record_status": "audit_pending"
+  },
+  {
+    "question_id": "M2QD-DA-PARTB-Q4",
+    "source_section": "乙部特训",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "revised",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "pass",
+      "necessary_images": "pass",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "图1所示的轨道 $AOB$ 满足 $\\angle AOB=2\\pi/3$，且 $AO$ 位于水平面上。长 $14\\,\\mathrm{m}$ 的棒 $MN$ 连接两个半径均为 $\\sqrt3\\,\\mathrm{m}$ 的相同球体的球心。两球可沿轨道自由滑动，并分别与 $OA$、$OB$ 相切于 $P$、$Q$。点 $A,B,O,P,Q,M,N$ 位于同一竖直平面内。设 $OP=x\\,\\mathrm{m}$、$OQ=y\\,\\mathrm{m}$。\n(a) 证明 $\\frac{dy}{dx}=-\\frac{2x+y-3}{x+2y-3}$。（4分）\n(b) 以 $N$ 为球心的球体以 $2\\,\\mathrm{m\\,s^{-1}}$ 的恒定速率移向 $O$。设棒 $MN$ 与水平面的夹角为 $\\theta$（弧度）。当 $x=11$ 时，求 $\\theta$ 的增加率。（9分）",
+    "solution_verified": "由球的半径及几何关系可得三角形两边为 $x-1$、$y-1$，夹角为 $2\\pi/3$。余弦定理给出 $x^2+y^2+xy-3x-3y=193$。\n(a) 对 $x$ 求导：$2x+2y\\,dy/dx+y+x\\,dy/dx-3-3\\,dy/dx=0$，故 $dy/dx=-(2x+y-3)/(x+2y-3)$。\n(b) 当 $x=11$ 时，关系式给出 $y=7$。球心 $N$ 移向 $O$，所以 $dx/dt=-2$，从而 $dy/dt=(-13/11)(-2)=26/11$。由正弦定理，$y=1+\\frac{28}{\\sqrt3}\\sin\\theta$；当 $y=7$ 时，$\\sin\\theta=3\\sqrt3/14$、$\\cos\\theta=13/14$。求导并代入得 $d\\theta/dt=\\sqrt3/11\\,\\mathrm{rad\\,s^{-1}}$。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "checked_pass",
+    "primary_type": "变率",
+    "tags": ["相关变化率", "几何量变化", "链式法则建模", "隐函数求导", "建立变量关系", "综合题目"],
+    "difficulty_level": 5,
+    "difficulty_dimensions": {"概念数": 2, "推理链长度": 2, "建模强度": 2, "代数负担": 2, "条件处理": 2, "易错风险": 2},
+    "difficulty_evidence": "必须从复杂相切几何中自行构造余弦关系，再连接两层变化率与三角函数关系，建模和推导链均达到最高档，评为L5。",
+    "correction_status": "corrected_verified",
+    "corrections": [
+      {
+        "field": "question_text_zh",
+        "error_origin": "translation",
+        "original": "固定速率；棒MN和水平面所成的角",
+        "corrected": "恒定速率；棒MN与水平面的夹角，并规范单位为 m s^{-1}。",
+        "reason": "改善术语、语法与单位书写，不改变数学条件。",
+        "evidence": "题目MMD第1477–1506行。"
+      }
+    ],
+    "duplicate_status": "new",
+    "duplicate_reference": "",
+    "duplicate_evidence": "来源未标注公开试题编号，在本45题范围内未发现同题。",
+    "unresolved_issues": [],
+    "audit_notes": "题目图 M2QD_DA_PARTB_Q4_Figure1.jpg 已人工查看，A、B、O、P、Q、M、N及14 m、2π/3标注均与题干一致；SHA-256与记录一致。",
+    "record_status": "audit_passed"
+  },
+  {
+    "question_id": "M2QD-DA-PARTB-Q5",
+    "source_section": "乙部特训",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "revised",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "pass",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "曲线 $y=1-x^2$ 与水平线 $y=k$（$0<k<1$）相交于 $P,Q$ 两点，$O$ 为原点。\n(a) 用 $k$ 表示 $\\triangle OPQ$ 的面积。（3分）\n(b) 求 $\\triangle OPQ$ 的最大面积。（3分）\n(c) 已知 $OP$ 以每秒2单位的速率增加。当 $P$ 的 $y$ 坐标为 $1/3$ 时，求 $\\triangle OPQ$ 面积的变化率。（4分）\n(d) 某学生猜想：当 $\\triangle OPQ$ 的面积达到最大值时，$OP$ 也达到最大值。说明该猜想是否正确。（2分）",
+    "solution_verified": "(a) $P,Q$ 的横坐标为 $\\pm\\sqrt{1-k}$，故面积 $A=k\\sqrt{1-k}$。\n(b) $dA/dk=(2-3k)/(2\\sqrt{1-k})$，在 $0<k<1$ 上于 $k=2/3$ 取得最大值 $2\\sqrt3/9$。\n(c) $OP=\\sqrt{k^2-k+1}$。由 $d(OP)/dt=2$ 得 $dk/dt=\\frac{2\\sqrt{k^2-k+1}}{2k-1}\\cdot2$。当 $k=1/3$ 时，$dA/dt=-\\sqrt{42}$ 平方单位/秒。\n(d) 在面积最大时 $k=2/3$，但 $d(OP)/dk=\\frac{2k-1}{2\\sqrt{k^2-k+1}}\\ne0$，故 $OP$ 当时并非极值，猜想不正确。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "corrected_verified",
+    "primary_type": "综合微分应用",
+    "tags": ["区间最值", "几何最优化", "相关变化率", "面积变化", "链式法则建模", "建立变量关系", "综合题目"],
+    "difficulty_level": 5,
+    "difficulty_dimensions": {"概念数": 2, "推理链长度": 2, "建模强度": 2, "代数负担": 1, "条件处理": 2, "易错风险": 2},
+    "difficulty_evidence": "同题连续考查面积建模、区间最大值、由OP反求参数变化率及反例判断，需跨最优化与变率组织长推导，评为L5。",
+    "correction_status": "corrected_verified",
+    "corrections": [
+      {
+        "field": "solution_original",
+      "error_origin": "source_original",
+      "original": "答案MMD第325行呈现为 $A=\\sqrt{k^2-1}$。",
+        "corrected": "A=k\\sqrt{1-k}。",
+      "reason": "由(a)的底乘高直接得到，且后一行导数与后续结果也对应此正确表达式；冻结MMD明确呈现错误式，但现有材料不足以进一步断言错误发生于原版还是转换阶段。现数据库答案已使用正确式但此前未保存校订记录。",
+        "evidence": "微分应用乙部答案MMD第314–327行；独立代数与数值复算得到 dA/dt=-√42。"
+      },
+      {
+        "field": "question_text_zh",
+        "error_origin": "translation",
+        "original": "达至其最大值；面积的变率",
+        "corrected": "达到最大值；面积的变化率，并补全(d)的2分标记。",
+        "reason": "统一简体中文书面表达并完整呈现分值。",
+        "evidence": "题目MMD第1508–1535行。"
+      }
+    ],
+    "duplicate_status": "historical_reference",
+    "duplicate_reference": "DSE-2018-Q9",
+    "duplicate_evidence": "题目MMD与答案均标注参考2018 Q9。",
+    "unresolved_issues": [],
+  "audit_notes": "冻结MMD存在一处明确公式错误，已在校订记录中保留原文与证据；错误发生阶段未作超出证据的归因。",
+    "record_status": "audit_passed"
+  },
+  {
+    "question_id": "M2QD-DA-PARTB-Q6",
+    "source_section": "乙部特训",
+    "checks": {
+      "question_boundary": "pass",
+      "english_text": "pass",
+      "chinese_text": "revised",
+      "formula_symbols_units": "pass",
+      "subparts_and_marks": "pass",
+      "necessary_images": "not_required",
+      "answer_pairing": "pass",
+      "answer_mathematics": "pass"
+    },
+    "question_text_zh_reviewed": "将曲线 $y=-\\sqrt{x^2+4}$ 与 $y=\\sqrt{(x-10)^2+9}$ 的图像分别记为 $G,H$，其中 $0<x<10$。点 $P$ 在 $G$ 上移动，过 $P$ 的竖直线与 $H$ 相交于 $Q$。设 $P$ 的横坐标为 $p$。已知当 $p=a$ 时，$PQ$ 的长度取得最小值。\n(a) 求 $a$。（4分）\n(b) (i) 有人声称当 $p=a$ 时，$\\triangle OPQ$ 的面积也取得最小值。你是否同意？说明理由；(ii) $OP$ 以每秒2单位的恒定速率增加，求当 $p=a$ 时 $\\triangle OPQ$ 周长的变化率。（9分）",
+    "solution_verified": "(a) $PQ=\\sqrt{(p-10)^2+9}+\\sqrt{p^2+4}$。令导数为0并利用 $0<p<10$，得 $p=4$，故 $a=4$。\n(b)(i) 面积 $A=\\frac12p\\,PQ$。在 $p=4$ 时 $d(PQ)/dp=0$，但 $dA/dp=PQ/2=5\\sqrt5/2\\ne0$，所以不同意。(ii) $OP=\\sqrt{2p^2+4}$；在 $p=4$ 且 $d(OP)/dt=2$ 时，$dp/dt=3/2$。又 $OQ=\\sqrt{p^2+(p-10)^2+9}$。设周长为 $w=OP+OQ+PQ$，则在 $p=4$ 时 $d(PQ)/dp=0$、$d(OQ)/dp=-2/\\sqrt{61}$，故 $dw/dt=2-3/\\sqrt{61}=2-3\\sqrt{61}/61$ 单位/秒。",
+    "answer_status_reviewed": "source_provided",
+    "answer_verification_status": "checked_pass",
+    "primary_type": "综合微分应用",
+    "tags": ["几何最优化", "相关变化率", "几何量变化", "链式法则建模", "建立变量关系", "综合题目"],
+    "difficulty_level": 5,
+    "difficulty_dimensions": {"概念数": 2, "推理链长度": 2, "建模强度": 2, "代数负担": 2, "条件处理": 2, "易错风险": 2},
+    "difficulty_evidence": "先最小化两根式距离，再反驳面积结论，最后把OP的给定变化率转换为参数变化率并合成三边周长变化率，推导链与整合度均最高，评为L5。",
+    "correction_status": "corrected_verified",
+    "corrections": [
+      {
+        "field": "question_text_zh",
+        "error_origin": "translation",
+        "original": "达至其极小值；宣称；周界的变率",
+        "corrected": "取得最小值；声称；周长的变化率。",
+        "reason": "使用更自然、统一的简体数学表达。",
+        "evidence": "题目MMD第1539–1569行。"
+      }
+    ],
+    "duplicate_status": "adapted",
+    "duplicate_reference": "DSE-2021-Q10",
+    "duplicate_evidence": "来源答案明确标注 HKDSE Mathematics M2 2021 Q10，数据库登记为改编题。",
+    "unresolved_issues": [],
+    "audit_notes": "平方求驻点时已用定义域0<p<10排除p=-20，并用导数两侧符号确认p=4为最小值点。",
+    "record_status": "audit_passed"
+  }
+]

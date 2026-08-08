@@ -1,0 +1,22 @@
+{
+  "captured_at": "2026-08-03T00:00:00+08:00",
+  "purpose": "Task 3 pre-audit non-mutation baseline",
+  "files": [
+    {"path":"m2_question_bank/data/m2_question_bank.sqlite3","bytes":5152768,"sha256":"b6dce8f03e080d2def81c806861c382a9e7abcde232b5c88e1ac0cfecf113346","role":"current_working_sqlite_v113"},
+    {"path":"m2_question_bank/data/questions.csv","bytes":4180213,"sha256":"f1cded1d5960d6b3d775f65155106d5818a3d3988fb3add3907520eeffdd460b","role":"current_working_csv_v113"},
+    {"path":"audit_extract/v116/m2_question_bank/data/m2_question_bank.sqlite3","bytes":6307840,"sha256":"d647244f54e9e54b25ec4885f16c47171c7521552876a5fa925a16d65d8c7714","role":"formal_v116_extracted_sqlite"},
+    {"path":"audit_extract/v116/m2_question_bank/data/questions.csv","bytes":5115256,"sha256":"849ccc93bdd1dc2fef811b53ddc47284d6e66cc817517dada29653d1fb3b0d45","role":"formal_v116_extracted_csv"},
+    {"path":"Joy_M2_V1_6_Question_Bank.sqlite3","bytes":2826240,"sha256":"0d9406ed7f789acb3eb6ecdc4c9a5421fcb0ffec3cc56cecaedff79ecac4fb11","role":"legacy_root_sqlite"},
+    {"path":"Joy_M2_V1_6_Questions.csv","bytes":2354323,"sha256":"bbadc38e3c7c20924b89c40d0a766aeb943221806b27a1bbef7ca3333ef3e9a7","role":"legacy_root_csv"},
+    {"path":"V1.16_complete_question_audit/frozen_sources/Joy_M2_Question_Bank_V1_16_M2Quick_Differentiation_Applications.zip","bytes":34735850,"sha256":"5f73f541f5c2da5bf3e5540daf7dbfb40566a339eaee79ef3e25d8eabd0404ae","role":"formal_v116_package"},
+    {"path":"V1.16_complete_question_audit/frozen_sources/M2Quick Drill-微分法的应用.mmd.zip","bytes":311765,"sha256":"c98efaa053499e260f72950f8c7067dbba2b641ad104375c0efaa65f116f0749","role":"question_mmd_source"},
+    {"path":"V1.16_complete_question_audit/frozen_sources/微分应用乙部答案.mmd.zip","bytes":186312,"sha256":"4fd3fc59c49cf7385d2958efe6d995b908d3dda7d38d7610a255cad017300061","role":"part_b_solution_source"},
+    {"path":"V1.16_complete_question_audit/frozen_sources/微分的应用甲部.mmd.zip","bytes":137453,"sha256":"7306fcbcb9d2e2ff67d4ebc0c79ff38520dfe4a2d8f897b9556bdf62cde471b5","role":"part_a_mmd_source"}
+  ],
+  "baseline_invariants": {
+    "question_count": 45,
+    "unique_question_ids": true,
+    "section_distribution": {"教材例题":8,"应试训练":14,"甲部特训":17,"乙部特训":6},
+    "record_status": {"audit_pending":45}
+  }
+}
