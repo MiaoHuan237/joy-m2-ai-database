@@ -1,0 +1,40 @@
+{
+  "answer_status_counts": {
+    "ai_solved_verified": 71,
+    "missing_from_source": 34,
+    "source_provided": 347
+  },
+  "audit_passed": 452,
+  "audit_pending": 0,
+  "blocked": 0,
+  "candidate_count": 452,
+  "exact_duplicate_count": 0,
+  "image_reference_count": 33,
+  "release_version": "V1.18",
+  "source_count": 23,
+  "source_counts": {
+    "DSE-2021": 12,
+    "DSE-2022": 12,
+    "DSE-2023": 12,
+    "DSE-2024": 13,
+    "DSE-2025": 13,
+    "DSE-2026": 12,
+    "M2QD-APPLICATIONS-INTEGRATION": 35,
+    "M2QD-BINOMIAL-THEOREM": 7,
+    "M2QD-CH06": 18,
+    "M2QD-INTEGRATION-CH4": 29,
+    "M2QD-LINEAR-SYSTEMS": 35,
+    "M2QD-MATHEMATICAL-INDUCTION": 6,
+    "M2QD-TRIGONOMETRY": 7,
+    "M2QD-VECTOR": 31,
+    "M2WANG-APPLICATIONS-OF-DIFFERENTIATION": 42,
+    "M2WANG-BINOMIAL-THEOREM": 17,
+    "M2WANG-DEFINITE-INTEGRAL": 27,
+    "M2WANG-INDEFINITE-INTEGRAL": 30,
+    "M2WANG-LIMITS-DIFFERENTIATION": 24,
+    "M2WANG-MATHEMATICAL-INDUCTION": 17,
+    "M2WANG-MATRICES-DETERMINANTS": 19,
+    "M2WANG-TRIGONOMETRY": 17,
+    "M2WANG-VECTORS-APPLICATIONS": 17
+  }
+}
