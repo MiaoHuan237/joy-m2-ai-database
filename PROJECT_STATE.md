@@ -15,7 +15,7 @@ Updated: 2026-08-08 (Asia/Singapore)
 
 ## Current task
 
-Task 7 — Codex engineering initialization is complete on branch `task7/codex-engineering-init`, pending Joy's integration choice.
+Task 7 — Codex engineering initialization is complete and locally integrated into `main`.
 
 Scope:
 
@@ -24,6 +24,7 @@ Scope:
 - V1.18 formal release copied byte-for-byte and protected by an independent baseline lock.
 - Minimal legacy snapshot preserves all 54 executable Task 3–6 regressions.
 - No formal question data changed; Task 8 pipeline refactoring has not started.
+- The local feature branch was merged by fast-forward after Joy selected local integration.
 
 ## Completion gate
 
