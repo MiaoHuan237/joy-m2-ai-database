@@ -15,25 +15,25 @@ Updated: 2026-08-08 (Asia/Shanghai)
 
 ## Current task
 
-Task 7.1 — remote engineering migration repair is prepared on the isolated local branch `repair/task-7.1` and is awaiting Joy's approval before updating remote `main`.
+Task 7.1 — remote engineering migration repair is complete and integrated into remote `main`.
 
 Scope:
 
-- Remote `main` currently remains at `ceb179e0dc7dd620fa4327c765adfe08dfe66d09`.
-- Safety branch `backup/task-7.1-ceb179e-20260808` preserves that remote state before any possible replacement.
+- Remote `main` contains the verified Task 7 engineering history, including recovery target `e3c9f61eebb72beedaf0aaf845b525e690b7bffe`.
+- Safety branch `backup/task-7.1-ceb179e-20260808` continues to preserve the previous remote state at `ceb179e0dc7dd620fa4327c765adfe08dfe66d09`.
 - The verified Task 7 recovery source is commit `e3c9f61eebb72beedaf0aaf845b525e690b7bffe` from `Joy_M2_AI_Database_Task7_2026-08-08.bundle`.
-- The isolated repair branch restores the standard project structure and minimal legacy snapshot required for all 54 executable Task 3–6 regressions.
+- The restored engineering history provides the standard project structure and minimal legacy snapshot required for all 54 executable Task 3–6 regressions.
 - V1.18 remains byte-identical to the remote baseline; no formal question data changed.
-- No update to remote `main` has been made, and Task 8 has not started.
+- Task 8 has not started.
 
 ## Completion gate
 
-- Task 7 structure and frozen-baseline tests: 7/7 passed on the isolated repair branch.
-- V1.18 independent verifier: `PASS` with 497/452/45 counts on the isolated repair branch.
-- Task 3–6 executable regressions: 13 + 9 + 10 + 22 = 54/54 passed on the isolated repair branch.
+- Task 7 structure and frozen-baseline tests: 7/7 passed after remote integration.
+- V1.18 independent verifier: `PASS` with 497/452/45 counts after remote integration.
+- Task 3–6 executable regressions: 13 + 9 + 10 + 22 = 54/54 passed after remote integration.
 - Verification record: `docs/reports/TASK7_VERIFICATION.md`.
-- Remote `main` replacement remains pending explicit Joy approval.
+- Remote backup branch remains retained; no cleanup has been performed.
 
 ## Next task
 
-After Task 7.1 is explicitly approved and the repaired engineering history is integrated, plan Task 8 separately: migrate the existing Task 5/6 pipeline into focused `src/joy_m2/` modules and a unified CLI while preserving V1.18 byte/data equivalence. Task 8 has not started.
+Plan Task 8 separately: migrate the existing Task 5/6 pipeline into focused `src/joy_m2/` modules and a unified CLI while preserving V1.18 byte/data equivalence. Task 8 has not started.
