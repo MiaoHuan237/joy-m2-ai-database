@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-08-08 (Asia/Shanghai)
+Updated: 2026-08-09 (Asia/Shanghai)
 
 ## Formal data
 
@@ -15,25 +15,29 @@ Updated: 2026-08-08 (Asia/Shanghai)
 
 ## Current task
 
-Task 7.1 — remote engineering migration repair is complete and integrated into remote `main`.
+Task 8A — unified pipeline interface design and Task 8B implementation plan are complete. Task 8B has not started.
 
 Scope:
 
-- Remote `main` contains the verified Task 7 engineering history, including recovery target `e3c9f61eebb72beedaf0aaf845b525e690b7bffe`.
-- Safety branch `backup/task-7.1-ceb179e-20260808` continues to preserve the previous remote state at `ceb179e0dc7dd620fa4327c765adfe08dfe66d09`.
-- The verified Task 7 recovery source is commit `e3c9f61eebb72beedaf0aaf845b525e690b7bffe` from `Joy_M2_AI_Database_Task7_2026-08-08.bundle`.
-- The restored engineering history provides the standard project structure and minimal legacy snapshot required for all 54 executable Task 3–6 regressions.
-- V1.18 remains byte-identical to the remote baseline; no formal question data changed.
-- Task 8 has not started.
+- Accepted wording: “Task 8A 设计与计划阶段通过；新增测试延期至 Task 8B。”
+- The approved design is `docs/superpowers/specs/2026-08-08-task8a-pipeline-contracts-design.md`.
+- The follow-up implementation plan is `docs/superpowers/plans/2026-08-08-task8a-pipeline-contracts.md`.
+- The design fixes the future responsibilities, typed Python interfaces, path/configuration rules, failure boundaries, deterministic artifact contracts, behavior-lock matrix, and Task 8B compatibility/rollback strategy.
+- Task 8A changed documentation only; no maintained pipeline implementation, CLI, formal database, frozen hash, compatibility view, or question data changed.
+- Task 8B execution requires separate explicit approval and has not started.
+- Task 8A was developed from verified baseline `295c8ae38b5b22c6ba449d2af7562cb1516cca4c`, whose history includes `e3c9f61eebb72beedaf0aaf845b525e690b7bffe`.
+- Safety branch `backup/task-7.1-ceb179e-20260808` remains retained.
 
 ## Completion gate
 
-- Task 7 structure and frozen-baseline tests: 7/7 passed after remote integration.
-- V1.18 independent verifier: `PASS` with 497/452/45 counts after remote integration.
-- Task 3–6 executable regressions: 13 + 9 + 10 + 22 = 54/54 passed after remote integration.
+- Task 8A closeout reran the Task 7 structure and frozen-baseline tests: 7/7 passed.
+- Task 8A closeout reran the V1.18 independent verifier: `PASS` with 497/452/45 counts.
+- Task 8A closeout reran the Task 3–6 executable regressions: 13 + 9 + 10 + 22 = 54/54 passed.
+- The Task 8A specification and implementation plan contain no unresolved placeholders; the plan has not been executed.
+- Final acceptance record: `docs/reports/TASK8A_FINAL_ACCEPTANCE.md`; behavior-lock tests and pipeline interface-contract tests both remain at 0 and are deferred to Task 8B. Zero does not mean PASS.
 - Verification record: `docs/reports/TASK7_VERIFICATION.md`.
 - Remote backup branch remains retained; no cleanup has been performed.
 
 ## Next task
 
-Plan Task 8 separately: migrate the existing Task 5/6 pipeline into focused `src/joy_m2/` modules and a unified CLI while preserving V1.18 byte/data equivalence. Task 8 has not started.
+After separate explicit approval, execute the Task 8B plan to migrate the Task 5/6 behavior into focused `src/joy_m2/` modules with test-first, layer-by-layer equivalence checks. Task 8B must not implement the CLI or write a formal release.
