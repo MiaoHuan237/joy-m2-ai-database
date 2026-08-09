@@ -19,6 +19,7 @@ Task 8A — unified pipeline interface and behavior-lock design is complete on `
 
 Scope:
 
+- Accepted wording: “Task 8A 设计与计划阶段通过；新增测试延期至 Task 8B。”
 - The approved design is `docs/superpowers/specs/2026-08-08-task8a-pipeline-contracts-design.md`.
 - The follow-up implementation plan is `docs/superpowers/plans/2026-08-08-task8a-pipeline-contracts.md`.
 - The design fixes the future responsibilities, typed Python interfaces, path/configuration rules, failure boundaries, deterministic artifact contracts, behavior-lock matrix, and Task 8B compatibility/rollback strategy.
@@ -33,7 +34,7 @@ Scope:
 - Task 8A closeout reran the V1.18 independent verifier: `PASS` with 497/452/45 counts.
 - Task 8A closeout reran the Task 3–6 executable regressions: 13 + 9 + 10 + 22 = 54/54 passed.
 - The Task 8A specification and implementation plan contain no unresolved placeholders; the plan has not been executed.
-- Final acceptance record: `docs/reports/TASK8A_FINAL_ACCEPTANCE.md`; no Task 8A behavior-lock or interface-contract test files exist because their implementation remains in the unexecuted Task 8B plan.
+- Final acceptance record: `docs/reports/TASK8A_FINAL_ACCEPTANCE.md`; behavior-lock tests and pipeline interface-contract tests both remain at 0 and are deferred to Task 8B. Zero does not mean PASS.
 - Verification record: `docs/reports/TASK7_VERIFICATION.md`.
 - Remote backup branch remains retained; no cleanup has been performed.
 
