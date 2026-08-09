@@ -1,0 +1,13 @@
+{
+  "answer_status_counts": {
+    "source_provided": 45
+  },
+  "csv_name": "Joy_M2_Complete_Questions_V1_17.csv",
+  "csv_sha256": "308728abb9936cd0feb84ac7e30922833b60565a2942656311aa9e23aed1e2ba",
+  "legacy_complete_question_count": 497,
+  "question_count": 45,
+  "release_version": "V1.17",
+  "sqlite_name": "Joy_M2_Complete_Question_DB_V1_17.sqlite3",
+  "sqlite_sha256": "58f32e547c4ff0cdd2ae25a9368ea288cbaa70af52869b779d698233aee93fab",
+  "user_version": 117
+}

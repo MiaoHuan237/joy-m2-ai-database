@@ -1,0 +1,16 @@
+{
+  "answer_status_counts": {
+    "ai_solved_verified": 71,
+    "missing_from_source": 34,
+    "source_provided": 392
+  },
+  "csv_name": "Joy_M2_Complete_Questions_V1_18.csv",
+  "csv_sha256": "94e4b8060f80c485b6cd4c20d0cd9bbe7c4b0939f289ad38762900f9bceec2c5",
+  "existing_v117_question_count": 45,
+  "question_count": 497,
+  "release_version": "V1.18",
+  "sqlite_name": "Joy_M2_Complete_Question_DB_V1_18.sqlite3",
+  "sqlite_sha256": "fd9fe44f1d4bebb3e6dc94ef9d0ef28afde217920c09682e3b4840a97522f5a7",
+  "task6_question_count": 452,
+  "user_version": 118
+}
