@@ -168,9 +168,18 @@ class AuditResult:
                 f"audit status {self.status!r} is inconsistent with blocking issues"
             )
 
-        declared_counts = Counter()
-        for answer_status, count in answer_status_counts:
-            declared_counts[answer_status] += count
+        declared_counts: dict[str, int] = {}
+        for entry in answer_status_counts:
+            if len(entry) != 2:
+                raise PipelineError("answer_status_counts entries must contain two values")
+            answer_status, count = entry
+            if type(answer_status) is not str:
+                raise PipelineError("answer status names must be strings")
+            if type(count) is not int or count <= 0:
+                raise PipelineError("answer status counts must be positive integers")
+            if answer_status in declared_counts:
+                raise PipelineError("answer status classifications must be unique")
+            declared_counts[answer_status] = count
         actual_counts = Counter(record.answer_status for record in records)
         if declared_counts != actual_counts:
             raise PipelineError(

@@ -784,6 +784,22 @@ class PipelineModelContractTests(unittest.TestCase):
                 answer_status_counts=[["wrong_status", 1]],
                 status="PASS",
             )
+        invalid_count_entries = (
+            ("duplicate answer status", [["value", 1], ["value", 0]]),
+            ("negative count", [["value", 2], ["value", -1]]),
+            ("zero count", [["value", 1], ["wrong_status", 0]]),
+            ("bool count", [["value", True]]),
+            ("non-int count", [["value", 1.0]]),
+        )
+        for reason, answer_status_counts in invalid_count_entries:
+            with self.subTest(reason=reason):
+                with self.assertRaises(errors.PipelineError):
+                    models.AuditResult(
+                        records=[question],
+                        issues=[],
+                        answer_status_counts=answer_status_counts,
+                        status="PASS",
+                    )
 
     def test_model_path_fields_resolve_to_absolute_frozen_paths(self) -> None:
         models = import_required(self, "joy_m2.models")
