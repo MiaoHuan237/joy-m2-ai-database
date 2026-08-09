@@ -170,4 +170,4 @@ SQLite 文件哈希与冻结锁完全一致，因此 497 道正式题及其存�
 - 未开始 Task 8B。
 - 未开始 Task 8C。
 - 未删除 compatibility views、legacy 文件或远端备份分支。
-- Task 8A 分支完成推送并创建未自动合并的 PR 后，保留当前工作树并等待 PR 审核。
+- Task 8A 验收完成后，分支已推送并创建草稿 PR #1；PR 的当前状态以 GitHub 为准。
