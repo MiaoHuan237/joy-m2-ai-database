@@ -58,7 +58,7 @@ task8_python=/Users/miaohuanjoy/.cache/codex-runtimes/codex-primary-runtime/depe
 
 - `tests/fixtures/pipeline/V1.17.json`: reviewed V1.17 counts, names, hashes, and layout facts.
 - `tests/fixtures/pipeline/V1.18.json`: reviewed V1.18 counts, names, hashes, and layout facts.
-- `tests/regression/test_task8a_legacy_pipeline_behavior.py`: characterization tests that call legacy only as an oracle.
+- `tests/regression/test_task8b_legacy_pipeline_behavior.py`: characterization tests that call legacy only as an oracle.
 - `tests/unit/test_pipeline_models.py`: dataclass immutability and result semantics.
 - `tests/unit/test_pipeline_config.py`: path resolution, containment, symlink, and overlap checks.
 - `tests/unit/test_audit_pipeline.py`: aggregation, duplicate blocking, provenance, and pass conversion.
@@ -80,7 +80,7 @@ task8_python=/Users/miaohuanjoy/.cache/codex-runtimes/codex-primary-runtime/depe
 **Files:**
 - Create: `tests/fixtures/pipeline/V1.17.json`
 - Create: `tests/fixtures/pipeline/V1.18.json`
-- Create: `tests/regression/test_task8a_legacy_pipeline_behavior.py`
+- Create: `tests/regression/test_task8b_legacy_pipeline_behavior.py`
 
 **Interfaces:**
 - Consumes: `legacy/task5_work/build_task5_release.py`, `legacy/task6_work/build_task6_release.py`, and the frozen release assets.
@@ -127,7 +127,7 @@ Create `tests/fixtures/pipeline/V1.18.json` with these fixed values:
 
 - [ ] **Step 2: Write safe characterization helpers**
 
-In `test_task8a_legacy_pipeline_behavior.py`, resolve the repository root from the test file, import legacy modules only inside test code, and build into `TemporaryDirectory`:
+In `test_task8b_legacy_pipeline_behavior.py`, resolve the repository root from the test file, import legacy modules only inside test code, and build into `TemporaryDirectory`:
 
 ```python
 ROOT = Path(__file__).resolve().parents[2]
@@ -168,7 +168,7 @@ Package twice to different temporary ZIP paths and assert identical bytes, fixed
 Run:
 
 ```bash
-$task8_python -m unittest -v tests.regression.test_task8a_legacy_pipeline_behavior
+$task8_python -m unittest -v tests.regression.test_task8b_legacy_pipeline_behavior
 ```
 
 Expected: PASS. These are characterization tests of existing behavior, so their first run is expected to pass rather than provide a red test.
@@ -188,7 +188,7 @@ Expected: Task 7 7/7, Task 6 22/22, Task 5 10/10.
 - [ ] **Step 7: Commit the behavior locks**
 
 ```bash
-git add tests/fixtures/pipeline/V1.17.json tests/fixtures/pipeline/V1.18.json tests/regression/test_task8a_legacy_pipeline_behavior.py
+git add tests/fixtures/pipeline/V1.17.json tests/fixtures/pipeline/V1.18.json tests/regression/test_task8b_legacy_pipeline_behavior.py
 git diff --cached --check
 git commit -m "test: lock legacy pipeline behavior"
 ```
@@ -416,7 +416,7 @@ Serialize `AuditedBatch` through a test-only canonical conversion using the exac
 - [ ] **Step 8: Run audit and legacy gates**
 
 ```bash
-$task8_python -m unittest -v tests.unit.test_audit_pipeline tests.regression.test_task8a_legacy_pipeline_behavior
+$task8_python -m unittest -v tests.unit.test_audit_pipeline tests.regression.test_task8b_legacy_pipeline_behavior
 (cd legacy && $task8_python -m unittest -v task6_work/test_task6_migration.py)
 ```
 

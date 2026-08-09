@@ -15,7 +15,7 @@ Updated: 2026-08-09 (Asia/Shanghai)
 
 ## Current task
 
-Task 8A — unified pipeline interface and behavior-lock design is complete on `task8a/pipeline-contracts`.
+Task 8A — unified pipeline interface design and Task 8B implementation plan are complete. Task 8B has not started.
 
 Scope:
 
@@ -25,7 +25,7 @@ Scope:
 - The design fixes the future responsibilities, typed Python interfaces, path/configuration rules, failure boundaries, deterministic artifact contracts, behavior-lock matrix, and Task 8B compatibility/rollback strategy.
 - Task 8A changed documentation only; no maintained pipeline implementation, CLI, formal database, frozen hash, compatibility view, or question data changed.
 - Task 8B execution requires separate explicit approval and has not started.
-- Remote `main` remains based on verified commit `295c8ae38b5b22c6ba449d2af7562cb1516cca4c`, whose history includes `e3c9f61eebb72beedaf0aaf845b525e690b7bffe`.
+- Task 8A was developed from verified baseline `295c8ae38b5b22c6ba449d2af7562cb1516cca4c`, whose history includes `e3c9f61eebb72beedaf0aaf845b525e690b7bffe`.
 - Safety branch `backup/task-7.1-ceb179e-20260808` remains retained.
 
 ## Completion gate
