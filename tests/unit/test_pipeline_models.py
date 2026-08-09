@@ -785,17 +785,21 @@ class PipelineModelContractTests(unittest.TestCase):
                 status="PASS",
             )
         invalid_count_entries = (
-            ("duplicate answer status", [["value", 1], ["value", 0]]),
-            ("negative count", [["value", 2], ["value", -1]]),
-            ("zero count", [["value", 1], ["wrong_status", 0]]),
-            ("bool count", [["value", True]]),
-            ("non-int count", [["value", 1.0]]),
+            (
+                "duplicate answer status",
+                [question, question],
+                [["value", 1], ["value", 1]],
+            ),
+            ("negative count", [question], [["value", 2], ["value", -1]]),
+            ("zero count", [question], [["value", 1], ["wrong_status", 0]]),
+            ("bool count", [question], [["value", True]]),
+            ("non-int count", [question], [["value", 1.0]]),
         )
-        for reason, answer_status_counts in invalid_count_entries:
+        for reason, records, answer_status_counts in invalid_count_entries:
             with self.subTest(reason=reason):
                 with self.assertRaises(errors.PipelineError):
                     models.AuditResult(
-                        records=[question],
+                        records=records,
                         issues=[],
                         answer_status_counts=answer_status_counts,
                         status="PASS",
