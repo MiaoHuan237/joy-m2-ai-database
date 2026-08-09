@@ -33,6 +33,7 @@ Scope:
 - Task 8A closeout reran the V1.18 independent verifier: `PASS` with 497/452/45 counts.
 - Task 8A closeout reran the Task 3–6 executable regressions: 13 + 9 + 10 + 22 = 54/54 passed.
 - The Task 8A specification and implementation plan contain no unresolved placeholders; the plan has not been executed.
+- Final acceptance record: `docs/reports/TASK8A_FINAL_ACCEPTANCE.md`; no Task 8A behavior-lock or interface-contract test files exist because their implementation remains in the unexecuted Task 8B plan.
 - Verification record: `docs/reports/TASK7_VERIFICATION.md`.
 - Remote backup branch remains retained; no cleanup has been performed.
 
