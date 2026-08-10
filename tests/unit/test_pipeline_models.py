@@ -519,6 +519,16 @@ class PipelineModelContractTests(unittest.TestCase):
     def test_question_image_enforces_only_general_value_invariants(self) -> None:
         models = import_required(self, "joy_m2.models")
         errors = import_required(self, "joy_m2.errors")
+        annotations = typing.get_type_hints(models.QuestionImage)
+        self.assertEqual(tuple(annotations), ("path", "sha256", "role"))
+        self.assertEqual(
+            annotations,
+            {
+                "path": str,
+                "sha256": str | None,
+                "role": str | None,
+            },
+        )
 
         path_only = models.QuestionImage("assets/q1.png", None, None)
         evidenced = models.QuestionImage(
