@@ -347,6 +347,387 @@ git commit -m "feat: add typed pipeline contracts"
 
 ---
 
+## Task 2 — Profile Parsing, Serialization and Audit Contract
+
+**Contract:** **APPROVED AND FROZEN**
+
+**Implementation:** **NOT STARTED — NOT APPROVED**
+
+This chapter freezes only the Task 2 contract. It does not authorize tests or
+production implementation. Any implementation requires an independent source
+review confirming that this contract is unambiguous, followed by separate human
+authorization.
+
+The staged approval name “Task 2” in this chapter refers to profile parsing,
+record-level audit serialization, and audit aggregation. The historical numbered
+implementation step below remains unapproved and is governed by this chapter.
+
+### 1. Public type and module boundaries
+
+The dependency direction is:
+
+```text
+external profile input
+→ audit/profiles.py
+→ typed AuditedQuestion records
+→ audit/pipeline.py
+→ AuditResult
+→ AuditResult.require_passed()
+→ AuditedBatch
+```
+
+Responsibilities are frozen as follows:
+
+- `src/joy_m2/models.py` defines immutable domain values and public types only.
+  It does not parse external profile shapes, preserve arbitrary compatibility
+  fields, perform approval conversion, or encode JSON.
+- `src/joy_m2/audit/profiles.py` is the sole external profile-shape conversion
+  boundary. It parses V1.17/V1.18 records, validates profile-specific structure,
+  constructs the approved typed representation, and serializes audit-stage
+  record-level mappings. It does not access the filesystem or database, compute
+  real file hashes, call export/release/CLI code, perform approval conversion,
+  or use a hidden mutable registry or generic `extras`.
+- `src/joy_m2/audit/pipeline.py` performs `audit_batch()` input preflight, invokes
+  the selected profile parser, executes business audit rules, aggregates and
+  sorts issues, and constructs `AuditResult`. It does not write databases,
+  export files, perform release approval, or call CLI code.
+- A later, separately authorized release transformer owns all V1.17 publication
+  and approval conversion. This chapter freezes that responsibility boundary but
+  does not design its API or authorize its implementation.
+- `src/joy_m2/export/formats.py` receives a record-level mapping after the
+  applicable business-stage transformation. It owns final file representation
+  and bytes only; it does not audit or change publication semantics.
+
+`AuditContract.profile` is exactly the approved `AuditProfile` literal. The only
+valid values are `"V1.17"` and `"V1.18"`; Task 5 maps to `"V1.17"` and Task 6
+maps to `"V1.18"`. Arbitrary strings, implicit profile inference, fallback
+profiles, and a mutable profile registry are forbidden.
+
+### 2. Common parsing and serialization rules
+
+The outer pipeline performs file/container preflight and JSON decoding. An
+invalid outer container raises `InputFormatError` there. A profile parser then
+accepts only the exact selected-profile record shape. It must:
+
+- reject a non-`dict` record, missing or forbidden key, extra key, incorrect key
+  order, wrong scalar/container type, or invalid image shape with
+  `InputFormatError`;
+- use exact runtime types: `bool` is not an `int`, and no `str()`, `int()`, or
+  other permissive conversion is allowed;
+- preserve record order, array order, image order, and approved field order;
+- fail fast on external shape errors, without returning a partial
+  `AuditResult`, partial `AuditedBatch`, or partial serialized result;
+- never accept `extras`, an unconstrained `dict`, or a generic `Mapping` as an
+  extension bag.
+
+Profile serializers accept only the approved typed representation for the same
+profile. They return a record-level `dict`, preserve the stage-specific field
+names, presence, values, and order, and do not write files or perform final JSON
+encoding.
+
+For V1.17 only, an internal immutable compatibility carrier is explicitly bound
+to its core `AuditedQuestion`. It contains the two known Task 4 compatibility
+values plus a separate original-key-presence flag for each value. Its class name
+is not a public API. It is not a raw JSON blob, parallel fact source, generic
+mapping, or arbitrary-field passthrough. Missing and explicit JSON `null` remain
+distinct.
+
+### 3. V1.17 audit-stage parser input
+
+The V1.17 parser consumes records approved to enter Task 2 in the real Task
+4/Audit-stage shape. It does not consume already-published V1.17 approved
+records.
+
+The exact 50-field base order is:
+
+```python
+V117_AUDIT_BASE_FIELDS = (
+    "question_id",
+    "source_id",
+    "source_question_number",
+    "source_section",
+    "source_file",
+    "source_member",
+    "source_sha256",
+    "source_member_sha256",
+    "source_fragment_hash",
+    "source_page",
+    "solution_source_file",
+    "solution_source_member",
+    "solution_source_member_sha256",
+    "question_text_original",
+    "question_text_zh",
+    "question_latex",
+    "marks_total",
+    "image_paths",
+    "solution_original",
+    "solution_verified",
+    "answer_status",
+    "answer_verification_status",
+    "official_marking_available",
+    "primary_type",
+    "tags",
+    "difficulty_level",
+    "difficulty_evidence",
+    "old_difficulty",
+    "old_difficulty_label",
+    "old_tags",
+    "question_review_status",
+    "formula_review_status",
+    "image_review_status",
+    "answer_review_status",
+    "correction_status",
+    "corrections",
+    "duplicate_status",
+    "duplicate_reference",
+    "duplicate_evidence",
+    "audit_notes",
+    "record_status",
+    "joy_approval",
+    "audited_at",
+    "approved_at",
+    "schema_version",
+    "source_heading",
+    "question_text_zh_reviewed",
+    "difficulty_dimensions",
+    "unresolved_issues",
+    "review_checks",
+)
+```
+
+The 24 records without Task 4 compatibility fields use exactly this 50-field
+shape. The other 21 records append exactly these two keys, in this order, and
+therefore use a 52-field shape:
+
+```python
+V117_TASK4_COMPATIBILITY_FIELDS = (
+    "task4_resolution",
+    "task4_processed_at",
+)
+```
+
+Both compatibility keys are either absent together or present together in the
+approved external shape. When present, each value is a true `str` or JSON
+`null`. The compatibility carrier nevertheless records each key's presence and
+value explicitly; it must not collapse missing into `None` or become a general
+extension mechanism.
+
+The exact special-field contract is:
+
+| Field | Input presence and type | Audit-stage meaning | Task 2 serialized shape |
+|---|---|---|---|
+| `year` | forbidden, including explicit `null` | common domain value is `None` | omitted |
+| `marks_total` | required; true `int` or `null`; `bool` rejected | `int | None` | unchanged value |
+| `image_paths` | required list of exact V1.17 image objects | `tuple[QuestionImage, ...]` | exact image-object list |
+| `record_status` | required literal `"audit_passed"` | technical audit state only | `"audit_passed"` |
+| `joy_approval` | required empty true string | no publication approval | unchanged empty string |
+| `approved_at` | required JSON `null` | no publication approval time | `null` |
+| `schema_version` | required literal `"complete-question-v1.0-draft"` | audit-stage schema | unchanged draft value |
+| `task4_resolution` | absent, or present with true `str`/`null` | explicit compatibility value plus presence flag | preserve exact presence and value |
+| `task4_processed_at` | absent, or present with true `str`/`null` | explicit compatibility value plus presence flag | preserve exact presence and value |
+| other 44 base fields | required with their approved exact JSON types | existing typed domain fields | unchanged value and base order |
+
+Every V1.17 image element is a true `dict` with exactly these keys in this
+order, with no missing or additional key:
+
+```python
+("path", "sha256", "role")
+```
+
+`path` is a non-empty true `str`. `sha256` and `role` are either both `None` or
+both true strings satisfying the approved `QuestionImage` value invariant;
+`role`, when present, is non-empty. Only `audit/profiles.py` converts this exact
+external object to `QuestionImage`. The model layer does not accept a string,
+`dict`, or `Mapping` in `AuditedQuestion.image_paths`.
+
+The V1.17 Task 2 input must not contain `formal_release_version`, `selectable`,
+or `source_order`. It must not be pre-converted to `published`, pre-populated
+with approval identity/time, or changed to the formal schema version. Such a
+record is the wrong stage and is rejected as an external profile-shape error;
+it is not converted into a seventh business issue.
+
+### 4. V1.17 audit-stage serializer output
+
+The V1.17 profile serializer emits only an audit-stage record-level mapping. Its
+output is exactly `V117_AUDIT_BASE_FIELDS` or, when the compatibility carrier
+marks both known keys present, that tuple followed by
+`V117_TASK4_COMPATIBILITY_FIELDS`.
+
+It preserves `record_status="audit_passed"`, the empty `joy_approval`, null
+`approved_at`, the draft `schema_version`, all field values, field presence, the
+50/52 field order, list order, image order, and compatibility presence
+semantics. It must not:
+
+- produce a `published` record;
+- manufacture or change `joy_approval`;
+- populate `approved_at`;
+- promote `schema_version` to a formal version;
+- add `formal_release_version`, `selectable`, or `source_order`;
+- invoke release code or simulate the legacy approval step;
+- claim that its direct output equals the frozen approved V1.17 record or file.
+
+### 5. Later V1.17 release transformation
+
+The frozen approved V1.17 record shape belongs to a later, separately authorized
+release transformer, not to Task 2. Based on the protected legacy oracle, it
+transforms each passing 50/52-field audit-stage mapping as follows:
+
+| Operation | Audit-stage value | Approved V1.17 value |
+|---|---|---|
+| add `formal_release_version` | key absent | `"V1.17"` |
+| add `selectable` | key absent | `True` |
+| add `source_order` | key absent | stable record position, starting at 1 |
+| rewrite `record_status` | `"audit_passed"` | `"published"` |
+| rewrite `joy_approval` | `""` | `"approved_by_joy"` |
+| rewrite `approved_at` | `None` | `"2026-08-08T20:00:00+08:00"` |
+| rewrite `schema_version` | `"complete-question-v1.0-draft"` | `"complete-question-v1.0"` |
+
+The transformer thereby produces the approved V1.17 53-field base record or
+55-field record with the two compatibility keys. These operations carry release
+and approval meaning. Task 2 must not implement, call, or imitate them. The
+release transformer API and implementation remain outside this contract and
+require a later independent task and approval.
+
+### 6. V1.18 profile contract
+
+The V1.18 compatibility record has exactly the 54 fields and order already
+frozen in `complete_questions_452_task6_audited.json`; unknown fields and Task 4
+compatibility fields are forbidden. The special rules remain:
+
+```python
+year_valid = value is None or type(value) is int
+marks_total_valid = type(value) is int
+```
+
+- `year` is required; a true `int` or `None` is valid, and `bool` is rejected.
+- `marks_total` is required; only a true `int` is valid, and `None` and `bool`
+  are rejected.
+- `image_paths` is a required JSON list of non-empty true path strings.
+  `audit/profiles.py` converts each string to `QuestionImage(path, None, None)`
+  and the V1.18 record serializer converts it back to a path string.
+- V1.17 structured image objects must never be emitted as V1.18 images.
+- Missing, extra, or wrongly typed fields raise `InputFormatError`; no generic
+  mapping or `extras` may bypass the exact profile shape.
+- Already-issued V1.18 publication evidence is preserved as typed
+  `PublicationEvidence`; Task 2 does not manufacture a new approval.
+
+### 7. InputFormatError and business-issue boundary
+
+An outer container or record that cannot be parsed as the selected profile
+raises `InputFormatError`, fails fast, and produces neither an `AuditIssue` nor a
+partial `AuditResult`. This includes JSON/container failure, missing, forbidden,
+extra, or misordered keys, wrong types, and invalid profile-specific image
+shapes.
+
+A successfully parsed record that violates an approved business audit rule
+produces one of the six blocker issues below. Business blockers do not fail
+fast: the pipeline continues auditing the other successfully parsed records and
+then sorts the complete issue list. A domain/profile discrepancy is a business
+issue only when it is exactly one of these six rules; it never creates a seventh
+code.
+
+`AuditIssue.field` remains a plain `str`. No location object, JSON Pointer, tuple
+path, or index-path type is added. The exact top-level field is stored in
+`field`; a specific image path is stored deterministically in `evidence`.
+
+| Code | Profile | Severity | Exact trigger after successful parsing | `field` | Deterministic `evidence` |
+|---|---|---|---|---|---|
+| `missing_question_text` | V1.17/V1.18 | `blocker` | `question_text_original` has no non-whitespace content | `question_text_original` | literal `"empty"` |
+| `invalid_difficulty` | V1.17/V1.18 | `blocker` | true-integer `difficulty_level` is outside 1–5 | `difficulty_level` | `str(level)` |
+| `missing_solution` | V1.17/V1.18 | `blocker` | `answer_status != "missing_from_source"` and `solution_verified` has no non-whitespace content | `solution_verified` | exact `answer_status` |
+| `missing_image` | V1.17/V1.18 | `blocker` | a declared relative image reference cannot be resolved by pipeline input preflight | `image_paths` | exact declared relative path |
+| `exact_duplicate` | V1.17/V1.18 | `blocker` | normalized complete-question text exactly matches another candidate or protected baseline record | `question_text_original` | deterministic duplicate `question_id` |
+| `invalid_tag` | V1.17/V1.18 | `blocker` | a parsed tag is absent from `AuditContract.allowed_tags` | `tags` | exact invalid tag |
+
+The list is closed: all six severities are `blocker`; there is no warning/error
+extension, catch-all issue, shape-drift issue, or seventh business code. Image
+shape errors remain `InputFormatError`. Image-reference resolution does not
+authorize profile-layer filesystem access, image-content validation, real hash
+calculation, or authenticity checks.
+
+### 8. Deterministic issue ordering
+
+The exact issue sort key is:
+
+```python
+key = (issue.question_id, issue.code, issue.field, issue.evidence)
+```
+
+Sorting must be stable. When all four keys are identical, issue production order
+is preserved. Implementations must not add a hidden fifth key, deduplicate equal
+issues, or depend on a set, unordered traversal, object identity, filesystem
+order, or hash randomization.
+
+### 9. AuditResult and AuditedBatch
+
+After external parsing succeeds, the pipeline aggregates every business blocker
+and constructs one internally consistent `AuditResult`:
+
+- `records` contains all successfully parsed typed records in input order;
+- `issues` contains all blocker issues in the deterministic order above;
+- `answer_status_counts` exactly counts those records by the real
+  `answer_status` values and follows the approved unique-positive-count model
+  contract;
+- `status` is `"PASS"` when no blocker exists and `"FAIL"` otherwise.
+
+With no blocker, `AuditResult.require_passed()` returns an immutable
+`AuditedBatch`. With one or more blockers, the pipeline still returns the failed
+aggregate `AuditResult`, but `require_passed()` raises the approved
+`AuditBlockedError`; no `AuditedBatch` may be obtained or exposed. External
+format failures raise `InputFormatError` earlier and return no partial result.
+
+### 10. Stage authority matrix
+
+`Allowed` identifies the unique owner. `Invoke only` permits orchestration but
+not reimplementation. Every other cell is forbidden.
+
+| Behavior | `audit/profiles.py` | `audit/pipeline.py` | later release transformer | `export/formats.py` |
+|---|---|---|---|---|
+| outer file/container preflight and JSON decoding | Forbidden | **Allowed** | Forbidden | Forbidden |
+| record-level profile-shape parsing | **Allowed** | Invoke only | Forbidden | Forbidden |
+| business audit rules | Forbidden | **Allowed** | Forbidden | Forbidden |
+| issue aggregation and sorting | Forbidden | **Allowed** | Forbidden | Forbidden |
+| `AuditResult` construction | Forbidden | **Allowed** | Forbidden | Forbidden |
+| audit-stage record mapping | **Allowed** | Forbidden | Forbidden | Forbidden |
+| generate `published` state | Forbidden | Forbidden | **Allowed** | Forbidden |
+| write approval identity/time | Forbidden | Forbidden | **Allowed** | Forbidden |
+| add `formal_release_version`, `selectable`, `source_order` | Forbidden | Forbidden | **Allowed** | Forbidden |
+| rewrite `record_status`, `joy_approval`, `approved_at`, `schema_version` | Forbidden | Forbidden | **Allowed** | Forbidden |
+| JSON encoding | Forbidden | Forbidden | Forbidden | **Allowed** |
+| file-level record ordering | Forbidden | Forbidden | Forbidden | **Allowed** |
+| file writing | Forbidden | Forbidden | Forbidden | **Allowed** |
+| final bytes generation | Forbidden | Forbidden | Forbidden | **Allowed** |
+
+The final frozen V1.17 compatibility guarantee is therefore a complete-chain
+property:
+
+```text
+Task 2 audit-stage 50/52-field mapping
+→ later release transformer producing 53/55 fields
+→ export/formats.py encoding
+→ frozen approved V1.17 JSON bytes
+```
+
+Task 2 serializer alone is not required or permitted to reproduce the frozen
+approved V1.17 bytes. `export/formats.py` owns UTF-8 JSON encoding, approved key
+presentation, file-level record order, indentation, separators, final newline,
+and final bytes. It does not add release fields or change status, approval time,
+approval identity, or schema version.
+
+### 11. Explicit non-goals and authorization gate
+
+Task 2 does not include database migration, export implementation migration,
+release implementation, CLI migration, file/image authenticity verification,
+real SHA-256 recomputation, frozen-asset changes, warning/error severity
+expansion, generic `extras`, automatic profile upgrade, or any later task's
+code.
+
+No parser, serializer, release transformer, `audit_batch()`, database/export/
+release component, or CLI is authorized by this documentation-only contract
+freeze. Task 2 implementation remains **NOT STARTED — NOT APPROVED**.
+
+---
+
 ### Task 3: Implement Aggregating Task 5/6 Audit Profiles
 
 **Files:**
