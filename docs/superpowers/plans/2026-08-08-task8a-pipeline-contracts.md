@@ -284,7 +284,16 @@ CandidateRelease
 FormalRelease
 ```
 
-`AuditedQuestion` must explicitly declare every domain field represented by legacy `TABLE_COLUMNS`; convert `image_paths`, `tags`, `corrections`, `review_checks`, and `unresolved_issues` to immutable tuples of typed values. Represent the historical `record_status`, `joy_approval`, and `approved_at` fields as a typed `PublicationEvidence` child value rather than treating them as a new audit decision. Do not add an `extras` mapping. `AuditResult.require_passed()` rejects any issue with severity `blocker`; callers inspect `VerificationReport.status` and every named check explicitly.
+`AuditedQuestion` must explicitly declare the audit-stage domain fields represented
+by legacy records; convert `image_paths`, `tags`, `corrections`, `review_checks`,
+and `unresolved_issues` to immutable tuples of typed values. Represent the
+historical `record_status`, `joy_approval`, and nullable `approved_at` fields as
+a typed `PublicationEvidence` child value rather than treating them as a new
+audit decision. Do not put the release-only `formal_release_version`,
+`selectable`, or `source_order` fields on `AuditedQuestion`, and do not add an
+`extras` mapping. `AuditResult.require_passed()` rejects any issue with severity
+`blocker`; callers inspect `VerificationReport.status` and every named check
+explicitly.
 
 - [ ] **Step 4: Run model tests to green**
 
@@ -349,14 +358,18 @@ git commit -m "feat: add typed pipeline contracts"
 
 ## Task 2 — Profile Parsing, Serialization and Audit Contract
 
-**Contract:** **APPROVED AND FROZEN**
+**Task 8B / Task 1:** **CLOSED — APPROVED**
 
-**Implementation:** **NOT STARTED — NOT APPROVED**
+**Task 8B / Task 2 contract:** **FROZEN — PENDING INDEPENDENT RE-REVIEW**
 
-This chapter freezes only the Task 2 contract. It does not authorize tests or
-production implementation. Any implementation requires an independent source
-review confirming that this contract is unambiguous, followed by separate human
-authorization.
+**Task 8B / Task 2 implementation:** **NOT STARTED — NOT APPROVED**
+
+This chapter freezes only the human-approved Task 2 contract revision. It does
+not authorize tests, a `models.py` change, profile parser/serializer code,
+`audit_batch()`, or any other production implementation. Independent re-review
+does not automatically grant implementation authority: model tests, the model
+amendment, profile tests, and Task 2 implementation each require the applicable
+later human authorization.
 
 The staged approval name “Task 2” in this chapter refers to profile parsing,
 record-level audit serialization, and audit aggregation. The historical numbered
@@ -403,6 +416,27 @@ valid values are `"V1.17"` and `"V1.18"`; Task 5 maps to `"V1.17"` and Task 6
 maps to `"V1.18"`. Arbitrary strings, implicit profile inference, fallback
 profiles, and a mutable profile registry are forbidden.
 
+The required stage-model amendment is frozen but is not implemented or
+authorized by this chapter:
+
+- `AuditedQuestion` is the audit-stage core record. Relative to the currently
+  approved field order, it omits exactly `formal_release_version`, `selectable`,
+  and `source_order`; those values are release-stage evidence, not audit-stage
+  domain fields.
+- `PublicationEvidence.approved_at` has the target type `str | None`. JSON
+  `null` maps losslessly to Python `None`, and Python `None` serializes
+  losslessly to JSON `null`; neither direction may replace it with an empty or
+  missing value or a fabricated timestamp.
+- A V1.18 profile adapter preserves already-issued release-only values in an
+  internal immutable, exact-field compatibility carrier bound to the core
+  record. Its fields and order are exactly `formal_release_version`,
+  `selectable`, and `source_order`. The values are never synthesized or copied
+  onto `AuditedQuestion`; the carrier is not a public model, generic mapping,
+  `extras`, or parallel fact source.
+
+Until a later authorization updates `models.py` and its contract tests to this
+frozen shape, Task 2 tests and implementation must not start.
+
 ### 2. Common parsing and serialization rules
 
 The outer pipeline performs file/container preflight and JSON decoding. An
@@ -434,9 +468,19 @@ distinct.
 
 ### 3. V1.17 audit-stage parser input
 
-The V1.17 parser consumes records approved to enter Task 2 in the real Task
+The V1.17 parser consumes records eligible to enter Task 2 in the real Task
 4/Audit-stage shape. It does not consume already-published V1.17 approved
-records.
+records. Eligibility is exact: `record_status == "audit_passed"` and
+`unresolved_issues == []` must both hold. Either a different status or any
+non-empty unresolved-issue list is a profile eligibility failure that raises
+`InputFormatError` immediately. It returns no partial `AuditResult`, produces no
+`AuditIssue`, maps to none of the six business issue codes, and does not create a
+seventh code.
+
+The legacy Task 4 P1 checks for status and unresolved issues are historical
+upstream audit behavior. Task 2 receives only records that already satisfy that
+eligibility boundary; it does not rerun the upstream approval process or
+manufacture, modify, or complete an approval state.
 
 The exact 50-field base order is:
 
@@ -521,11 +565,12 @@ The exact special-field contract is:
 | `image_paths` | required list of exact V1.17 image objects | `tuple[QuestionImage, ...]` | exact image-object list |
 | `record_status` | required literal `"audit_passed"` | technical audit state only | `"audit_passed"` |
 | `joy_approval` | required empty true string | no publication approval | unchanged empty string |
-| `approved_at` | required JSON `null` | no publication approval time | `null` |
+| `approved_at` | required JSON `null` | `PublicationEvidence.approved_at: str | None` is exactly `None` | `null` |
 | `schema_version` | required literal `"complete-question-v1.0-draft"` | audit-stage schema | unchanged draft value |
+| `unresolved_issues` | required empty list | Task 2 eligibility has already passed | unchanged empty list |
 | `task4_resolution` | absent, or present with true `str`/`null` | explicit compatibility value plus presence flag | preserve exact presence and value |
 | `task4_processed_at` | absent, or present with true `str`/`null` | explicit compatibility value plus presence flag | preserve exact presence and value |
-| other 44 base fields | required with their approved exact JSON types | existing typed domain fields | unchanged value and base order |
+| other 43 base fields | required with their approved exact JSON types | existing typed domain fields | unchanged value and base order |
 
 Every V1.17 image element is a true `dict` with exactly these keys in this
 order, with no missing or additional key:
@@ -544,7 +589,9 @@ The V1.17 Task 2 input must not contain `formal_release_version`, `selectable`,
 or `source_order`. It must not be pre-converted to `published`, pre-populated
 with approval identity/time, or changed to the formal schema version. Such a
 record is the wrong stage and is rejected as an external profile-shape error;
-it is not converted into a seventh business issue.
+it is not converted into a seventh business issue. The parser and serializer
+must not prefill the three release-only fields with `""`, `None`, `0`, `False`,
+another placeholder, or a derived value.
 
 ### 4. V1.17 audit-stage serializer output
 
@@ -610,6 +657,10 @@ marks_total_valid = type(value) is int
   mapping or `extras` may bypass the exact profile shape.
 - Already-issued V1.18 publication evidence is preserved as typed
   `PublicationEvidence`; Task 2 does not manufacture a new approval.
+- The already-issued `formal_release_version`, `selectable`, and `source_order`
+  values are preserved only in the exact internal V1.18 compatibility carrier
+  defined above. The profile serializer emits them from that carrier in their
+  frozen positions; it never derives, defaults, or pre-fills them.
 
 ### 7. InputFormatError and business-issue boundary
 
@@ -617,7 +668,8 @@ An outer container or record that cannot be parsed as the selected profile
 raises `InputFormatError`, fails fast, and produces neither an `AuditIssue` nor a
 partial `AuditResult`. This includes JSON/container failure, missing, forbidden,
 extra, or misordered keys, wrong types, and invalid profile-specific image
-shapes.
+shapes. It also includes either V1.17 eligibility failure frozen in Section 3;
+those failures are not business blockers.
 
 A successfully parsed record that violates an approved business audit rule
 produces one of the six blocker issues below. Business blockers do not fail
@@ -644,6 +696,36 @@ extension, catch-all issue, shape-drift issue, or seventh business code. Image
 shape errors remain `InputFormatError`. Image-reference resolution does not
 authorize profile-layer filesystem access, image-content validation, real hash
 calculation, or authenticity checks.
+
+For `exact_duplicate`, “deterministic duplicate `question_id`” means the rolling
+predecessor held in `normalized_seen` immediately before the current record is
+checked. The algorithm is frozen as follows:
+
+1. Process candidate records in their stable input order, using normalized
+   complete-question text as the `normalized_seen` key.
+2. If that key already exists, emit exactly one `exact_duplicate` issue for the
+   current record and use the currently stored preceding `question_id` as
+   `evidence`.
+3. After the check, always overwrite that key with the current record's
+   `question_id`, whether or not the current record was a duplicate.
+
+Thus, when one normalized text appears as Q1, Q2, and Q3 in stable input order,
+Q1 has no `exact_duplicate`, Q2 has `evidence="Q1"`, and Q3 has
+`evidence="Q2"`. The implementation must not emit separate issues for a
+baseline match, earliest match, minimum ID, or every historical match, and must
+not choose evidence through a set, unordered traversal, object identity,
+filesystem order, or hash randomization.
+
+For the V1.18 legacy oracle, `normalized_seen` is seeded before candidate
+processing from `complete_questions_v2` by normalizing each baseline
+`question_text_original` and storing its `question_id`. The historical query has
+no `ORDER BY`, but the protected V1.17 baseline has 45 rows and 45 distinct
+normalized keys, so initialization performs no competing overwrite and its
+result is unambiguous. Candidates then use the legacy's explicit stable
+`ORDER BY q.source_id, q.question_number, q.question_id`; each candidate follows
+the same check-then-overwrite rule above. The absence of `ORDER BY` in that
+historical baseline query is not permission to select duplicate evidence by an
+unstable order.
 
 ### 8. Deterministic issue ordering
 
@@ -724,7 +806,11 @@ code.
 
 No parser, serializer, release transformer, `audit_batch()`, database/export/
 release component, or CLI is authorized by this documentation-only contract
-freeze. Task 2 implementation remains **NOT STARTED — NOT APPROVED**.
+freeze. No test or `models.py` change is authorized either. Task 2 contract is
+**FROZEN — PENDING INDEPENDENT RE-REVIEW**, and Task 2 implementation remains
+**NOT STARTED — NOT APPROVED**. Even a passing independent re-review does not
+authorize the next action; tests and implementation still require separate
+human authorization.
 
 ---
 
@@ -742,7 +828,7 @@ freeze. Task 2 implementation remains **NOT STARTED — NOT APPROVED**.
 
 - [ ] **Step 1: Write failing Task 6 happy-path tests**
 
-Use the protected V1.17 database under `legacy/outputs/25757421d1d8/Task5_V1.17_正式入库/` as read-only input. Assert 452 records, 23 sources, unique IDs, source order starting at 46, answer counts 347/71/34, 33 image references, and no blockers.
+Use the protected V1.17 database under `legacy/outputs/25757421d1d8/Task5_V1.17_正式入库/` as read-only input. Assert 452 records, 23 sources, unique IDs, stable record order corresponding to the legacy sequence that starts after the 45 protected records, answer counts 347/71/34, 33 image references, and no blockers. Do not assert or populate a `source_order` field on `AuditedQuestion`.
 
 ```python
 result = audit_batch(task6_request(ROOT))
@@ -765,7 +851,16 @@ Before producing records, require the database and asset root to exist, verify t
 
 - [ ] **Step 3: Implement Task 6 conversion without approval coupling**
 
-Port the reviewed Task 6 rules into `profiles.py`: excluded source, 2026 marks, 2026 Joy Levels, answer identity mapping, tag cleaning, image resolution, source hashes, Q8 note, and normalized-text duplicate comparison. Set technical status to `audit_passed`, but do not manufacture a new approval. Preserve the already-issued V1.18 publication fields only inside typed `PublicationEvidence`; the V1.18 compatibility serializer maps that evidence back to the historical JSON keys, while future approval authority still comes only from `ApprovalRecord` at promotion.
+Port the reviewed Task 6 rules into `profiles.py`: excluded source, 2026 marks,
+2026 Joy Levels, answer identity mapping, tag cleaning, image resolution, source
+hashes, Q8 note, and normalized-text duplicate comparison. Set technical status
+to `audit_passed`, but do not manufacture a new approval or populate
+`formal_release_version`, `selectable`, or `source_order` on `AuditedQuestion`.
+When the input is an already-issued V1.18 compatibility record, preserve its
+publication fields inside typed `PublicationEvidence` and its three release-only
+values inside the exact internal profile carrier; the V1.18 compatibility
+serializer maps only those preserved values back to their historical JSON keys.
+Future approval authority still comes only from `ApprovalRecord` at promotion.
 
 - [ ] **Step 4: Implement issue aggregation**
 
@@ -788,11 +883,22 @@ Create temporary SQLite copies with two exact duplicates, a missing image refere
 
 - [ ] **Step 6: Add Task 5 profile tests**
 
-Load the Task 4 candidate JSON through a Task 5 `AuditContract`, assert exactly 45 unique `audit_passed` records with no unresolved issues, preserve their order, and assert an unapproved or duplicate record becomes a blocker rather than a published row.
+Load the Task 4 candidate JSON through a Task 5 `AuditContract`, assert exactly
+45 unique `audit_passed` records with no unresolved issues, and preserve their
+order. Assert a non-eligible record raises `InputFormatError` fail-fast without
+a partial result or business issue, while a successfully parsed duplicate
+produces the approved `exact_duplicate` blocker rather than a published row.
 
 - [ ] **Step 7: Compare passing audit records with legacy JSON bytes**
 
-Serialize `AuditedBatch` through a test-only canonical conversion using the exact legacy field names and assert it equals the Task 6 oracle's `complete_questions_452_task6_audited.json` bytes. This proves the typed model did not alter field values or ordering.
+For already-issued V1.18 compatibility input, serialize through the approved
+profile serializer and assert the exact 54-field record mappings are unchanged,
+including the three values preserved outside `AuditedQuestion`. For newly
+audited records, compare every audit-stage core value and its stable order with
+the Task 6 oracle after excluding the three release-only fields; do not invent
+those fields to force direct byte equality. Full V1.18 bytes are a later
+complete-chain assertion after the separately authorized release transformation
+and `export/formats.py` encoding.
 
 - [ ] **Step 8: Run audit and legacy gates**
 
