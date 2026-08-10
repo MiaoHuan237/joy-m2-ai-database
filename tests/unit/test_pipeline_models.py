@@ -24,6 +24,7 @@ PUBLIC_VALUE_TYPES = (
     "AuditIssue",
     "Correction",
     "PublicationEvidence",
+    "QuestionImage",
     "AuditedQuestion",
     "AuditedBatch",
     "AuditResult",
@@ -120,6 +121,7 @@ EXACT_FIELD_CONTRACTS = {
     "AuditIssue": ("code", "severity", "question_id", "field", "evidence"),
     "Correction": ("field", "error_origin", "original", "corrected", "reason", "evidence"),
     "PublicationEvidence": ("record_status", "joy_approval", "approved_at"),
+    "QuestionImage": ("path", "sha256", "role"),
     "AuditedQuestion": AUDITED_QUESTION_FIELDS,
     "AuditedBatch": ("records",),
     "AuditResult": ("records", "issues", "answer_status_counts", "status"),
@@ -272,6 +274,10 @@ def make_publication_evidence(models):
     )
 
 
+def make_question_image(models, path="assets/q1.png", sha256=None, role=None):
+    return models.QuestionImage(path=path, sha256=sha256, role=role)
+
+
 def make_audited_question(models, **overrides):
     values = {name: "value" for name in AUDITED_QUESTION_FIELDS}
     values.update(
@@ -282,7 +288,7 @@ def make_audited_question(models, **overrides):
         old_difficulty=1,
         selectable=True,
         source_order=46,
-        image_paths=["assets/q1.png"],
+        image_paths=[make_question_image(models)],
         tags=["微分"],
         difficulty_dimensions=[("概念数", 1)],
         old_tags=["旧标签"],
@@ -418,9 +424,9 @@ class PipelineErrorContractTests(unittest.TestCase):
 
 
 class PipelineModelContractTests(unittest.TestCase):
-    def test_all_24_approved_shared_value_types_are_public_dataclasses(self) -> None:
+    def test_all_25_approved_shared_value_types_are_public_dataclasses(self) -> None:
         models = import_required(self, "joy_m2.models")
-        self.assertEqual(len(PUBLIC_VALUE_TYPES), 24)
+        self.assertEqual(len(PUBLIC_VALUE_TYPES), 25)
         self.assertEqual(
             tuple(name for name in PUBLIC_VALUE_TYPES if hasattr(models, name)),
             PUBLIC_VALUE_TYPES,
@@ -433,7 +439,7 @@ class PipelineModelContractTests(unittest.TestCase):
         }
         self.assertEqual(public_dataclasses, set(PUBLIC_VALUE_TYPES))
 
-    def test_all_24_shared_dataclasses_are_declared_frozen(self) -> None:
+    def test_all_25_shared_dataclasses_are_declared_frozen(self) -> None:
         models = import_required(self, "joy_m2.models")
         for name in PUBLIC_VALUE_TYPES:
             with self.subTest(value_type=name):
@@ -455,7 +461,7 @@ class PipelineModelContractTests(unittest.TestCase):
     def test_approved_key_types_have_exact_explicit_field_order(self) -> None:
         models = import_required(self, "joy_m2.models")
         self.assertEqual(tuple(EXACT_FIELD_CONTRACTS), PUBLIC_VALUE_TYPES)
-        self.assertEqual(len(EXACT_FIELD_CONTRACTS), 24)
+        self.assertEqual(len(EXACT_FIELD_CONTRACTS), 25)
         for name, expected in EXACT_FIELD_CONTRACTS.items():
             with self.subTest(value_type=name):
                 self.assertEqual(field_names(getattr(models, name)), expected)
@@ -493,8 +499,9 @@ class PipelineModelContractTests(unittest.TestCase):
     def test_audited_question_collection_inputs_become_tuples_and_parent_is_frozen(self) -> None:
         models = import_required(self, "joy_m2.models")
         question = make_audited_question(models)
+        question_image = make_question_image(models)
         expected = {
-            "image_paths": ("assets/q1.png",),
+            "image_paths": (question_image,),
             "tags": ("微分",),
             "difficulty_dimensions": (("概念数", 1),),
             "old_tags": ("旧标签",),
@@ -508,6 +515,125 @@ class PipelineModelContractTests(unittest.TestCase):
                 self.assertIsInstance(getattr(question, name), tuple)
         with self.assertRaises(FrozenInstanceError):
             question.tags = ()
+
+    def test_question_image_enforces_only_general_value_invariants(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        errors = import_required(self, "joy_m2.errors")
+
+        path_only = models.QuestionImage("assets/q1.png", None, None)
+        evidenced = models.QuestionImage(
+            "assets/q2.png",
+            "a" * 64,
+            "required_question_figure",
+        )
+        self.assertEqual(
+            (path_only.path, path_only.sha256, path_only.role),
+            ("assets/q1.png", None, None),
+        )
+        self.assertEqual(evidenced.sha256, "a" * 64)
+        with self.assertRaises(FrozenInstanceError):
+            evidenced.path = "changed.png"
+
+        class StringSubclass(str):
+            pass
+
+        invalid_values = (
+            ("", None, None),
+            (1, None, None),
+            (StringSubclass("assets/q1.png"), None, None),
+            ("assets/q1.png", "a" * 63, "figure"),
+            ("assets/q1.png", "A" * 64, "figure"),
+            ("assets/q1.png", "g" * 64, "figure"),
+            ("assets/q1.png", 1, "figure"),
+            ("assets/q1.png", StringSubclass("a" * 64), "figure"),
+            ("assets/q1.png", "a" * 64, ""),
+            ("assets/q1.png", "a" * 64, 1),
+            ("assets/q1.png", "a" * 64, StringSubclass("figure")),
+            ("assets/q1.png", "a" * 64, None),
+            ("assets/q1.png", None, "figure"),
+        )
+        for path, sha256, role in invalid_values:
+            with self.subTest(path=path, sha256=sha256, role=role):
+                with self.assertRaises(errors.PipelineError):
+                    models.QuestionImage(path, sha256, role)
+
+    def test_audited_question_accepts_only_question_images_and_defensively_copies_lists(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        errors = import_required(self, "joy_m2.errors")
+        annotations = typing.get_type_hints(models.AuditedQuestion)
+        self.assertEqual(
+            annotations["image_paths"],
+            tuple[models.QuestionImage, ...],
+        )
+        first = make_question_image(models, "assets/first.png")
+        second = make_question_image(models, "assets/second.png", "b" * 64, "figure")
+        source_images = [first, second]
+
+        question = make_audited_question(models, image_paths=source_images)
+        source_images.reverse()
+        source_images.append(first)
+
+        self.assertEqual(question.image_paths, (first, second))
+        self.assertIs(question.image_paths[0], first)
+        self.assertIs(question.image_paths[1], second)
+        self.assertIsInstance(question.image_paths, tuple)
+        with self.assertRaises(FrozenInstanceError):
+            question.image_paths = ()
+
+        invalid_collections = (
+            ["assets/q1.png"],
+            [{"path": "assets/q1.png", "sha256": None, "role": None}],
+            {"path": "assets/q1.png"},
+            [first, "assets/q2.png"],
+        )
+        for image_paths in invalid_collections:
+            with self.subTest(image_paths=image_paths):
+                with self.assertRaises(errors.PipelineError):
+                    make_audited_question(models, image_paths=image_paths)
+
+    def test_audited_question_nullable_integer_fields_reject_bool_and_coercion(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        errors = import_required(self, "joy_m2.errors")
+        annotations = typing.get_type_hints(models.AuditedQuestion)
+        self.assertEqual(annotations["marks_total"], int | None)
+        self.assertEqual(annotations["year"], int | None)
+        for marks_total, year in ((None, None), (4, None), (None, 2026), (4, 2026)):
+            with self.subTest(marks_total=marks_total, year=year):
+                question = make_audited_question(
+                    models,
+                    marks_total=marks_total,
+                    year=year,
+                )
+                self.assertIs(question.marks_total, marks_total)
+                self.assertIs(question.year, year)
+
+        for field, value in (
+            ("marks_total", True),
+            ("marks_total", "4"),
+            ("marks_total", 4.0),
+            ("year", False),
+            ("year", "2026"),
+            ("year", 2026.0),
+        ):
+            with self.subTest(field=field, value=value):
+                with self.assertRaises(errors.PipelineError):
+                    make_audited_question(models, **{field: value})
+
+    def test_audit_contract_profile_is_a_closed_literal_at_type_and_runtime(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        errors = import_required(self, "joy_m2.errors")
+        self.assertEqual(typing.get_args(models.AuditProfile), ("V1.17", "V1.18"))
+        self.assertIs(
+            typing.get_type_hints(models.AuditContract)["profile"],
+            models.AuditProfile,
+        )
+        for profile in ("V1.17", "V1.18"):
+            with self.subTest(profile=profile):
+                self.assertEqual(make_audit_contract(models, profile=profile).profile, profile)
+        for profile in ("", "v1.18", "V1.19", 118, True):
+            with self.subTest(profile=profile):
+                with self.assertRaises(errors.PipelineError):
+                    make_audit_contract(models, profile=profile)
 
     def test_verification_report_normalizes_checks_and_is_frozen(self) -> None:
         models = import_required(self, "joy_m2.models")

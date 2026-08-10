@@ -5,9 +5,14 @@ from __future__ import annotations
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
+import re
+from typing import Literal
 
 from . import config as _config
 from .errors import AuditBlockedError, PipelineError
+
+
+AuditProfile = Literal["V1.17", "V1.18"]
 
 
 def _tuple_of_tuples(values):
@@ -70,6 +75,26 @@ class PublicationEvidence:
 
 
 @dataclass(frozen=True)
+class QuestionImage:
+    path: str
+    sha256: str | None
+    role: str | None
+
+    def __post_init__(self) -> None:
+        if type(self.path) is not str or not self.path:
+            raise PipelineError("question image path must be a non-empty string")
+        if self.sha256 is not None and (
+            type(self.sha256) is not str
+            or re.fullmatch(r"[0-9a-f]{64}", self.sha256) is None
+        ):
+            raise PipelineError("question image sha256 must be a lowercase SHA-256 digest")
+        if self.role is not None and (type(self.role) is not str or not self.role):
+            raise PipelineError("question image role must be a non-empty string")
+        if (self.sha256 is None) != (self.role is None):
+            raise PipelineError("question image sha256 and role must be provided together")
+
+
+@dataclass(frozen=True)
 class AuditedQuestion:
     question_id: str
     source_id: str
@@ -88,9 +113,9 @@ class AuditedQuestion:
     question_text_zh: str
     question_text_zh_reviewed: str
     question_latex: str
-    marks_total: int
-    year: int
-    image_paths: tuple[str, ...]
+    marks_total: int | None
+    year: int | None
+    image_paths: tuple[QuestionImage, ...]
     solution_original: str
     solution_verified: str
     answer_status: str
@@ -125,7 +150,16 @@ class AuditedQuestion:
     source_order: int
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "image_paths", tuple(self.image_paths))
+        for field_name in ("marks_total", "year"):
+            value = getattr(self, field_name)
+            if value is not None and type(value) is not int:
+                raise PipelineError(f"{field_name} must be an integer or None")
+        if type(self.image_paths) not in {list, tuple}:
+            raise PipelineError("image_paths must be a list or tuple of QuestionImage values")
+        image_paths = tuple(self.image_paths)
+        if any(type(image) is not QuestionImage for image in image_paths):
+            raise PipelineError("image_paths must contain only QuestionImage values")
+        object.__setattr__(self, "image_paths", image_paths)
         object.__setattr__(self, "tags", tuple(self.tags))
         object.__setattr__(
             self,
@@ -194,7 +228,7 @@ class AuditResult:
 
 @dataclass(frozen=True)
 class AuditContract:
-    profile: str
+    profile: AuditProfile
     release_version: str
     schema_version: str
     expected_question_count: int
@@ -204,6 +238,8 @@ class AuditContract:
     required_fields: tuple[str, ...]
 
     def __post_init__(self) -> None:
+        if type(self.profile) is not str or self.profile not in {"V1.17", "V1.18"}:
+            raise PipelineError("audit profile must be V1.17 or V1.18")
         object.__setattr__(
             self,
             "expected_answer_status_counts",
