@@ -46,9 +46,12 @@ task8_python=/Users/miaohuanjoy/.cache/codex-runtimes/codex-primary-runtime/depe
 - `src/joy_m2/db/profiles.py`: V1.17 schema creation and V1.18 append contracts.
 - `src/joy_m2/db/__init__.py`: public database exports only.
 - `src/joy_m2/export/formats.py`: canonical JSON, CSV, and UTF-8/LF writing primitives.
-- `src/joy_m2/export/pipeline.py`: SQLite-only CSV, Markdown, report, and state export.
+- `src/joy_m2/export/pipeline.py`: SQLite-derived files plus supplied typed
+  audit evidence export; never reopens the candidate.
 - `src/joy_m2/export/__init__.py`: public export API only.
 - `src/joy_m2/release/hashing.py`: SHA-256, manifest, and `SHA256SUMS.txt` primitives.
+- `src/joy_m2/release/transformers.py`: deterministic V1.17 historical
+  audit-PASS-to-release-stage transformation only.
 - `src/joy_m2/release/packaging.py`: deterministic ZIP creation and ZIP metadata verification.
 - `src/joy_m2/release/verification.py`: candidate/formal release verification and structured reports.
 - `src/joy_m2/release/pipeline.py`: atomic staging build and approval-bound formal promotion.
@@ -62,6 +65,8 @@ task8_python=/Users/miaohuanjoy/.cache/codex-runtimes/codex-primary-runtime/depe
 - `tests/unit/test_pipeline_models.py`: dataclass immutability and result semantics.
 - `tests/unit/test_pipeline_config.py`: path resolution, containment, symlink, and overlap checks.
 - `tests/unit/test_audit_pipeline.py`: aggregation, duplicate blocking, provenance, and pass conversion.
+- `tests/unit/test_v117_release_transformer.py`: release-stage envelope,
+  deterministic V1.17 decision, and oracle/byte-equivalence.
 - `tests/integration/test_db_pipeline.py`: V1.17/V1.18 SQLite byte and logical equivalence.
 - `tests/integration/test_export_pipeline.py`: CSV/Markdown/JSON byte contracts.
 - `tests/unit/test_release_primitives.py`: hashing, manifest, sums, and deterministic ZIP.
@@ -366,16 +371,18 @@ git commit -m "feat: add typed pipeline contracts"
 
 **Task 8B / Task 1:** **CLOSED — APPROVED**
 
-**Task 8B / Task 2 contract:** **FROZEN — PENDING INDEPENDENT RE-REVIEW**
+**Task 8B / Task 2 Phase 1 models/tests:** **CLOSED — INDEPENDENT REVIEW PASSED**
 
-**Task 8B / Task 2 models/tests/implementation:** **NOT STARTED — NOT APPROVED**
+**Task 8B / Task 2 Phase 2 contract decisions:** **DESIGN APPROVED — CONTRACT REVISION AUTHORIZED**
 
-This chapter freezes only the human-approved Task 2 contract revision. It does
-not authorize tests, a `models.py` change, profile parser/serializer code,
-`audit_batch()`, or any other production implementation. Independent re-review
-does not automatically grant implementation authority: model tests, the model
-amendment, profile tests, and Task 2 implementation each require the applicable
-later human authorization.
+**Task 8B / Task 2 Phase 2 implementation:** **NOT STARTED — NOT APPROVED**
+
+This chapter originally froze the human-approved Task 2 contract revision.
+Its Phase 1 public models and model tests have since been implemented and passed
+independent review. The Phase 2 revision below freezes additional interfaces
+and data flow only; it does not authorize profile parser/serializer code,
+`audit_batch()`, the V1.17 transformer, database/export/release changes, tests,
+or any other Phase 2 production implementation.
 
 The staged approval name “Task 2” in this chapter refers to profile parsing,
 record-level audit serialization, and audit aggregation. The historical numbered
@@ -411,8 +418,8 @@ Responsibilities are frozen as follows:
   sorts issues, and constructs `AuditResult`. It does not write databases,
   export files, perform release approval, or call CLI code.
 - A later, separately authorized release transformer owns all V1.17 publication
-  and approval conversion. This chapter freezes that responsibility boundary but
-  does not design its API or authorize its implementation.
+  and approval conversion. The Phase 2 chapter below now freezes its API and
+  release-stage envelope, but does not authorize implementation.
 - `src/joy_m2/export/formats.py` receives a record-level mapping after the
   applicable business-stage transformation. It owns final file representation
   and bytes only; it does not audit or change publication semantics.
@@ -422,10 +429,9 @@ valid values are `"V1.17"` and `"V1.18"`; Task 5 maps to `"V1.17"` and Task 6
 maps to `"V1.18"`. Arbitrary strings, implicit profile inference, fallback
 profiles, and a mutable profile registry are forbidden.
 
-The required stage-model amendment is frozen but is not implemented or
-authorized by this chapter. All three new values below are future public
-`@dataclass(frozen=True)` types with the exact field names, order, and Python
-types shown:
+The required Phase 1 stage-model amendment is implemented and independently
+approved. The three public `@dataclass(frozen=True)` values have the exact field
+names, order, and Python types shown:
 
 ```python
 Task4Compatibility(
@@ -476,7 +482,7 @@ Their public model boundaries are frozen as follows:
   only V1.17 Task 4/Audit shape replay, while `release_compatibility` serves
   only V1.18 release-shape replay. The carriers must not be merged, converted
   to `extras`, or stored outside the envelope.
-- `AuditResult.records` and `AuditedBatch.records` have the exact future target
+- `AuditResult.records` and `AuditedBatch.records` have the exact public
   type `tuple[AuditedRecord, ...]`. Each input record produces one envelope,
   and `require_passed()` preserves the same ordered envelope tuple.
 
@@ -501,8 +507,8 @@ invariants uses the existing `PipelineError` model boundary; no new exception or
 issue code is introduced. Invalid external profile input is rejected at the
 profile boundary as `InputFormatError` before any partial result is exposed.
 
-Until a later authorization updates `models.py` and its contract tests to this
-frozen shape, Task 2 tests and implementation must not start.
+Phase 1 does not authorize the Phase 2 parsers, serializer, audit pipeline,
+transformer, database, export, or release work specified later in this plan.
 
 ### 2. Common parsing and serialization rules
 
@@ -662,9 +668,10 @@ Task 4/Audit 50/52-field input
 → AuditedRecord(question, Task4Compatibility, None)
 → AuditResult.records carries the envelope unchanged
 → AuditedBatch.records carries the envelope unchanged
-→ Task 2 serializer replays 50/52 fields from that same envelope
-→ future release transformer creates three release fields and rewrites release state
-→ approved V1.17 contains 53/55 fields
+├─ audit evidence: Task 2 serializer replays 50/52 fields from that envelope
+└─ release path: Phase 2 transformer directly retains each envelope,
+   creates release-stage values, and rewrites release state
+   → release-stage serializer emits approved V1.17 53/55 fields
 ```
 
 The exact special-field contract is:
@@ -734,8 +741,9 @@ expand a 50-field record to 52 fields, shrink a 52-field record to 50 fields, or
 ### 5. Later V1.17 release transformation
 
 The frozen approved V1.17 record shape belongs to a later, separately authorized
-release transformer, not to Task 2. Based on the protected legacy oracle, it
-transforms each passing 50/52-field audit-stage mapping as follows:
+release transformer, not to the audit-stage serializer. Based on the protected
+legacy oracle, it transforms each passing V1.17 `AuditedBatch` into direct
+release-stage wrappers and applies these mapping operations:
 
 | Operation | Audit-stage value | Approved V1.17 value |
 |---|---|---|
@@ -750,14 +758,15 @@ transforms each passing 50/52-field audit-stage mapping as follows:
 The transformer thereby produces the approved V1.17 53-field base record or
 55-field record with the two compatibility keys. These operations carry release
 and approval meaning. Task 2 must not implement, call, or imitate them. The
-release transformer API and implementation remain outside this contract and
-require a later independent task and approval.
+release transformer API is frozen by the Phase 2 chapter below; its tests and
+implementation require a later independent task and approval.
 
-The transformer preserves any Task 4 keys already replayed into the 50/52-field
-mapping; it neither reads nor creates a `ReleaseCompatibility` for this path.
-It is the only component allowed to create the three new V1.17 release-only
-values. Conversely, Task 2's V1.17 adapter, pipeline, and serializer may not
-prefill, default, or derive them.
+Each release wrapper directly retains the original `AuditedRecord`, including
+its `Task4Compatibility`, and adds a release-stage `ReleaseCompatibility`
+outside that audit envelope. It never puts the new carrier into the retained
+`AuditedRecord`. The transformer is the only component allowed to create the
+three new V1.17 release-only values. Conversely, Task 2's V1.17 adapter,
+pipeline, and audit-stage serializer may not prefill, default, or derive them.
 
 ### 6. V1.18 profile contract
 
@@ -955,7 +964,7 @@ other cell is forbidden.
 | construct `Task4Compatibility` and V1.17 `AuditedRecord` | **Allowed** | Forbidden | Forbidden | Forbidden |
 | read existing V1.18 release-only values | **Allowed** | Forbidden | Forbidden | Forbidden |
 | construct `ReleaseCompatibility` and V1.18 `AuditedRecord` | **Allowed** | Forbidden | Forbidden | Forbidden |
-| carry an `AuditedRecord` and both carrier slots | Forbidden | **Carry only** | Forbidden | Forbidden |
+| carry an `AuditedRecord` and both carrier slots | Forbidden | **Carry only** | **Direct retained child only** | Forbidden; consumes mapping only |
 | business audit rules over `record.question` | Forbidden | **Allowed** | Forbidden | Forbidden |
 | issue aggregation and sorting | Forbidden | **Allowed** | Forbidden | Forbidden |
 | `AuditResult` construction | Forbidden | **Allowed** | Forbidden | Forbidden |
@@ -984,8 +993,9 @@ The final frozen V1.17 compatibility guarantee is therefore a complete-chain
 property:
 
 ```text
-Task 2 audit-stage 50/52-field mapping
-→ later release transformer producing 53/55 fields
+Task 2 `AuditedBatch` with V1.17 envelopes
+→ Phase 2 release transformer directly retaining those envelopes
+→ release-stage mapping producing 53/55 fields
 → export/formats.py encoding
 → frozen approved V1.17 JSON bytes
 ```
@@ -1005,14 +1015,298 @@ expansion, generic `extras`, automatic profile upgrade, or any later task's
 code.
 
 No parser, serializer, release transformer, `audit_batch()`, database/export/
-release component, or CLI is authorized by this documentation-only contract
-freeze. No test or `models.py` change is authorized either. Specifically, this
-revision does not authorize implementation of `Task4Compatibility`,
-`ReleaseCompatibility`, or `AuditedRecord`, nor changes to `AuditResult` or
-`AuditedBatch`. Task 2 contract is **FROZEN — PENDING INDEPENDENT RE-REVIEW**,
-and Task 2 models/tests/implementation remain **NOT STARTED — NOT APPROVED**.
+release component, or CLI is authorized by this documentation-only Phase 2
+contract freeze. Phase 1 `Task4Compatibility`, `ReleaseCompatibility`,
+`AuditedRecord`, `AuditResult.records`, and `AuditedBatch.records` are already
+implemented and independently approved; this revision neither reopens nor
+redesigns them. Task 2 Phase 2 implementation remains **NOT STARTED — NOT
+APPROVED**.
 Even a passing independent re-review does not authorize the next action; model
 changes, tests, and implementation still require separate human authorization.
+
+---
+
+## Task 2 Phase 2 — Explicit Inputs, Historical Transformation, and Audit Evidence
+
+This chapter is the approved Phase 2 contract revision. It supersedes later
+historical Task 3–7 steps wherever they treat V1.17 SQLite extraction as a
+maintained candidate producer, omit the V1.17 release-stage transformer, let
+database create publication fields, or assign audit-report semantics/encoding
+to the wrong stage. Everything in this chapter is frozen design and remains
+unimplemented until separately authorized.
+
+### 1. Exact future public interfaces
+
+`AuditRequest` must be revised to this exact structure:
+
+```python
+@dataclass(frozen=True)
+class AuditRequest:
+    candidate_path: Path
+    baseline_database: ArtifactRef
+    asset_root: Path
+    contract: AuditContract
+    selected_source_ids: tuple[str, ...]
+```
+
+`candidate_path` and `baseline_database` are independent explicit inputs. No
+library code may infer either from cwd, environment variables, repository
+layout, profile, or the other path. `audit/pipeline.py` owns candidate JSON,
+file, asset-root, and baseline SQLite preflight, including existence, exact
+kind, and independently recomputed SHA-256. `audit/profiles.py` receives decoded
+record values only and performs no filesystem, SQLite, or hashing access. The
+candidate digest is recorded in audit/build evidence; the baseline digest must
+match `ArtifactRef.sha256` before audit proceeds.
+
+Phase 2 also freezes these future release-stage values:
+
+```python
+@dataclass(frozen=True)
+class V117ReleaseDecision:
+    formal_release_version: Literal["V1.17"]
+    selectable: Literal[True]
+    record_status: Literal["published"]
+    joy_approval: Literal["approved_by_joy"]
+    approved_at: Literal["2026-08-08T20:00:00+08:00"]
+    schema_version: Literal["complete-question-v1.0"]
+
+@dataclass(frozen=True)
+class V117ReleaseRecord:
+    audited_record: AuditedRecord
+    publication_evidence: PublicationEvidence
+    release_compatibility: ReleaseCompatibility
+    schema_version: str
+
+@dataclass(frozen=True)
+class V117ReleaseBatch:
+    records: tuple[V117ReleaseRecord, ...]
+
+def transform_v117_release(
+    batch: AuditedBatch,
+    decision: V117ReleaseDecision,
+) -> V117ReleaseBatch: ...
+```
+
+The decision is a deterministic historical V1.17 replay value, not a current
+candidate approval and not the promotion-stage `ApprovalRecord`. The
+transformer reads no clock, environment variable, approval manifest, or global
+registry. It accepts only a V1.17 `AuditedBatch` obtained from
+`AuditResult.require_passed()`, runs after audit PASS and before database, and
+is forbidden on V1.18.
+
+Each `V117ReleaseRecord` directly retains its matching `AuditedRecord` and
+preserves order and one-to-one cardinality. `AuditedRecord` remains the only
+audit-stage public envelope; its two compatibility carriers retain the Phase 1
+legal combination and are never merged. Parallel lists, `question_id` joins,
+position/file-order joins, and object-identity joins are forbidden. The
+release-stage `ReleaseCompatibility.source_order` starts at 1 in stable order,
+but implementation must prove the values through the protected legacy oracle
+and byte-equivalence rather than relying on an unchecked positional assumption.
+
+The future semantic report is:
+
+```python
+@dataclass(frozen=True)
+class AuditReport:
+    release_version: str
+    candidate_count: int
+    source_count: int
+    audit_passed: int
+    audit_pending: int
+    blocked: int
+    exact_duplicate_count: int
+    answer_status_counts: tuple[tuple[str, int], ...]
+    image_reference_count: int
+    source_counts: tuple[tuple[str, int], ...]
+```
+
+`AuditResult` will add exact field `report: AuditReport` after its existing
+`status: str` field. The database request target will be:
+
+```python
+@dataclass(frozen=True)
+class DatabaseBuildRequest:
+    batch: AuditedBatch | V117ReleaseBatch
+    baseline_database: ArtifactRef
+    baseline_manifest: ArtifactRef
+    output_path: Path
+    release_spec: ReleaseSpec
+    contract: DatabaseContract
+```
+
+The V1.17 database profile accepts only `V117ReleaseBatch`; the V1.18 profile
+accepts only `AuditedBatch`. A profile/batch mismatch is rejected before output
+creation, and database never constructs publication values.
+
+The successful export boundary will be:
+
+```python
+@dataclass(frozen=True)
+class ExportRequest:
+    database: DatabaseArtifact
+    audit_result: AuditResult
+    record_batch: AuditedBatch | V117ReleaseBatch
+    output_dir: Path
+    contract: ExportContract
+```
+
+Before any write, this public boundary must reject with the existing
+`PipelineError` boundary unless all of the following hold:
+
+1. `audit_result.status == "PASS"`;
+2. record counts are equal;
+3. an `AuditedBatch` has records exactly equal and ordered identically to
+   `audit_result.records`; or a `V117ReleaseBatch`, in its own order, directly
+   yields the exact `audit_result.records` tuple through each item's
+   `audited_record`;
+4. no external map, second lookup, object identity, or ordering reconstruction
+   participates in the comparison.
+
+Supporting target structures are exact:
+
+```python
+@dataclass(frozen=True)
+class ExportContract:
+    profile: str
+    audit_records_filename: str
+    audit_report_filename: str
+    csv_filename: str
+    knowledge_markdown_filename: str
+    import_report_filename: str
+    project_state_filename: str
+    taxonomy_filename: str | None
+    expected_question_count: int
+    expected_missing_answer_count: int
+
+@dataclass(frozen=True)
+class DerivedArtifacts:
+    csv: ArtifactRef
+    knowledge_markdown: ArtifactRef
+    import_report: ArtifactRef
+    project_state: ArtifactRef
+    taxonomy: ArtifactRef | None
+    audit_records: ArtifactRef
+    audit_report: ArtifactRef
+```
+
+`ReleaseContract` removes its existing `audit_records_filename` and
+`audit_report_filename` fields; every other field retains its current order and
+type. Audit owns report semantics and counts. The applicable profile serializer
+or V1.17 transformer
+owns record mapping. `export/formats.py` and `export/pipeline.py` own JSON
+representation, encoding, and file writing. Release only orchestrates and
+collects the resulting artifacts into manifest, sums, package, and verification.
+
+### 2. Candidate JSON and baseline SQLite responsibilities
+
+| Profile | Maintained candidate | Protected baseline / duplicate reference | Database responsibility |
+|---|---|---|---|
+| V1.17 | `legacy/task4_work/task4_package/03_候选数据/complete_questions_45_task4.json`, exact 50/52-field audit-stage records | V1.16 SQLite | Build V1.17 from baseline and the transformed 45-record release batch |
+| V1.18 | `releases/V1.18/complete_questions_452_task6_audited.json`, exactly 452 records and 54 fields per record | V1.17 SQLite | Copy the existing 45 formal records from baseline, then append the 452 audited records |
+
+Legacy extraction of the 452 candidates from V1.17 SQLite remains a read-only
+characterization and byte-equivalence oracle. Maintained production never uses
+it as a candidate producer. The candidate JSON and baseline SQLite are checked
+separately; neither substitutes for or reconstructs the other.
+
+### 3. Stage authority matrix
+
+| Behavior | `audit/profiles.py` | `audit/pipeline.py` | V1.17 transformer | `db/pipeline.py` | `export/*` | `release/pipeline.py` |
+|---|---|---|---|---|---|---|
+| candidate JSON/file and baseline SQLite preflight | Forbidden | **Owns** | Forbidden | baseline recheck only | Forbidden | Invoke only |
+| exact profile parsing and audit-stage record mapping | **Owns** | Invoke only | Forbidden | Forbidden | Invoke serializer only | Forbidden |
+| duplicate seed and business audit | Forbidden | **Owns** | Forbidden | Forbidden | Forbidden | Invoke only |
+| `AuditResult` / `AuditReport` semantics and statistics | Forbidden | **Owns** | Forbidden | Forbidden | Consume only | Forbidden |
+| V1.17 historical publication decision and release-stage mapping | Forbidden | Forbidden | **Owns** | Consume only | Consume only | Invoke only |
+| preserve V1.18 release compatibility | **Owns** | Carry only | Forbidden | Consume only | Consume only | Forbidden |
+| create or rewrite database publication fields | Forbidden | Forbidden | **Owns for V1.17** | Forbidden | Forbidden | Forbidden |
+| database copy, transaction, schema, integrity | Forbidden | Forbidden | Forbidden | **Owns** | Forbidden | Invoke only |
+| audit evidence JSON encoding and file writing | Mapping only | Semantics only | Mapping only | Forbidden | **Owns** | Invoke/collect only |
+| manifest, sums, ZIP, candidate verification | Forbidden | Forbidden | Forbidden | Forbidden | Artifact source only | **Owns** |
+
+### 4. Complete successful and failed flows
+
+V1.17 success:
+
+```text
+Task 4 50/52-field candidate JSON + protected V1.16 SQLite + asset root
+→ audit preflight and exact V1.17 parser
+→ baseline-seeded audit → AuditResult(AuditReport)
+→ require_passed() → AuditedBatch
+→ transform_v117_release(decision) → V117ReleaseBatch
+→ database builds V1.17 without creating publication semantics
+→ export consumes database + original audit_result + matching release batch
+→ release collects artifacts, manifests, packages, and verifies candidate
+```
+
+V1.18 success:
+
+```text
+frozen 452×54-field candidate JSON + protected V1.17 SQLite + asset root
+→ audit preflight and exact V1.18 parser
+→ baseline-seeded audit → AuditResult(AuditReport)
+→ require_passed() → AuditedBatch (no release transformer)
+→ database copies 45 baseline records and appends 452 records
+→ export consumes database + original audit_result + matching audited batch
+→ release collects artifacts, manifests, packages, and verifies candidate
+```
+
+Input/container/profile failures occur before `AuditResult` and write no normal
+artifact. A business blocker returns a failed `AuditResult` and `AuditReport`,
+but cannot produce `AuditedBatch`, call the transformer/database, create normal
+database/candidate artifacts, or enter promotion. Within `build_candidate()`,
+the caller-supplied deterministic `run_id` selects
+`data/staging/.failed/<run_id>/`. A standalone failed-audit evidence output must
+receive its output directory explicitly from its caller; its exact public
+request and filenames are deferred to a separately reviewed contract. No
+random run ID, timestamp naming, cwd lookup, or new implicit API is permitted.
+
+### 5. Required contract tests
+
+The separately authorized implementation must add tests that prove:
+
+- `AuditRequest` has the exact field order/types and candidate/baseline cannot
+  be inferred or substituted;
+- V1.17 accepts only Task 4 50/52 JSON with V1.16 baseline, and V1.18 accepts
+  only frozen 452×54 JSON with V1.17 baseline;
+- candidate and baseline missing/type failures, candidate digest capture, and
+  baseline digest mismatch occur before partial audit;
+- profiles perform no filesystem or SQLite access;
+- only a passed V1.17 batch enters the transformer, V1.18 is rejected, the
+  decision is deterministic, every release record directly retains its audit
+  envelope, and source order is oracle/byte-equivalent;
+- database cannot manufacture or rewrite V1.17 publication fields;
+- `AuditReport` counts are owned by audit and export does not recompute them;
+- `DatabaseBuildRequest`, `ExportRequest`, `ExportContract`,
+  `DerivedArtifacts`, and the reduced `ReleaseContract` have the exact frozen
+  field order and types;
+- `ExportRequest` rejects count, order, value, profile, or direct-envelope
+  mismatch before writing;
+- failed audit evidence uses deterministic caller-provided location and cannot
+  create database/candidate/promotion artifacts;
+- maintained candidate loading never calls the legacy SQLite extractor, while
+  legacy remains available only inside tests as an oracle.
+
+### 6. Minimal implementation files and commit order
+
+The contract revision itself changes only the two Task 8A authority documents.
+After separate authorizations, the minimum expected implementation surface is:
+
+- `src/joy_m2/models.py` and `tests/unit/test_pipeline_models.py` for the Phase 2
+  request/report/release/export values;
+- `src/joy_m2/audit/profiles.py`, `src/joy_m2/audit/pipeline.py`, and focused
+  audit tests for JSON-backed profiles and explicit baseline preflight;
+- `src/joy_m2/release/transformers.py` and a focused V1.17 transformer test;
+- `src/joy_m2/db/pipeline.py` and integration tests for typed batch consumption;
+- `src/joy_m2/export/formats.py`, `src/joy_m2/export/pipeline.py`, and integration
+  tests for typed audit evidence;
+- `src/joy_m2/release/pipeline.py` and end-to-end tests only after lower stages
+  pass independently.
+
+Recommended implementation commit order is: Phase 2 public contracts/tests;
+JSON-backed audit; V1.17 transformer; database consumption; typed audit export;
+release orchestration and end-to-end equivalence. Each commit requires its own
+explicit authorization and review gate.
 
 ---
 
@@ -1032,7 +1326,14 @@ changes, tests, and implementation still require separate human authorization.
 
 - [ ] **Step 1: Write failing Task 6 happy-path tests**
 
-Use the protected V1.17 database under `legacy/outputs/25757421d1d8/Task5_V1.17_正式入库/` as read-only input. Assert 452 `AuditedRecord` envelopes, 23 sources, unique IDs, stable record order corresponding to the legacy sequence that starts after the 45 protected records, answer counts 347/71/34, 33 image references, and no blockers. Do not assert or populate a `source_order` field on `AuditedQuestion`; a compatibility replay may obtain it only from that same envelope's `ReleaseCompatibility`.
+Use the frozen 452-record, 54-field V1.18 audited JSON as
+`AuditRequest.candidate_path` and the protected V1.17 database under
+`legacy/outputs/25757421d1d8/Task5_V1.17_正式入库/` as the separate
+`baseline_database`. Assert 452 `AuditedRecord` envelopes, 23 sources, unique
+IDs, preserved JSON record order, answer counts 347/71/34, 33 image references,
+and no blockers. Do not extract candidate records from the baseline. Do not
+assert or populate a `source_order` field on `AuditedQuestion`; compatibility
+replay obtains it only from the same envelope's `ReleaseCompatibility`.
 
 ```python
 result = audit_batch(task6_request(ROOT))
@@ -1049,24 +1350,33 @@ $task8_python -m unittest -v tests.unit.test_audit_pipeline.Task6AuditContractTe
 
 Expected: FAIL because `audit_batch` is not implemented.
 
-- [ ] **Step 2: Implement fatal input validation and candidate extraction**
+- [ ] **Step 2: Implement fatal input validation and explicit candidate loading**
 
-Before producing records, require the database and asset root to exist, verify the V1.17 SHA-256, open SQLite read-only with URI mode, and run the exact Task 6 join and `ORDER BY q.source_id, q.question_number, q.question_id` from the legacy oracle. Map missing files to `InputMissingError`, invalid SQLite/JSON to `InputFormatError`, and hash mismatch to `BaselineMismatchError`.
+Before producing records, independently require the candidate JSON, baseline
+database, and asset root to exist with the correct kinds; compute the candidate
+SHA-256 for evidence, verify the V1.17 baseline against its `ArtifactRef`, decode
+the exact 452-record JSON container, and open baseline SQLite read-only only to
+seed duplicate references and validate the protected baseline. Map missing
+files to `InputMissingError`, invalid SQLite/JSON to `InputFormatError`, and
+baseline hash mismatch to `BaselineMismatchError`. The Task 6 SQLite join and
+its `ORDER BY` remain test-oracle code only and must not be called by maintained
+candidate loading.
 
-- [ ] **Step 3: Implement Task 6 conversion without approval coupling**
+- [ ] **Step 3: Implement exact V1.18 JSON parsing without approval coupling**
 
-Port the reviewed Task 6 rules into `profiles.py`: excluded source, 2026 marks,
-2026 Joy Levels, answer identity mapping, tag cleaning, image resolution, source
-hashes, Q8 note, and normalized-text duplicate comparison. Set technical status
-to `audit_passed`, but do not manufacture a new approval or populate
-`formal_release_version`, `selectable`, or `source_order` on `AuditedQuestion`.
-When the input is an already-issued V1.18 compatibility record, preserve its
-publication fields inside typed `PublicationEvidence` and its three release-only
+Parse the already-audited frozen V1.18 JSON through the exact 54-field profile.
+The legacy extraction/conversion rules for excluded source, 2026 marks, Joy
+Levels, answer identity, tag cleaning, source hashes, and Q8 notes are comparison
+oracles, not maintained candidate transformations. Resolve image references and
+apply the approved normalized-text duplicate rule in `audit/pipeline.py`. Do not
+manufacture a new approval or populate `formal_release_version`, `selectable`,
+or `source_order` on `AuditedQuestion`. Preserve the input publication fields
+inside typed `PublicationEvidence` and its three release-only
 values inside the exact public `ReleaseCompatibility` on the same
 `AuditedRecord`; the V1.18 compatibility serializer maps only those preserved
 values back to their historical JSON keys. It must not create that carrier from
 missing fields or derive any of its values.
-Future approval authority still comes only from `ApprovalRecord` at promotion.
+Future promotion authority still comes only from `ApprovalRecord`.
 
 - [ ] **Step 4: Implement issue aggregation**
 
@@ -1085,11 +1395,16 @@ Continue processing any field that remains interpretable. Return all issues in d
 
 - [ ] **Step 5: Add failure aggregation tests**
 
-Create temporary SQLite copies with two exact duplicates, a missing image reference, an invalid tag, and an empty non-missing answer. Assert all relevant issue codes are present in one result and `require_passed()` raises `AuditBlockedError` without any output database.
+Create temporary candidate JSON values with two exact duplicates, a missing
+image reference, an invalid tag, and an empty non-missing answer; keep the
+protected baseline read-only. Assert all relevant issue codes are present in one
+result and `require_passed()` raises `AuditBlockedError` without any output
+database.
 
 - [ ] **Step 6: Add Task 5 profile tests**
 
-Load the Task 4 candidate JSON through a Task 5 `AuditContract`, assert exactly
+Load the Task 4 candidate JSON through a Task 5 `AuditContract` and pass the
+protected V1.16 SQLite separately as `baseline_database`; assert exactly
 45 unique `audit_passed` envelopes with no unresolved issues, and preserve their
 order. Assert every envelope has a `Task4Compatibility`, including all 24
 double-absent records, and has `release_compatibility=None`. Assert a non-eligible
@@ -1128,6 +1443,50 @@ git commit -m "feat: add typed audit pipeline"
 
 ---
 
+### Task 3A: Implement the V1.17 Historical Release Transformer
+
+**Files:**
+- Create: `src/joy_m2/release/transformers.py`
+- Modify: `src/joy_m2/release/__init__.py`
+- Create: `tests/unit/test_v117_release_transformer.py`
+
+**Interfaces:**
+- Consumes: a V1.17 `AuditedBatch` returned by `require_passed()` and an explicit
+  `V117ReleaseDecision`.
+- Produces: `transform_v117_release(...) -> V117ReleaseBatch` with direct,
+  ordered audit-envelope retention.
+
+- [ ] **Step 1: Write failing contract and boundary tests**
+
+Assert exact decision/record/batch field types, rejection of a failed or V1.18
+batch, no clock/environment/registry/`ApprovalRecord` dependency, and one direct
+`AuditedRecord` child per output record. Assert neither compatibility carrier on
+the retained `AuditedRecord` is changed.
+
+- [ ] **Step 2: Implement the minimal deterministic transformer**
+
+Apply only the seven protected V1.17 historical operations frozen above. Create
+release-stage `PublicationEvidence`, `ReleaseCompatibility`, and schema value on
+the direct wrapper. Preserve input order and cardinality. Do not serialize JSON
+or access files/databases.
+
+- [ ] **Step 3: Prove source-order and record equivalence**
+
+Compare all 45 transformed records against the protected legacy oracle,
+including 1-based `source_order`, 53/55-field mapping, Task 4 key presence,
+publication values, and final byte-equivalence after the approved serializer.
+Position alone is not accepted as proof; the oracle comparison is required.
+
+- [ ] **Step 4: Commit the transformer separately**
+
+```bash
+git add src/joy_m2/release/transformers.py src/joy_m2/release/__init__.py tests/unit/test_v117_release_transformer.py
+git diff --cached --check
+git commit -m "feat: add V1.17 release transformer"
+```
+
+---
+
 ### Task 4: Implement Transactional V1.17 and V1.18 Database Builds
 
 **Files:**
@@ -1137,7 +1496,8 @@ git commit -m "feat: add typed audit pipeline"
 - Create: `tests/integration/test_db_pipeline.py`
 
 **Interfaces:**
-- Consumes: `AuditedBatch`, `ReleaseSpec`, `DatabaseContract`, `DatabaseBuildRequest`.
+- Consumes: V1.18 `AuditedBatch` or V1.17 `V117ReleaseBatch`, `ReleaseSpec`,
+  `DatabaseContract`, and `DatabaseBuildRequest`.
 - Produces: `build_database(request) -> DatabaseArtifact` and `verify_database(path, contract) -> VerificationReport`.
 
 - [ ] **Step 1: Write the failing V1.18 byte-equivalence test**
@@ -1177,7 +1537,14 @@ Inject a duplicate ID, an unknown `source_id`, a malformed baseline, and an exis
 
 - [ ] **Step 6: Add V1.17 build support and equivalence**
 
-Implement the schema-creation profile from Task 5, including V2 tables, constraints, indexes, metadata, taxonomy, import run, selectable view, `user_version=117`, and `VACUUM`. Assert the temporary output database bytes equal the protected V1.17 database and the V1.16 historical tables are logically unchanged.
+Implement the schema-creation profile from Task 5, accepting only the
+`V117ReleaseBatch` produced by Task 3A and copying its already-decided
+publication values without creating or rewriting them. Include V2 tables,
+constraints, indexes, metadata, taxonomy, import run, selectable view,
+`user_version=117`, and `VACUUM`. Assert the temporary output database bytes
+equal the protected V1.17 database and the V1.16 historical tables are logically
+unchanged. Assert an audit-stage `AuditedBatch` is rejected for V1.17 before
+output creation.
 
 - [ ] **Step 7: Run database and audit suites**
 
@@ -1197,7 +1564,7 @@ git commit -m "feat: add transactional database pipeline"
 
 ---
 
-### Task 5: Implement SQLite-Only Deterministic Exports
+### Task 5: Implement Deterministic Database and Audit-Evidence Exports
 
 **Files:**
 - Create: `src/joy_m2/export/formats.py`
@@ -1206,7 +1573,9 @@ git commit -m "feat: add transactional database pipeline"
 - Create: `tests/integration/test_export_pipeline.py`
 
 **Interfaces:**
-- Consumes: `DatabaseArtifact`, `ExportContract`, and a current staging output directory.
+- Consumes: `DatabaseArtifact`, the original `AuditResult`, its directly
+  corresponding `AuditedBatch | V117ReleaseBatch`, `ExportContract`, and a
+  current staging output directory.
 - Produces: `export_database(request) -> DerivedArtifacts` and `verify_exports(request) -> VerificationReport`.
 
 - [ ] **Step 1: Write failing serializer tests**
@@ -1232,19 +1601,40 @@ Use `json.dumps(ensure_ascii=False, sort_keys=True, separators=(",", ":"))` for 
 
 - [ ] **Step 3: Write failing V1.18 export equivalence tests**
 
-Build a temporary V1.18 database through Task 4, export all V1.18 profile files, then compare CSV, knowledge Markdown, audit JSON, audit report, import report, and project-state bytes to their `releases/V1.18/` counterparts. Assert CSV rows equal every SQLite cell after NULL-to-empty conversion and Markdown contains 497 unique headings plus 34 missing-source markers.
+Build a temporary V1.18 database through Task 4, retain the exact Task 3
+`AuditResult` and `AuditedBatch`, and export all V1.18 profile files. Compare
+CSV, knowledge Markdown, audit JSON, audit report, import report, and
+project-state bytes to their `releases/V1.18/` counterparts. Assert CSV rows
+equal every SQLite cell after NULL-to-empty conversion, Markdown contains 497
+unique headings plus 34 missing-source markers, and the audit report bytes encode
+the existing `AuditReport` without exporter-side recounting.
 
 - [ ] **Step 4: Implement `export_database`**
 
-Read only the supplied `DatabaseArtifact`; never reopen source JSON as a data source for CSV/Markdown. Query CSV by `question_id`, Markdown by `source_order`, and summaries with explicit `ORDER BY`. Persist audit records and report supplied by the typed audit result using the approved JSON serializer. Refuse any target outside the current staging run or any existing output file.
+Before opening an output, enforce the frozen count/order/direct-envelope
+relationship between `audit_result` and `record_batch`. Read only the supplied
+`DatabaseArtifact` for CSV/Markdown and database-derived summaries; never reopen
+source JSON. Query CSV by `question_id`, Markdown by `source_order`, and database
+summaries with explicit `ORDER BY`. Serialize records from the supplied matching
+batch and serialize the supplied `AuditReport` without re-auditing or
+recounting. Refuse any mismatch, target outside the current staging run, or
+existing output file before partial writes.
 
 - [ ] **Step 5: Implement `verify_exports`**
 
-Return individual checks for expected file set, CSV BOM, CSV column/value equality, row count, Markdown unique headings, missing-answer markers, JSON parseability, expected audit count, and deterministic re-export hashes. Return FAIL for mismatches and raise only when the verification cannot execute.
+Return individual checks for expected file set, CSV BOM, CSV column/value
+equality, row count, Markdown unique headings, missing-answer markers, audit JSON
+parseability, batch/report count and order agreement, and deterministic
+re-export hashes. Return FAIL for artifact mismatches and raise only when the
+verification cannot execute.
 
 - [ ] **Step 6: Add V1.17 export profile tests**
 
-Assert V1.17 CSV, knowledge Markdown, report, project state, approved JSON, and taxonomy JSON bytes equal the protected legacy Task 5 release artifacts.
+Pass the exact original V1.17 `AuditResult` and Task 3A `V117ReleaseBatch`.
+Assert V1.17 CSV, knowledge Markdown, report, project state, approved JSON, and
+taxonomy JSON bytes equal the protected legacy Task 5 release artifacts, and
+that a reordered, truncated, or unrelated release batch is rejected before
+writing.
 
 - [ ] **Step 7: Run export, database, and legacy tests**
 
@@ -1361,9 +1751,22 @@ Expected: FAIL because `build_candidate` is absent.
 
 - [ ] **Step 2: Implement `build_candidate` orchestration**
 
-Preflight every input and output conflict before creating the hidden temporary run. Call `audit_batch()`, require a passed batch, call `build_database()`, call `export_database()`, write evidence/manifest/sums, build the ZIP, and call `verify_candidate()`. If its status is not `PASS`, raise `PipelineError` with the failed check names; otherwise atomically rename the hidden run to `<run_id>`.
+Preflight every input and output conflict before creating the hidden temporary
+run. Call `audit_batch()` and retain its `AuditResult`; require a passed batch;
+for V1.17 only call `transform_v117_release()` with the explicit historical
+decision, while V1.18 passes the `AuditedBatch` unchanged. Pass that batch to
+`build_database()`, then pass the database artifact, original audit result, and
+same matching batch to `export_database()`. Collect its audit evidence
+artifacts, write manifest/sums, build the ZIP, and call `verify_candidate()`.
+Release must not encode audit JSON or recompute report statistics. If candidate
+status is not `PASS`, raise `PipelineError` with the failed check names;
+otherwise atomically rename the hidden run to `<run_id>`.
 
-Catch `PipelineError` only to write deterministic failure metadata and relocate the known temporary run under `.failed`; re-raise the original typed exception.
+Catch `PipelineError` only to write deterministic failure metadata and relocate
+the known temporary run under `.failed/<request.run_id>`; re-raise the original
+typed exception. A failed audit may persist its existing `AuditResult` and
+`AuditReport` as diagnostics, but must not call transformer/database or produce
+normal candidate artifacts.
 
 - [ ] **Step 3: Add output conflict and stale candidate tests**
 

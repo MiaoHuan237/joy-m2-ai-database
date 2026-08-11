@@ -6,6 +6,11 @@
 
 本规格获 Joy 书面批准前，不生成实施计划；Task 8A 不迁移或重写生产代码。
 
+截至 Task 8B / Task 2 Phase 2 合同修订，Phase 1 公共模型与模型测试已经
+独立复审通过；本规格第 16 节冻结的是尚未实现的 Phase 2 接口与调用边界。
+该修订不表示 parser、adapter、serializer、transformer、database、export 或
+release 已经实现，也不授予实现权限。
+
 设计完成标准：
 
 1. 四个模块各有单一职责，依赖方向明确。
@@ -104,16 +109,21 @@ Task 8A 从以下远端状态开始：
 
 ## 5. 模块职责与依赖方向
 
-数据流固定为：
+完整数据流固定为：
 
 ```text
 PipelineConfig
       ↓
-audit → AuditResult / AuditedBatch
+explicit candidate JSON + explicit protected baseline SQLite
+      ↓
+audit → AuditResult / AuditReport → AuditedBatch
+      ↓
+V1.17 only: historical release transformer → V117ReleaseBatch
+V1.18: AuditedBatch passes through unchanged
       ↓
 db → DatabaseArtifact
       ↓
-export → DerivedArtifacts
+export → database-derived files + supplied audit evidence → DerivedArtifacts
       ↓
 release → CandidateRelease → VerificationReport → FormalRelease
 ```
@@ -122,25 +132,25 @@ release → CandidateRelease → VerificationReport → FormalRelease
 
 ### 5.1 `joy_m2.audit`
 
-单一职责是读取候选和审计契约，检查完整题边界、字段完整性、答案身份、来源追踪、图片、标签、难度、校订和重复关系，并汇总结构化 issues。
+单一职责是读取显式候选 JSON 和显式受保护 baseline SQLite，检查完整题边界、字段完整性、答案身份、来源追踪、图片、标签、难度、校订和重复关系，并汇总结构化 issues 与 `AuditReport`。`audit/pipeline.py` 负责候选 JSON、文件、资源与 baseline SQLite 的存在性、类型和 SHA-256 preflight；`audit/profiles.py` 只处理已经解码的 record mapping，不访问文件系统或 SQLite。
 
 它不修改 SQLite，不生成 CSV/Markdown，不决定正式发布，也不写 `releases/`。技术审计通过只产生 `AuditedBatch`，不等于 Joy 正式批准。
 
 ### 5.2 `joy_m2.db`
 
-单一职责是验证基线身份，并把 `AuditedBatch` 事务式应用到候选 SQLite。它负责 schema、metadata、import run、`user_version`、兼容对象保留、integrity 和 foreign-key 检查。
+单一职责是再次验证基线身份，并把已经决定发布语义的批次事务式应用到候选 SQLite。V1.18 消费 `AuditedBatch`；V1.17 消费 `V117ReleaseBatch`，不得自行创建或改写发布字段。它负责 schema、metadata、import run、`user_version`、兼容对象保留、integrity 和 foreign-key 检查。
 
 它不重新解释审计规则，不生成派生文件、manifest 或 ZIP。
 
 ### 5.3 `joy_m2.export`
 
-单一职责是只读最终候选 SQLite，并生成 CSV、Markdown、入库报告和其他由 `ExportContract` 明确列出的派生产物。
+单一职责是只读最终候选 SQLite，并生成 CSV、Markdown、入库报告和其他由 `ExportContract` 明确列出的数据库派生产物；同时把 audit 已经计算的 `AuditResult`/`AuditReport` 和 audit/profile 或获准 V1.17 transformer 已经映射的 records 编码、写为审计证据。
 
-它不迁移数据库，不修改题目，不判断发布目标，也不写正式目录。
+它不迁移数据库，不修改题目，不判断发布目标，也不写正式目录。它不得重新读取 candidate JSON、重新审计、重新统计 `AuditReport`，或通过 `question_id`、位置、文件顺序、对象 identity 等方式恢复记录对应关系。
 
 ### 5.4 `joy_m2.release`
 
-单一职责是编排流水线与发布安全：创建隔离 staging run、持久化审计证据、调用数据库和导出阶段、生成 manifest/SHA/ZIP、独立验证候选，以及在明确审批后原子提升。
+单一职责是编排流水线与发布安全：创建隔离 staging run、调用 audit、V1.17 historical release transformer、database 与 export，收集审计证据 artifact，生成 manifest/SHA/ZIP、独立验证候选，以及在明确审批后原子提升。审计语义和 JSON 编码分别属于 audit 与 export；release 不重复实现。
 
 `build_candidate()` 永远只写 staging；`promote_candidate()` 是唯一允许写入 `releases/` 的接口。
 
@@ -197,27 +207,71 @@ audit_batch(request: AuditRequest) -> AuditResult
 AuditResult.require_passed() -> AuditedBatch
 ```
 
-`AuditRequest` 包含来源 SQLite、资源根目录、`AuditContract`、已审核的版本决议和候选选择范围。`AuditResult` 包含全部记录结果、issues、统计和整体状态。存在 blocker 时，`require_passed()` 抛 `AuditBlockedError`。
+Phase 2 的目标接口为：
 
-### 7.2 db
+```python
+AuditRequest(
+    candidate_path: Path,
+    baseline_database: ArtifactRef,
+    asset_root: Path,
+    contract: AuditContract,
+    selected_source_ids: tuple[str, ...],
+)
+```
+
+`candidate_path` 与 `baseline_database` 是两个独立、显式输入，不能从 cwd、
+环境变量、仓库布局或彼此推导。pipeline 分别检查存在性、文件类型和
+SHA-256。V1.17 candidate 是 Task 4 的 50/52 字段 JSON，baseline 是受保护
+V1.16 SQLite；V1.18 candidate 是冻结的 452×54 字段 audited JSON，baseline
+是受保护 V1.17 SQLite。`AuditResult` 包含全部 record envelopes、issues、
+`AuditReport`、统计和整体状态。存在 blocker 时，`require_passed()` 抛
+`AuditBlockedError`。
+
+以上 `AuditRequest` 和 `AuditReport` 是本次冻结但尚未实现的 Phase 2
+接口；Phase 1 已实现的 `AuditedRecord`、`AuditResult.records` 和
+`AuditedBatch.records` 保持不变。
+
+### 7.2 V1.17 historical release transformer
+
+```python
+transform_v117_release(
+    batch: AuditedBatch,
+    decision: V117ReleaseDecision,
+) -> V117ReleaseBatch
+```
+
+该函数仅接受已经通过 `require_passed()` 的 V1.17 `AuditedBatch`，位于
+audit PASS 之后、database 写入之前。`V117ReleaseDecision` 显式携带冻结
+历史发布决议；它不读取系统时钟、环境变量、全局 registry 或 approval
+manifest，也不使用后续 promotion 的 `ApprovalRecord`。V1.18 禁止调用该
+transformer。第 16 节冻结完整 typed envelope 与字段。
+
+### 7.3 db
 
 ```python
 build_database(request: DatabaseBuildRequest) -> DatabaseArtifact
 verify_database(path: Path, contract: DatabaseContract) -> VerificationReport
 ```
 
-`DatabaseBuildRequest` 只接受 `AuditedBatch`、冻结基线、当前 staging run 内的目标路径、`ReleaseSpec` 和 `DatabaseContract`。
+`DatabaseBuildRequest` 对 V1.18 接受 `AuditedBatch`，对 V1.17 接受
+`V117ReleaseBatch`；同时接受冻结基线、当前 staging run 内的目标路径、
+`ReleaseSpec` 和 `DatabaseContract`。database 不得从 audit-stage 值创建
+发布字段。
 
-### 7.3 export
+### 7.4 export
 
 ```python
 export_database(request: ExportRequest) -> DerivedArtifacts
 verify_exports(request: ExportVerificationRequest) -> VerificationReport
 ```
 
-`ExportRequest` 只接受已完成的 `DatabaseArtifact`、当前 staging run 和 `ExportContract`。`DerivedArtifacts` 显式列出每个产物，不返回无约束路径字典。
+正常成功路径的 Phase 2 目标 `ExportRequest` 接受已完成的
+`DatabaseArtifact`、原始 `AuditResult`、与它直接对应的 `AuditedBatch` 或
+获准的 `V117ReleaseBatch`、当前 staging 输出目录和 `ExportContract`。
+`DerivedArtifacts` 显式列出数据库派生物和 audit evidence artifact，不返回
+无约束路径字典。第 16 节冻结 record 数量、顺序和一一对应校验。
 
-### 7.4 release
+### 7.5 release
 
 ```python
 build_candidate(request: CandidateBuildRequest) -> CandidateRelease
@@ -340,7 +394,13 @@ PipelineError
 
 题目级问题进入 `AuditIssue`，至少包含稳定代码、严重级别、题目 ID、字段和证据。审计尽量完成并汇总所有可判断问题。精确重复使用稳定代码 `exact_duplicate`，始终为 blocker。
 
-存在 blocker 时，`AuditResult` 仍可作为诊断证据落盘，但不能取得 `AuditedBatch`，数据库阶段抛 `AuditBlockedError`，不写候选 SQLite。
+存在 blocker 时，`AuditResult` 与 audit 拥有的 `AuditReport` 仍可作为诊断
+证据交给 export 落盘，但不能取得 `AuditedBatch`，不得调用 transformer 或
+database，也不得生成正常 candidate artifact 或进入 promotion。在
+`build_candidate()` 中，失败诊断目录使用调用方显式提供的
+`CandidateBuildRequest.run_id`，确定为 `data/staging/.failed/<run_id>/`；独立
+audit 调用的失败证据输出位置必须由调用方显式提供，精确的独立 API 与命名
+留给后续合同，不得自动生成随机 run ID 或从 cwd 推导路径。
 
 ### 10.4 SQLite 失败
 
@@ -365,13 +425,22 @@ PipelineError
 
 ### 11.2 audit
 
+- 锁定 `AuditRequest` 的 candidate JSON、baseline SQLite 两个显式输入及各自 preflight，禁止路径推导和 maintained SQLite candidate extraction。
 - 锁定 452 题、23 来源、唯一 ID、完整题边界和稳定顺序。
 - 锁定 Task 6 的 347/71/34，以及合并 V1.17 后的 392/71/34。
 - 锁定缺答案空值、2026 非官方身份、图片引用、来源哈希和 Q8 风险说明。
 - 对精确重复、非法标签、缺图片、字段缺失和来源问题做多 issue 汇总。
 - 存在 blocker 时不能产生 `AuditedBatch`。
+- 锁定 `AuditReport` 由 audit 计算，失败结果可诊断但不能进入 transformer/database。
 
-### 11.3 db
+### 11.3 V1.17 transformer
+
+- 只接受通过 `require_passed()` 的 V1.17 `AuditedBatch`，拒绝 V1.18 和失败审计。
+- 锁定显式 `V117ReleaseDecision`，证明不读取时钟、环境、registry、approval manifest 或 `ApprovalRecord`。
+- 每个 `V117ReleaseRecord` 直接保留一个对应 `AuditedRecord`，数量、顺序和一一对应不变。
+- 通过 legacy oracle 和最终 byte-equivalence 证明 1-based `source_order` 及 53/55 字段映射。
+
+### 11.4 db
 
 - 基线哈希不符时零输出。
 - V1.17 的 45 题和 Task 6 的 452 题逐字段等价。
@@ -379,15 +448,18 @@ PipelineError
 - `user_version=118`、integrity `ok`、foreign-key 错误 0。
 - 事务失败不暴露候选数据库。
 - 重复主键、外键和 integrity 失败映射到指定领域异常。
+- V1.17 只接受 `V117ReleaseBatch`，V1.18 只接受 `AuditedBatch`；database 不创建或改写发布字段。
 
-### 11.4 export
+### 11.5 export
 
 - CSV BOM、CRLF、列顺序、NULL 表示和 497 行逐值镜像。
 - Markdown 有 497 个唯一标题和 34 个缺答案标记。
 - JSON 键排序、缩进、Unicode、LF 和末尾换行固定。
 - 相同 SQLite 连续导出两次逐字节一致。
+- audit evidence 只消费原 `AuditResult` 和直接对应 batch；数量、顺序或 envelope 不一致时零写入拒绝。
+- export 不重新读取 candidate、不重新审计、不重新统计 `AuditReport`。
 
-### 11.5 release
+### 11.6 release
 
 - manifest 文件集合与哈希闭包正确。
 - SHA 清单覆盖所有受保护 payload 且不覆盖自身或 ZIP。
@@ -396,8 +468,10 @@ PipelineError
 - 已存在 staging、ZIP 或正式目录时拒绝覆盖。
 - 审批版本、审批人、范围或 candidate manifest 哈希不匹配时拒绝提升。
 - 正式验证失败时不产生 `releases/<version>/`。
+- V1.17 调用 transformer 的位置固定在 audit PASS 后、database 前；V1.18 跳过。
+- 失败审计使用调用方显式 run ID 的确定性诊断位置，不产生正常 candidate 或 promotion artifact。
 
-### 11.6 故障注入
+### 11.7 故障注入
 
 至少覆盖缺数据库、manifest、图片，坏 JSON，基线哈希错误，精确重复，审计 blocker，重复 ID，外键错误，stale candidate，输出冲突和审批绑定错误。每项均断言异常类型、诊断证据和正式目录零变化。
 
@@ -467,3 +541,229 @@ CLI 只负责参数解析、仓库根发现、`PipelineConfig` 构造、结果�
 - 删除 compatibility views、legacy 文件或远端备份分支。
 - 设计 Task 8C。
 - 未经 Joy 批准候选数据或正式提升新版本。
+
+## 16. Task 8B / Task 2 Phase 2 冻结合同
+
+本节由用户审核通过，并取代本规格中把 audit candidate 模糊描述为“来源
+SQLite”、把 audit evidence 写入语义归给 release、或没有 V1.17 transformer
+边界的早期表述。Phase 1 的 `Task4Compatibility`、
+`ReleaseCompatibility`、`AuditedRecord` 以及 records 类型迁移已经完成并
+通过独立复审；本节其余类型、字段、函数和调用链均为 **DESIGN APPROVED —
+NOT IMPLEMENTED**。
+
+### 16.1 显式输入与 profile 分工
+
+Phase 2 `AuditRequest` 精确目标结构为：
+
+```python
+@dataclass(frozen=True)
+class AuditRequest:
+    candidate_path: Path
+    baseline_database: ArtifactRef
+    asset_root: Path
+    contract: AuditContract
+    selected_source_ids: tuple[str, ...]
+```
+
+candidate 与 baseline 是两个独立事实源。`audit/pipeline.py` 在解析 record
+前分别验证 candidate JSON、baseline SQLite 和 asset root 的存在性与类型，
+并重新计算两个文件的 SHA-256；candidate 摘要进入审计/构建证据，baseline
+摘要必须等于 `ArtifactRef.sha256`。baseline 不匹配在写入前以现有领域输入
+异常拒绝。不得从 cwd、环境变量、仓库相对位置、另一输入
+路径、profile 名或全局状态推导任一输入。
+
+输入职责固定为：
+
+| Profile | Candidate | Baseline / duplicate reference | 后续 database 行为 |
+|---|---|---|---|
+| V1.17 | `legacy/task4_work/task4_package/03_候选数据/complete_questions_45_task4.json` 的 Task 4 audit-stage JSON，严格 50/52 字段 | 受保护 V1.16 SQLite | 从 baseline 构建并写入经 transformer 决定的 45 条 V1.17 records |
+| V1.18 | `releases/V1.18/complete_questions_452_task6_audited.json`，冻结 452 条且每条 54 字段 | 受保护 V1.17 SQLite | 复制 baseline 已有 45 条正式 records，再写入 452 条 candidate records |
+
+legacy 从 V1.17 SQLite 提取 452 条记录的逻辑只作为 characterization 与
+byte-equivalence oracle，不是 maintained candidate producer，也不是第二个
+candidate 真相源。`audit/profiles.py` 只接受 pipeline 已解码的单条 JSON
+对象，不访问文件系统、SQLite 或哈希 API。
+
+### 16.2 V1.17 historical release transformer
+
+未来公共 release-stage values 精确冻结为：
+
+```python
+@dataclass(frozen=True)
+class V117ReleaseDecision:
+    formal_release_version: Literal["V1.17"]
+    selectable: Literal[True]
+    record_status: Literal["published"]
+    joy_approval: Literal["approved_by_joy"]
+    approved_at: Literal["2026-08-08T20:00:00+08:00"]
+    schema_version: Literal["complete-question-v1.0"]
+
+@dataclass(frozen=True)
+class V117ReleaseRecord:
+    audited_record: AuditedRecord
+    publication_evidence: PublicationEvidence
+    release_compatibility: ReleaseCompatibility
+    schema_version: str
+
+@dataclass(frozen=True)
+class V117ReleaseBatch:
+    records: tuple[V117ReleaseRecord, ...]
+
+def transform_v117_release(
+    batch: AuditedBatch,
+    decision: V117ReleaseDecision,
+) -> V117ReleaseBatch: ...
+```
+
+transformer 必须验证输入是 V1.17 envelope、已经由
+`AuditResult.require_passed()` 取得，并按输入顺序一对一产生 release records。
+每个 `V117ReleaseRecord` 直接保留对应 `AuditedRecord`；不得把
+`ReleaseCompatibility` 回填到原 `AuditedRecord`，不得让两个 compatibility
+carrier 同时非 `None`，也不得使用平行列表、`question_id`、列表位置、文件
+顺序或对象 identity 二次拼接。
+
+transformer 只重放受保护 legacy V1.17 的历史发布决议，不表示当前候选获得
+Joy promotion 审批。它不使用 `ApprovalRecord`，不读取系统时钟、环境变量、
+approval manifest 或全局 registry。`source_order` 从 1 开始并保持 record
+顺序，但实现必须以 legacy oracle 和最终 byte-equivalence 证明其值，不能只
+凭位置假设宣告正确。V1.18 已携带自身 release compatibility，禁止进入该
+transformer。database 对 V1.17 只消费 `V117ReleaseBatch`，不能创建、默认、
+规范化或改写发布字段。
+
+Phase 2 的目标 database request 为：
+
+```python
+@dataclass(frozen=True)
+class DatabaseBuildRequest:
+    batch: AuditedBatch | V117ReleaseBatch
+    baseline_database: ArtifactRef
+    baseline_manifest: ArtifactRef
+    output_path: Path
+    release_spec: ReleaseSpec
+    contract: DatabaseContract
+```
+
+V1.17 profile 只接受 `V117ReleaseBatch`，V1.18 profile 只接受
+`AuditedBatch`；不匹配在创建输出前使用现有 `PipelineError` 边界拒绝。
+
+### 16.3 audit report 与 evidence 所有权
+
+audit 拥有 issues、PASS/FAIL、统计和 `AuditReport` 的语义；profile serializer
+拥有 V1.17/V1.18 audit-stage record mapping，V1.17 transformer 拥有获准的
+release-stage record mapping；`export/formats.py` 与 `export/pipeline.py` 拥有
+JSON 表示、编码和文件写入；`release/pipeline.py` 只编排、收集
+`ArtifactRef`、写 manifest/SHA、封包和验证。
+
+未来 `AuditReport` 精确目标结构为：
+
+```python
+@dataclass(frozen=True)
+class AuditReport:
+    release_version: str
+    candidate_count: int
+    source_count: int
+    audit_passed: int
+    audit_pending: int
+    blocked: int
+    exact_duplicate_count: int
+    answer_status_counts: tuple[tuple[str, int], ...]
+    image_reference_count: int
+    source_counts: tuple[tuple[str, int], ...]
+```
+
+Phase 2 将 `AuditResult` 精确扩展为在现有 `status: str` 后增加
+`report: AuditReport`。export 只能消费该 report，不能从 records 或 SQLite
+重新统计。成功路径的目标结构为：
+
+```python
+@dataclass(frozen=True)
+class ExportRequest:
+    database: DatabaseArtifact
+    audit_result: AuditResult
+    record_batch: AuditedBatch | V117ReleaseBatch
+    output_dir: Path
+    contract: ExportContract
+```
+
+该公共边界必须在任何写入前验证：
+
+1. `audit_result.status == "PASS"`，且 `record_batch` 的记录数与
+   `audit_result.records` 相同；
+2. `AuditedBatch.records == audit_result.records`；或对
+   `V117ReleaseBatch`，按 batch 自身顺序直接取每项的 `audited_record` 后，
+   其 tuple 等于 `audit_result.records`；
+3. 比较是 envelope 值与顺序的直接比较，不使用对象 identity、二次关联或
+   外部 registry；
+4. 任一不一致使用现有 `PipelineError` 公共边界明确拒绝，不产生部分文件。
+
+配套目标结构精确为：
+
+```python
+@dataclass(frozen=True)
+class ExportContract:
+    profile: str
+    audit_records_filename: str
+    audit_report_filename: str
+    csv_filename: str
+    knowledge_markdown_filename: str
+    import_report_filename: str
+    project_state_filename: str
+    taxonomy_filename: str | None
+    expected_question_count: int
+    expected_missing_answer_count: int
+
+@dataclass(frozen=True)
+class DerivedArtifacts:
+    csv: ArtifactRef
+    knowledge_markdown: ArtifactRef
+    import_report: ArtifactRef
+    project_state: ArtifactRef
+    taxonomy: ArtifactRef | None
+    audit_records: ArtifactRef
+    audit_report: ArtifactRef
+```
+
+`ReleaseContract` deletes its existing `audit_records_filename` and
+`audit_report_filename` fields; every other field retains its current order and
+type. It does not repeat audit encoding semantics. release only places these
+export artifacts in manifest and verification. CSV、Markdown 等数据库派生物仍
+只读最终 SQLite；audit evidence 只读 `audit_result` 与 `record_batch`，两条
+来源不得互相替代。
+
+失败审计没有 `AuditedBatch`，因此不构造上述成功路径 `ExportRequest`，不
+调用 transformer 或 database，也不生成正常 database/candidate artifacts。
+`build_candidate()` 使用调用方显式 `run_id` 写入确定的
+`data/staging/.failed/<run_id>/` 诊断位置；独立 audit evidence 的公共写入
+请求和精确文件命名留给后续独立合同，但其输出目录必须由调用方显式提供。
+在该合同获批前，不得暗中新增随机 run ID、时间戳目录或路径推导 API。
+
+### 16.4 成功、失败与后续实现顺序
+
+成功路径固定为：
+
+```text
+CandidateBuildRequest (explicit run_id and contracts)
+→ AuditRequest (candidate JSON + baseline SQLite + asset root)
+→ audit/pipeline preflight and JSON decoding
+→ audit/profiles exact record parsing
+→ duplicate seed from baseline + business audit
+→ AuditResult(AuditReport)
+→ require_passed() → AuditedBatch
+→ V1.17 only: transform_v117_release() → V117ReleaseBatch
+→ V1.18: keep AuditedBatch unchanged
+→ build_database()
+→ export_database(database + audit_result + matching record_batch)
+→ collect audit/database/export artifacts
+→ manifest + SHA-256 sums + deterministic ZIP + independent verification
+→ CandidateRelease
+```
+
+失败路径固定为：input/profile 错误在 `AuditResult` 前 fail-fast；业务 blocker
+产生失败 `AuditResult`/`AuditReport`，可保存确定性诊断证据，但无法取得
+`AuditedBatch`，并在 transformer、database、正常 export、candidate manifest
+和 promotion 前停止。
+
+后续实现必须拆分为可独立复审的提交，推荐顺序是：Phase 2 models/contracts
+测试；JSON-backed audit profiles/pipeline；V1.17 transformer；database batch
+消费；typed audit evidence export；最后才是 release orchestration 和端到端
+等价验证。任何一个提交都需要单独授权，本次文档提交不启动这些工作。
