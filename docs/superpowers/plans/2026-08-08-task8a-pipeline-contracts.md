@@ -266,6 +266,9 @@ AuditIssue
 Correction
 PublicationEvidence
 AuditedQuestion
+Task4Compatibility
+ReleaseCompatibility
+AuditedRecord
 AuditedBatch
 AuditResult
 AuditContract
@@ -290,10 +293,13 @@ and `unresolved_issues` to immutable tuples of typed values. Represent the
 historical `record_status`, `joy_approval`, and nullable `approved_at` fields as
 a typed `PublicationEvidence` child value rather than treating them as a new
 audit decision. Do not put the release-only `formal_release_version`,
-`selectable`, or `source_order` fields on `AuditedQuestion`, and do not add an
-`extras` mapping. `AuditResult.require_passed()` rejects any issue with severity
-`blocker`; callers inspect `VerificationReport.status` and every named check
-explicitly.
+`selectable`, `source_order`, `task4_resolution`, or `task4_processed_at` fields
+on `AuditedQuestion`, and do not add an `extras` mapping. The later Task 2 model
+amendment adds the exact public frozen compatibility values and record envelope
+frozen in the Task 2 chapter below; this historical implementation step does not
+authorize that amendment. `AuditResult.require_passed()` rejects any issue with
+severity `blocker`; callers inspect `VerificationReport.status` and every named
+check explicitly.
 
 - [ ] **Step 4: Run model tests to green**
 
@@ -362,7 +368,7 @@ git commit -m "feat: add typed pipeline contracts"
 
 **Task 8B / Task 2 contract:** **FROZEN — PENDING INDEPENDENT RE-REVIEW**
 
-**Task 8B / Task 2 implementation:** **NOT STARTED — NOT APPROVED**
+**Task 8B / Task 2 models/tests/implementation:** **NOT STARTED — NOT APPROVED**
 
 This chapter freezes only the human-approved Task 2 contract revision. It does
 not authorize tests, a `models.py` change, profile parser/serializer code,
@@ -382,7 +388,7 @@ The dependency direction is:
 ```text
 external profile input
 → audit/profiles.py
-→ typed AuditedQuestion records
+→ typed AuditedRecord envelopes
 → audit/pipeline.py
 → AuditResult
 → AuditResult.require_passed()
@@ -417,22 +423,83 @@ maps to `"V1.18"`. Arbitrary strings, implicit profile inference, fallback
 profiles, and a mutable profile registry are forbidden.
 
 The required stage-model amendment is frozen but is not implemented or
-authorized by this chapter:
+authorized by this chapter. All three new values below are future public
+`@dataclass(frozen=True)` types with the exact field names, order, and Python
+types shown:
+
+```python
+Task4Compatibility(
+    task4_resolution_present: bool,
+    task4_resolution: str | None,
+    task4_processed_at_present: bool,
+    task4_processed_at: str | None,
+)
+
+ReleaseCompatibility(
+    formal_release_version: str,
+    selectable: bool,
+    source_order: int,
+)
+
+AuditedRecord(
+    question: AuditedQuestion,
+    task4_compatibility: Task4Compatibility | None,
+    release_compatibility: ReleaseCompatibility | None,
+)
+```
+
+Their public model boundaries are frozen as follows:
 
 - `AuditedQuestion` is the audit-stage core record. Relative to the currently
   approved field order, it omits exactly `formal_release_version`, `selectable`,
-  and `source_order`; those values are release-stage evidence, not audit-stage
-  domain fields.
+  `source_order`, `task4_resolution`, and `task4_processed_at`; those five values
+  are compatibility evidence, not audit-stage domain fields.
 - `PublicationEvidence.approved_at` has the target type `str | None`. JSON
   `null` maps losslessly to Python `None`, and Python `None` serializes
   losslessly to JSON `null`; neither direction may replace it with an empty or
   missing value or a fabricated timestamp.
-- A V1.18 profile adapter preserves already-issued release-only values in an
-  internal immutable, exact-field compatibility carrier bound to the core
-  record. Its fields and order are exactly `formal_release_version`,
-  `selectable`, and `source_order`. The values are never synthesized or copied
-  onto `AuditedQuestion`; the carrier is not a public model, generic mapping,
-  `extras`, or parallel fact source.
+- `Task4Compatibility` is the only legal carrier for the two V1.17 Task 4
+  compatibility keys. Each `*_present` field is a true `bool`. Each value is a
+  true `str` or `None`; `None` is the unique empty slot when its key was absent,
+  but presence is never inferred from the value. If a present flag is false,
+  its value must be `None`. If it is true, `None` represents an explicit JSON
+  `null` and a string preserves the exact input string. The two flags remain
+  independent even though the frozen 45-record input currently has both keys
+  absent or both present.
+- `ReleaseCompatibility` is the only legal carrier for already-issued V1.18
+  release-only values. `formal_release_version` is a true `str`, `selectable`
+  is a true `bool`, and `source_order` is a true `int` (not `bool`). All three
+  fields are required; partial construction, coercion, defaults, derivation,
+  normalization, or replacement is forbidden.
+- `AuditedRecord` is the audit pipeline's only legal typed record envelope.
+  Business audit rules may read only `question`. `task4_compatibility` serves
+  only V1.17 Task 4/Audit shape replay, while `release_compatibility` serves
+  only V1.18 release-shape replay. The carriers must not be merged, converted
+  to `extras`, or stored outside the envelope.
+- `AuditResult.records` and `AuditedBatch.records` have the exact future target
+  type `tuple[AuditedRecord, ...]`. Each input record produces one envelope,
+  and `require_passed()` preserves the same ordered envelope tuple.
+
+The only supported carrier combinations are:
+
+| Profile path | `task4_compatibility` | `release_compatibility` |
+|---|---|---|
+| V1.17 Task 4/Audit | `Task4Compatibility` | `None` |
+| V1.18 frozen release | `None` | `ReleaseCompatibility` |
+
+A V1.17 record constructs `Task4Compatibility` even when both source keys are
+absent; both flags are then false and both values are `None`.
+`task4_compatibility=None` means the record is not on the V1.17 compatibility
+path, not that both keys were absent. The two carriers must never both be
+non-`None`. Because Task 2 supports no third input profile, they must never both
+be `None`. Empty mappings, empty strings, sentinel objects, partially populated
+carriers, hidden mappings, parallel lists, `question_id` joins, position joins,
+object-identity joins, and global registries are forbidden.
+
+Direct construction that violates these closed value or carrier-combination
+invariants uses the existing `PipelineError` model boundary; no new exception or
+issue code is introduced. Invalid external profile input is rejected at the
+profile boundary as `InputFormatError` before any partial result is exposed.
 
 Until a later authorization updates `models.py` and its contract tests to this
 frozen shape, Task 2 tests and implementation must not start.
@@ -454,17 +521,21 @@ accepts only the exact selected-profile record shape. It must:
 - never accept `extras`, an unconstrained `dict`, or a generic `Mapping` as an
   extension bag.
 
-Profile serializers accept only the approved typed representation for the same
-profile. They return a record-level `dict`, preserve the stage-specific field
-names, presence, values, and order, and do not write files or perform final JSON
-encoding.
+Profile serializers accept only an `AuditedRecord` for the same profile. They
+return a record-level `dict`, preserve the stage-specific field names, presence,
+values, and order, and do not write files or perform final JSON encoding. They
+read compatibility values only from the carrier in that same envelope. They may
+not query an external mapping or another record, reconstruct pairings by
+`question_id`, position, file order, or object identity, or consult global
+state.
 
-For V1.17 only, an internal immutable compatibility carrier is explicitly bound
-to its core `AuditedQuestion`. It contains the two known Task 4 compatibility
-values plus a separate original-key-presence flag for each value. Its class name
-is not a public API. It is not a raw JSON blob, parallel fact source, generic
-mapping, or arbitrary-field passthrough. Missing and explicit JSON `null` remain
-distinct.
+`Task4Compatibility` and `ReleaseCompatibility` are closed named values, not
+raw JSON blobs, generic mappings, arbitrary-field passthrough, or parallel fact
+sources. They preserve existing compatibility evidence only. They do not create,
+derive, normalize, default, repair, or modify it; carry `AuditIssue` values; or
+participate in business audit decisions. Neither carrier object is itself a JSON
+field: serializers replay only its named source fields in their frozen external
+positions.
 
 ### 3. V1.17 audit-stage parser input
 
@@ -552,9 +623,49 @@ V117_TASK4_COMPATIBILITY_FIELDS = (
 
 Both compatibility keys are either absent together or present together in the
 approved external shape. When present, each value is a true `str` or JSON
-`null`. The compatibility carrier nevertheless records each key's presence and
-value explicitly; it must not collapse missing into `None` or become a general
-extension mechanism.
+`null`. `audit/profiles.py` nevertheless records each key independently in a
+`Task4Compatibility`: `task4_resolution_present` and
+`task4_processed_at_present` record original key presence, while
+`task4_resolution: str | None` and `task4_processed_at: str | None` preserve the
+original values. A missing key has `present=False` and value `None`; an explicit
+JSON `null` has `present=True` and value `None`. The flag, never the value,
+controls whether the serializer emits the key. No flag may be omitted or shared,
+and the carrier cannot become a general extension mechanism. For this frozen
+V1.17 profile, the only valid flag pairs are `(False, False)` and
+`(True, True)`; the serializer rejects a mixed pair rather than emitting an
+unapproved 51-field shape. Separate flags remain mandatory so each key's
+presence and explicit-null value are represented directly rather than inferred
+or collapsed.
+
+Every valid V1.17 input record, including each of the 24 records with neither
+key, produces exactly:
+
+```python
+AuditedRecord(
+    question=<AuditedQuestion without either Task 4 key>,
+    task4_compatibility=<Task4Compatibility>,
+    release_compatibility=None,
+)
+```
+
+The parser constructs the envelope once. `AuditResult.records` and
+`AuditedBatch.records` carry that same record pairing in input order without
+dropping, replacing, swapping, or reordering either the question or carrier.
+
+The complete frozen V1.17 path is:
+
+```text
+Task 4/Audit 50/52-field input
+→ parser reads the core fields and independently checks both Task 4 keys
+→ Task4Compatibility preserves both values and both presence flags
+→ AuditedQuestion excludes both Task 4 keys and all three release-only keys
+→ AuditedRecord(question, Task4Compatibility, None)
+→ AuditResult.records carries the envelope unchanged
+→ AuditedBatch.records carries the envelope unchanged
+→ Task 2 serializer replays 50/52 fields from that same envelope
+→ future release transformer creates three release fields and rewrites release state
+→ approved V1.17 contains 53/55 fields
+```
 
 The exact special-field contract is:
 
@@ -596,20 +707,27 @@ another placeholder, or a derived value.
 ### 4. V1.17 audit-stage serializer output
 
 The V1.17 profile serializer emits only an audit-stage record-level mapping. Its
-output is exactly `V117_AUDIT_BASE_FIELDS` or, when the compatibility carrier
-marks both known keys present, that tuple followed by
-`V117_TASK4_COMPATIBILITY_FIELDS`.
+only compatibility source is the same
+`AuditedRecord.task4_compatibility` received from the pipeline. That carrier is
+required and `release_compatibility` must be `None`. Its output contains exactly
+`V117_AUDIT_BASE_FIELDS` followed, independently according to the two presence
+flags, by each applicable key in `V117_TASK4_COMPATIBILITY_FIELDS` order. For the
+frozen input this yields exactly the original 24×50-field and 21×52-field
+shapes.
 
 It preserves `record_status="audit_passed"`, the empty `joy_approval`, null
 `approved_at`, the draft `schema_version`, all field values, field presence, the
 50/52 field order, list order, image order, and compatibility presence
-semantics. It must not:
+semantics. A false flag omits its key; a true flag emits its exact string or an
+explicit JSON `null`. It must not serialize a `task4_compatibility` object,
+expand a 50-field record to 52 fields, shrink a 52-field record to 50 fields, or:
 
 - produce a `published` record;
 - manufacture or change `joy_approval`;
 - populate `approved_at`;
 - promote `schema_version` to a formal version;
 - add `formal_release_version`, `selectable`, or `source_order`;
+- consult any compatibility source outside the current `AuditedRecord`;
 - invoke release code or simulate the legacy approval step;
 - claim that its direct output equals the frozen approved V1.17 record or file.
 
@@ -635,6 +753,12 @@ and approval meaning. Task 2 must not implement, call, or imitate them. The
 release transformer API and implementation remain outside this contract and
 require a later independent task and approval.
 
+The transformer preserves any Task 4 keys already replayed into the 50/52-field
+mapping; it neither reads nor creates a `ReleaseCompatibility` for this path.
+It is the only component allowed to create the three new V1.17 release-only
+values. Conversely, Task 2's V1.17 adapter, pipeline, and serializer may not
+prefill, default, or derive them.
+
 ### 6. V1.18 profile contract
 
 The V1.18 compatibility record has exactly the 54 fields and order already
@@ -658,9 +782,50 @@ marks_total_valid = type(value) is int
 - Already-issued V1.18 publication evidence is preserved as typed
   `PublicationEvidence`; Task 2 does not manufacture a new approval.
 - The already-issued `formal_release_version`, `selectable`, and `source_order`
-  values are preserved only in the exact internal V1.18 compatibility carrier
-  defined above. The profile serializer emits them from that carrier in their
-  frozen positions; it never derives, defaults, or pre-fills them.
+  values are read exactly once by the adapter and preserved only in a public
+  `ReleaseCompatibility(formal_release_version: str, selectable: bool,
+  source_order: int)`. Exact runtime types are required: subclasses and
+  coercions are not accepted, and `bool` is not valid for `source_order`. A
+  missing or invalid field raises `InputFormatError` fail-fast, with no partial
+  `AuditResult`, partial output, `AuditIssue`, or mapping to a business issue
+  code.
+
+Every valid V1.18 input record produces exactly:
+
+```python
+AuditedRecord(
+    question=<AuditedQuestion without the three release-only fields>,
+    task4_compatibility=None,
+    release_compatibility=ReleaseCompatibility(
+        formal_release_version=<input value>,
+        selectable=<input value>,
+        source_order=<input value>,
+    ),
+)
+```
+
+The pipeline carries that envelope unchanged through `AuditResult.records` and
+`AuditedBatch.records`. The V1.18 serializer reads only the same envelope's
+`release_compatibility` and replays all three exact values in their frozen
+positions, leaving the record at 54 fields. It must not serialize a
+`release_compatibility` object; create, derive, default, replace, normalize,
+delete, exchange, or reorder any of the three values; or call the release
+transformer. The release transformer does not participate in this compatibility
+replay path.
+
+The complete frozen V1.18 path is:
+
+```text
+frozen V1.18 54-field input
+→ adapter strictly reads the three existing release-only values
+→ ReleaseCompatibility preserves those exact values
+→ AuditedQuestion excludes the three release-only values and both Task 4 keys
+→ AuditedRecord(question, None, ReleaseCompatibility)
+→ AuditResult.records carries the envelope unchanged
+→ AuditedBatch.records carries the envelope unchanged
+→ V1.18 serializer replays the same three values from the same envelope
+→ output remains exactly 54 fields
+```
 
 ### 7. InputFormatError and business-issue boundary
 
@@ -677,6 +842,15 @@ fast: the pipeline continues auditing the other successfully parsed records and
 then sorts the complete issue list. A domain/profile discrepancy is a business
 issue only when it is exactly one of these six rules; it never creates a seventh
 code.
+
+All six business rules read only `AuditedRecord.question`.
+`Task4Compatibility` and `ReleaseCompatibility` do not participate in duplicate
+matching, issue triggers, codes, fields, evidence, severities, ordering, or
+PASS/FAIL. `exact_duplicate` derives its normalized key and evidence only from
+questions. Two envelopes with equal questions and different compatibility
+evidence therefore produce the same business audit result. Issue production and
+sorting must not drop, replace, swap, or reorder the compatibility carrier paired
+with any question.
 
 `AuditIssue.field` remains a plain `str`. No location object, JSON Pointer, tuple
 path, or index-path type is added. The exact top-level field is stored in
@@ -745,40 +919,66 @@ order, or hash randomization.
 After external parsing succeeds, the pipeline aggregates every business blocker
 and constructs one internally consistent `AuditResult`:
 
-- `records` contains all successfully parsed typed records in input order;
+- `records` has exact type `tuple[AuditedRecord, ...]` and contains one envelope
+  per successfully parsed input record in input order;
 - `issues` contains all blocker issues in the deterministic order above;
 - `answer_status_counts` exactly counts those records by the real
-  `answer_status` values and follows the approved unique-positive-count model
-  contract;
+  `record.question.answer_status` values and follows the approved
+  unique-positive-count model contract;
 - `status` is `"PASS"` when no blocker exists and `"FAIL"` otherwise.
 
 With no blocker, `AuditResult.require_passed()` returns an immutable
-`AuditedBatch`. With one or more blockers, the pipeline still returns the failed
-aggregate `AuditResult`, but `require_passed()` raises the approved
+`AuditedBatch` whose `records` has the same exact
+`tuple[AuditedRecord, ...]` value and order. The question and its two carrier
+slots remain in the same envelope; separate question/carrier lists and later
+reassociation by position, `question_id`, object identity, file order, or global
+state are forbidden. With one or more blockers, the pipeline still returns the
+failed aggregate `AuditResult`, but `require_passed()` raises the approved
 `AuditBlockedError`; no `AuditedBatch` may be obtained or exposed. External
 format failures raise `InputFormatError` earlier and return no partial result.
+Except for the record element type changing from `AuditedQuestion` to
+`AuditedRecord`, this revision does not expand the responsibilities of
+`AuditResult`, `AuditedBatch`, `require_passed()`, or `AuditBlockedError`.
 
 ### 10. Stage authority matrix
 
 `Allowed` identifies the unique owner. `Invoke only` permits orchestration but
-not reimplementation. Every other cell is forbidden.
+not reimplementation. `Carry only` means the component may preserve the same
+envelope but may not inspect a carrier for business logic or modify it. Every
+other cell is forbidden.
 
 | Behavior | `audit/profiles.py` | `audit/pipeline.py` | later release transformer | `export/formats.py` |
 |---|---|---|---|---|
 | outer file/container preflight and JSON decoding | Forbidden | **Allowed** | Forbidden | Forbidden |
 | record-level profile-shape parsing | **Allowed** | Invoke only | Forbidden | Forbidden |
-| business audit rules | Forbidden | **Allowed** | Forbidden | Forbidden |
+| inspect V1.17 Task 4 key presence and read existing values | **Allowed** | Forbidden | Forbidden | Forbidden |
+| construct `Task4Compatibility` and V1.17 `AuditedRecord` | **Allowed** | Forbidden | Forbidden | Forbidden |
+| read existing V1.18 release-only values | **Allowed** | Forbidden | Forbidden | Forbidden |
+| construct `ReleaseCompatibility` and V1.18 `AuditedRecord` | **Allowed** | Forbidden | Forbidden | Forbidden |
+| carry an `AuditedRecord` and both carrier slots | Forbidden | **Carry only** | Forbidden | Forbidden |
+| business audit rules over `record.question` | Forbidden | **Allowed** | Forbidden | Forbidden |
 | issue aggregation and sorting | Forbidden | **Allowed** | Forbidden | Forbidden |
 | `AuditResult` construction | Forbidden | **Allowed** | Forbidden | Forbidden |
-| audit-stage record mapping | **Allowed** | Forbidden | Forbidden | Forbidden |
-| generate `published` state | Forbidden | Forbidden | **Allowed** | Forbidden |
-| write approval identity/time | Forbidden | Forbidden | **Allowed** | Forbidden |
-| add `formal_release_version`, `selectable`, `source_order` | Forbidden | Forbidden | **Allowed** | Forbidden |
-| rewrite `record_status`, `joy_approval`, `approved_at`, `schema_version` | Forbidden | Forbidden | **Allowed** | Forbidden |
+| V1.17 audit-stage mapping and presence-controlled Task 4 replay | **Allowed** | Forbidden | Forbidden | Forbidden |
+| V1.18 54-field mapping and exact release-value replay | **Allowed** | Forbidden | Forbidden | Forbidden |
+| generate `published` state for V1.17 | Forbidden | Forbidden | **Allowed** | Forbidden |
+| write V1.17 approval identity/time | Forbidden | Forbidden | **Allowed** | Forbidden |
+| create V1.17 `formal_release_version`, `selectable`, `source_order` | Forbidden | Forbidden | **Allowed** | Forbidden |
+| rewrite V1.17 `record_status`, `joy_approval`, `approved_at`, `schema_version` | Forbidden | Forbidden | **Allowed** | Forbidden |
 | JSON encoding | Forbidden | Forbidden | Forbidden | **Allowed** |
 | file-level record ordering | Forbidden | Forbidden | Forbidden | **Allowed** |
 | file writing | Forbidden | Forbidden | Forbidden | **Allowed** |
 | final bytes generation | Forbidden | Forbidden | Forbidden | **Allowed** |
+
+The verbs are intentionally distinct. A profile adapter checks key presence,
+reads existing values, and constructs the exact carrier. The pipeline carries
+the complete envelope unchanged. A V1.17 serializer replays keys according to
+presence flags; a V1.18 serializer replays three required existing fields. Only
+the later V1.17 release transformer creates new release-only values. No Task 2
+component may generate or infer compatibility values, fill a missing required
+value with `""`, `0`, `False`, `None`, or a sentinel, move a carrier between
+records, merge the two carriers, or use a hidden mapping, parallel list,
+secondary join, `extras`, or mutable registry.
 
 The final frozen V1.17 compatibility guarantee is therefore a complete-chain
 property:
@@ -806,11 +1006,13 @@ code.
 
 No parser, serializer, release transformer, `audit_batch()`, database/export/
 release component, or CLI is authorized by this documentation-only contract
-freeze. No test or `models.py` change is authorized either. Task 2 contract is
-**FROZEN — PENDING INDEPENDENT RE-REVIEW**, and Task 2 implementation remains
-**NOT STARTED — NOT APPROVED**. Even a passing independent re-review does not
-authorize the next action; tests and implementation still require separate
-human authorization.
+freeze. No test or `models.py` change is authorized either. Specifically, this
+revision does not authorize implementation of `Task4Compatibility`,
+`ReleaseCompatibility`, or `AuditedRecord`, nor changes to `AuditResult` or
+`AuditedBatch`. Task 2 contract is **FROZEN — PENDING INDEPENDENT RE-REVIEW**,
+and Task 2 models/tests/implementation remain **NOT STARTED — NOT APPROVED**.
+Even a passing independent re-review does not authorize the next action; model
+changes, tests, and implementation still require separate human authorization.
 
 ---
 
@@ -823,12 +1025,14 @@ human authorization.
 - Create: `tests/unit/test_audit_pipeline.py`
 
 **Interfaces:**
-- Consumes: `AuditRequest`, `AuditContract`, `AuditResult`, `AuditedBatch`, and input exceptions from Task 2.
+- Consumes: `AuditRequest`, `AuditContract`, `AuditedRecord`,
+  `Task4Compatibility`, `ReleaseCompatibility`, `AuditResult`, `AuditedBatch`,
+  and input exceptions from Task 2.
 - Produces: `audit_batch(request: AuditRequest) -> AuditResult` with stable issue codes and byte-equivalent passed records.
 
 - [ ] **Step 1: Write failing Task 6 happy-path tests**
 
-Use the protected V1.17 database under `legacy/outputs/25757421d1d8/Task5_V1.17_正式入库/` as read-only input. Assert 452 records, 23 sources, unique IDs, stable record order corresponding to the legacy sequence that starts after the 45 protected records, answer counts 347/71/34, 33 image references, and no blockers. Do not assert or populate a `source_order` field on `AuditedQuestion`.
+Use the protected V1.17 database under `legacy/outputs/25757421d1d8/Task5_V1.17_正式入库/` as read-only input. Assert 452 `AuditedRecord` envelopes, 23 sources, unique IDs, stable record order corresponding to the legacy sequence that starts after the 45 protected records, answer counts 347/71/34, 33 image references, and no blockers. Do not assert or populate a `source_order` field on `AuditedQuestion`; a compatibility replay may obtain it only from that same envelope's `ReleaseCompatibility`.
 
 ```python
 result = audit_batch(task6_request(ROOT))
@@ -858,13 +1062,15 @@ to `audit_passed`, but do not manufacture a new approval or populate
 `formal_release_version`, `selectable`, or `source_order` on `AuditedQuestion`.
 When the input is an already-issued V1.18 compatibility record, preserve its
 publication fields inside typed `PublicationEvidence` and its three release-only
-values inside the exact internal profile carrier; the V1.18 compatibility
-serializer maps only those preserved values back to their historical JSON keys.
+values inside the exact public `ReleaseCompatibility` on the same
+`AuditedRecord`; the V1.18 compatibility serializer maps only those preserved
+values back to their historical JSON keys. It must not create that carrier from
+missing fields or derive any of its values.
 Future approval authority still comes only from `ApprovalRecord` at promotion.
 
 - [ ] **Step 4: Implement issue aggregation**
 
-For each record append stable issues rather than raising immediately:
+For each `record.question` append stable issues rather than raising immediately:
 
 ```python
 AuditIssue("missing_question_text", "blocker", question_id, "question_text_original", "empty")
@@ -884,21 +1090,24 @@ Create temporary SQLite copies with two exact duplicates, a missing image refere
 - [ ] **Step 6: Add Task 5 profile tests**
 
 Load the Task 4 candidate JSON through a Task 5 `AuditContract`, assert exactly
-45 unique `audit_passed` records with no unresolved issues, and preserve their
-order. Assert a non-eligible record raises `InputFormatError` fail-fast without
-a partial result or business issue, while a successfully parsed duplicate
-produces the approved `exact_duplicate` blocker rather than a published row.
+45 unique `audit_passed` envelopes with no unresolved issues, and preserve their
+order. Assert every envelope has a `Task4Compatibility`, including all 24
+double-absent records, and has `release_compatibility=None`. Assert a non-eligible
+record raises `InputFormatError` fail-fast without a partial result or business
+issue, while a successfully parsed duplicate produces the approved
+`exact_duplicate` blocker rather than a published row.
 
 - [ ] **Step 7: Compare passing audit records with legacy JSON bytes**
 
 For already-issued V1.18 compatibility input, serialize through the approved
 profile serializer and assert the exact 54-field record mappings are unchanged,
-including the three values preserved outside `AuditedQuestion`. For newly
-audited records, compare every audit-stage core value and its stable order with
-the Task 6 oracle after excluding the three release-only fields; do not invent
-those fields to force direct byte equality. Full V1.18 bytes are a later
-complete-chain assertion after the separately authorized release transformation
-and `export/formats.py` encoding.
+including the three values preserved in each `AuditedRecord` outside
+`AuditedQuestion`. Compare every audit-stage core value and its stable order
+with the Task 6 oracle after excluding the three release-only fields; do not
+invent those fields to force direct byte equality. Full V1.18 compatibility
+bytes require serialization of envelopes whose three values came from the
+frozen input, followed by `export/formats.py` encoding; the release transformer
+does not participate in that path.
 
 - [ ] **Step 8: Run audit and legacy gates**
 
