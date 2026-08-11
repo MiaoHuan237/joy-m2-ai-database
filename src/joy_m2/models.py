@@ -71,7 +71,7 @@ class Correction:
 class PublicationEvidence:
     record_status: str
     joy_approval: str
-    approved_at: str
+    approved_at: str | None
 
 
 @dataclass(frozen=True)
@@ -144,10 +144,7 @@ class AuditedQuestion:
     publication_evidence: PublicationEvidence
     audited_at: str
     schema_version: str
-    selectable: bool
     source_heading: str
-    formal_release_version: str
-    source_order: int
 
     def __post_init__(self) -> None:
         for field_name in ("marks_total", "year"):
@@ -173,8 +170,75 @@ class AuditedQuestion:
 
 
 @dataclass(frozen=True)
+class Task4Compatibility:
+    task4_resolution_present: bool
+    task4_resolution: str | None
+    task4_processed_at_present: bool
+    task4_processed_at: str | None
+
+    def __post_init__(self) -> None:
+        pairs = (
+            (
+                "task4_resolution",
+                self.task4_resolution_present,
+                self.task4_resolution,
+            ),
+            (
+                "task4_processed_at",
+                self.task4_processed_at_present,
+                self.task4_processed_at,
+            ),
+        )
+        for name, present, value in pairs:
+            if type(present) is not bool:
+                raise PipelineError(f"{name}_present must be a boolean")
+            if value is not None and type(value) is not str:
+                raise PipelineError(f"{name} must be a string or None")
+            if not present and value is not None:
+                raise PipelineError(f"{name} must be None when its key is absent")
+
+
+@dataclass(frozen=True)
+class ReleaseCompatibility:
+    formal_release_version: str
+    selectable: bool
+    source_order: int
+
+    def __post_init__(self) -> None:
+        if type(self.formal_release_version) is not str:
+            raise PipelineError("formal_release_version must be a string")
+        if type(self.selectable) is not bool:
+            raise PipelineError("selectable must be a boolean")
+        if type(self.source_order) is not int:
+            raise PipelineError("source_order must be an integer")
+
+
+@dataclass(frozen=True)
+class AuditedRecord:
+    question: AuditedQuestion
+    task4_compatibility: Task4Compatibility | None
+    release_compatibility: ReleaseCompatibility | None
+
+    def __post_init__(self) -> None:
+        if type(self.question) is not AuditedQuestion:
+            raise PipelineError("question must be an AuditedQuestion")
+        if self.task4_compatibility is not None and (
+            type(self.task4_compatibility) is not Task4Compatibility
+        ):
+            raise PipelineError("task4_compatibility must be Task4Compatibility or None")
+        if self.release_compatibility is not None and (
+            type(self.release_compatibility) is not ReleaseCompatibility
+        ):
+            raise PipelineError(
+                "release_compatibility must be ReleaseCompatibility or None"
+            )
+        if (self.task4_compatibility is None) == (self.release_compatibility is None):
+            raise PipelineError("exactly one compatibility carrier must be provided")
+
+
+@dataclass(frozen=True)
 class AuditedBatch:
-    records: tuple[AuditedQuestion, ...]
+    records: tuple[AuditedRecord, ...]
 
     def __post_init__(self) -> None:
         object.__setattr__(self, "records", tuple(self.records))
@@ -182,7 +246,7 @@ class AuditedBatch:
 
 @dataclass(frozen=True)
 class AuditResult:
-    records: tuple[AuditedQuestion, ...]
+    records: tuple[AuditedRecord, ...]
     issues: tuple[AuditIssue, ...]
     answer_status_counts: tuple[tuple[str, int], ...]
     status: str
@@ -214,7 +278,7 @@ class AuditResult:
             if answer_status in declared_counts:
                 raise PipelineError("answer status classifications must be unique")
             declared_counts[answer_status] = count
-        actual_counts = Counter(record.answer_status for record in records)
+        actual_counts = Counter(record.question.answer_status for record in records)
         if declared_counts != actual_counts:
             raise PipelineError(
                 "answer_status_counts is inconsistent with audited records"

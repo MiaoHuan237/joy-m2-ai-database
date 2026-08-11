@@ -26,6 +26,9 @@ PUBLIC_VALUE_TYPES = (
     "PublicationEvidence",
     "QuestionImage",
     "AuditedQuestion",
+    "Task4Compatibility",
+    "ReleaseCompatibility",
+    "AuditedRecord",
     "AuditedBatch",
     "AuditResult",
     "AuditContract",
@@ -96,10 +99,7 @@ AUDITED_QUESTION_FIELDS = (
     "publication_evidence",
     "audited_at",
     "schema_version",
-    "selectable",
     "source_heading",
-    "formal_release_version",
-    "source_order",
 )
 
 EXACT_FIELD_CONTRACTS = {
@@ -123,6 +123,22 @@ EXACT_FIELD_CONTRACTS = {
     "PublicationEvidence": ("record_status", "joy_approval", "approved_at"),
     "QuestionImage": ("path", "sha256", "role"),
     "AuditedQuestion": AUDITED_QUESTION_FIELDS,
+    "Task4Compatibility": (
+        "task4_resolution_present",
+        "task4_resolution",
+        "task4_processed_at_present",
+        "task4_processed_at",
+    ),
+    "ReleaseCompatibility": (
+        "formal_release_version",
+        "selectable",
+        "source_order",
+    ),
+    "AuditedRecord": (
+        "question",
+        "task4_compatibility",
+        "release_compatibility",
+    ),
     "AuditedBatch": ("records",),
     "AuditResult": ("records", "issues", "answer_status_counts", "status"),
     "AuditContract": (
@@ -286,8 +302,6 @@ def make_audited_question(models, **overrides):
         official_marking_available=False,
         difficulty_level=2,
         old_difficulty=1,
-        selectable=True,
-        source_order=46,
         image_paths=[make_question_image(models)],
         tags=["微分"],
         difficulty_dimensions=[("概念数", 1)],
@@ -299,6 +313,21 @@ def make_audited_question(models, **overrides):
     )
     values.update(overrides)
     return models.AuditedQuestion(**values)
+
+
+def make_audited_record(models, question=None, profile="V1.18"):
+    question = question or make_audited_question(models)
+    if profile == "V1.17":
+        return models.AuditedRecord(
+            question=question,
+            task4_compatibility=models.Task4Compatibility(False, None, False, None),
+            release_compatibility=None,
+        )
+    return models.AuditedRecord(
+        question=question,
+        task4_compatibility=None,
+        release_compatibility=models.ReleaseCompatibility("V1.18", True, 46),
+    )
 
 
 def make_artifact(models, name: str):
@@ -423,10 +452,247 @@ class PipelineErrorContractTests(unittest.TestCase):
         self.assertTrue(issubclass(errors.DatabaseIntegrityError, errors.DatabaseBuildError))
 
 
-class PipelineModelContractTests(unittest.TestCase):
-    def test_all_25_approved_shared_value_types_are_public_dataclasses(self) -> None:
+class CompatibilityModelContractTests(unittest.TestCase):
+    def require_type(self, models, name: str):
+        value_type = getattr(models, name, None)
+        self.assertIsNotNone(value_type, f"missing public model: {name}")
+        return value_type
+
+    def make_v117_record(self, models, question=None):
+        task4_type = self.require_type(models, "Task4Compatibility")
+        record_type = self.require_type(models, "AuditedRecord")
+        return record_type(
+            question=question or make_audited_question(models),
+            task4_compatibility=task4_type(False, None, False, None),
+            release_compatibility=None,
+        )
+
+    def make_v118_record(self, models, question=None):
+        release_type = self.require_type(models, "ReleaseCompatibility")
+        record_type = self.require_type(models, "AuditedRecord")
+        return record_type(
+            question=question or make_audited_question(models),
+            task4_compatibility=None,
+            release_compatibility=release_type("V1.18", True, 46),
+        )
+
+    def test_task4_compatibility_has_exact_ordered_typed_fields(self) -> None:
         models = import_required(self, "joy_m2.models")
-        self.assertEqual(len(PUBLIC_VALUE_TYPES), 25)
+        value_type = self.require_type(models, "Task4Compatibility")
+        self.assertEqual(
+            field_names(value_type),
+            (
+                "task4_resolution_present",
+                "task4_resolution",
+                "task4_processed_at_present",
+                "task4_processed_at",
+            ),
+        )
+        self.assertEqual(
+            typing.get_type_hints(value_type),
+            {
+                "task4_resolution_present": bool,
+                "task4_resolution": str | None,
+                "task4_processed_at_present": bool,
+                "task4_processed_at": str | None,
+            },
+        )
+
+    def test_task4_compatibility_preserves_missing_and_explicit_null(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        value_type = self.require_type(models, "Task4Compatibility")
+        missing = value_type(False, None, False, None)
+        explicit_null = value_type(True, None, True, None)
+        self.assertEqual(
+            (
+                missing.task4_resolution_present,
+                missing.task4_resolution,
+                missing.task4_processed_at_present,
+                missing.task4_processed_at,
+            ),
+            (False, None, False, None),
+        )
+        self.assertEqual(
+            (
+                explicit_null.task4_resolution_present,
+                explicit_null.task4_resolution,
+                explicit_null.task4_processed_at_present,
+                explicit_null.task4_processed_at,
+            ),
+            (True, None, True, None),
+        )
+        self.assertNotEqual(missing, explicit_null)
+
+    def test_task4_presence_flags_are_independent(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        value_type = self.require_type(models, "Task4Compatibility")
+        resolution_only = value_type(True, None, False, None)
+        processed_at_only = value_type(False, None, True, None)
+        self.assertEqual(
+            (
+                resolution_only.task4_resolution_present,
+                resolution_only.task4_processed_at_present,
+            ),
+            (True, False),
+        )
+        self.assertEqual(
+            (
+                processed_at_only.task4_resolution_present,
+                processed_at_only.task4_processed_at_present,
+            ),
+            (False, True),
+        )
+
+    def test_release_compatibility_has_exact_ordered_typed_fields(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        value_type = self.require_type(models, "ReleaseCompatibility")
+        self.assertEqual(
+            field_names(value_type),
+            ("formal_release_version", "selectable", "source_order"),
+        )
+        self.assertEqual(
+            typing.get_type_hints(value_type),
+            {
+                "formal_release_version": str,
+                "selectable": bool,
+                "source_order": int,
+            },
+        )
+
+    def test_closed_compatibility_values_reject_wrong_runtime_types(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        errors = import_required(self, "joy_m2.errors")
+        task4_type = self.require_type(models, "Task4Compatibility")
+        release_type = self.require_type(models, "ReleaseCompatibility")
+        with self.assertRaises(errors.PipelineError):
+            task4_type(False, "derived", False, None)
+        with self.assertRaises(errors.PipelineError):
+            task4_type(1, None, False, None)
+        with self.assertRaises(errors.PipelineError):
+            release_type("V1.18", True, False)
+
+    def test_audited_record_has_exact_ordered_typed_fields(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        value_type = self.require_type(models, "AuditedRecord")
+        task4_type = self.require_type(models, "Task4Compatibility")
+        release_type = self.require_type(models, "ReleaseCompatibility")
+        self.assertEqual(
+            field_names(value_type),
+            ("question", "task4_compatibility", "release_compatibility"),
+        )
+        self.assertEqual(
+            typing.get_type_hints(value_type),
+            {
+                "question": models.AuditedQuestion,
+                "task4_compatibility": task4_type | None,
+                "release_compatibility": release_type | None,
+            },
+        )
+
+    def test_audited_record_accepts_only_the_two_legal_carrier_combinations(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        errors = import_required(self, "joy_m2.errors")
+        self.require_type(models, "AuditedRecord")
+        question = make_audited_question(models)
+        v117 = self.make_v117_record(models, question)
+        v118 = self.make_v118_record(models, question)
+        self.assertIs(v117.question, question)
+        self.assertIsNotNone(v117.task4_compatibility)
+        self.assertIsNone(v117.release_compatibility)
+        self.assertIs(v118.question, question)
+        self.assertIsNone(v118.task4_compatibility)
+        self.assertIsNotNone(v118.release_compatibility)
+        with self.assertRaises(errors.PipelineError):
+            type(v117)(question, v117.task4_compatibility, v118.release_compatibility)
+        with self.assertRaises(errors.PipelineError):
+            type(v117)(question, None, None)
+
+    def test_audit_record_collections_use_the_envelope_type(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        record_type = self.require_type(models, "AuditedRecord")
+        self.assertEqual(
+            typing.get_type_hints(models.AuditResult)["records"],
+            tuple[record_type, ...],
+        )
+        self.assertEqual(
+            typing.get_type_hints(models.AuditedBatch)["records"],
+            tuple[record_type, ...],
+        )
+        record = self.make_v118_record(models)
+        result = models.AuditResult(
+            records=(record,),
+            issues=(),
+            answer_status_counts=(("value", 1),),
+            status="PASS",
+        )
+        batch = models.AuditedBatch(records=(record,))
+        self.assertEqual(result.records, (record,))
+        self.assertEqual(batch.records, (record,))
+
+    def test_require_passed_preserves_all_three_result_rules_with_envelopes(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        errors = import_required(self, "joy_m2.errors")
+        record = self.make_v117_record(models)
+        passed = models.AuditResult(
+            records=(record,),
+            issues=(),
+            answer_status_counts=(("value", 1),),
+            status="PASS",
+        )
+        batch = passed.require_passed()
+        self.assertEqual(batch.records, passed.records)
+        self.assertIs(batch.records[0], record)
+        blocked = models.AuditResult(
+            records=(record,),
+            issues=(models.AuditIssue("exact_duplicate", "blocker", "Q1", "field", "Q0"),),
+            answer_status_counts=(("value", 1),),
+            status="FAIL",
+        )
+        with self.assertRaises(errors.AuditBlockedError):
+            blocked.require_passed()
+        empty = models.AuditResult(
+            records=(),
+            issues=(),
+            answer_status_counts=(),
+            status="PASS",
+        )
+        self.assertEqual(empty.require_passed().records, ())
+
+    def test_core_question_and_publication_evidence_keep_stage_boundaries(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        forbidden = {
+            "task4_resolution",
+            "task4_processed_at",
+            "formal_release_version",
+            "selectable",
+            "source_order",
+        }
+        self.assertTrue(forbidden.isdisjoint(field_names(models.AuditedQuestion)))
+        self.assertEqual(
+            typing.get_type_hints(models.PublicationEvidence)["approved_at"],
+            str | None,
+        )
+        evidence = models.PublicationEvidence("audit_passed", "", None)
+        self.assertIsNone(evidence.approved_at)
+
+    def test_new_compatibility_models_remain_frozen(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        values = (
+            self.require_type(models, "Task4Compatibility")(False, None, False, None),
+            self.require_type(models, "ReleaseCompatibility")("V1.18", True, 46),
+            self.make_v117_record(models),
+        )
+        for value in values:
+            with self.subTest(value_type=type(value).__name__):
+                self.assertTrue(value.__dataclass_params__.frozen)
+                with self.assertRaises(FrozenInstanceError):
+                    setattr(value, fields(value)[0].name, "changed")
+
+
+class PipelineModelContractTests(unittest.TestCase):
+    def test_all_28_approved_shared_value_types_are_public_dataclasses(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        self.assertEqual(len(PUBLIC_VALUE_TYPES), 28)
         self.assertEqual(
             tuple(name for name in PUBLIC_VALUE_TYPES if hasattr(models, name)),
             PUBLIC_VALUE_TYPES,
@@ -439,7 +705,7 @@ class PipelineModelContractTests(unittest.TestCase):
         }
         self.assertEqual(public_dataclasses, set(PUBLIC_VALUE_TYPES))
 
-    def test_all_25_shared_dataclasses_are_declared_frozen(self) -> None:
+    def test_all_28_shared_dataclasses_are_declared_frozen(self) -> None:
         models = import_required(self, "joy_m2.models")
         for name in PUBLIC_VALUE_TYPES:
             with self.subTest(value_type=name):
@@ -461,7 +727,7 @@ class PipelineModelContractTests(unittest.TestCase):
     def test_approved_key_types_have_exact_explicit_field_order(self) -> None:
         models = import_required(self, "joy_m2.models")
         self.assertEqual(tuple(EXACT_FIELD_CONTRACTS), PUBLIC_VALUE_TYPES)
-        self.assertEqual(len(EXACT_FIELD_CONTRACTS), 25)
+        self.assertEqual(len(EXACT_FIELD_CONTRACTS), 28)
         for name, expected in EXACT_FIELD_CONTRACTS.items():
             with self.subTest(value_type=name):
                 self.assertEqual(field_names(getattr(models, name)), expected)
@@ -476,13 +742,22 @@ class PipelineModelContractTests(unittest.TestCase):
         for name in ACTUAL_LEGACY_TABLE_COLUMNS:
             if name == "record_status":
                 mapped_fields.append("publication_evidence")
-            elif name not in {"joy_approval", "approved_at"}:
+            elif name not in {
+                "joy_approval",
+                "approved_at",
+                "formal_release_version",
+                "selectable",
+                "source_order",
+            }:
                 mapped_fields.append(name)
-        self.assertEqual(len(mapped_fields), 52)
+        self.assertEqual(len(mapped_fields), 49)
         self.assertEqual(tuple(mapped_fields), AUDITED_QUESTION_FIELDS)
         self.assertNotIn("record_status", AUDITED_QUESTION_FIELDS)
         self.assertNotIn("joy_approval", AUDITED_QUESTION_FIELDS)
         self.assertNotIn("approved_at", AUDITED_QUESTION_FIELDS)
+        self.assertNotIn("formal_release_version", AUDITED_QUESTION_FIELDS)
+        self.assertNotIn("selectable", AUDITED_QUESTION_FIELDS)
+        self.assertNotIn("source_order", AUDITED_QUESTION_FIELDS)
 
     def test_public_values_have_no_extras_or_unbounded_mapping_fields(self) -> None:
         models = import_required(self, "joy_m2.models")
@@ -680,24 +955,28 @@ class PipelineModelContractTests(unittest.TestCase):
     def test_non_blocking_audit_result_preserves_content_in_an_immutable_batch(self) -> None:
         models = import_required(self, "joy_m2.models")
         question = make_audited_question(models)
+        record = make_audited_record(models, question)
         result = models.AuditResult(
-            records=[question],
+            records=[record],
             issues=[],
             answer_status_counts=[["value", 1]],
             status="PASS",
         )
         batch = result.require_passed()
         self.assertIsInstance(batch, models.AuditedBatch)
-        self.assertEqual(batch.records, (question,))
-        self.assertIs(batch.records[0], question)
+        self.assertEqual(batch.records, (record,))
+        self.assertIs(batch.records[0], record)
         self.assertIsInstance(batch.records, tuple)
         with self.assertRaises(FrozenInstanceError):
             batch.records = ()
 
     def test_audited_batch_directly_normalizes_a_record_list_without_aliasing(self) -> None:
         models = import_required(self, "joy_m2.models")
-        first = make_audited_question(models)
-        second = make_audited_question(models, question_id="Q2")
+        first = make_audited_record(models)
+        second = make_audited_record(
+            models,
+            make_audited_question(models, question_id="Q2"),
+        )
         source_records = [first, second]
         batch = models.AuditedBatch(records=source_records)
         source_records.reverse()
@@ -713,7 +992,8 @@ class PipelineModelContractTests(unittest.TestCase):
     def test_all_15_approved_tuple_fields_normalize_lists_without_aliasing(self) -> None:
         models = import_required(self, "joy_m2.models")
         question = make_audited_question(models)
-        records = [question]
+        record = make_audited_record(models, question)
+        records = [record]
         issues = []
         result_counts = [["value", 1]]
         audit_counts = [["value", 1]]
@@ -766,8 +1046,8 @@ class PipelineModelContractTests(unittest.TestCase):
         )
 
         expected = {
-            ("AuditedBatch", "records"): (batch, (question,)),
-            ("AuditResult", "records"): (result, (question,)),
+            ("AuditedBatch", "records"): (batch, (record,)),
+            ("AuditResult", "records"): (result, (record,)),
             ("AuditResult", "issues"): (result, ()),
             ("AuditResult", "answer_status_counts"): (result, (("value", 1),)),
             ("AuditContract", "expected_answer_status_counts"): (
@@ -823,7 +1103,7 @@ class PipelineModelContractTests(unittest.TestCase):
                 with self.assertRaises(FrozenInstanceError):
                     setattr(instance, field, ())
 
-        records.append(question)
+        records.append(record)
         issues.append(models.AuditIssue("late", "blocker", "Q2", "field", "evidence"))
         result_counts[0][0] = "changed"
         result_counts.append(["late", 2])
@@ -847,12 +1127,13 @@ class PipelineModelContractTests(unittest.TestCase):
     def test_nested_count_fields_normalize_both_sequence_levels(self) -> None:
         models = import_required(self, "joy_m2.models")
         question = make_audited_question(models)
+        record = make_audited_record(models, question)
         values = [["value", 1]]
         instances = (
             (
                 "AuditResult.answer_status_counts",
                 models.AuditResult(
-                    records=[question],
+                    records=[record],
                     issues=[],
                     answer_status_counts=values,
                     status="PASS",
@@ -891,31 +1172,32 @@ class PipelineModelContractTests(unittest.TestCase):
         models = import_required(self, "joy_m2.models")
         errors = import_required(self, "joy_m2.errors")
         question = make_audited_question(models)
+        record = make_audited_record(models, question)
         blocker = models.AuditIssue("exact_duplicate", "blocker", "Q1", "field", "Q0")
         with self.assertRaises(errors.PipelineError):
             models.AuditResult(
-                records=[question],
+                records=[record],
                 issues=[blocker],
                 answer_status_counts=[["value", 1]],
                 status="PASS",
             )
         with self.assertRaises(errors.PipelineError):
             models.AuditResult(
-                records=[question],
+                records=[record],
                 issues=[],
                 answer_status_counts=[["value", 2]],
                 status="PASS",
             )
         with self.assertRaises(errors.PipelineError):
             models.AuditResult(
-                records=[question],
+                records=[record],
                 issues=[],
                 answer_status_counts=[["value", 1]],
                 status="FAIL",
             )
         with self.assertRaises(errors.PipelineError):
             models.AuditResult(
-                records=[question],
+                records=[record],
                 issues=[],
                 answer_status_counts=[["wrong_status", 1]],
                 status="PASS",
@@ -923,13 +1205,13 @@ class PipelineModelContractTests(unittest.TestCase):
         invalid_count_entries = (
             (
                 "duplicate answer status",
-                [question, question],
+                [record, record],
                 [["value", 1], ["value", 1]],
             ),
-            ("negative count", [question], [["value", 2], ["value", -1]]),
-            ("zero count", [question], [["value", 1], ["wrong_status", 0]]),
-            ("bool count", [question], [["value", True]]),
-            ("non-int count", [question], [["value", 1.0]]),
+            ("negative count", [record], [["value", 2], ["value", -1]]),
+            ("zero count", [record], [["value", 1], ["wrong_status", 0]]),
+            ("bool count", [record], [["value", True]]),
+            ("non-int count", [record], [["value", 1.0]]),
         )
         for reason, records, answer_status_counts in invalid_count_entries:
             with self.subTest(reason=reason):
