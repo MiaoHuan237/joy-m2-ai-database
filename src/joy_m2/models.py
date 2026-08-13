@@ -19,6 +19,25 @@ def _tuple_of_tuples(values):
     return tuple(tuple(value) for value in values)
 
 
+def _validated_counts(values, field_name: str) -> tuple[tuple[str, int], ...]:
+    normalized = _tuple_of_tuples(values)
+    declared: dict[str, int] = {}
+    for entry in normalized:
+        if len(entry) != 2:
+            raise PipelineError(f"{field_name} entries must contain two values")
+        name, count = entry
+        if type(name) is not str:
+            raise PipelineError(f"{field_name} names must be strings")
+        if type(count) is not int or count <= 0:
+            raise PipelineError(f"{field_name} counts must be positive integers")
+        if name in declared:
+            raise PipelineError(f"{field_name} classifications must be unique")
+        declared[name] = count
+    if tuple(declared) != tuple(sorted(declared)):
+        raise PipelineError(f"{field_name} keys must be sorted")
+    return normalized
+
+
 @dataclass(frozen=True)
 class ReleaseSpec:
     release_version: str
@@ -245,47 +264,165 @@ class AuditedBatch:
 
 
 @dataclass(frozen=True)
+class AuditInputEvidence:
+    candidate_json: ArtifactRef
+    baseline_database: ArtifactRef
+
+    def __post_init__(self) -> None:
+        if type(self.candidate_json) is not ArtifactRef:
+            raise PipelineError("candidate_json must be an ArtifactRef")
+        if type(self.baseline_database) is not ArtifactRef:
+            raise PipelineError("baseline_database must be an ArtifactRef")
+
+
+@dataclass(frozen=True)
+class AuditReport:
+    release_version: str
+    status: str
+    candidate_count: int
+    source_count: int
+    audit_passed: int
+    audit_pending: int
+    blocked: int
+    exact_duplicate_count: int
+    answer_status_counts: tuple[tuple[str, int], ...]
+    image_reference_count: int
+    source_counts: tuple[tuple[str, int], ...]
+
+    def __post_init__(self) -> None:
+        if type(self.release_version) is not str:
+            raise PipelineError("audit report release_version must be a string")
+        if self.status not in {"passed", "failed"}:
+            raise PipelineError("audit report status must be 'passed' or 'failed'")
+        for field_name in (
+            "candidate_count",
+            "source_count",
+            "audit_passed",
+            "audit_pending",
+            "blocked",
+            "exact_duplicate_count",
+            "image_reference_count",
+        ):
+            value = getattr(self, field_name)
+            if type(value) is not int or value < 0:
+                raise PipelineError(f"audit report {field_name} must be a non-negative integer")
+        answer_status_counts = _validated_counts(
+            self.answer_status_counts,
+            "answer_status_counts",
+        )
+        source_counts = _validated_counts(self.source_counts, "source_counts")
+        object.__setattr__(self, "answer_status_counts", answer_status_counts)
+        object.__setattr__(self, "source_counts", source_counts)
+
+        if self.audit_pending != 0:
+            raise PipelineError("audit_pending must be zero")
+        if self.audit_passed + self.blocked != self.candidate_count:
+            raise PipelineError("audit_passed and blocked must partition candidate_count")
+        expected_status = "failed" if self.blocked else "passed"
+        if self.status != expected_status:
+            raise PipelineError("audit report status is inconsistent with blocked records")
+        if self.exact_duplicate_count > self.blocked:
+            raise PipelineError("exact_duplicate_count cannot exceed blocked")
+        if sum(count for _, count in answer_status_counts) != self.candidate_count:
+            raise PipelineError("answer_status_counts must cover every candidate record")
+        if len(source_counts) != self.source_count:
+            raise PipelineError("source_count must equal the number of distinct sources")
+        if sum(count for _, count in source_counts) != self.candidate_count:
+            raise PipelineError("source_counts must cover every candidate record")
+
+
+@dataclass(frozen=True)
 class AuditResult:
     records: tuple[AuditedRecord, ...]
     issues: tuple[AuditIssue, ...]
     answer_status_counts: tuple[tuple[str, int], ...]
     status: str
+    report: AuditReport
+    input_evidence: AuditInputEvidence
 
     def __post_init__(self) -> None:
         records = tuple(self.records)
         issues = tuple(self.issues)
-        answer_status_counts = _tuple_of_tuples(self.answer_status_counts)
+        if any(type(record) is not AuditedRecord for record in records):
+            raise PipelineError("records must contain only AuditedRecord values")
+        if any(type(issue) is not AuditIssue for issue in issues):
+            raise PipelineError("issues must contain only AuditIssue values")
+        issues = tuple(
+            sorted(
+                issues,
+                key=lambda issue: (
+                    issue.question_id,
+                    issue.code,
+                    issue.field,
+                    issue.evidence,
+                ),
+            )
+        )
+        answer_status_counts = _validated_counts(
+            self.answer_status_counts,
+            "answer_status_counts",
+        )
         object.__setattr__(self, "records", records)
         object.__setattr__(self, "issues", issues)
         object.__setattr__(self, "answer_status_counts", answer_status_counts)
 
-        has_blocker = any(issue.severity == "blocker" for issue in issues)
-        expected_status = "FAIL" if has_blocker else "PASS"
+        if type(self.report) is not AuditReport:
+            raise PipelineError("report must be an AuditReport")
+        if type(self.input_evidence) is not AuditInputEvidence:
+            raise PipelineError("input_evidence must be AuditInputEvidence")
+
+        expected_status = "failed" if issues else "passed"
         if self.status != expected_status:
             raise PipelineError(
-                f"audit status {self.status!r} is inconsistent with blocking issues"
+                f"audit status {self.status!r} is inconsistent with issues"
             )
+        if self.report.status != self.status:
+            raise PipelineError("audit result and report status must be equal")
 
-        declared_counts: dict[str, int] = {}
-        for entry in answer_status_counts:
-            if len(entry) != 2:
-                raise PipelineError("answer_status_counts entries must contain two values")
-            answer_status, count = entry
-            if type(answer_status) is not str:
-                raise PipelineError("answer status names must be strings")
-            if type(count) is not int or count <= 0:
-                raise PipelineError("answer status counts must be positive integers")
-            if answer_status in declared_counts:
-                raise PipelineError("answer status classifications must be unique")
-            declared_counts[answer_status] = count
-        actual_counts = Counter(record.question.answer_status for record in records)
-        if declared_counts != actual_counts:
+        actual_answer_counts = tuple(
+            sorted(Counter(record.question.answer_status for record in records).items())
+        )
+        if answer_status_counts != actual_answer_counts:
             raise PipelineError(
                 "answer_status_counts is inconsistent with audited records"
             )
+        if self.report.answer_status_counts != answer_status_counts:
+            raise PipelineError("result and report answer_status_counts must be equal")
+
+        record_ids = {record.question.question_id for record in records}
+        if any(issue.question_id not in record_ids for issue in issues):
+            raise PipelineError("audit issues must refer to audited record ids")
+        blocker_ids = {
+            issue.question_id for issue in issues if issue.severity == "blocker"
+        }
+        exact_duplicate_ids = {
+            issue.question_id
+            for issue in issues
+            if issue.severity == "blocker" and issue.code == "exact_duplicate"
+        }
+        actual_source_counts = tuple(
+            sorted(Counter(record.question.source_id for record in records).items())
+        )
+        expected_report_values = {
+            "candidate_count": len(records),
+            "source_count": len(actual_source_counts),
+            "audit_passed": len(records) - len(blocker_ids),
+            "audit_pending": 0,
+            "blocked": len(blocker_ids),
+            "exact_duplicate_count": len(exact_duplicate_ids),
+            "image_reference_count": sum(
+                len(record.question.image_paths) for record in records
+            ),
+            "source_counts": actual_source_counts,
+        }
+        for field_name, expected in expected_report_values.items():
+            if getattr(self.report, field_name) != expected:
+                raise PipelineError(
+                    f"audit report {field_name} is inconsistent with audited records"
+                )
 
     def require_passed(self) -> AuditedBatch:
-        if self.status != "PASS":
+        if self.status != "passed":
             raise AuditBlockedError("blocking audit issues prevent database construction")
         return AuditedBatch(self.records)
 
@@ -315,13 +452,14 @@ class AuditContract:
 
 @dataclass(frozen=True)
 class AuditRequest:
-    source_path: Path
+    candidate_path: Path
+    baseline_database: ArtifactRef
     asset_root: Path
     contract: AuditContract
     selected_source_ids: tuple[str, ...]
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "source_path", self.source_path.resolve())
+        object.__setattr__(self, "candidate_path", self.candidate_path.resolve())
         object.__setattr__(self, "asset_root", self.asset_root.resolve())
         object.__setattr__(self, "selected_source_ids", tuple(self.selected_source_ids))
 

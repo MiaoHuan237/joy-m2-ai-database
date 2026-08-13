@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from collections.abc import Mapping
-from dataclasses import FrozenInstanceError, fields, is_dataclass
+from dataclasses import MISSING, FrozenInstanceError, fields, is_dataclass
 import importlib
 from pathlib import Path
 import sys
@@ -30,6 +30,8 @@ PUBLIC_VALUE_TYPES = (
     "ReleaseCompatibility",
     "AuditedRecord",
     "AuditedBatch",
+    "AuditInputEvidence",
+    "AuditReport",
     "AuditResult",
     "AuditContract",
     "AuditRequest",
@@ -140,7 +142,28 @@ EXACT_FIELD_CONTRACTS = {
         "release_compatibility",
     ),
     "AuditedBatch": ("records",),
-    "AuditResult": ("records", "issues", "answer_status_counts", "status"),
+    "AuditInputEvidence": ("candidate_json", "baseline_database"),
+    "AuditReport": (
+        "release_version",
+        "status",
+        "candidate_count",
+        "source_count",
+        "audit_passed",
+        "audit_pending",
+        "blocked",
+        "exact_duplicate_count",
+        "answer_status_counts",
+        "image_reference_count",
+        "source_counts",
+    ),
+    "AuditResult": (
+        "records",
+        "issues",
+        "answer_status_counts",
+        "status",
+        "report",
+        "input_evidence",
+    ),
     "AuditContract": (
         "profile",
         "release_version",
@@ -151,7 +174,13 @@ EXACT_FIELD_CONTRACTS = {
         "allowed_tags",
         "required_fields",
     ),
-    "AuditRequest": ("source_path", "asset_root", "contract", "selected_source_ids"),
+    "AuditRequest": (
+        "candidate_path",
+        "baseline_database",
+        "asset_root",
+        "contract",
+        "selected_source_ids",
+    ),
     "DatabaseContract": (
         "profile",
         "expected_user_version",
@@ -231,6 +260,7 @@ EXACT_FIELD_CONTRACTS = {
 
 TUPLE_FIELDS = {
     "AuditedBatch": ("records",),
+    "AuditReport": ("answer_status_counts", "source_counts"),
     "AuditResult": ("records", "issues", "answer_status_counts"),
     "AuditContract": (
         "expected_answer_status_counts",
@@ -336,6 +366,134 @@ def make_artifact(models, name: str):
         sha256="a" * 64,
         size_bytes=1,
         kind="test",
+    )
+
+
+def make_audit_input_evidence(models):
+    return models.AuditInputEvidence(
+        candidate_json=models.ArtifactRef(
+            path=Path("/tmp/candidate.json"),
+            sha256="c" * 64,
+            size_bytes=2,
+            kind="json",
+        ),
+        baseline_database=models.ArtifactRef(
+            path=Path("/tmp/baseline.sqlite3"),
+            sha256="b" * 64,
+            size_bytes=3,
+            kind="sqlite",
+        ),
+    )
+
+
+def make_audit_report(
+    models,
+    *,
+    records=(),
+    issues=(),
+    answer_status_counts=None,
+    status=None,
+    release_version="V1.18",
+    **overrides,
+):
+    records = tuple(records)
+    issues = tuple(issues)
+    if status is None:
+        status = "failed" if issues else "passed"
+    if answer_status_counts is None:
+        answer_status_counts = tuple(
+            sorted(
+                {
+                    answer_status: sum(
+                        record.question.answer_status == answer_status
+                        for record in records
+                    )
+                    for answer_status in {
+                        record.question.answer_status for record in records
+                    }
+                }.items()
+            )
+        )
+    blocker_ids = {
+        issue.question_id for issue in issues if issue.severity == "blocker"
+    }
+    exact_duplicate_ids = {
+        issue.question_id
+        for issue in issues
+        if issue.severity == "blocker" and issue.code == "exact_duplicate"
+    }
+    source_counts = tuple(
+        sorted(
+            {
+                source_id: sum(
+                    record.question.source_id == source_id for record in records
+                )
+                for source_id in {record.question.source_id for record in records}
+            }.items()
+        )
+    )
+    values = {
+        "release_version": release_version,
+        "status": status,
+        "candidate_count": len(records),
+        "source_count": len(source_counts),
+        "audit_passed": len(records) - len(blocker_ids),
+        "audit_pending": 0,
+        "blocked": len(blocker_ids),
+        "exact_duplicate_count": len(exact_duplicate_ids),
+        "answer_status_counts": answer_status_counts,
+        "image_reference_count": sum(
+            len(record.question.image_paths) for record in records
+        ),
+        "source_counts": source_counts,
+    }
+    values.update(overrides)
+    return models.AuditReport(**values)
+
+
+def make_audit_result(
+    models,
+    *,
+    records=(),
+    issues=(),
+    answer_status_counts=None,
+    status=None,
+    report=None,
+    input_evidence=None,
+):
+    records = tuple(records)
+    issues = tuple(issues)
+    if status is None:
+        status = "failed" if issues else "passed"
+    if answer_status_counts is None:
+        answer_status_counts = tuple(
+            sorted(
+                {
+                    answer_status: sum(
+                        record.question.answer_status == answer_status
+                        for record in records
+                    )
+                    for answer_status in {
+                        record.question.answer_status for record in records
+                    }
+                }.items()
+            )
+        )
+    if report is None:
+        report = make_audit_report(
+            models,
+            records=records,
+            issues=issues,
+            answer_status_counts=answer_status_counts,
+            status=status,
+        )
+    return models.AuditResult(
+        records=records,
+        issues=issues,
+        answer_status_counts=answer_status_counts,
+        status=status,
+        report=report,
+        input_evidence=input_evidence or make_audit_input_evidence(models),
     )
 
 
@@ -619,12 +777,7 @@ class CompatibilityModelContractTests(unittest.TestCase):
             tuple[record_type, ...],
         )
         record = self.make_v118_record(models)
-        result = models.AuditResult(
-            records=(record,),
-            issues=(),
-            answer_status_counts=(("value", 1),),
-            status="PASS",
-        )
+        result = make_audit_result(models, records=(record,))
         batch = models.AuditedBatch(records=(record,))
         self.assertEqual(result.records, (record,))
         self.assertEqual(batch.records, (record,))
@@ -632,30 +785,22 @@ class CompatibilityModelContractTests(unittest.TestCase):
     def test_require_passed_preserves_all_three_result_rules_with_envelopes(self) -> None:
         models = import_required(self, "joy_m2.models")
         errors = import_required(self, "joy_m2.errors")
-        record = self.make_v117_record(models)
-        passed = models.AuditResult(
-            records=(record,),
-            issues=(),
-            answer_status_counts=(("value", 1),),
-            status="PASS",
+        record = self.make_v117_record(
+            models,
+            make_audited_question(models, question_id="Q1"),
         )
+        passed = make_audit_result(models, records=(record,))
         batch = passed.require_passed()
         self.assertEqual(batch.records, passed.records)
         self.assertIs(batch.records[0], record)
-        blocked = models.AuditResult(
+        blocked = make_audit_result(
+            models,
             records=(record,),
             issues=(models.AuditIssue("exact_duplicate", "blocker", "Q1", "field", "Q0"),),
-            answer_status_counts=(("value", 1),),
-            status="FAIL",
         )
         with self.assertRaises(errors.AuditBlockedError):
             blocked.require_passed()
-        empty = models.AuditResult(
-            records=(),
-            issues=(),
-            answer_status_counts=(),
-            status="PASS",
-        )
+        empty = make_audit_result(models)
         self.assertEqual(empty.require_passed().records, ())
 
     def test_core_question_and_publication_evidence_keep_stage_boundaries(self) -> None:
@@ -689,10 +834,331 @@ class CompatibilityModelContractTests(unittest.TestCase):
                     setattr(value, fields(value)[0].name, "changed")
 
 
-class PipelineModelContractTests(unittest.TestCase):
-    def test_all_28_approved_shared_value_types_are_public_dataclasses(self) -> None:
+class Phase2PublicModelContractTests(unittest.TestCase):
+    def test_audit_input_evidence_is_the_exact_two_artifact_carrier(self) -> None:
         models = import_required(self, "joy_m2.models")
-        self.assertEqual(len(PUBLIC_VALUE_TYPES), 28)
+        evidence_type = getattr(models, "AuditInputEvidence", None)
+        self.assertIsNotNone(evidence_type, "missing public model: AuditInputEvidence")
+        self.assertEqual(
+            typing.get_type_hints(evidence_type),
+            {
+                "candidate_json": models.ArtifactRef,
+                "baseline_database": models.ArtifactRef,
+            },
+        )
+        self.assertEqual(
+            field_names(evidence_type),
+            ("candidate_json", "baseline_database"),
+        )
+        self.assertNotIn("baseline_release_archive", field_names(evidence_type))
+        evidence = make_audit_input_evidence(models)
+        self.assertEqual(evidence.candidate_json.sha256, "c" * 64)
+        self.assertEqual(evidence.baseline_database.sha256, "b" * 64)
+        self.assertTrue(evidence.__dataclass_params__.frozen)
+        with self.assertRaises(FrozenInstanceError):
+            evidence.candidate_json = evidence.baseline_database
+
+    def test_audit_request_replaces_source_path_with_explicit_candidate_and_baseline(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        self.assertEqual(
+            typing.get_type_hints(models.AuditRequest),
+            {
+                "candidate_path": Path,
+                "baseline_database": models.ArtifactRef,
+                "asset_root": Path,
+                "contract": models.AuditContract,
+                "selected_source_ids": tuple[str, ...],
+            },
+        )
+        self.assertNotIn("source_path", field_names(models.AuditRequest))
+        baseline = make_artifact(models, "baseline.sqlite3")
+        request = models.AuditRequest(
+            candidate_path=Path("candidate.json"),
+            baseline_database=baseline,
+            asset_root=Path("assets"),
+            contract=make_audit_contract(models),
+            selected_source_ids=["source-b", "source-a"],
+        )
+        self.assertEqual(request.candidate_path, Path("candidate.json").resolve())
+        self.assertIs(request.baseline_database, baseline)
+        self.assertEqual(request.selected_source_ids, ("source-b", "source-a"))
+
+    def test_audit_report_has_exact_typed_required_fields(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        report_type = getattr(models, "AuditReport", None)
+        self.assertIsNotNone(report_type, "missing public model: AuditReport")
+        self.assertEqual(
+            typing.get_type_hints(report_type),
+            {
+                "release_version": str,
+                "status": str,
+                "candidate_count": int,
+                "source_count": int,
+                "audit_passed": int,
+                "audit_pending": int,
+                "blocked": int,
+                "exact_duplicate_count": int,
+                "answer_status_counts": tuple[tuple[str, int], ...],
+                "image_reference_count": int,
+                "source_counts": tuple[tuple[str, int], ...],
+            },
+        )
+        self.assertTrue(all(field.default is MISSING for field in fields(report_type)))
+        empty = make_audit_report(models)
+        self.assertEqual(empty.status, "passed")
+        self.assertEqual(empty.candidate_count, 0)
+        self.assertEqual(empty.answer_status_counts, ())
+        self.assertEqual(empty.source_counts, ())
+
+    def test_audit_result_owns_report_and_input_evidence_with_exact_types(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        self.assertEqual(
+            typing.get_type_hints(models.AuditResult),
+            {
+                "records": tuple[models.AuditedRecord, ...],
+                "issues": tuple[models.AuditIssue, ...],
+                "answer_status_counts": tuple[tuple[str, int], ...],
+                "status": str,
+                "report": models.AuditReport,
+                "input_evidence": models.AuditInputEvidence,
+            },
+        )
+        evidence_owners = []
+        for name in PUBLIC_VALUE_TYPES:
+            for field_name, annotation in typing.get_type_hints(
+                getattr(models, name)
+            ).items():
+                if annotation is models.AuditInputEvidence:
+                    evidence_owners.append((name, field_name))
+        self.assertEqual(evidence_owners, [("AuditResult", "input_evidence")])
+
+    def test_audit_statistics_use_record_level_deduplicated_blockers(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        records = (
+            make_audited_record(
+                models,
+                make_audited_question(
+                    models,
+                    question_id="Q1",
+                    source_id="source-b",
+                    answer_status="source_provided",
+                    image_paths=[
+                        make_question_image(models, "assets/q1-a.png"),
+                        make_question_image(models, "assets/q1-b.png"),
+                    ],
+                ),
+            ),
+            make_audited_record(
+                models,
+                make_audited_question(
+                    models,
+                    question_id="Q2",
+                    source_id="source-a",
+                    answer_status="missing_from_source",
+                    image_paths=[],
+                ),
+            ),
+            make_audited_record(
+                models,
+                make_audited_question(
+                    models,
+                    question_id="Q3",
+                    source_id="source-b",
+                    answer_status="source_provided",
+                ),
+            ),
+        )
+        issues = (
+            models.AuditIssue("exact_duplicate", "blocker", "Q1", "text", "Q0"),
+            models.AuditIssue("invalid_difficulty", "blocker", "Q1", "year", "6"),
+            models.AuditIssue("exact_duplicate", "blocker", "Q2", "text", "Q0"),
+            models.AuditIssue("invalid_tag", "blocker", "Q2", "tags", "bad"),
+        )
+        report = models.AuditReport(
+            release_version="V1.18",
+            status="failed",
+            candidate_count=3,
+            source_count=2,
+            audit_passed=1,
+            audit_pending=0,
+            blocked=2,
+            exact_duplicate_count=2,
+            answer_status_counts=(
+                ("missing_from_source", 1),
+                ("source_provided", 2),
+            ),
+            image_reference_count=3,
+            source_counts=(("source-a", 1), ("source-b", 2)),
+        )
+        result = models.AuditResult(
+            records=records,
+            issues=issues,
+            answer_status_counts=report.answer_status_counts,
+            status="failed",
+            report=report,
+            input_evidence=make_audit_input_evidence(models),
+        )
+        self.assertEqual(result.report.blocked, 2)
+        self.assertEqual(result.report.audit_passed, 1)
+        self.assertEqual(result.report.exact_duplicate_count, 2)
+        self.assertEqual(result.report.source_counts[0][0], "source-a")
+
+    def test_audit_result_canonicalizes_issues_by_the_exact_approved_key(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        records = (
+            make_audited_record(
+                models,
+                make_audited_question(models, question_id="Q1"),
+            ),
+            make_audited_record(
+                models,
+                make_audited_question(models, question_id="Q2"),
+            ),
+        )
+        q2 = models.AuditIssue("code-a", "blocker", "Q2", "field-a", "a")
+        code_b = models.AuditIssue("code-b", "blocker", "Q1", "field-a", "a")
+        field_b = models.AuditIssue("code-a", "blocker", "Q1", "field-b", "a")
+        evidence_b = models.AuditIssue("code-a", "blocker", "Q1", "field-a", "b")
+        evidence_a = models.AuditIssue("code-a", "blocker", "Q1", "field-a", "a")
+
+        result = make_audit_result(
+            models,
+            records=records,
+            issues=[q2, code_b, field_b, evidence_b, evidence_a],
+        )
+
+        self.assertEqual(
+            result.issues,
+            (evidence_a, evidence_b, field_b, code_b, q2),
+        )
+
+    def test_audit_result_issue_sort_is_stable_for_equal_keys(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        record = make_audited_record(
+            models,
+            make_audited_question(models, question_id="Q1"),
+        )
+        first = models.AuditIssue("same", "blocker", "Q1", "same", "same")
+        second = models.AuditIssue("same", "blocker", "Q1", "same", "same")
+        self.assertIsNot(first, second)
+
+        result = make_audit_result(
+            models,
+            records=[record],
+            issues=[first, second],
+        )
+
+        self.assertEqual(len(result.issues), 2)
+        self.assertIs(result.issues[0], first)
+        self.assertIs(result.issues[1], second)
+
+    def test_audit_result_rejects_every_report_or_status_closure_mismatch(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        errors = import_required(self, "joy_m2.errors")
+        record = make_audited_record(
+            models,
+            make_audited_question(
+                models,
+                question_id="Q1",
+                source_id="source-a",
+                image_paths=[],
+            ),
+        )
+        invalid_report_overrides = {
+            "candidate_count": 2,
+            "source_count": 2,
+            "audit_passed": 0,
+            "audit_pending": 1,
+            "blocked": 1,
+            "exact_duplicate_count": 1,
+            "answer_status_counts": (("wrong", 1),),
+            "image_reference_count": 1,
+            "source_counts": (("source-b", 1),),
+        }
+        for field_name, invalid_value in invalid_report_overrides.items():
+            with self.subTest(field=field_name):
+                with self.assertRaises(errors.PipelineError):
+                    make_audit_result(
+                        models,
+                        records=[record],
+                        report=make_audit_report(
+                            models,
+                            records=[record],
+                            **{field_name: invalid_value},
+                        ),
+                    )
+
+        blocker = models.AuditIssue(
+            "exact_duplicate", "blocker", "Q1", "question_text_original", "Q0"
+        )
+        with self.assertRaises(errors.PipelineError):
+            make_audit_result(models, records=[record], issues=[blocker], status="passed")
+        with self.assertRaises(errors.PipelineError):
+            make_audit_result(models, records=[record], status="failed")
+        with self.assertRaises(errors.PipelineError):
+            make_audit_result(models, records=[record], status="PASS")
+        with self.assertRaises(errors.PipelineError):
+            models.AuditResult(
+                records=[object()],
+                issues=[],
+                answer_status_counts=[],
+                status="passed",
+                report=make_audit_report(models),
+                input_evidence=make_audit_input_evidence(models),
+            )
+        with self.assertRaises(errors.PipelineError):
+            models.AuditResult(
+                records=[record],
+                issues=[object()],
+                answer_status_counts=[["value", 1]],
+                status="failed",
+                report=make_audit_report(
+                    models,
+                    records=[record],
+                    issues=[blocker],
+                ),
+                input_evidence=make_audit_input_evidence(models),
+            )
+
+    def test_audit_report_rejects_unsorted_or_non_closed_statistics(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        errors = import_required(self, "joy_m2.errors")
+        invalid_reports = (
+            {"status": "PASS"},
+            {"candidate_count": 1},
+            {"audit_pending": 1},
+            {"status": "failed"},
+            {
+                "status": "passed",
+                "candidate_count": 1,
+                "audit_passed": 0,
+                "blocked": 1,
+                "answer_status_counts": (("value", 1),),
+                "source_count": 1,
+                "source_counts": (("source-a", 1),),
+            },
+            {"answer_status_counts": (("z", 1), ("a", 1)), "candidate_count": 2, "audit_passed": 2},
+            {"source_counts": (("z", 1), ("a", 1)), "candidate_count": 2, "audit_passed": 2, "source_count": 2},
+        )
+        for overrides in invalid_reports:
+            with self.subTest(overrides=overrides):
+                with self.assertRaises(errors.PipelineError):
+                    make_audit_report(models, **overrides)
+
+    def test_public_empty_pass_result_remains_valid_with_authoritative_evidence(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        result = make_audit_result(models)
+        self.assertEqual(result.status, "passed")
+        self.assertEqual(result.report.status, "passed")
+        self.assertEqual(result.records, ())
+        self.assertEqual(result.issues, ())
+        self.assertEqual(result.require_passed().records, ())
+
+
+class PipelineModelContractTests(unittest.TestCase):
+    def test_all_30_approved_shared_value_types_are_public_dataclasses(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        self.assertEqual(len(PUBLIC_VALUE_TYPES), 30)
         self.assertEqual(
             tuple(name for name in PUBLIC_VALUE_TYPES if hasattr(models, name)),
             PUBLIC_VALUE_TYPES,
@@ -705,7 +1171,7 @@ class PipelineModelContractTests(unittest.TestCase):
         }
         self.assertEqual(public_dataclasses, set(PUBLIC_VALUE_TYPES))
 
-    def test_all_28_shared_dataclasses_are_declared_frozen(self) -> None:
+    def test_all_30_shared_dataclasses_are_declared_frozen(self) -> None:
         models = import_required(self, "joy_m2.models")
         for name in PUBLIC_VALUE_TYPES:
             with self.subTest(value_type=name):
@@ -727,7 +1193,7 @@ class PipelineModelContractTests(unittest.TestCase):
     def test_approved_key_types_have_exact_explicit_field_order(self) -> None:
         models = import_required(self, "joy_m2.models")
         self.assertEqual(tuple(EXACT_FIELD_CONTRACTS), PUBLIC_VALUE_TYPES)
-        self.assertEqual(len(EXACT_FIELD_CONTRACTS), 28)
+        self.assertEqual(len(EXACT_FIELD_CONTRACTS), 30)
         for name, expected in EXACT_FIELD_CONTRACTS.items():
             with self.subTest(value_type=name):
                 self.assertEqual(field_names(getattr(models, name)), expected)
@@ -933,8 +1399,13 @@ class PipelineModelContractTests(unittest.TestCase):
     def test_blocking_audit_issue_cannot_become_an_audited_batch(self) -> None:
         models = import_required(self, "joy_m2.models")
         errors = import_required(self, "joy_m2.errors")
-        result = models.AuditResult(
-            records=[],
+        record = make_audited_record(
+            models,
+            make_audited_question(models, question_id="Q1"),
+        )
+        result = make_audit_result(
+            models,
+            records=[record],
             issues=[
                 models.AuditIssue(
                     "exact_duplicate",
@@ -944,8 +1415,6 @@ class PipelineModelContractTests(unittest.TestCase):
                     "Q0",
                 ),
             ],
-            answer_status_counts=[],
-            status="FAIL",
         )
         self.assertIsInstance(result.records, tuple)
         self.assertIsInstance(result.issues, tuple)
@@ -956,12 +1425,7 @@ class PipelineModelContractTests(unittest.TestCase):
         models = import_required(self, "joy_m2.models")
         question = make_audited_question(models)
         record = make_audited_record(models, question)
-        result = models.AuditResult(
-            records=[record],
-            issues=[],
-            answer_status_counts=[["value", 1]],
-            status="PASS",
-        )
+        result = make_audit_result(models, records=[record])
         batch = result.require_passed()
         self.assertIsInstance(batch, models.AuditedBatch)
         self.assertEqual(batch.records, (record,))
@@ -989,13 +1453,14 @@ class PipelineModelContractTests(unittest.TestCase):
         with self.assertRaises(FrozenInstanceError):
             batch.records = ()
 
-    def test_all_15_approved_tuple_fields_normalize_lists_without_aliasing(self) -> None:
+    def test_all_17_approved_tuple_fields_normalize_lists_without_aliasing(self) -> None:
         models = import_required(self, "joy_m2.models")
         question = make_audited_question(models)
         record = make_audited_record(models, question)
         records = [record]
         issues = []
         result_counts = [["value", 1]]
+        report_source_counts = [["value", 1]]
         audit_counts = [["value", 1]]
         allowed_tags = ["微分"]
         required_fields = ["question_id"]
@@ -1009,11 +1474,19 @@ class PipelineModelContractTests(unittest.TestCase):
         zip_exclusions = ["zip"]
 
         batch = models.AuditedBatch(records=records)
-        result = models.AuditResult(
+        report = make_audit_report(
+            models,
             records=records,
             issues=issues,
             answer_status_counts=result_counts,
-            status="PASS",
+            source_counts=report_source_counts,
+        )
+        result = make_audit_result(
+            models,
+            records=records,
+            issues=issues,
+            answer_status_counts=result_counts,
+            report=report,
         )
         audit_contract = make_audit_contract(
             models,
@@ -1023,7 +1496,8 @@ class PipelineModelContractTests(unittest.TestCase):
             required_fields=required_fields,
         )
         audit_request = models.AuditRequest(
-            source_path=Path("source.sqlite3"),
+            candidate_path=Path("candidate.json"),
+            baseline_database=make_artifact(models, "baseline.sqlite3"),
             asset_root=Path("assets"),
             contract=audit_contract,
             selected_source_ids=selected_source_ids,
@@ -1050,6 +1524,8 @@ class PipelineModelContractTests(unittest.TestCase):
             ("AuditResult", "records"): (result, (record,)),
             ("AuditResult", "issues"): (result, ()),
             ("AuditResult", "answer_status_counts"): (result, (("value", 1),)),
+            ("AuditReport", "answer_status_counts"): (report, (("value", 1),)),
+            ("AuditReport", "source_counts"): (report, (("value", 1),)),
             ("AuditContract", "expected_answer_status_counts"): (
                 audit_contract,
                 (("value", 1),),
@@ -1086,7 +1562,7 @@ class PipelineModelContractTests(unittest.TestCase):
             ),
             ("ReleaseContract", "zip_excluded_kinds"): (release_contract, ("zip",)),
         }
-        self.assertEqual(sum(len(names) for names in TUPLE_FIELDS.values()), 15)
+        self.assertEqual(sum(len(names) for names in TUPLE_FIELDS.values()), 17)
         self.assertEqual(
             set(expected),
             {
@@ -1107,6 +1583,8 @@ class PipelineModelContractTests(unittest.TestCase):
         issues.append(models.AuditIssue("late", "blocker", "Q2", "field", "evidence"))
         result_counts[0][0] = "changed"
         result_counts.append(["late", 2])
+        report_source_counts[0][0] = "changed"
+        report_source_counts.append(["late", 2])
         audit_counts[0][0] = "changed"
         audit_counts.append(["late", 2])
         allowed_tags.append("late")
@@ -1132,11 +1610,19 @@ class PipelineModelContractTests(unittest.TestCase):
         instances = (
             (
                 "AuditResult.answer_status_counts",
-                models.AuditResult(
+                make_audit_result(
+                    models,
                     records=[record],
-                    issues=[],
                     answer_status_counts=values,
-                    status="PASS",
+                ),
+                "answer_status_counts",
+            ),
+            (
+                "AuditReport.answer_status_counts",
+                make_audit_report(
+                    models,
+                    records=[record],
+                    answer_status_counts=values,
                 ),
                 "answer_status_counts",
             ),
@@ -1175,32 +1661,34 @@ class PipelineModelContractTests(unittest.TestCase):
         record = make_audited_record(models, question)
         blocker = models.AuditIssue("exact_duplicate", "blocker", "Q1", "field", "Q0")
         with self.assertRaises(errors.PipelineError):
-            models.AuditResult(
+            make_audit_result(
+                models,
                 records=[record],
                 issues=[blocker],
                 answer_status_counts=[["value", 1]],
-                status="PASS",
+                status="passed",
             )
         with self.assertRaises(errors.PipelineError):
-            models.AuditResult(
+            make_audit_result(
+                models,
                 records=[record],
                 issues=[],
                 answer_status_counts=[["value", 2]],
-                status="PASS",
             )
         with self.assertRaises(errors.PipelineError):
-            models.AuditResult(
+            make_audit_result(
+                models,
                 records=[record],
                 issues=[],
                 answer_status_counts=[["value", 1]],
-                status="FAIL",
+                status="failed",
             )
         with self.assertRaises(errors.PipelineError):
-            models.AuditResult(
+            make_audit_result(
+                models,
                 records=[record],
                 issues=[],
                 answer_status_counts=[["wrong_status", 1]],
-                status="PASS",
             )
         invalid_count_entries = (
             (
@@ -1216,11 +1704,11 @@ class PipelineModelContractTests(unittest.TestCase):
         for reason, records, answer_status_counts in invalid_count_entries:
             with self.subTest(reason=reason):
                 with self.assertRaises(errors.PipelineError):
-                    models.AuditResult(
+                    make_audit_result(
+                        models,
                         records=records,
                         issues=[],
                         answer_status_counts=answer_status_counts,
-                        status="PASS",
                     )
 
     def test_model_path_fields_resolve_to_absolute_frozen_paths(self) -> None:
@@ -1228,7 +1716,10 @@ class PipelineModelContractTests(unittest.TestCase):
         artifact = models.ArtifactRef(Path("artifact.bin"), "a" * 64, 1, "test")
         audit_contract = make_audit_contract(models)
         audit_request = models.AuditRequest(
-            source_path=Path("source.sqlite3"),
+            candidate_path=Path("candidate.json"),
+            baseline_database=models.ArtifactRef(
+                Path("baseline.sqlite3"), "b" * 64, 1, "sqlite"
+            ),
             asset_root=Path("assets"),
             contract=audit_contract,
             selected_source_ids=[],
@@ -1266,7 +1757,12 @@ class PipelineModelContractTests(unittest.TestCase):
         )
         cases = (
             (artifact, "path", Path("artifact.bin").resolve()),
-            (audit_request, "source_path", Path("source.sqlite3").resolve()),
+            (audit_request, "candidate_path", Path("candidate.json").resolve()),
+            (
+                audit_request.baseline_database,
+                "path",
+                Path("baseline.sqlite3").resolve(),
+            ),
             (audit_request, "asset_root", Path("assets").resolve()),
             (database_request, "output_path", Path("staging/candidate.sqlite3").resolve()),
             (export_request, "output_dir", Path("staging/exports").resolve()),
