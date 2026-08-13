@@ -1,1 +1,6 @@
-"""Reserved for the Task 8 audit pipeline migration."""
+"""Typed audit pipeline for maintained Joy M2 candidates."""
+
+from .pipeline import audit_batch
+
+
+__all__ = ("audit_batch",)
