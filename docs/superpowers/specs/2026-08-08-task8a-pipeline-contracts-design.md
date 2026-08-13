@@ -560,7 +560,7 @@ CLI 只负责参数解析、仓库根发现、`PipelineConfig` 构造、结果�
 
 每迁移一层都必须同时运行并通过：
 
-1. Task 7：7/7。
+1. Task 7 historical/migrated structural and frozen-baseline gate：7/7。
 2. Task 3–6：54/54。
 3. V1.18 verifier：`PASS`。
 4. 对应的新单元、集成、特征和端到端等价测试。
@@ -568,6 +568,15 @@ CLI 只负责参数解析、仓库根发现、`PipelineConfig` 构造、结果�
 6. `git diff` 人工检查。
 
 任一门禁失败即停止，不能弱化断言、修改冻结哈希、删除兼容覆盖或把部分 staging 当作成功结果。
+
+Task 7 的原始 7/7 结论仍是其完成时点的有效历史验收。其中
+`test_task7_does_not_implement_the_task8_pipeline` 通过断言
+`audit/pipeline.py`、`export/pipeline.py` 和 `release/pipeline.py` 尚不存在，
+证明 Task 7 项目初始化没有提前实现 Task 8 流水线；该断言是 temporal
+historical gate，不是后续 Phase 2 永久要求这些模块不存在的 architecture
+invariant。Phase 2 有意改变 repository structure 后，Task 7 gate 仍保持 7 项，
+但其中这一项必须按第 16.5 节先以 TDD 迁移为永久结构边界；其余 package、legacy
+snapshot、V1.18 lock/hash 和独立 verifier 断言不得删除、弱化或改写历史结论。
 
 ## 15. 明确不在本规格范围内
 
@@ -933,3 +942,66 @@ CandidateBuildRequest (explicit run_id and contracts)
 测试；JSON-backed audit profiles/pipeline；V1.17 transformer；database batch
 消费；typed audit evidence export；最后才是 release orchestration 和端到端
 等价验证。任何一个提交都需要单独授权，本次文档提交不启动这些工作。
+
+### 16.5 Task 7 historical gate 的 Phase 2 迁移
+
+`tests/regression/test_task7_project_initialization.py` 中原
+`test_task7_does_not_implement_the_task8_pipeline` 只证明 Task 7 完成时没有越界
+提前创建 Task 8 pipeline。它当时通过且 Task 7 的 7/7 历史结论继续有效；本次
+迁移不是纠正 Task 7，而是为随后获批的 Phase 2 repository structure 替换一个
+已经完成使命的时间性断言。
+
+Phase 2 implementation 开始时，必须在创建任何 pipeline module 前，先且只把
+该测试迁移为一个永久的 Phase 2 structural invariant。新的七项 Task 7 gate
+保留另外六项既有测试不变，并把原测试替换为一项同时执行以下精确检查的测试：
+
+1. `src/joy_m2/` 下名为 `pipeline.py` 的文件只允许位于：
+   `audit/pipeline.py`、`db/pipeline.py`、`export/pipeline.py` 和
+   `release/pipeline.py`；发现的集合必须是该 literal approved set 的 subset，
+   且本次迁移后必须至少包含 `audit/pipeline.py`、`export/pipeline.py` 和
+   `release/pipeline.py` 三条原冲突路径。每项必须是普通文件，不能是 symlink；
+   `db/pipeline.py` 仍由后续 Task 4 的 focused TDD 首次创建，不得为本结构门禁
+   提前 scaffold；任何其他文件名中含 `pipeline` 的 maintained Python module
+   也禁止存在；
+2. `src/joy_m2/__init__.py` 以及 `audit`、`db`、`export`、`release` 四个
+   subpackage 的 `__init__.py` 必须继续存在；原
+   `test_required_project_entries_exist` 保持不变；
+3. 原 gate 中同样未获批准的 `src/joy_m2/db/migrate.py` 必须继续不存在；
+   `src/joy_m2/cli.py`、`src/joy_m2/__main__.py` 也必须不存在，且
+   `pyproject.toml` 不得出现 `[project.scripts]`；四个 approved `pipeline.py`
+   只是可导入 library module，不能新增其他命令、脚本或 executable pipeline
+   entry point；AST 扫描全部 `src/joy_m2/**/*.py` 时，`audit_batch` 只能定义在
+   `audit/pipeline.py`，`build_database`/`verify_database` 只能定义在
+   `db/pipeline.py`，`export_database`/`verify_exports` 只能定义在
+   `export/pipeline.py`，`build_candidate`/`promote_candidate` 只能定义在
+   `release/pipeline.py`；本阶段不授权 CLI；
+4. `legacy/` 下不得存在任何文件名含 `pipeline` 的 Python module；所有已发现
+   maintained pipeline module 的 AST import 必须不含顶层 `legacy` import；
+   legacy 只可由测试作为 oracle 调用，不能成为 maintained runtime dependency；
+5. 原 minimal legacy snapshot、V1.18 `BASELINE_LOCK.json`、release hashes、
+   SQLite identity 和 embedded independent verifier 测试保持原断言与 7/7
+   总数；不得以更新 frozen artifacts、hashes 或 validator 取得 GREEN。
+
+上述测试的 approved set 和 required set 必须分别以四个与三个独立路径 literal
+写出，不得从实际扫描结果生成期望值。TDD 顺序冻结为：先替换 historical
+negative assertion；在三个冲突 module 仍缺失时运行并看到 6 PASS/1 FAIL，且
+唯一失败是 required pipeline set 缺失；再创建三个仅含 module docstring、可
+直接 import 且不导出行为 API 的最小 scaffold；重跑恢复 7/7。scaffold 只建立
+已批准的 package/location，不得提前
+实现 audit、database、export 或 release 行为；因此后续各层必须继续先用缺失
+公共函数/行为的 focused test 取得各自 RED，再修改对应 scaffold 达到 GREEN。
+不得删除整个测试、把 discovered-set subset 检查放宽为未枚举路径、使用
+skip/expected failure，或在测试中预先接受任意未来路径。
+
+三文件 required set 只用于允许 Task 4 之前的计划过渡态。Task 4 创建
+`db/pipeline.py` 后，discovered set 必须精确等于四文件 approved set；Task 4
+及其后每层的 Task 7 gate、最终 Task 8B gate 都必须断言这一精确相等关系，不能
+回退为只要求三文件 required set。迁移提交通过独立复审后，每个后续 Phase 2
+实现层的 focused tests 之外都必须同时重跑迁移后的 Task 7 7/7；该持续门禁和
+原 Task 3–6 54/54、V1.18 verifier/frozen hash 门禁并行生效。
+
+为执行这一次迁移，`tests/regression/test_task7_project_initialization.py` 明确
+加入 Phase 2 implementation 的 approved modification scope；授权仅限替换上述
+单一 temporal assertion。本文档修订本身仍为 docs-only，不修改测试或创建
+scaffold。后续每层以及最终完整门禁运行的是迁移后的 Task 7 7/7，不重写或否定
+Task 7 原历史验收记录。

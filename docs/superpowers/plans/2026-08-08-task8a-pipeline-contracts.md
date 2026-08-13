@@ -1449,11 +1449,117 @@ After separate authorizations, the minimum expected implementation surface is:
 - `src/joy_m2/release/pipeline.py` and end-to-end tests for frozen manifest
   scalar projections, including the V1.17-only historical ZIP compatibility
   constant, only after lower stages pass independently.
+- `tests/regression/test_task7_project_initialization.py`, limited to replacing
+  its one historical Task 8 pipeline non-existence assertion with the exact
+  Phase 2 permanent structural invariant below. No other Task 7 assertion may
+  be deleted, weakened, or rewritten.
 
-Recommended implementation commit order is: Phase 2 public contracts/tests;
-JSON-backed audit; V1.17 transformer; database consumption; typed audit export;
-release orchestration and end-to-end equivalence. Each commit requires its own
-explicit authorization and review gate.
+Recommended implementation commit order is: migrate the Task 7 temporal gate
+and add behavior-free approved pipeline scaffolds; Phase 2 public
+contracts/tests; JSON-backed audit; V1.17 transformer; database consumption;
+typed audit export; release orchestration and end-to-end equivalence. Each
+commit requires its own explicit authorization and review gate.
+
+### 7. First implementation step: migrate the Task 7 temporal gate
+
+Task 7 originally passed 7/7 with
+`test_task7_does_not_implement_the_task8_pipeline`, which asserted that
+`src/joy_m2/audit/pipeline.py`, `src/joy_m2/export/pipeline.py`, and
+`src/joy_m2/release/pipeline.py` did not exist. That was the correct historical
+gate for Task 7 project initialization: it proved Task 8 implementation had not
+started early. It is not a permanent architecture invariant after approved
+Phase 2 intentionally adds those modules. This migration preserves, rather
+than revises, the historical Task 7 acceptance conclusion.
+
+**Files:**
+- Modify: `tests/regression/test_task7_project_initialization.py`
+- Create: `src/joy_m2/audit/pipeline.py`
+- Create: `src/joy_m2/export/pipeline.py`
+- Create: `src/joy_m2/release/pipeline.py`
+
+The test modification is authorized only for replacing that single temporal
+test. Keep the other six Task 7 tests and their assertions unchanged, so the
+migrated suite remains exactly seven tests. The replacement test must use a
+literal expected set and prove all of the following in one structural boundary:
+
+1. every discovered `src/joy_m2/**/pipeline.py` belongs to the literal approved
+   set `audit/pipeline.py`, `db/pipeline.py`, `export/pipeline.py`, and
+   `release/pipeline.py`; the literal required set
+   `audit/pipeline.py`, `export/pipeline.py`, and `release/pipeline.py` is
+   present after this migration. Every discovered file is regular and not a
+   symlink. `db/pipeline.py` remains absent until Task 4 creates it through its
+   focused RED/GREEN cycle, after which it is already permitted by this gate.
+   No other maintained Python module whose filename contains `pipeline` may
+   exist;
+2. `src/joy_m2/__init__.py` and the existing `audit`, `db`, `export`, and
+   `release` package `__init__.py` files remain present, while the existing
+   project-entry bootstrap test remains unchanged;
+3. the original gate's still-unapproved `src/joy_m2/db/migrate.py` remains
+   absent; `src/joy_m2/cli.py` and `src/joy_m2/__main__.py` remain absent and
+   `pyproject.toml` has no `[project.scripts]` table; the approved pipeline
+   files remain importable library modules, with no separately executable or
+   command entry point. An AST scan of all `src/joy_m2/**/*.py` permits
+   `audit_batch` definitions only in `audit/pipeline.py`,
+   `build_database`/`verify_database` only in `db/pipeline.py`,
+   `export_database`/`verify_exports` only in `export/pipeline.py`, and
+   `build_candidate`/`promote_candidate` only in `release/pipeline.py`;
+4. `legacy/` contains no Python module whose filename includes `pipeline`, and
+   an AST inspection of every discovered maintained pipeline module finds no
+   import whose top-level package is `legacy`; tests may invoke legacy as an
+   oracle, maintained runtime may not;
+5. the existing minimal-legacy-snapshot and four frozen V1.18 tests remain
+   unchanged. The migration cannot edit a frozen artifact, baseline lock,
+   protected hash, SQLite file, or validator to pass.
+
+- [ ] **Step 1: Replace the historical assertion and verify RED**
+
+Make only the test replacement above, before creating any pipeline module.
+Run:
+
+```bash
+$task8_python -m unittest -v tests.regression.test_task7_project_initialization
+```
+
+Expected: exactly 7 tests collected, 6 PASS/1 FAIL. The sole failure must
+report that the literal three-file required pipeline set is missing; syntax,
+import, frozen-hash, SQLite, legacy-snapshot, or verifier failures are not an
+acceptable RED.
+
+- [ ] **Step 2: Add minimal approved module scaffolds and verify GREEN**
+
+Create the three required `pipeline.py` files with only a module docstring. They
+must be directly importable, contain no public behavior API, import no legacy
+module, and perform no filesystem, database, hashing, export, or release work.
+Then rerun the command above.
+
+Expected: the migrated Task 7 suite returns to exactly 7/7 PASS. This GREEN
+proves only the approved permanent package boundary. It does not satisfy any
+later audit/database/export/release behavior test: those tests must still be
+written first and fail because their public function or behavior is absent.
+
+The three-file required set is only the planned transition before Task 4.
+Task 4's focused RED remains the first authority to create `db/pipeline.py`.
+After its GREEN, the discovered set must equal the complete four-file approved
+set, and every Task 4-or-later run of this migrated Task 7 test must enforce
+that equality. After this structural commit is independently approved, append
+the migrated Task 7 command to every later Task 3/3A/4/5/6/7 focused gate as a
+continuous 7/7 regression; the final Task 8 command below remains mandatory.
+
+- [ ] **Step 3: Commit the structural migration separately**
+
+```bash
+git add tests/regression/test_task7_project_initialization.py \
+  src/joy_m2/audit/pipeline.py \
+  src/joy_m2/export/pipeline.py \
+  src/joy_m2/release/pipeline.py
+git diff --cached --check
+git commit -m "test: migrate Task 7 pipeline structure gate"
+```
+
+Do not delete the test, permit any path outside the four-item literal approved
+set, add skip or expected-failure handling, implement a behavior API in these
+scaffolds, or start the next Phase 2 step before this commit receives its
+required review.
 
 ---
 
@@ -1461,7 +1567,7 @@ explicit authorization and review gate.
 
 **Files:**
 - Create: `src/joy_m2/audit/profiles.py`
-- Create: `src/joy_m2/audit/pipeline.py`
+- Modify: `src/joy_m2/audit/pipeline.py`
 - Modify: `src/joy_m2/audit/__init__.py`
 - Create: `tests/unit/test_audit_pipeline.py`
 
@@ -1589,6 +1695,7 @@ does not participate in that path.
 
 ```bash
 $task8_python -m unittest -v tests.unit.test_audit_pipeline tests.regression.test_task8b_legacy_pipeline_behavior
+$task8_python -m unittest -v tests.regression.test_task7_project_initialization
 (cd legacy && $task8_python -m unittest -v task6_work/test_task6_migration.py)
 ```
 
@@ -1639,6 +1746,15 @@ Compare all 45 transformed records against the protected legacy oracle,
 including 1-based `source_order`, 53/55-field mapping, Task 4 key presence,
 publication values, and final byte-equivalence after the approved serializer.
 Position alone is not accepted as proof; the oracle comparison is required.
+
+Run the focused transformer suite and continuous migrated Task 7 gate:
+
+```bash
+$task8_python -m unittest -v tests.unit.test_v117_release_transformer
+$task8_python -m unittest -v tests.regression.test_task7_project_initialization
+```
+
+Expected: both PASS; Task 7 remains exactly 7/7.
 
 - [ ] **Step 4: Commit the transformer separately**
 
@@ -1713,9 +1829,11 @@ output creation.
 
 ```bash
 $task8_python -m unittest -v tests.integration.test_db_pipeline tests.unit.test_audit_pipeline
+$task8_python -m unittest -v tests.regression.test_task7_project_initialization
 ```
 
-Expected: PASS.
+Expected: PASS, with the Task 7 structural test now enforcing exact equality to
+the complete four-file approved pipeline set.
 
 - [ ] **Step 8: Commit database migration**
 
@@ -1731,7 +1849,7 @@ git commit -m "feat: add transactional database pipeline"
 
 **Files:**
 - Create: `src/joy_m2/export/formats.py`
-- Create: `src/joy_m2/export/pipeline.py`
+- Modify: `src/joy_m2/export/pipeline.py`
 - Modify: `src/joy_m2/export/__init__.py`
 - Create: `tests/integration/test_export_pipeline.py`
 
@@ -1818,6 +1936,7 @@ does not expose a parallel carrier, and does not read legacy
 
 ```bash
 $task8_python -m unittest -v tests.integration.test_export_pipeline tests.integration.test_db_pipeline
+$task8_python -m unittest -v tests.regression.test_task7_project_initialization
 (cd legacy/task5_work && $task8_python -m unittest -v test_task5_import.py)
 ```
 
@@ -1890,6 +2009,7 @@ Combine independent checks for manifest artifacts, sums file-set closure, file h
 
 ```bash
 $task8_python -m unittest -v tests.unit.test_release_primitives
+$task8_python -m unittest -v tests.regression.test_task7_project_initialization
 ```
 
 Expected: PASS.
@@ -1907,7 +2027,7 @@ git commit -m "feat: add deterministic release primitives"
 ### Task 7: Implement Atomic Candidate Builds and Approval-Bound Promotion
 
 **Files:**
-- Create: `src/joy_m2/release/pipeline.py`
+- Modify: `src/joy_m2/release/pipeline.py`
 - Modify: `src/joy_m2/release/__init__.py`
 - Create: `tests/integration/test_release_pipeline.py`
 
@@ -1989,6 +2109,7 @@ Promote a small synthetic PASS candidate into a temporary `releases/V9.99/`. Ass
 
 ```bash
 $task8_python -m unittest -v tests.integration.test_release_pipeline tests.unit.test_release_primitives
+$task8_python -m unittest -v tests.regression.test_task7_project_initialization
 ```
 
 Expected: PASS.
