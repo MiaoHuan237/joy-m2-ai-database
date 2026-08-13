@@ -1449,10 +1449,12 @@ After separate authorizations, the minimum expected implementation surface is:
 - `src/joy_m2/release/pipeline.py` and end-to-end tests for frozen manifest
   scalar projections, including the V1.17-only historical ZIP compatibility
   constant, only after lower stages pass independently.
-- `tests/regression/test_task7_project_initialization.py`, limited to replacing
-  its one historical Task 8 pipeline non-existence assertion with the exact
-  Phase 2 permanent structural invariant below. No other Task 7 assertion may
-  be deleted, weakened, or rewritten.
+- `tests/regression/test_task7_project_initialization.py`, limited to two
+  controlled edits of its one historical Task 8 pipeline non-existence
+  assertion: Stage 1 replaces it with the transitional subset + required-three
+  rule, and Task 4 Stage 2 upgrades that same assertion to the permanent
+  four-file exact-set rule. No other Task 7 assertion may be deleted, weakened,
+  or rewritten.
 
 Recommended implementation commit order is: migrate the Task 7 temporal gate
 and add behavior-free approved pipeline scaffolds; Phase 2 public
@@ -1477,10 +1479,11 @@ than revises, the historical Task 7 acceptance conclusion.
 - Create: `src/joy_m2/export/pipeline.py`
 - Create: `src/joy_m2/release/pipeline.py`
 
-The test modification is authorized only for replacing that single temporal
-test. Keep the other six Task 7 tests and their assertions unchanged, so the
-migrated suite remains exactly seven tests. The replacement test must use a
-literal expected set and prove all of the following in one structural boundary:
+This Stage 1 test modification is authorized only for replacing that single
+temporal test. Keep the other six Task 7 tests and their assertions unchanged,
+so the migrated suite remains exactly seven tests. The replacement test must
+use a literal expected set and prove all of the following in one structural
+boundary:
 
 1. every discovered `src/joy_m2/**/pipeline.py` belongs to the literal approved
    set `audit/pipeline.py`, `db/pipeline.py`, `export/pipeline.py`, and
@@ -1533,17 +1536,18 @@ module, and perform no filesystem, database, hashing, export, or release work.
 Then rerun the command above.
 
 Expected: the migrated Task 7 suite returns to exactly 7/7 PASS. This GREEN
-proves only the approved permanent package boundary. It does not satisfy any
+proves only the approved transitional package/location boundary. It does not satisfy any
 later audit/database/export/release behavior test: those tests must still be
 written first and fail because their public function or behavior is absent.
 
 The three-file required set is only the planned transition before Task 4.
-Task 4's focused RED remains the first authority to create `db/pipeline.py`.
-After its GREEN, the discovered set must equal the complete four-file approved
-set, and every Task 4-or-later run of this migrated Task 7 test must enforce
-that equality. After this structural commit is independently approved, append
-the migrated Task 7 command to every later Task 3/3A/4/5/6/7 focused gate as a
-continuous 7/7 regression; the final Task 8 command below remains mandatory.
+Task 4 must perform the separately authorized Stage 2 edit and prove its RED
+before its focused RED remains the first authority to create `db/pipeline.py`.
+After Task 4 GREEN, every run of this migrated Task 7 test must enforce exact
+equality to the complete four-file approved set. After this structural commit
+is independently approved, append the migrated Task 7 command to every later
+Task 3/3A/4/5/6/7 focused gate as a continuous 7/7 regression; the final Task 8
+command below remains mandatory.
 
 - [ ] **Step 3: Commit the structural migration separately**
 
@@ -1773,13 +1777,42 @@ git commit -m "feat: add V1.17 release transformer"
 - Create: `src/joy_m2/db/pipeline.py`
 - Modify: `src/joy_m2/db/__init__.py`
 - Create: `tests/integration/test_db_pipeline.py`
+- Modify: `tests/regression/test_task7_project_initialization.py` (Stage 2 only:
+  upgrade the one pipeline structural assertion to the four-file exact set;
+  leave the other six Task 7 tests and all of their assertions unchanged)
 
 **Interfaces:**
 - Consumes: V1.18 `AuditedBatch` or V1.17 `V117ReleaseBatch`, `ReleaseSpec`,
   `DatabaseContract`, and `DatabaseBuildRequest`.
 - Produces: `build_database(request) -> DatabaseArtifact` and `verify_database(path, contract) -> VerificationReport`.
 
-- [ ] **Step 1: Write the failing V1.18 byte-equivalence test**
+- [ ] **Step 1: Upgrade the Task 7 structural gate to Stage 2 and verify RED**
+
+Before creating `src/joy_m2/db/pipeline.py`, change only the migrated pipeline
+structural assertion from the Stage 1 approved-path subset + required-three rule
+to exact equality with this independently written literal set:
+
+```text
+{
+  audit/pipeline.py,
+  db/pipeline.py,
+  export/pipeline.py,
+  release/pipeline.py,
+}
+```
+
+Do not modify the other six Task 7 tests or weaken the existing forbidden-path,
+legacy, bootstrap/package, or frozen V1.18 checks. Run:
+
+```bash
+$task8_python -m unittest -v tests.regression.test_task7_project_initialization
+```
+
+Expected: exactly 7 tests collected, 6 PASS/1 FAIL. The sole failure must report
+that `db/pipeline.py` is missing. If any other test or condition fails, stop and
+report a contract/implementation deviation; do not create the database module.
+
+- [ ] **Step 2: Write the failing V1.18 byte-equivalence test**
 
 Audit the 452 candidates with Task 3, build to a new temporary path, and assert:
 
@@ -1790,31 +1823,35 @@ self.assertEqual(output_db.read_bytes(), (ROOT / "releases/V1.18/Joy_M2_Complete
 
 Also assert `user_version=118`, integrity `ok`, foreign-key errors 0, 497 total rows, 452 rows with `source_order>45`, and 45 byte/logically unchanged V1.17 rows.
 
-Run and expect an import failure:
+Still without creating `db/pipeline.py`, run and expect an import failure:
 
 ```bash
 $task8_python -m unittest -v tests.integration.test_db_pipeline.V118DatabaseBuildTests
 ```
 
-- [ ] **Step 2: Implement protected baseline validation**
+- [ ] **Step 3: Implement protected baseline validation**
 
-Validate the source path, V1.17 hash, manifest binding, integrity, foreign keys, 45 V2 rows, and 497 compatibility-view rows before creating the output parent or file. Map each failure to the specified input/database exception.
+Only after both the Stage 2 structural RED and the focused database RED above
+are confirmed, create `db/pipeline.py` for the first time. Validate the source
+path, V1.17 hash, manifest binding, integrity, foreign keys, 45 V2 rows, and 497
+compatibility-view rows before creating the output parent or file. Map each
+failure to the specified input/database exception.
 
-- [ ] **Step 3: Implement the V1.18 transaction**
+- [ ] **Step 4: Implement the V1.18 transaction**
 
 Copy the baseline to a temporary database in the target parent, set `foreign_keys=ON` and `journal_mode=DELETE`, begin one immediate transaction, insert all typed rows and tags in stable order, rebuild taxonomy from ordered distinct values, update metadata/import run, set `user_version=118`, commit, check integrity/foreign keys, and run `VACUUM` exactly where the legacy profile requires it.
 
 Use the exact `DB_TABLE_COLUMNS` order from the oracle as a named constant in `profiles.py`; every JSON-valued cell uses the approved canonical JSON serializer.
 
-- [ ] **Step 4: Make publication of the database atomic**
+- [ ] **Step 5: Make publication of the database atomic**
 
 Run final read-only verification against the temporary file. Only after PASS, use `Path.replace(output_path)` when `output_path` does not exist. On any exception, remove only the known temporary file and leave `output_path` absent.
 
-- [ ] **Step 5: Add duplicate, foreign-key, integrity, and conflict tests**
+- [ ] **Step 6: Add duplicate, foreign-key, integrity, and conflict tests**
 
 Inject a duplicate ID, an unknown `source_id`, a malformed baseline, and an existing output path. Assert `AuditBlockedError`, `ForeignKeyViolationError`, `DatabaseIntegrityError` or `BaselineMismatchError`, and `OutputConflictError` as applicable. After each failure assert the original target bytes are absent or unchanged.
 
-- [ ] **Step 6: Add V1.17 build support and equivalence**
+- [ ] **Step 7: Add V1.17 build support and equivalence**
 
 Implement the schema-creation profile from Task 5, accepting only the
 `V117ReleaseBatch` produced by Task 3A and copying its already-decided
@@ -1825,20 +1862,25 @@ equal the protected V1.17 database and the V1.16 historical tables are logically
 unchanged. Assert an audit-stage `AuditedBatch` is rejected for V1.17 before
 output creation.
 
-- [ ] **Step 7: Run database and audit suites**
+- [ ] **Step 8: Run database, audit, and permanent structural suites**
 
 ```bash
 $task8_python -m unittest -v tests.integration.test_db_pipeline tests.unit.test_audit_pipeline
 $task8_python -m unittest -v tests.regression.test_task7_project_initialization
 ```
 
-Expected: PASS, with the Task 7 structural test now enforcing exact equality to
-the complete four-file approved pipeline set.
+Expected: all PASS, with Task 7 restored to exactly 7/7 and its structural test
+now permanently enforcing exact equality to the complete four-file approved
+pipeline set. Deleting `db/pipeline.py` or adding a fifth maintained pipeline
+module must fail this test; no later implementation may restore the Stage 1
+subset rule.
 
-- [ ] **Step 8: Commit database migration**
+- [ ] **Step 9: Commit database migration**
 
 ```bash
-git add src/joy_m2/db tests/integration/test_db_pipeline.py
+git add src/joy_m2/db \
+  tests/integration/test_db_pipeline.py \
+  tests/regression/test_task7_project_initialization.py
 git diff --cached --check
 git commit -m "feat: add transactional database pipeline"
 ```

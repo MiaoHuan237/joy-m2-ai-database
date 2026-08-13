@@ -951,9 +951,13 @@ CandidateBuildRequest (explicit run_id and contracts)
 迁移不是纠正 Task 7，而是为随后获批的 Phase 2 repository structure 替换一个
 已经完成使命的时间性断言。
 
-Phase 2 implementation 开始时，必须在创建任何 pipeline module 前，先且只把
-该测试迁移为一个永久的 Phase 2 structural invariant。新的七项 Task 7 gate
-保留另外六项既有测试不变，并把原测试替换为一项同时执行以下精确检查的测试：
+Phase 2 implementation 中，该单一 structural assertion 必须经过两个受控迁移
+阶段；另外六项既有 Task 7 测试在两个阶段都保持不变。Stage 1 只支持前三个
+scaffold 的首次创建；Stage 2 在 Task 4 首次创建 `db/pipeline.py` 前把同一断言
+收紧为永久的四文件 exact-set invariant。
+
+Stage 1 必须在创建任何 pipeline module 前，先且只把原 temporal assertion
+替换为一项同时执行以下精确检查的 structural assertion：
 
 1. `src/joy_m2/` 下名为 `pipeline.py` 的文件只允许位于：
    `audit/pipeline.py`、`db/pipeline.py`、`export/pipeline.py` 和
@@ -982,26 +986,46 @@ Phase 2 implementation 开始时，必须在创建任何 pipeline module 前，�
    SQLite identity 和 embedded independent verifier 测试保持原断言与 7/7
    总数；不得以更新 frozen artifacts、hashes 或 validator 取得 GREEN。
 
-上述测试的 approved set 和 required set 必须分别以四个与三个独立路径 literal
-写出，不得从实际扫描结果生成期望值。TDD 顺序冻结为：先替换 historical
-negative assertion；在三个冲突 module 仍缺失时运行并看到 6 PASS/1 FAIL，且
-唯一失败是 required pipeline set 缺失；再创建三个仅含 module docstring、可
-直接 import 且不导出行为 API 的最小 scaffold；重跑恢复 7/7。scaffold 只建立
-已批准的 package/location，不得提前
+Stage 1 的 approved set 和 required set 必须分别以四个与三个独立路径 literal
+写出，不得从实际扫描结果生成期望值；此时不得要求或创建
+`db/pipeline.py`。Stage 1 的 TDD 顺序冻结为：先替换 historical negative
+assertion；在三个冲突 module 仍缺失时运行并看到 6 PASS/1 FAIL，且唯一失败是
+required-three pipeline set 缺失；再创建三个仅含 module docstring、可直接
+import 且不导出行为 API 的最小 scaffold；重跑恢复 7/7。scaffold 只建立已批准
+的 package/location，不得提前
 实现 audit、database、export 或 release 行为；因此后续各层必须继续先用缺失
 公共函数/行为的 focused test 取得各自 RED，再修改对应 scaffold 达到 GREEN。
 不得删除整个测试、把 discovered-set subset 检查放宽为未枚举路径、使用
 skip/expected failure，或在测试中预先接受任意未来路径。
 
-三文件 required set 只用于允许 Task 4 之前的计划过渡态。Task 4 创建
-`db/pipeline.py` 后，discovered set 必须精确等于四文件 approved set；Task 4
-及其后每层的 Task 7 gate、最终 Task 8B gate 都必须断言这一精确相等关系，不能
-回退为只要求三文件 required set。迁移提交通过独立复审后，每个后续 Phase 2
-实现层的 focused tests 之外都必须同时重跑迁移后的 Task 7 7/7；该持续门禁和
-原 Task 3–6 54/54、V1.18 verifier/frozen hash 门禁并行生效。
+三文件 required set 只用于 Task 4 之前的计划过渡态。Stage 2 必须在 Task 4
+首次创建 `db/pipeline.py` 前再次且只修改同一个 structural assertion：把 Stage 1
+的 approved-path subset + required-three 规则升级为 discovered maintained
+pipeline files 精确等于以下四文件 literal set：`audit/pipeline.py`、
+`db/pipeline.py`、`export/pipeline.py`、`release/pipeline.py`。在
+`db/pipeline.py` 仍不存在时运行：
 
-为执行这一次迁移，`tests/regression/test_task7_project_initialization.py` 明确
-加入 Phase 2 implementation 的 approved modification scope；授权仅限替换上述
-单一 temporal assertion。本文档修订本身仍为 docs-only，不修改测试或创建
-scaffold。后续每层以及最终完整门禁运行的是迁移后的 Task 7 7/7，不重写或否定
-Task 7 原历史验收记录。
+```bash
+$task8_python -m unittest -v tests.regression.test_task7_project_initialization
+```
+
+必须收集 7 项并得到 6 PASS/1 FAIL，
+唯一失败原因必须是缺少 `db/pipeline.py`；任何其他失败都必须停止并报告合同或
+实现偏差。只有确认这一 Stage 2 RED 和 Task 4 自身 focused RED 后，Task 4 才能
+首次创建并最小实现 `db/pipeline.py`；Task 4 GREEN 后 Task 7 必须恢复 7/7。
+
+从 Stage 2 GREEN 起，四文件 exact-set 关系是永久结构门禁：缺少包括
+`db/pipeline.py` 在内的任何批准文件，或增加第五个 maintained pipeline module，
+都必须使该 structural test 失败；Task 4 及其后任何实现不得把断言降级回 subset
+或 required-three。迁移提交通过独立复审后，每个后续 Phase 2 实现层的 focused
+tests 之外都必须同时重跑迁移后的 Task 7 7/7；该持续门禁和原 Task 3–6 54/54、
+V1.18 verifier/frozen hash 门禁并行生效。
+
+为执行这两个受控阶段，`tests/regression/test_task7_project_initialization.py`
+明确加入 Stage 1 和 Task 4 的 approved modification scope。Stage 1 授权仅限把
+上述单一 temporal assertion 替换为 subset + required-three 规则；Task 4 授权
+仅限在创建 `db/pipeline.py` 前把同一断言升级为四文件 exact set。两个阶段都不得
+删除、放宽或重写另外六项 Task 7 regression protection，也不得改变 frozen
+boundary、legacy prohibition 或 bootstrap/package invariant。本文档修订本身仍为
+docs-only，不修改测试或创建 scaffold；后续每层以及最终完整门禁运行的是 Stage 2
+后的 Task 7 7/7，不重写或否定 Task 7 原历史验收记录。
