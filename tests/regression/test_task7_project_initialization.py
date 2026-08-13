@@ -52,15 +52,112 @@ class ProjectStructureTests(unittest.TestCase):
         missing = [relative for relative in required if not (ROOT / relative).exists()]
         self.assertEqual(missing, [])
 
-    def test_task7_does_not_implement_the_task8_pipeline(self) -> None:
-        forbidden = [
-            ROOT / "src/joy_m2/cli.py",
-            ROOT / "src/joy_m2/audit/pipeline.py",
-            ROOT / "src/joy_m2/db/migrate.py",
-            ROOT / "src/joy_m2/export/pipeline.py",
-            ROOT / "src/joy_m2/release/pipeline.py",
-        ]
-        self.assertEqual([str(path.relative_to(ROOT)) for path in forbidden if path.exists()], [])
+    def test_phase2_pipeline_structure_stays_within_approved_boundary(self) -> None:
+        import ast
+        import tomllib
+
+        maintained_root = ROOT / "src/joy_m2"
+        approved = {
+            Path("audit/pipeline.py"),
+            Path("db/pipeline.py"),
+            Path("export/pipeline.py"),
+            Path("release/pipeline.py"),
+        }
+        required = {
+            Path("audit/pipeline.py"),
+            Path("export/pipeline.py"),
+            Path("release/pipeline.py"),
+        }
+        discovered = {
+            path.relative_to(maintained_root)
+            for path in maintained_root.rglob("*.py")
+            if "pipeline" in path.name
+        }
+
+        self.assertEqual(discovered - approved, set())
+        missing = required - discovered
+        self.assertEqual(
+            missing,
+            set(),
+            "missing required maintained pipeline modules: "
+            + ", ".join(sorted(str(path) for path in missing)),
+        )
+        self.assertNotIn(Path("db/pipeline.py"), discovered)
+        for relative in discovered:
+            path = maintained_root / relative
+            self.assertTrue(path.is_file(), str(relative))
+            self.assertFalse(path.is_symlink(), str(relative))
+
+        required_packages = {
+            Path("__init__.py"),
+            Path("audit/__init__.py"),
+            Path("db/__init__.py"),
+            Path("export/__init__.py"),
+            Path("release/__init__.py"),
+        }
+        self.assertEqual(
+            {relative for relative in required_packages if not (maintained_root / relative).is_file()},
+            set(),
+        )
+        forbidden_entries = {
+            Path("cli.py"),
+            Path("db/migrate.py"),
+        }
+        self.assertEqual(
+            {relative for relative in forbidden_entries if (maintained_root / relative).exists()},
+            set(),
+        )
+        forbidden_main_modules = {
+            path.relative_to(maintained_root)
+            for path in maintained_root.rglob("__main__.py")
+        }
+        self.assertEqual(
+            forbidden_main_modules,
+            set(),
+            "forbidden maintained __main__.py modules: "
+            + ", ".join(sorted(str(path) for path in forbidden_main_modules)),
+        )
+        with (ROOT / "pyproject.toml").open("rb") as handle:
+            pyproject = tomllib.load(handle)
+        self.assertNotIn("scripts", pyproject["project"])
+
+        api_owners = {
+            "audit_batch": Path("audit/pipeline.py"),
+            "build_database": Path("db/pipeline.py"),
+            "verify_database": Path("db/pipeline.py"),
+            "export_database": Path("export/pipeline.py"),
+            "verify_exports": Path("export/pipeline.py"),
+            "build_candidate": Path("release/pipeline.py"),
+            "promote_candidate": Path("release/pipeline.py"),
+        }
+        for path in maintained_root.rglob("*.py"):
+            relative = path.relative_to(maintained_root)
+            tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(relative))
+            for node in ast.walk(tree):
+                if isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)) and node.name in api_owners:
+                    self.assertEqual(relative, api_owners[node.name], node.name)
+
+        legacy_pipeline_modules = {
+            path.relative_to(ROOT / "legacy")
+            for path in (ROOT / "legacy").rglob("*.py")
+            if "pipeline" in path.name
+        }
+        self.assertEqual(legacy_pipeline_modules, set())
+        for relative in discovered:
+            path = maintained_root / relative
+            tree = ast.parse(path.read_text(encoding="utf-8"), filename=str(relative))
+            imported_top_levels = {
+                alias.name.split(".", 1)[0]
+                for node in ast.walk(tree)
+                if isinstance(node, ast.Import)
+                for alias in node.names
+            }
+            imported_top_levels.update(
+                node.module.split(".", 1)[0]
+                for node in ast.walk(tree)
+                if isinstance(node, ast.ImportFrom) and node.module is not None
+            )
+            self.assertNotIn("legacy", imported_top_levels, str(relative))
 
     def test_minimal_legacy_regression_snapshot_is_present(self) -> None:
         required = [
