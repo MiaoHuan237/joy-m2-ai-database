@@ -30,6 +30,9 @@ PUBLIC_VALUE_TYPES = (
     "ReleaseCompatibility",
     "AuditedRecord",
     "AuditedBatch",
+    "V117ReleaseDecision",
+    "V117ReleaseRecord",
+    "V117ReleaseBatch",
     "AuditInputEvidence",
     "AuditReport",
     "AuditResult",
@@ -142,6 +145,21 @@ EXACT_FIELD_CONTRACTS = {
         "release_compatibility",
     ),
     "AuditedBatch": ("records",),
+    "V117ReleaseDecision": (
+        "formal_release_version",
+        "selectable",
+        "record_status",
+        "joy_approval",
+        "approved_at",
+        "schema_version",
+    ),
+    "V117ReleaseRecord": (
+        "audited_record",
+        "publication_evidence",
+        "release_compatibility",
+        "schema_version",
+    ),
+    "V117ReleaseBatch": ("records",),
     "AuditInputEvidence": ("candidate_json", "baseline_database"),
     "AuditReport": (
         "release_version",
@@ -1155,10 +1173,180 @@ class Phase2PublicModelContractTests(unittest.TestCase):
         self.assertEqual(result.require_passed().records, ())
 
 
-class PipelineModelContractTests(unittest.TestCase):
-    def test_all_30_approved_shared_value_types_are_public_dataclasses(self) -> None:
+class V117ReleaseModelContractTests(unittest.TestCase):
+    def require_type(self, models, name: str):
+        value_type = getattr(models, name, None)
+        self.assertIsNotNone(value_type, f"missing public model: {name}")
+        return value_type
+
+    def make_decision(self, models, **overrides):
+        values = {
+            "formal_release_version": "V1.17",
+            "selectable": True,
+            "record_status": "published",
+            "joy_approval": "approved_by_joy",
+            "approved_at": "2026-08-08T20:00:00+08:00",
+            "schema_version": "complete-question-v1.0",
+        }
+        values.update(overrides)
+        return self.require_type(models, "V117ReleaseDecision")(**values)
+
+    def make_release_record(self, models, *, question_id="Q1", source_order=1):
+        question = make_audited_question(
+            models,
+            question_id=question_id,
+            publication_evidence=models.PublicationEvidence("audit_passed", "", None),
+            unresolved_issues=[],
+            schema_version="complete-question-v1.0-draft",
+        )
+        return self.require_type(models, "V117ReleaseRecord")(
+            audited_record=make_audited_record(models, question, profile="V1.17"),
+            publication_evidence=models.PublicationEvidence(
+                "published",
+                "approved_by_joy",
+                "2026-08-08T20:00:00+08:00",
+            ),
+            release_compatibility=models.ReleaseCompatibility(
+                "V1.17",
+                True,
+                source_order,
+            ),
+            schema_version="complete-question-v1.0",
+        )
+
+    def test_release_models_have_exact_fields_and_type_hints(self) -> None:
         models = import_required(self, "joy_m2.models")
-        self.assertEqual(len(PUBLIC_VALUE_TYPES), 30)
+        decision_type = self.require_type(models, "V117ReleaseDecision")
+        record_type = self.require_type(models, "V117ReleaseRecord")
+        batch_type = self.require_type(models, "V117ReleaseBatch")
+        self.assertEqual(
+            typing.get_type_hints(decision_type),
+            {
+                "formal_release_version": typing.Literal["V1.17"],
+                "selectable": typing.Literal[True],
+                "record_status": typing.Literal["published"],
+                "joy_approval": typing.Literal["approved_by_joy"],
+                "approved_at": typing.Literal["2026-08-08T20:00:00+08:00"],
+                "schema_version": typing.Literal["complete-question-v1.0"],
+            },
+        )
+        self.assertEqual(
+            typing.get_type_hints(record_type),
+            {
+                "audited_record": models.AuditedRecord,
+                "publication_evidence": models.PublicationEvidence,
+                "release_compatibility": models.ReleaseCompatibility,
+                "schema_version": str,
+            },
+        )
+        self.assertEqual(
+            typing.get_type_hints(batch_type),
+            {"records": tuple[record_type, ...]},
+        )
+
+    def test_release_decision_accepts_only_the_frozen_historical_values(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        errors = import_required(self, "joy_m2.errors")
+        decision = self.make_decision(models)
+        self.assertTrue(decision.__dataclass_params__.frozen)
+        with self.assertRaises(FrozenInstanceError):
+            decision.schema_version = "changed"
+        invalid = {
+            "formal_release_version": "V1.18",
+            "selectable": 1,
+            "record_status": "audit_passed",
+            "joy_approval": "",
+            "approved_at": None,
+            "schema_version": "complete-question-v1.0-draft",
+        }
+        for field_name, value in invalid.items():
+            with self.subTest(field=field_name):
+                with self.assertRaises(errors.PipelineError):
+                    self.make_decision(models, **{field_name: value})
+
+    def test_release_record_retains_the_v117_audit_envelope_without_mutation(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        errors = import_required(self, "joy_m2.errors")
+        record = self.make_release_record(models)
+        audited_record = record.audited_record
+        self.assertEqual(audited_record.question.publication_evidence.record_status, "audit_passed")
+        self.assertEqual(audited_record.question.publication_evidence.joy_approval, "")
+        self.assertIsNone(audited_record.question.publication_evidence.approved_at)
+        self.assertEqual(audited_record.question.schema_version, "complete-question-v1.0-draft")
+        self.assertIsNotNone(audited_record.task4_compatibility)
+        self.assertIsNone(audited_record.release_compatibility)
+        self.assertEqual(record.publication_evidence.record_status, "published")
+        self.assertEqual(record.release_compatibility.formal_release_version, "V1.17")
+        self.assertEqual(record.schema_version, "complete-question-v1.0")
+        with self.assertRaises(errors.PipelineError):
+            self.require_type(models, "V117ReleaseRecord")(
+                audited_record=make_audited_record(models, profile="V1.18"),
+                publication_evidence=record.publication_evidence,
+                release_compatibility=record.release_compatibility,
+                schema_version=record.schema_version,
+            )
+        unresolved_question = make_audited_question(
+            models,
+            publication_evidence=models.PublicationEvidence("audit_passed", "", None),
+            unresolved_issues=["pending"],
+            schema_version="complete-question-v1.0-draft",
+        )
+        with self.assertRaises(errors.PipelineError):
+            self.require_type(models, "V117ReleaseRecord")(
+                audited_record=make_audited_record(
+                    models,
+                    unresolved_question,
+                    profile="V1.17",
+                ),
+                publication_evidence=record.publication_evidence,
+                release_compatibility=record.release_compatibility,
+                schema_version=record.schema_version,
+            )
+
+    def test_release_batch_preserves_order_and_enforces_one_based_source_order(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        errors = import_required(self, "joy_m2.errors")
+        first = self.make_release_record(models, question_id="Q1", source_order=1)
+        second = self.make_release_record(models, question_id="Q2", source_order=2)
+        batch = self.require_type(models, "V117ReleaseBatch")(records=[first, second])
+        self.assertEqual(batch.records, (first, second))
+        self.assertIsInstance(batch.records, tuple)
+        with self.assertRaises(FrozenInstanceError):
+            batch.records = ()
+        with self.assertRaises(errors.PipelineError):
+            self.require_type(models, "V117ReleaseBatch")(
+                records=[first, self.make_release_record(models, question_id="Q3", source_order=3)]
+            )
+        with self.assertRaises(errors.PipelineError):
+            self.require_type(models, "V117ReleaseBatch")(records=[first, object()])
+
+    def test_database_build_request_accepts_only_the_two_approved_batch_types(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        errors = import_required(self, "joy_m2.errors")
+        hints = typing.get_type_hints(models.DatabaseBuildRequest)
+        self.assertEqual(
+            tuple(value_type.__name__ for value_type in typing.get_args(hints["batch"])),
+            ("AuditedBatch", "V117ReleaseBatch"),
+        )
+        common = {
+            "baseline_database": make_artifact(models, "baseline.sqlite3"),
+            "baseline_manifest": make_artifact(models, "manifest.json"),
+            "output_path": Path("staging/candidate.sqlite3"),
+            "release_spec": make_release_spec(models),
+            "contract": make_database_contract(models),
+        }
+        audited_batch = models.AuditedBatch(records=[])
+        release_batch = self.require_type(models, "V117ReleaseBatch")(records=[])
+        self.assertIs(models.DatabaseBuildRequest(batch=audited_batch, **common).batch, audited_batch)
+        self.assertIs(models.DatabaseBuildRequest(batch=release_batch, **common).batch, release_batch)
+        with self.assertRaises(errors.PipelineError):
+            models.DatabaseBuildRequest(batch=object(), **common)
+
+
+class PipelineModelContractTests(unittest.TestCase):
+    def test_all_33_approved_shared_value_types_are_public_dataclasses(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        self.assertEqual(len(PUBLIC_VALUE_TYPES), 33)
         self.assertEqual(
             tuple(name for name in PUBLIC_VALUE_TYPES if hasattr(models, name)),
             PUBLIC_VALUE_TYPES,
@@ -1171,7 +1359,7 @@ class PipelineModelContractTests(unittest.TestCase):
         }
         self.assertEqual(public_dataclasses, set(PUBLIC_VALUE_TYPES))
 
-    def test_all_30_shared_dataclasses_are_declared_frozen(self) -> None:
+    def test_all_33_shared_dataclasses_are_declared_frozen(self) -> None:
         models = import_required(self, "joy_m2.models")
         for name in PUBLIC_VALUE_TYPES:
             with self.subTest(value_type=name):
@@ -1193,7 +1381,7 @@ class PipelineModelContractTests(unittest.TestCase):
     def test_approved_key_types_have_exact_explicit_field_order(self) -> None:
         models = import_required(self, "joy_m2.models")
         self.assertEqual(tuple(EXACT_FIELD_CONTRACTS), PUBLIC_VALUE_TYPES)
-        self.assertEqual(len(EXACT_FIELD_CONTRACTS), 30)
+        self.assertEqual(len(EXACT_FIELD_CONTRACTS), 33)
         for name, expected in EXACT_FIELD_CONTRACTS.items():
             with self.subTest(value_type=name):
                 self.assertEqual(field_names(getattr(models, name)), expected)

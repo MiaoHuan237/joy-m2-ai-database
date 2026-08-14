@@ -264,6 +264,93 @@ class AuditedBatch:
 
 
 @dataclass(frozen=True)
+class V117ReleaseDecision:
+    formal_release_version: Literal["V1.17"]
+    selectable: Literal[True]
+    record_status: Literal["published"]
+    joy_approval: Literal["approved_by_joy"]
+    approved_at: Literal["2026-08-08T20:00:00+08:00"]
+    schema_version: Literal["complete-question-v1.0"]
+
+    def __post_init__(self) -> None:
+        expected = (
+            ("formal_release_version", str, "V1.17"),
+            ("selectable", bool, True),
+            ("record_status", str, "published"),
+            ("joy_approval", str, "approved_by_joy"),
+            ("approved_at", str, "2026-08-08T20:00:00+08:00"),
+            ("schema_version", str, "complete-question-v1.0"),
+        )
+        for field_name, value_type, wanted in expected:
+            value = getattr(self, field_name)
+            if type(value) is not value_type or value != wanted:
+                raise PipelineError(f"{field_name} must equal {wanted!r}")
+
+
+@dataclass(frozen=True)
+class V117ReleaseRecord:
+    audited_record: AuditedRecord
+    publication_evidence: PublicationEvidence
+    release_compatibility: ReleaseCompatibility
+    schema_version: str
+
+    def __post_init__(self) -> None:
+        if type(self.audited_record) is not AuditedRecord:
+            raise PipelineError("audited_record must be an AuditedRecord")
+        if (
+            self.audited_record.task4_compatibility is None
+            or self.audited_record.release_compatibility is not None
+        ):
+            raise PipelineError("audited_record must be a V1.17 audit envelope")
+        audit_evidence = self.audited_record.question.publication_evidence
+        if (
+            audit_evidence.record_status != "audit_passed"
+            or audit_evidence.joy_approval != ""
+            or audit_evidence.approved_at is not None
+            or self.audited_record.question.schema_version
+            != "complete-question-v1.0-draft"
+            or self.audited_record.question.unresolved_issues
+        ):
+            raise PipelineError("audited_record must retain V1.17 audit-stage values")
+        if type(self.publication_evidence) is not PublicationEvidence:
+            raise PipelineError("publication_evidence must be PublicationEvidence")
+        if (
+            self.publication_evidence.record_status != "published"
+            or self.publication_evidence.joy_approval != "approved_by_joy"
+            or self.publication_evidence.approved_at
+            != "2026-08-08T20:00:00+08:00"
+        ):
+            raise PipelineError("publication_evidence must contain V1.17 release values")
+        if type(self.release_compatibility) is not ReleaseCompatibility:
+            raise PipelineError("release_compatibility must be ReleaseCompatibility")
+        if (
+            self.release_compatibility.formal_release_version != "V1.17"
+            or self.release_compatibility.selectable is not True
+            or self.release_compatibility.source_order <= 0
+        ):
+            raise PipelineError("release_compatibility must contain V1.17 release values")
+        if type(self.schema_version) is not str or self.schema_version != "complete-question-v1.0":
+            raise PipelineError("schema_version must equal 'complete-question-v1.0'")
+
+
+@dataclass(frozen=True)
+class V117ReleaseBatch:
+    records: tuple[V117ReleaseRecord, ...]
+
+    def __post_init__(self) -> None:
+        if type(self.records) not in {list, tuple}:
+            raise PipelineError("records must be a list or tuple of V117ReleaseRecord values")
+        records = tuple(self.records)
+        if any(type(record) is not V117ReleaseRecord for record in records):
+            raise PipelineError("records must contain only V117ReleaseRecord values")
+        if tuple(record.release_compatibility.source_order for record in records) != tuple(
+            range(1, len(records) + 1)
+        ):
+            raise PipelineError("records must preserve contiguous one-based source_order")
+        object.__setattr__(self, "records", records)
+
+
+@dataclass(frozen=True)
 class AuditInputEvidence:
     candidate_json: ArtifactRef
     baseline_database: ArtifactRef
@@ -489,7 +576,7 @@ class DatabaseContract:
 
 @dataclass(frozen=True)
 class DatabaseBuildRequest:
-    batch: AuditedBatch
+    batch: AuditedBatch | V117ReleaseBatch
     baseline_database: ArtifactRef
     baseline_manifest: ArtifactRef
     output_path: Path
@@ -497,6 +584,8 @@ class DatabaseBuildRequest:
     contract: DatabaseContract
 
     def __post_init__(self) -> None:
+        if type(self.batch) not in {AuditedBatch, V117ReleaseBatch}:
+            raise PipelineError("batch must be AuditedBatch or V117ReleaseBatch")
         object.__setattr__(self, "output_path", self.output_path.resolve())
 
 
