@@ -1439,7 +1439,9 @@ After separate authorizations, the minimum expected implementation surface is:
 
 - `src/joy_m2/models.py` and `tests/unit/test_pipeline_models.py` for the Phase 2
   request/evidence/report/release/export values and closed status/count
-  invariants;
+  invariants; Task 3A is specifically authorized to revisit only these two
+  files for the three frozen V1.17 release models and the
+  `DatabaseBuildRequest.batch` union migration described below;
 - `src/joy_m2/audit/profiles.py`, `src/joy_m2/audit/pipeline.py`, and focused
   audit tests for JSON-backed profiles and explicit baseline preflight;
 - `src/joy_m2/release/transformers.py` and a focused V1.17 transformer test;
@@ -1718,9 +1720,18 @@ git commit -m "feat: add typed audit pipeline"
 ### Task 3A: Implement the V1.17 Historical Release Transformer
 
 **Files:**
+- Modify: `src/joy_m2/models.py` (only `V117ReleaseDecision`,
+  `V117ReleaseRecord`, `V117ReleaseBatch`, and
+  `DatabaseBuildRequest.batch: AuditedBatch | V117ReleaseBatch`)
+- Modify: `tests/unit/test_pipeline_models.py` (only exact tests for those
+  release models and that batch-type migration)
 - Create: `src/joy_m2/release/transformers.py`
 - Modify: `src/joy_m2/release/__init__.py`
 - Create: `tests/unit/test_v117_release_transformer.py`
+
+This five-file list is the complete Task 3A modification scope. It authorizes
+no other production, test, data, release, legacy, validator, state, or contract
+file.
 
 **Interfaces:**
 - Consumes: a V1.17 `AuditResult` and an explicit `V117ReleaseDecision`; the
@@ -1728,15 +1739,43 @@ git commit -m "feat: add typed audit pipeline"
 - Produces: `transform_v117_release(...) -> V117ReleaseBatch` with direct,
   ordered audit-envelope retention.
 
-- [ ] **Step 1: Write failing contract and boundary tests**
+- [ ] **Step 1: Write the failing public release-model tests**
 
-Assert exact decision/record/batch field types, `AuditBlockedError` for a failed
-result, `PipelineError` for empty/V1.18/mixed input, no clock/environment/
-registry/identity/parallel-pass/`ApprovalRecord` dependency, and one direct
-`AuditedRecord` child per output record. Assert neither compatibility carrier on
-the retained `AuditedRecord` is changed.
+Modify only `tests/unit/test_pipeline_models.py`. Assert the exact approved
+field names, order, type hints, frozen behavior, validation, deterministic
+record ordering, and ownership for `V117ReleaseDecision`,
+`V117ReleaseRecord`, and `V117ReleaseBatch`. Add exact
+`DatabaseBuildRequest.batch` tests proving that `AuditedBatch` remains valid,
+`V117ReleaseBatch` becomes valid, every other batch type is rejected, and no
+other `DatabaseBuildRequest` field or behavior changes.
 
-- [ ] **Step 2: Implement the minimal deterministic transformer**
+Run the public-model suite before changing `models.py`. Expected: RED only
+because the three approved release models are absent and
+`DatabaseBuildRequest.batch` still has the old `AuditedBatch`-only contract;
+syntax, fixture, unrelated import, or setup errors are not acceptable.
+
+- [ ] **Step 2: Implement the minimal public release models and verify GREEN**
+
+Modify only `src/joy_m2/models.py`. Add the three dataclasses with exactly the
+fields and frozen semantics in the approved design, with no convenience fields
+or third release-batch carrier. Preserve input order in
+`V117ReleaseBatch.records`. Migrate only `DatabaseBuildRequest.batch` to
+`AuditedBatch | V117ReleaseBatch`; keep all other fields and behavior unchanged.
+Run the complete public-model suite and require GREEN before writing any
+transformer behavior test.
+
+- [ ] **Step 3: Write failing transformer contract and boundary tests**
+
+Create `tests/unit/test_v117_release_transformer.py`. Assert
+`AuditBlockedError` for a failed result, `PipelineError` for empty/V1.18/mixed
+input, no clock/environment/registry/identity/parallel-pass/`ApprovalRecord`
+dependency, and one direct `AuditedRecord` child per output record. Assert
+neither compatibility carrier on the retained `AuditedRecord` is changed. Run
+the focused transformer suite before creating `release/transformers.py` and
+require RED only because the approved transformer API/behavior is absent; an
+unrelated model, syntax, path, fixture, or setup error is not acceptable.
+
+- [ ] **Step 4: Implement the minimal deterministic transformer**
 
 Call `result.require_passed()` internally, then apply only the seven protected
 V1.17 historical operations frozen above. Create
@@ -1744,29 +1783,56 @@ release-stage `PublicationEvidence`, `ReleaseCompatibility`, and schema value on
 the direct wrapper. Preserve input order and cardinality. Do not serialize JSON
 or access files/databases.
 
-- [ ] **Step 3: Prove source-order and record equivalence**
+- [ ] **Step 5: Export only the approved transformer API**
+
+Modify `src/joy_m2/release/__init__.py` only to expose the approved
+`transform_v117_release` API. The public release types remain owned by
+`models.py`; do not re-declare them here. Do not add release orchestration,
+manifest, database, export, file, hashing, clock, environment, registry, or
+V1.16 ZIP behavior.
+
+- [ ] **Step 6: Prove source-order and record equivalence**
 
 Compare all 45 transformed records against the protected legacy oracle,
 including 1-based `source_order`, 53/55-field mapping, Task 4 key presence,
 publication values, and final byte-equivalence after the approved serializer.
 Position alone is not accepted as proof; the oracle comparison is required.
 
-Run the focused transformer suite and continuous migrated Task 7 gate:
+- [ ] **Step 7: Verify focused GREEN and all prerequisite regressions**
+
+Run the focused transformer suite, the complete public-model and audit suites,
+and the continuous compatibility gates:
 
 ```bash
 $task8_python -m unittest -v tests.unit.test_v117_release_transformer
+$task8_python -m unittest -v tests.unit.test_pipeline_models
+$task8_python -m unittest -v tests.unit.test_pipeline_models tests.unit.test_pipeline_config
+$task8_python -m unittest -v tests.unit.test_audit_pipeline
 $task8_python -m unittest -v tests.regression.test_task7_project_initialization
+(cd legacy && $task8_python -m unittest -v task6_work/test_task6_migration.py)
+$task8_python releases/V1.18/verify_task6_release.py releases/V1.18
 ```
 
-Expected: both PASS; Task 7 remains exactly 7/7.
+Expected: all PASS; Audit remains 21/21, Task 7 remains exactly 7/7, Task 6
+remains 22/22, and the independent V1.18 validator reports `PASS`.
 
-- [ ] **Step 4: Commit the transformer separately**
+- [ ] **Step 8: Commit the models and transformer together after review**
 
 ```bash
-git add src/joy_m2/release/transformers.py src/joy_m2/release/__init__.py tests/unit/test_v117_release_transformer.py
+git add src/joy_m2/models.py \
+  src/joy_m2/release/transformers.py \
+  src/joy_m2/release/__init__.py \
+  tests/unit/test_pipeline_models.py \
+  tests/unit/test_v117_release_transformer.py
 git diff --cached --check
 git commit -m "feat: add V1.17 release transformer"
 ```
+
+Task 4 remains blocked until this complete five-file Task 3A change has passed
+independent review and been committed. Task 4 consumes the already-migrated
+`DatabaseBuildRequest.batch: AuditedBatch | V117ReleaseBatch`; it must not add
+the release models, repeat this public-model migration, or start from an
+unreviewed/uncommitted Task 3A worktree state.
 
 ---
 

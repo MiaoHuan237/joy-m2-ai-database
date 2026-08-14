@@ -712,8 +712,48 @@ class DatabaseBuildRequest:
     contract: DatabaseContract
 ```
 
+Task 3A owns the complete, closed implementation surface needed to make these
+already-frozen release-stage values available before database work begins:
+
+- modify `src/joy_m2/models.py` only to add `V117ReleaseDecision`,
+  `V117ReleaseRecord`, and `V117ReleaseBatch`, and to migrate only
+  `DatabaseBuildRequest.batch` from `AuditedBatch` to
+  `AuditedBatch | V117ReleaseBatch`;
+- modify `tests/unit/test_pipeline_models.py` only for exact field/type,
+  frozen/validation/ordering/ownership tests for those three models and the
+  `DatabaseBuildRequest.batch` migration;
+- create `src/joy_m2/release/transformers.py`, modify
+  `src/joy_m2/release/__init__.py`, and create
+  `tests/unit/test_v117_release_transformer.py` for the approved transformer
+  API and behavior.
+
+Those five files are the complete Task 3A modification scope; this authority
+does not extend to any other model, request field, pipeline, test, artifact, or
+document. The three release models use exactly the fields and frozen semantics
+above, add no convenience field or third release-batch carrier, preserve input
+record order, and retain the ownership boundaries already frozen in this
+section. `DatabaseBuildRequest` continues to accept `AuditedBatch`, newly
+accepts `V117ReleaseBatch`, rejects every other batch type, and otherwise keeps
+its field order and contract unchanged.
+
+Task 3A uses two sequential RED/GREEN cycles. First, change only
+`test_pipeline_models.py` and prove RED for the three missing release models
+and the still-narrow `DatabaseBuildRequest.batch`; then make the minimal
+`models.py` changes and restore the complete public-model suite to GREEN.
+Second, create the focused transformer tests and prove a behavior RED caused
+only by the missing approved transformer API/behavior; then implement
+`release/transformers.py` and expose only that API from `release/__init__.py`.
+Only after the focused Task 3A suite and the public-model, audit, Task 7, Task 6,
+and V1.18 verifier regressions are GREEN may Task 3A be reviewed and committed.
+The transformer must not be implemented before its public models, and its tests
+must not be backfilled after production behavior.
+
 V1.17 profile 只接受 `V117ReleaseBatch`，V1.18 profile 只接受
 `AuditedBatch`；不匹配在创建输出前使用现有 `PipelineError` 边界拒绝。
+Task 4 may begin only after this complete Task 3A change has passed independent
+review and been committed. Task 4 consumes the already-closed
+`DatabaseBuildRequest.batch: AuditedBatch | V117ReleaseBatch` contract and is
+not authorized to add the release models or repeat that public-model migration.
 
 ### 16.3 audit report 与 evidence 所有权
 
