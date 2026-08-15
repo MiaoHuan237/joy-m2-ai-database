@@ -489,6 +489,28 @@ audit 调用的失败证据输出位置必须由调用方显式提供，精确�
   SQLite row serialization 可以把精确 `audit_passed` 单向投影为
   `published`。任何其他 source status 必须拒绝，不得任意改写。
 
+本次 V1.18 authority remediation 获得 `INDEPENDENT REVIEW PASSED` 后，恢复
+Task 4 implementation 的顺序固定为：
+
+1. 在任何 production 修改前，先增加并运行 V1.18 frozen serialization
+   compatibility projection RED。测试必须锁定上游 `audit_passed`、原始 typed
+   carrier 不变、frozen V1.18 SQLite 持久化值为 `published`、projection 只发生
+   在 V1.18 serialization boundary，且 V1.17 不受该例外影响。
+2. 仍在任何 production 修改前，再增加并运行 manifest identity RED。至少覆盖
+   correct database digest + wrong `release_version`、wrong `schema_version`、
+   wrong `release_status`/`release_model`，并要求在创建 output parent、temporary
+   database 或 output file 前拒绝。
+3. 两组 RED 都必须证明失败来自对应 production contract 尚未实现，而不是
+   setup、import、fixture 或 test construction 错误；只有确认两组正确 RED 后
+   才允许修改 production。
+4. production correction 只能最小闭合 V1.18 compatibility projection boundary
+   和 manifest identity preflight，不得扩大 publication business authority。
+5. 两组 focused tests GREEN 后，才运行完整 Task 4 regression 与 frozen
+   compatibility gates。
+
+禁止先修改 `db/profiles.py` 或 `db/pipeline.py`，再补上述 tests。resumed Task 4
+必须保持 `RED → minimal fix → GREEN`。
+
 ### 11.5 export
 
 - CSV BOM、CRLF、列顺序、NULL 表示和 497 行逐值镜像。
