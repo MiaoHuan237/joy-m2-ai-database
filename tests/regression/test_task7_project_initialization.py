@@ -63,26 +63,13 @@ class ProjectStructureTests(unittest.TestCase):
             Path("export/pipeline.py"),
             Path("release/pipeline.py"),
         }
-        required = {
-            Path("audit/pipeline.py"),
-            Path("export/pipeline.py"),
-            Path("release/pipeline.py"),
-        }
         discovered = {
             path.relative_to(maintained_root)
             for path in maintained_root.rglob("*.py")
             if "pipeline" in path.name
         }
 
-        self.assertEqual(discovered - approved, set())
-        missing = required - discovered
-        self.assertEqual(
-            missing,
-            set(),
-            "missing required maintained pipeline modules: "
-            + ", ".join(sorted(str(path) for path in missing)),
-        )
-        self.assertNotIn(Path("db/pipeline.py"), discovered)
+        self.assertEqual(discovered, approved)
         for relative in discovered:
             path = maintained_root / relative
             self.assertTrue(path.is_file(), str(relative))
