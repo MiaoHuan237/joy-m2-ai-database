@@ -2089,9 +2089,12 @@ Export behavior test or production Export implementation is created.
 
 #### Phase B: Export behavior RED -> GREEN
 
-- [ ] **Step 4: Write failing serializer tests**
+- [ ] **Step 4: Write failing serializer/format contract tests**
 
-Assert canonical JSON bytes, evidence JSON bytes, CSV BOM/CRLF, LF-only text, and exactly one trailing newline:
+With all Export production files still unchanged, create or modify the focused
+serializer/format tests. Assert canonical JSON bytes, evidence JSON bytes, CSV
+BOM/CRLF, LF-only text, field ordering, deterministic bytes, and exactly one
+trailing newline:
 
 ```python
 self.assertEqual(canonical_json_bytes({"中": [2, 1]}), b'{"\xe4\xb8\xad":[2,1]}')
@@ -2104,13 +2107,18 @@ Run:
 $task8_python -m unittest -v tests.integration.test_export_pipeline.FormatContractTests
 ```
 
-Expected: FAIL because `formats.py` does not exist.
+Expected: FAIL through explicit assertions because the approved serializer APIs
+or behavior are absent. A `ModuleNotFoundError`, import/setup error, fixture
+error, test-construction error, environment error, or Public Models dependency
+error is not a valid RED. Do not create or modify `export/formats.py`,
+`export/pipeline.py`, or `export/__init__.py` yet.
 
-- [ ] **Step 5: Implement exact format primitives**
+- [ ] **Step 5: Write failing pipeline and equivalence tests**
 
-Use `json.dumps(ensure_ascii=False, sort_keys=True, separators=(",", ":"))` for canonical JSON and `indent=2` plus one LF for evidence JSON. Open CSV with `encoding="utf-8-sig", newline=""` and set `lineterminator="\r\n"`. Normalize generated Markdown/report/state text to LF before writing and append exactly one final LF.
-
-- [ ] **Step 6: Write failing V1.18 export equivalence tests**
+Still without changing any Export production file, add focused tests for
+`export_database`, `verify_exports`, the typed `ExportRequest`, exact
+`DerivedArtifacts` output binding, deterministic artifact bytes, atomic
+write/cleanup, and invalid, mismatched, pre-existing, or conflicting inputs.
 
 Build a temporary V1.18 database through Task 4, retain the exact Task 3
 `AuditResult` and `AuditedBatch`, and export all V1.18 profile files. Compare
@@ -2126,7 +2134,62 @@ Assert export accepts no raw input digest parameter, returns no input-evidence
 carrier/scalar, and never rereads or rehashes candidate/baseline files. Frozen
 manifest projection assertions belong to Task 7 release orchestration below.
 
-- [ ] **Step 7: Implement `export_database`**
+Pass the exact original V1.17 `AuditResult` and Task 3A `V117ReleaseBatch`.
+Assert V1.17 CSV, knowledge Markdown, report, project state, approved JSON, and
+taxonomy JSON bytes equal the protected legacy Task 5 release artifacts, and
+that a reordered, truncated, or unrelated release batch is rejected before
+writing. Assert export accepts no independent candidate/database/ZIP digest
+argument, does not expose a parallel carrier, and does not read legacy
+`BASE_ZIP_SHA256`. V1.17 manifest mapping/oracle tests belong to Task 7.
+
+The pipeline/equivalence group must remain importable and fail through explicit
+contract assertions because the corresponding Export behavior is absent. An
+import/setup error, fixture error, test-construction error, environment error,
+or Public Models dependency error is not a valid RED. Do not create or modify
+`export/formats.py`, `export/pipeline.py`, or `export/__init__.py` yet.
+
+- [ ] **Step 6: Validate both RED groups before production**
+
+Run the serializer/format group and the pipeline/equivalence group separately.
+Record the command, collected count, PASS/FAIL/ERROR counts, exit code, and the
+specific missing Export behavior for every failure. Both groups must have a
+non-zero exit code caused only by their corresponding absent production
+behavior. Only after both valid REDs are confirmed may any Export production
+file change.
+
+The forbidden sequence is:
+
+```text
+serializer RED -> implement formats.py -> pipeline RED
+```
+
+The only approved Phase B sequence is:
+
+```text
+serializer RED
+-> pipeline/equivalence RED
+-> verify both REDs
+-> minimal Export production implementation
+-> unified GREEN
+-> full regression gates
+```
+
+Only after Step 6 may Steps 7-9 create or modify
+`src/joy_m2/export/formats.py`, `src/joy_m2/export/pipeline.py`, and
+`src/joy_m2/export/__init__.py`. The implementation may proceed in minimum
+dependency order, but no one of these three production files may change before
+both RED groups are validated.
+
+- [ ] **Step 7: Implement exact format primitives**
+
+Only after Step 6, create `src/joy_m2/export/formats.py`. Use
+`json.dumps(ensure_ascii=False, sort_keys=True, separators=(",", ":"))` for
+canonical JSON and `indent=2` plus one LF for evidence JSON. Open CSV with
+`encoding="utf-8-sig", newline=""` and set `lineterminator="\r\n"`. Normalize
+generated Markdown/report/state text to LF before writing and append exactly one
+final LF.
+
+- [ ] **Step 8: Implement `export_database`**
 
 Before opening an output, enforce the frozen count/order/direct-envelope
 relationship between `audit_result` and `record_batch`. Read only the supplied
@@ -2151,29 +2214,27 @@ Export. Export may hash and size its generated outputs for those `ArtifactRef`
 values, but it must not recompute candidate/baseline evidence,
 `AuditInputEvidence`, audit statistics, or the V1.17 release decision.
 
-- [ ] **Step 8: Implement `verify_exports`**
+- [ ] **Step 9: Implement `verify_exports`**
 
 Return individual checks for expected file set, CSV BOM, CSV column/value
 equality, row count, Markdown unique headings, missing-answer markers, audit JSON
 parseability, batch/report count and order agreement, and deterministic
 re-export hashes. Return FAIL for artifact mismatches and raise only when the
-verification cannot execute.
+verification cannot execute. Modify `src/joy_m2/export/__init__.py` only to
+expose the approved `export_database` and `verify_exports` public APIs; add no
+compatibility shim or second parameter entry point.
 
-- [ ] **Step 9: Add V1.17 export profile tests**
+- [ ] **Step 10: Restore unified GREEN, then run full regression gates**
 
-Pass the exact original V1.17 `AuditResult` and Task 3A `V117ReleaseBatch`.
-Assert V1.17 CSV, knowledge Markdown, report, project state, approved JSON, and
-taxonomy JSON bytes equal the protected legacy Task 5 release artifacts, and
-that a reordered, truncated, or unrelated release batch is rejected before
-writing.
-
-Assert export accepts no independent candidate/database/ZIP digest argument,
-does not expose a parallel carrier, and does not read legacy
-`BASE_ZIP_SHA256`. V1.17 manifest mapping/oracle tests belong to Task 7.
-
-- [ ] **Step 10: Run export, database, and legacy tests**
+First run the serializer/format focused tests, the pipeline/equivalence focused
+tests, and the complete `tests.integration.test_export_pipeline` suite. Require
+all three to be GREEN before running the broader database, Task 7, legacy, and
+frozen-compatibility gates:
 
 ```bash
+$task8_python -m unittest -v tests.integration.test_export_pipeline.FormatContractTests
+$task8_python -m unittest -v tests.integration.test_export_pipeline.ExportPipelineTests
+$task8_python -m unittest -v tests.integration.test_export_pipeline
 $task8_python -m unittest -v tests.integration.test_export_pipeline tests.integration.test_db_pipeline
 $task8_python -m unittest -v tests.regression.test_task7_project_initialization
 (cd legacy/task5_work && $task8_python -m unittest -v test_task5_import.py)
