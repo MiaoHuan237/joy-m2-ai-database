@@ -1204,7 +1204,13 @@ class DatabaseBuildRequest:
 
 The V1.17 database profile accepts only `V117ReleaseBatch`; the V1.18 profile
 accepts only `AuditedBatch`. A profile/batch mismatch is rejected before output
-creation, and database never constructs publication values.
+creation. Database never owns publication business authority and may not
+generally construct or rewrite publication values. Its only exception is the
+one-way frozen V1.18 SQLite serialization projection from an upstream exact
+`record_status="audit_passed"` to the persisted value `"published"`; this does
+not mutate any `AuditedRecord`, `AuditedBatch`, or `AuditResult`, cannot be read
+back to reconstruct audit state, and does not apply to V1.17, future versions,
+export, release orchestration, or manifest business state.
 
 The successful export boundary will be:
 
@@ -1333,7 +1339,8 @@ separately; neither substitutes for or reconstructs the other.
 | `AuditResult` / `AuditReport` semantics and statistics | Forbidden | **Owns** | Forbidden | Forbidden | Consume only | Forbidden |
 | V1.17 historical publication decision and release-stage mapping | Forbidden | Forbidden | **Owns** | Consume only | Consume only | Invoke only |
 | preserve V1.18 release compatibility | **Owns** | Carry only | Forbidden | Consume only | Consume only | Forbidden |
-| create or rewrite database publication fields | Forbidden | Forbidden | **Owns for V1.17** | Forbidden | Forbidden | Forbidden |
+| publication business authority / general publication-field construction or rewrite | Forbidden | Forbidden | **Owns for V1.17 only** | Forbidden | Forbidden | Forbidden |
+| V1.18 frozen SQLite `record_status` compatibility projection | Forbidden | Forbidden | Forbidden | **Allowed only for `audit_passed` → `published` serialization** | Forbidden | Forbidden |
 | database copy, transaction, schema, integrity | Forbidden | Forbidden | Forbidden | **Owns** | Forbidden | Invoke only |
 | audit evidence JSON encoding and file writing | Mapping only | Semantics only | Mapping only | Forbidden | **Owns** | Invoke/collect only |
 | frozen manifest input-digest projections | Forbidden | Evidence source only | Forbidden | Forbidden | Forbidden | **Serialize from result only** |
@@ -1367,6 +1374,8 @@ frozen 452×54-field candidate JSON + protected V1.17 SQLite + asset root
 → AuditResult(AuditReport, AuditInputEvidence)
 → require_passed() → AuditedBatch (no release transformer)
 → database copies 45 baseline records and appends 452 records
+  → frozen V1.18 SQLite serialization only projects `audit_passed` to
+    `published` without mutating the audited batch
 → export consumes database + original audit_result + matching audited batch
 → release emits frozen baseline_v117_sqlite_sha256 projection
 → release collects artifacts, packages, and verifies candidate
@@ -1405,6 +1414,17 @@ The separately authorized implementation must add tests that prove:
   audit envelope, `ReleaseCompatibility` remains reusable without being written
   back into the V1.17 envelope, and source order is oracle/byte-equivalent;
 - database cannot manufacture or rewrite V1.17 publication fields;
+- the sole V1.18 compatibility projection accepts only upstream
+  `record_status="audit_passed"`, persists `"published"` only at the frozen
+  SQLite serialization boundary, leaves the original typed carriers unchanged,
+  rejects every other source status, and cannot affect V1.17 or be reversed;
+- database validates the existing frozen V1.17 manifest identity before any
+  output parent or temporary database is created: `release_version="V1.17"`,
+  `release_status="formal"`, `schema_version="complete-question-v1.0"`, and
+  `release_model="transitional-dual-layer"`. V1.17 additionally binds
+  `baseline_v116_sqlite_sha256`; V1.18 additionally binds the V1.17 baseline
+  filename under `artifact_sha256`. Correct database digest with a wrong or
+  missing manifest identity/binding must be rejected;
 - `AuditReport` record-level counts, distinct-blocked formulas, sorted tuple
   keys, and result/report lowercase status equivalence are owned by audit;
   inconsistent result/report/envelope state raises `PipelineError`, and export
@@ -1899,13 +1919,46 @@ $task8_python -m unittest -v tests.integration.test_db_pipeline.V118DatabaseBuil
 
 Only after both the Stage 2 structural RED and the focused database RED above
 are confirmed, create `db/pipeline.py` for the first time. Validate the source
-path, V1.17 hash, manifest binding, integrity, foreign keys, 45 V2 rows, and 497
-compatibility-view rows before creating the output parent or file. Map each
-failure to the specified input/database exception.
+path, V1.17 hash, manifest identity and binding, integrity, foreign keys, 45 V2
+rows, and 497 compatibility-view rows before creating the output parent or file.
+`baseline_manifest` is the existing frozen V1.17 formal manifest. For both
+profiles require its existing identity fields to be exactly
+`release_version="V1.17"`, `release_status="formal"`,
+`schema_version="complete-question-v1.0"`, and
+`release_model="transitional-dual-layer"`; no new `profile` field is added.
+For a V1.17 build require
+`baseline_v116_sqlite_sha256 == baseline_database.sha256`. For a V1.18 build
+require `artifact_sha256[Path(baseline_database.path).name] ==
+baseline_database.sha256`. Map each failure to the specified input/database
+exception.
+
+After this authority remediation passes independent review and before changing
+the paused production implementation, add two focused RED groups to
+`tests/integration/test_db_pipeline.py` and run them:
+
+1. V1.18 serialization projection: assert upstream `audit_passed`, original
+   `AuditedRecord`/`AuditedBatch` unchanged, persisted SQLite `published`, every
+   other source status rejected before output, and the V1.17 path unchanged.
+2. Manifest identity: with the correct SQLite digest, change
+   `release_version` to `V9.99`, change or remove `schema_version`,
+   `release_status`, or `release_model`, and remove or corrupt the required
+   profile-specific baseline binding. Every case must fail before any output
+   parent, temporary database, or output file exists.
+
+Both groups must fail for the missing production contract rather than import,
+fixture, or setup errors. Only after both RED groups are confirmed may the
+minimal production correction begin.
 
 - [ ] **Step 4: Implement the V1.18 transaction**
 
 Copy the baseline to a temporary database in the target parent, set `foreign_keys=ON` and `journal_mode=DELETE`, begin one immediate transaction, insert all typed rows and tags in stable order, rebuild taxonomy from ordered distinct values, update metadata/import run, set `user_version=118`, commit, check integrity/foreign keys, and run `VACUUM` exactly where the legacy profile requires it.
+
+Database retains no publication business authority. At the row-serialization
+boundary only, require each V1.18 upstream record to have exact
+`record_status="audit_passed"` and persist `"published"` solely as the frozen
+V1.18 historical compatibility projection. Do not mutate the input record or
+batch, do not accept another source status, do not reverse the mapping, and do
+not reuse this exception for V1.17 or any other stage/version.
 
 Use the exact `DB_TABLE_COLUMNS` order from the oracle as a named constant in `profiles.py`; every JSON-valued cell uses the approved canonical JSON serializer.
 

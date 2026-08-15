@@ -138,7 +138,7 @@ release → CandidateRelease → VerificationReport → FormalRelease
 
 ### 5.2 `joy_m2.db`
 
-单一职责是再次验证基线身份，并把已经决定发布语义的批次事务式应用到候选 SQLite。V1.18 消费 `AuditedBatch`；V1.17 消费 `V117ReleaseBatch`，不得自行创建或改写发布字段。它负责 schema、metadata、import run、`user_version`、兼容对象保留、integrity 和 foreign-key 检查。
+单一职责是再次验证基线身份，并把已经决定发布语义的批次事务式应用到候选 SQLite。V1.18 消费 `AuditedBatch`；V1.17 消费 `V117ReleaseBatch`。database 不拥有 publication business authority，也不得通用地创建或改写发布字段。唯一窄例外是 V1.18 frozen SQLite serialization：输入 record 必须已经精确为 `record_status="audit_passed"`，serializer 才把持久化列单向投影为 `record_status="published"`，以保持冻结 V1.18 SQLite byte-equivalence。该投影不是新的 publication decision，不修改 `AuditedRecord`、`AuditedBatch` 或 `AuditResult`，不得反向恢复 audit state，也不得用于 V1.17、未来版本、export、release orchestration 或 manifest business state。它负责 schema、metadata、import run、`user_version`、兼容对象保留、integrity 和 foreign-key 检查。
 
 它不重新解释审计规则，不生成派生文件、manifest 或 ZIP。
 
@@ -265,8 +265,10 @@ verify_database(path: Path, contract: DatabaseContract) -> VerificationReport
 
 `DatabaseBuildRequest` 对 V1.18 接受 `AuditedBatch`，对 V1.17 接受
 `V117ReleaseBatch`；同时接受冻结基线、当前 staging run 内的目标路径、
-`ReleaseSpec` 和 `DatabaseContract`。database 不得从 audit-stage 值创建
-发布字段。
+`ReleaseSpec` 和 `DatabaseContract`。database 不拥有 publication business
+authority。它只在 V1.18 frozen SQLite serialization boundary 接受上游精确
+`record_status="audit_passed"` 并持久化为 `"published"`；除此之外不得从
+audit-stage 值创建或改写发布字段。
 
 ### 7.4 export
 
@@ -466,12 +468,26 @@ audit 调用的失败证据输出位置必须由调用方显式提供，精确�
 ### 11.4 db
 
 - 基线哈希不符时零输出。
+- `baseline_manifest` 必须是现有冻结 V1.17 formal manifest，不得发明新的
+  profile 字段。其 identity 精确由现有字段
+  `release_version="V1.17"`、`release_status="formal"`、
+  `schema_version="complete-question-v1.0"` 和
+  `release_model="transitional-dual-layer"` 共同定义。V1.17 build 还必须要求
+  `baseline_v116_sqlite_sha256 == baseline_database.sha256`；V1.18 build 还必须
+  要求 `artifact_sha256[Path(baseline_database.path).name] ==
+  baseline_database.sha256`。错误、缺失或类型错误的 identity/binding 即使
+  database digest 正确也必须在创建 output parent、temporary database 或
+  output file 前拒绝。
 - V1.17 的 45 题和 Task 6 的 452 题逐字段等价。
 - 历史四表与 compatibility views 保留。
 - `user_version=118`、integrity `ok`、foreign-key 错误 0。
 - 事务失败不暴露候选数据库。
 - 重复主键、外键和 integrity 失败映射到指定领域异常。
-- V1.17 只接受 `V117ReleaseBatch`，V1.18 只接受 `AuditedBatch`；database 不创建或改写发布字段。
+- V1.17 只接受 `V117ReleaseBatch`，publication values 仍完全由 V1.17
+  transformer 决定；database 不得重新决定或改写 V1.17 publication semantics。
+- V1.18 只接受 `AuditedBatch`。原始 typed carriers 必须保持不变；仅 frozen
+  SQLite row serialization 可以把精确 `audit_passed` 单向投影为
+  `published`。任何其他 source status 必须拒绝，不得任意改写。
 
 ### 11.5 export
 
@@ -929,6 +945,8 @@ evidence 或历史 ZIP 常量混用。冻结 serializer 不得发明新 digest �
 | `AuditInputEvidence` 构造与 result ownership | 禁止 | **拥有** | 通过 result 消费 | 禁止 | 通过 result 消费 | 仅携带 result |
 | report/issues/status/统计 | 禁止 | **拥有** | 禁止 | 禁止 | 只消费 | 禁止 |
 | V1.17 历史发布转换 | 禁止 | 禁止 | **拥有** | 只消费 | 只消费 | 仅调用 |
+| publication business authority / 通用发布字段创建或改写 | 禁止 | 禁止 | **V1.17 only** | 禁止 | 禁止 | 禁止 |
+| V1.18 frozen SQLite `record_status` compatibility projection | 禁止 | 禁止 | 禁止 | **仅允许 `audit_passed` → `published` serialization** | 禁止 | 禁止 |
 | database 构建 | 禁止 | 禁止 | 禁止 | **拥有** | 禁止 | 仅调用 |
 | audit evidence JSON 编码/写入 | mapping only | semantics only | mapping only | 禁止 | **拥有** | 仅调用/收集 |
 | evidence manifest scalar 投影 | 禁止 | evidence source only | 禁止 | 禁止 | 禁止 | **只从 result 序列化** |
@@ -965,6 +983,8 @@ CandidateBuildRequest (explicit run_id and contracts)
   → internal require_passed() → V117ReleaseBatch
 → V1.18: require_passed() → AuditedBatch
 → build_database()
+  → V1.18 frozen SQLite serialization only: `audit_passed` → `published`
+    without mutating or reconstructing upstream typed state
 → export_database(database + audit_result + matching record_batch)
 → collect audit/database/export artifacts
 → release manifest serializer projects frozen scalars from AuditResult.input_evidence
