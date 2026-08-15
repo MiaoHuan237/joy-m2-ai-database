@@ -2009,6 +2009,8 @@ git commit -m "feat: add transactional database pipeline"
 ### Task 5: Implement Deterministic Database and Audit-Evidence Exports
 
 **Files:**
+- Modify: `src/joy_m2/models.py` (only the approved Export public carrier migration)
+- Modify: `tests/unit/test_pipeline_models.py` (only the corresponding model-contract tests)
 - Create: `src/joy_m2/export/formats.py`
 - Modify: `src/joy_m2/export/pipeline.py`
 - Modify: `src/joy_m2/export/__init__.py`
@@ -2020,7 +2022,74 @@ git commit -m "feat: add transactional database pipeline"
   current staging output directory.
 - Produces: `export_database(request) -> DerivedArtifacts` and `verify_exports(request) -> VerificationReport`.
 
-- [ ] **Step 1: Write failing serializer tests**
+This is the complete Task 5 modification scope; no other source, test, data,
+release, legacy, or documentation file is implicitly authorized. Task 5 owns
+implementation of the already-approved Export public carrier definitions in
+the design, not their redesign. It may add no convenience field or third batch
+carrier and must not alter any other public model contract.
+
+#### Phase A: Export Public Models RED -> GREEN
+
+- [ ] **Step 1: Write failing Export public-model contract tests**
+
+Modify only `tests/unit/test_pipeline_models.py`. Assert the exact field order,
+types, frozen behavior, runtime validation, and lack of defaults or extra fields
+for these approved migrations:
+
+```python
+@dataclass(frozen=True)
+class ExportContract:
+    profile: str
+    audit_records_filename: str
+    audit_report_filename: str
+    csv_filename: str
+    knowledge_markdown_filename: str
+    import_report_filename: str
+    project_state_filename: str
+    taxonomy_filename: str | None
+    expected_question_count: int
+    expected_missing_answer_count: int
+
+@dataclass(frozen=True)
+class ExportRequest:
+    database: DatabaseArtifact
+    audit_result: AuditResult
+    record_batch: AuditedBatch | V117ReleaseBatch
+    output_dir: Path
+    contract: ExportContract
+
+@dataclass(frozen=True)
+class DerivedArtifacts:
+    csv: ArtifactRef
+    knowledge_markdown: ArtifactRef
+    import_report: ArtifactRef
+    project_state: ArtifactRef
+    taxonomy: ArtifactRef | None
+    audit_records: ArtifactRef
+    audit_report: ArtifactRef
+```
+
+The `ExportRequest` tests must accept only the two approved batch types and must
+show that `audit_result` and `record_batch` are part of this one public carrier,
+not parallel arguments or digest/evidence fields. Do not modify `models.py` yet.
+Run the Public Models suite and require a real RED caused only by the old public
+carrier shapes. Import, setup, fixture, or unrelated failures are not valid RED.
+
+- [ ] **Step 2: Implement the minimal Export public-model migration**
+
+Only after the model RED is confirmed, minimally modify `src/joy_m2/models.py`
+to implement the three exact approved structures. Preserve existing path
+normalization, shared frozen/runtime-type rules, all existing field meanings,
+and the absence of independent input-evidence or digest fields.
+
+- [ ] **Step 3: Restore Public Models GREEN**
+
+Run `tests.unit.test_pipeline_models` and require all tests to pass before any
+Export behavior test or production Export implementation is created.
+
+#### Phase B: Export behavior RED -> GREEN
+
+- [ ] **Step 4: Write failing serializer tests**
 
 Assert canonical JSON bytes, evidence JSON bytes, CSV BOM/CRLF, LF-only text, and exactly one trailing newline:
 
@@ -2037,11 +2106,11 @@ $task8_python -m unittest -v tests.integration.test_export_pipeline.FormatContra
 
 Expected: FAIL because `formats.py` does not exist.
 
-- [ ] **Step 2: Implement exact format primitives**
+- [ ] **Step 5: Implement exact format primitives**
 
 Use `json.dumps(ensure_ascii=False, sort_keys=True, separators=(",", ":"))` for canonical JSON and `indent=2` plus one LF for evidence JSON. Open CSV with `encoding="utf-8-sig", newline=""` and set `lineterminator="\r\n"`. Normalize generated Markdown/report/state text to LF before writing and append exactly one final LF.
 
-- [ ] **Step 3: Write failing V1.18 export equivalence tests**
+- [ ] **Step 6: Write failing V1.18 export equivalence tests**
 
 Build a temporary V1.18 database through Task 4, retain the exact Task 3
 `AuditResult` and `AuditedBatch`, and export all V1.18 profile files. Compare
@@ -2057,7 +2126,7 @@ Assert export accepts no raw input digest parameter, returns no input-evidence
 carrier/scalar, and never rereads or rehashes candidate/baseline files. Frozen
 manifest projection assertions belong to Task 7 release orchestration below.
 
-- [ ] **Step 4: Implement `export_database`**
+- [ ] **Step 7: Implement `export_database`**
 
 Before opening an output, enforce the frozen count/order/direct-envelope
 relationship between `audit_result` and `record_batch`. Read only the supplied
@@ -2073,7 +2142,16 @@ independent digest scalars, or read manifest scalars backward. Leave manifest
 projection to release and keep exported artifact refs limited to generated
 outputs.
 
-- [ ] **Step 5: Implement `verify_exports`**
+The complete upstream authority must enter only through the single
+`ExportRequest`; `export_database()` must not accept `audit_result` or
+`record_batch` as extra positional, keyword-only, private, registry-backed, or
+otherwise parallel parameters. `DerivedArtifacts.audit_records` and
+`DerivedArtifacts.audit_report` describe only bytes actually generated by
+Export. Export may hash and size its generated outputs for those `ArtifactRef`
+values, but it must not recompute candidate/baseline evidence,
+`AuditInputEvidence`, audit statistics, or the V1.17 release decision.
+
+- [ ] **Step 8: Implement `verify_exports`**
 
 Return individual checks for expected file set, CSV BOM, CSV column/value
 equality, row count, Markdown unique headings, missing-answer markers, audit JSON
@@ -2081,7 +2159,7 @@ parseability, batch/report count and order agreement, and deterministic
 re-export hashes. Return FAIL for artifact mismatches and raise only when the
 verification cannot execute.
 
-- [ ] **Step 6: Add V1.17 export profile tests**
+- [ ] **Step 9: Add V1.17 export profile tests**
 
 Pass the exact original V1.17 `AuditResult` and Task 3A `V117ReleaseBatch`.
 Assert V1.17 CSV, knowledge Markdown, report, project state, approved JSON, and
@@ -2093,7 +2171,7 @@ Assert export accepts no independent candidate/database/ZIP digest argument,
 does not expose a parallel carrier, and does not read legacy
 `BASE_ZIP_SHA256`. V1.17 manifest mapping/oracle tests belong to Task 7.
 
-- [ ] **Step 7: Run export, database, and legacy tests**
+- [ ] **Step 10: Run export, database, and legacy tests**
 
 ```bash
 $task8_python -m unittest -v tests.integration.test_export_pipeline tests.integration.test_db_pipeline
@@ -2103,13 +2181,21 @@ $task8_python -m unittest -v tests.regression.test_task7_project_initialization
 
 Expected: PASS.
 
-- [ ] **Step 8: Commit deterministic exporters**
+- [ ] **Step 11: Commit deterministic exporters**
 
 ```bash
-git add src/joy_m2/export tests/integration/test_export_pipeline.py
+git add src/joy_m2/models.py \
+  tests/unit/test_pipeline_models.py \
+  src/joy_m2/export \
+  tests/integration/test_export_pipeline.py
 git diff --cached --check
 git commit -m "feat: add deterministic SQLite exports"
 ```
+
+Task 6 release primitives and later release orchestration remain blocked until
+this complete Task 5 public-model plus Export behavior change has passed
+independent review and been committed. Those later tasks consume the completed
+public carriers and must not repeat or assume ownership of this migration.
 
 ---
 

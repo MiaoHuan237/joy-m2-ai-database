@@ -1025,6 +1025,67 @@ CandidateBuildRequest (explicit run_id and contracts)
 消费；typed audit evidence export；最后才是 release orchestration 和端到端
 等价验证。任何一个提交都需要单独授权，本次文档提交不启动这些工作。
 
+#### Task 5 Export public carrier migration and implementation gate
+
+Task 5 is the implementation owner for the remaining approved public Export
+carrier migration in this design. This ownership is limited to implementing the
+already-frozen `ExportContract`, `ExportRequest`, and `DerivedArtifacts` field
+sets above; it does not authorize convenience fields, a parallel carrier, raw
+candidate inputs, or any change to audit, database, or V1.17 transformer
+authority.
+
+The complete and closed Task 5 implementation scope is exactly:
+
+1. `src/joy_m2/models.py`;
+2. `tests/unit/test_pipeline_models.py`;
+3. `src/joy_m2/export/formats.py`;
+4. `src/joy_m2/export/pipeline.py`;
+5. `src/joy_m2/export/__init__.py`;
+6. `tests/integration/test_export_pipeline.py`.
+
+No other file is implicitly authorized. In particular, Task 5 must first add
+`audit_records_filename` and `audit_report_filename` to `ExportContract` in the
+exact order defined above; add `audit_result` and
+`record_batch: AuditedBatch | V117ReleaseBatch` to the single public
+`ExportRequest`; and append `audit_records` and `audit_report` as `ArtifactRef`
+fields to `DerivedArtifacts` while preserving the order and meaning of all
+existing fields. Defaults, runtime validation, frozen semantics, and path
+normalization remain governed by the existing shared-model rules and the exact
+contracts in this design.
+
+Task 5 uses two mandatory TDD phases in this order:
+
+1. **Export Public Models RED -> GREEN.** Modify only
+   `tests/unit/test_pipeline_models.py` first and prove RED for the exact three
+   carrier migrations. The failure must be the old public carrier shape, not a
+   test, import, setup, or unrelated regression error. Only then minimally
+   modify `src/joy_m2/models.py` and restore the Public Models suite to GREEN.
+2. **Export behavior RED -> GREEN.** Only after the public models are GREEN may
+   Task 5 create `tests/integration/test_export_pipeline.py` and prove the
+   serializer/pipeline RED while Export production behavior is still absent.
+   Only then may it create `export/formats.py` and modify
+   `export/pipeline.py`/`export/__init__.py` for the minimal GREEN, followed by
+   the full regression and frozen-compatibility gates.
+
+The reverse sequence -- Export production followed by public models or tests --
+is forbidden. `audit_result` and `record_batch` must enter only through
+`export_database(request: ExportRequest) -> DerivedArtifacts`; they cannot be
+extra positional, keyword-only, private, or registry-supplied parameters. The
+approved `verify_exports(request: ExportVerificationRequest) ->
+VerificationReport` shape is unchanged.
+
+Task 5 does not change the serialization contracts in sections 9.2-9.4 or the
+authority rules in sections 11.5 and 16.3. `DerivedArtifacts.audit_records` and
+`DerivedArtifacts.audit_report` are references only to bytes actually generated
+by Export. Export may calculate SHA-256 and size for those output bytes, but it
+must not recompute candidate/baseline evidence, `AuditInputEvidence`, audit
+statistics, or a V1.17 release decision.
+
+Release orchestration remains blocked until the complete Task 5 public-model and
+Export behavior implementation has passed independent review and been committed.
+Release must consume these completed public carriers and must not repeat or own
+their migration.
+
 ### 16.5 Task 7 historical gate 的 Phase 2 迁移
 
 `tests/regression/test_task7_project_initialization.py` 中原
