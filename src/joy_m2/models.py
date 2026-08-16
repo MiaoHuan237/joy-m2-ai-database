@@ -615,6 +615,8 @@ class DatabaseArtifact:
 @dataclass(frozen=True)
 class ExportContract:
     profile: str
+    audit_records_filename: str
+    audit_report_filename: str
     csv_filename: str
     knowledge_markdown_filename: str
     import_report_filename: str
@@ -623,14 +625,72 @@ class ExportContract:
     expected_question_count: int
     expected_missing_answer_count: int
 
+    def __post_init__(self) -> None:
+        if type(self.profile) is not str or self.profile not in {"V1.17", "V1.18"}:
+            raise PipelineError("export profile must be V1.17 or V1.18")
+        for field_name in (
+            "audit_records_filename",
+            "audit_report_filename",
+            "csv_filename",
+            "knowledge_markdown_filename",
+            "import_report_filename",
+            "project_state_filename",
+        ):
+            if type(getattr(self, field_name)) is not str:
+                raise PipelineError(f"{field_name} must be a string")
+        if self.taxonomy_filename is not None and type(self.taxonomy_filename) is not str:
+            raise PipelineError("taxonomy_filename must be a string or None")
+        for field_name in (
+            "expected_question_count",
+            "expected_missing_answer_count",
+        ):
+            value = getattr(self, field_name)
+            if type(value) is not int or value < 0:
+                raise PipelineError(f"{field_name} must be a non-negative integer")
+        if self.expected_missing_answer_count > self.expected_question_count:
+            raise PipelineError(
+                "expected_missing_answer_count cannot exceed expected_question_count"
+            )
+
 
 @dataclass(frozen=True)
 class ExportRequest:
     database: DatabaseArtifact
+    audit_result: AuditResult
+    record_batch: AuditedBatch | V117ReleaseBatch
     output_dir: Path
     contract: ExportContract
 
     def __post_init__(self) -> None:
+        if type(self.database) is not DatabaseArtifact:
+            raise PipelineError("database must be a DatabaseArtifact")
+        if type(self.audit_result) is not AuditResult:
+            raise PipelineError("audit_result must be an AuditResult")
+        if type(self.record_batch) not in {AuditedBatch, V117ReleaseBatch}:
+            raise PipelineError("record_batch must be AuditedBatch or V117ReleaseBatch")
+        if not isinstance(self.output_dir, Path):
+            raise PipelineError("output_dir must be a Path")
+        if type(self.contract) is not ExportContract:
+            raise PipelineError("contract must be an ExportContract")
+
+        self.audit_result.require_passed()
+        profile = self.contract.profile
+        if self.database.release_spec.release_version != profile:
+            raise PipelineError("database release version must match export profile")
+        if self.audit_result.report.release_version != profile:
+            raise PipelineError("audit report release version must match export profile")
+        if profile == "V1.18":
+            if type(self.record_batch) is not AuditedBatch:
+                raise PipelineError("V1.18 export requires an AuditedBatch")
+            batch_records = self.record_batch.records
+        else:
+            if type(self.record_batch) is not V117ReleaseBatch:
+                raise PipelineError("V1.17 export requires a V117ReleaseBatch")
+            batch_records = tuple(
+                record.audited_record for record in self.record_batch.records
+            )
+        if batch_records != self.audit_result.records:
+            raise PipelineError("record_batch must match audit_result records and order")
         object.__setattr__(self, "output_dir", self.output_dir.resolve())
 
 
@@ -648,6 +708,22 @@ class DerivedArtifacts:
     import_report: ArtifactRef
     project_state: ArtifactRef
     taxonomy: ArtifactRef | None
+    audit_records: ArtifactRef
+    audit_report: ArtifactRef
+
+    def __post_init__(self) -> None:
+        for field_name in (
+            "csv",
+            "knowledge_markdown",
+            "import_report",
+            "project_state",
+            "audit_records",
+            "audit_report",
+        ):
+            if type(getattr(self, field_name)) is not ArtifactRef:
+                raise PipelineError(f"{field_name} must be an ArtifactRef")
+        if self.taxonomy is not None and type(self.taxonomy) is not ArtifactRef:
+            raise PipelineError("taxonomy must be an ArtifactRef or None")
 
 
 @dataclass(frozen=True)

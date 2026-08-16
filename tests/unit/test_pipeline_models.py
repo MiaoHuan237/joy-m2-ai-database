@@ -107,6 +107,37 @@ AUDITED_QUESTION_FIELDS = (
     "source_heading",
 )
 
+EXPORT_CONTRACT_FIELDS = (
+    "profile",
+    "audit_records_filename",
+    "audit_report_filename",
+    "csv_filename",
+    "knowledge_markdown_filename",
+    "import_report_filename",
+    "project_state_filename",
+    "taxonomy_filename",
+    "expected_question_count",
+    "expected_missing_answer_count",
+)
+
+EXPORT_REQUEST_FIELDS = (
+    "database",
+    "audit_result",
+    "record_batch",
+    "output_dir",
+    "contract",
+)
+
+DERIVED_ARTIFACT_FIELDS = (
+    "csv",
+    "knowledge_markdown",
+    "import_report",
+    "project_state",
+    "taxonomy",
+    "audit_records",
+    "audit_report",
+)
+
 EXACT_FIELD_CONTRACTS = {
     "ReleaseSpec": (
         "release_version",
@@ -220,25 +251,10 @@ EXACT_FIELD_CONTRACTS = {
         "contract",
     ),
     "DatabaseArtifact": ("database", "release_spec", "verification_report"),
-    "ExportContract": (
-        "profile",
-        "csv_filename",
-        "knowledge_markdown_filename",
-        "import_report_filename",
-        "project_state_filename",
-        "taxonomy_filename",
-        "expected_question_count",
-        "expected_missing_answer_count",
-    ),
-    "ExportRequest": ("database", "output_dir", "contract"),
+    "ExportContract": EXPORT_CONTRACT_FIELDS,
+    "ExportRequest": EXPORT_REQUEST_FIELDS,
     "ExportVerificationRequest": ("database", "artifacts", "contract"),
-    "DerivedArtifacts": (
-        "csv",
-        "knowledge_markdown",
-        "import_report",
-        "project_state",
-        "taxonomy",
-    ),
+    "DerivedArtifacts": DERIVED_ARTIFACT_FIELDS,
     "ReleaseContract": (
         "profile",
         "audit_records_filename",
@@ -515,14 +531,16 @@ def make_audit_result(
     )
 
 
-def make_release_spec(models):
-    return models.ReleaseSpec(
-        release_version="V1.19",
-        baseline_version="V1.18",
-        baseline_sqlite_sha256="b" * 64,
-        schema_version="complete-question-v1.0",
-        created_at="2026-08-09T12:00:00+08:00",
-    )
+def make_release_spec(models, **overrides):
+    values = {
+        "release_version": "V1.19",
+        "baseline_version": "V1.18",
+        "baseline_sqlite_sha256": "b" * 64,
+        "schema_version": "complete-question-v1.0",
+        "created_at": "2026-08-09T12:00:00+08:00",
+    }
+    values.update(overrides)
+    return models.ReleaseSpec(**values)
 
 
 def make_audit_contract(models, **overrides):
@@ -585,10 +603,15 @@ def make_release_contract(models, **overrides):
     return models.ReleaseContract(**values)
 
 
-def make_database_artifact(models):
+def make_database_artifact(models, release_version="V1.18"):
+    baseline_version = "V1.16" if release_version == "V1.17" else "V1.17"
     return models.DatabaseArtifact(
         database=make_artifact(models, "database.sqlite3"),
-        release_spec=make_release_spec(models),
+        release_spec=make_release_spec(
+            models,
+            release_version=release_version,
+            baseline_version=baseline_version,
+        ),
         verification_report=models.VerificationReport(
             status="PASS",
             checks=[models.VerificationCheck("database", True, "matched")],
@@ -599,6 +622,8 @@ def make_database_artifact(models):
 def make_export_contract(models):
     return models.ExportContract(
         profile="V1.18",
+        audit_records_filename="task6_audit_records.json",
+        audit_report_filename="task6_audit_report.json",
         csv_filename="questions.csv",
         knowledge_markdown_filename="knowledge.md",
         import_report_filename="import.md",
@@ -1343,6 +1368,312 @@ class V117ReleaseModelContractTests(unittest.TestCase):
             models.DatabaseBuildRequest(batch=object(), **common)
 
 
+class ExportPublicModelContractTests(unittest.TestCase):
+    def export_contract_values(self, **overrides):
+        values = {
+            "profile": "V1.18",
+            "audit_records_filename": "task6_audit_records.json",
+            "audit_report_filename": "task6_audit_report.json",
+            "csv_filename": "questions.csv",
+            "knowledge_markdown_filename": "knowledge.md",
+            "import_report_filename": "import.md",
+            "project_state_filename": "PROJECT_STATE.md",
+            "taxonomy_filename": None,
+            "expected_question_count": 497,
+            "expected_missing_answer_count": 34,
+        }
+        values.update(overrides)
+        return values
+
+    def make_v118_authority(self, models):
+        record = make_audited_record(
+            models,
+            make_audited_question(models, question_id="Q-V118"),
+        )
+        result = make_audit_result(models, records=[record])
+        return (
+            make_database_artifact(models),
+            result,
+            models.AuditedBatch(records=[record]),
+            models.ExportContract(**self.export_contract_values()),
+        )
+
+    def make_v117_authority(self, models):
+        question = make_audited_question(
+            models,
+            question_id="Q-V117",
+            publication_evidence=models.PublicationEvidence("audit_passed", "", None),
+            unresolved_issues=[],
+            schema_version="complete-question-v1.0-draft",
+        )
+        audited_record = make_audited_record(models, question, profile="V1.17")
+        result = make_audit_result(
+            models,
+            records=[audited_record],
+            report=make_audit_report(
+                models,
+                records=[audited_record],
+                release_version="V1.17",
+            ),
+        )
+        release_audited_record = models.AuditedRecord(
+            question=audited_record.question,
+            task4_compatibility=audited_record.task4_compatibility,
+            release_compatibility=None,
+        )
+        release_record = models.V117ReleaseRecord(
+            audited_record=release_audited_record,
+            publication_evidence=models.PublicationEvidence(
+                "published",
+                "approved_by_joy",
+                "2026-08-08T20:00:00+08:00",
+            ),
+            release_compatibility=models.ReleaseCompatibility("V1.17", True, 1),
+            schema_version="complete-question-v1.0",
+        )
+        return (
+            make_database_artifact(models, release_version="V1.17"),
+            result,
+            models.V117ReleaseBatch(records=[release_record]),
+            models.ExportContract(**self.export_contract_values(profile="V1.17")),
+        )
+
+    def test_export_contract_has_exact_required_fields_types_and_no_defaults(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        self.assertEqual(field_names(models.ExportContract), EXPORT_CONTRACT_FIELDS)
+        self.assertEqual(
+            typing.get_type_hints(models.ExportContract),
+            {
+                "profile": str,
+                "audit_records_filename": str,
+                "audit_report_filename": str,
+                "csv_filename": str,
+                "knowledge_markdown_filename": str,
+                "import_report_filename": str,
+                "project_state_filename": str,
+                "taxonomy_filename": str | None,
+                "expected_question_count": int,
+                "expected_missing_answer_count": int,
+            },
+        )
+        self.assertTrue(all(field.default is MISSING for field in fields(models.ExportContract)))
+        contract = models.ExportContract(**self.export_contract_values())
+        self.assertEqual(contract.audit_records_filename, "task6_audit_records.json")
+        self.assertEqual(contract.audit_report_filename, "task6_audit_report.json")
+        with self.assertRaises(FrozenInstanceError):
+            contract.audit_records_filename = "changed.json"
+
+    def test_export_contract_rejects_invalid_runtime_values(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        errors = import_required(self, "joy_m2.errors")
+        self.assertEqual(field_names(models.ExportContract), EXPORT_CONTRACT_FIELDS)
+
+        class StringSubclass(str):
+            pass
+
+        invalid = (
+            ("profile", "V1.19"),
+            ("profile", 118),
+            ("audit_records_filename", Path("audit.json")),
+            ("audit_report_filename", StringSubclass("audit-report.json")),
+            ("csv_filename", None),
+            ("knowledge_markdown_filename", 1),
+            ("import_report_filename", Path("import.md")),
+            ("project_state_filename", False),
+            ("taxonomy_filename", 1),
+            ("expected_question_count", True),
+            ("expected_question_count", -1),
+            ("expected_missing_answer_count", 1.0),
+            ("expected_missing_answer_count", -1),
+        )
+        for field_name, invalid_value in invalid:
+            with self.subTest(field=field_name, value=invalid_value):
+                with self.assertRaises(errors.PipelineError):
+                    models.ExportContract(
+                        **self.export_contract_values(**{field_name: invalid_value})
+                    )
+        with self.assertRaises(errors.PipelineError):
+            models.ExportContract(
+                **self.export_contract_values(
+                    expected_question_count=1,
+                    expected_missing_answer_count=2,
+                )
+            )
+
+    def test_export_request_is_the_exact_single_authority_carrier(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        self.assertEqual(field_names(models.ExportRequest), EXPORT_REQUEST_FIELDS)
+        self.assertEqual(
+            typing.get_type_hints(models.ExportRequest),
+            {
+                "database": models.DatabaseArtifact,
+                "audit_result": models.AuditResult,
+                "record_batch": models.AuditedBatch | models.V117ReleaseBatch,
+                "output_dir": Path,
+                "contract": models.ExportContract,
+            },
+        )
+        self.assertTrue(all(field.default is MISSING for field in fields(models.ExportRequest)))
+        for database, result, batch, contract in (
+            self.make_v118_authority(models),
+            self.make_v117_authority(models),
+        ):
+            with self.subTest(profile=contract.profile):
+                request = models.ExportRequest(
+                    database=database,
+                    audit_result=result,
+                    record_batch=batch,
+                    output_dir=Path("staging/exports"),
+                    contract=contract,
+                )
+                self.assertIs(request.database, database)
+                self.assertIs(request.audit_result, result)
+                self.assertIs(request.record_batch, batch)
+                self.assertEqual(request.output_dir, Path("staging/exports").resolve())
+                if type(batch) is models.V117ReleaseBatch:
+                    self.assertIsNot(batch.records[0].audited_record, result.records[0])
+                    self.assertEqual(batch.records[0].audited_record, result.records[0])
+                with self.assertRaises(FrozenInstanceError):
+                    request.record_batch = batch
+
+    def test_export_request_rejects_wrong_types_and_authority_combinations(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        errors = import_required(self, "joy_m2.errors")
+        self.assertEqual(field_names(models.ExportRequest), EXPORT_REQUEST_FIELDS)
+        database, result, batch, contract = self.make_v118_authority(models)
+        values = {
+            "database": database,
+            "audit_result": result,
+            "record_batch": batch,
+            "output_dir": Path("staging/exports"),
+            "contract": contract,
+        }
+        invalid_types = {
+            "database": object(),
+            "audit_result": object(),
+            "record_batch": object(),
+            "output_dir": "staging/exports",
+            "contract": object(),
+        }
+        for field_name, invalid_value in invalid_types.items():
+            with self.subTest(field=field_name):
+                with self.assertRaises(errors.PipelineError):
+                    models.ExportRequest(**(values | {field_name: invalid_value}))
+
+        blocker = models.AuditIssue(
+            "exact_duplicate", "blocker", "Q-V118", "question_text_original", "Q0"
+        )
+        failed_result = make_audit_result(
+            models,
+            records=result.records,
+            issues=[blocker],
+        )
+        with self.assertRaises(errors.PipelineError):
+            models.ExportRequest(**(values | {"audit_result": failed_result}))
+
+        other_record = make_audited_record(
+            models,
+            make_audited_question(models, question_id="Q-OTHER"),
+        )
+        with self.assertRaises(errors.PipelineError):
+            models.ExportRequest(
+                **(values | {"record_batch": models.AuditedBatch([other_record])})
+            )
+
+        two_record_result = make_audit_result(
+            models,
+            records=[result.records[0], other_record],
+        )
+        two_record_values = values | {
+            "audit_result": two_record_result,
+            "record_batch": models.AuditedBatch([result.records[0], other_record]),
+        }
+        with self.assertRaises(errors.PipelineError):
+            models.ExportRequest(
+                **(two_record_values | {"record_batch": models.AuditedBatch([result.records[0]])})
+            )
+        with self.assertRaises(errors.PipelineError):
+            models.ExportRequest(
+                **(
+                    two_record_values
+                    | {"record_batch": models.AuditedBatch([other_record, result.records[0]])}
+                )
+            )
+
+        wrong_report_profile = make_audit_result(
+            models,
+            records=result.records,
+            report=make_audit_report(
+                models,
+                records=result.records,
+                release_version="V1.17",
+            ),
+        )
+        with self.assertRaises(errors.PipelineError):
+            models.ExportRequest(
+                **(values | {"audit_result": wrong_report_profile})
+            )
+        with self.assertRaises(errors.PipelineError):
+            models.ExportRequest(
+                **(values | {"database": make_database_artifact(models, "V1.17")})
+            )
+
+        _, _, v117_batch, v117_contract = self.make_v117_authority(models)
+        with self.assertRaises(errors.PipelineError):
+            models.ExportRequest(
+                **(values | {"record_batch": v117_batch, "contract": v117_contract})
+            )
+
+    def test_derived_artifacts_has_exact_typed_fields_and_preserves_identity(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        self.assertEqual(field_names(models.DerivedArtifacts), DERIVED_ARTIFACT_FIELDS)
+        self.assertEqual(
+            typing.get_type_hints(models.DerivedArtifacts),
+            {
+                "csv": models.ArtifactRef,
+                "knowledge_markdown": models.ArtifactRef,
+                "import_report": models.ArtifactRef,
+                "project_state": models.ArtifactRef,
+                "taxonomy": models.ArtifactRef | None,
+                "audit_records": models.ArtifactRef,
+                "audit_report": models.ArtifactRef,
+            },
+        )
+        self.assertTrue(all(field.default is MISSING for field in fields(models.DerivedArtifacts)))
+        artifacts = {
+            "csv": make_artifact(models, "questions.csv"),
+            "knowledge_markdown": make_artifact(models, "knowledge.md"),
+            "import_report": make_artifact(models, "import.md"),
+            "project_state": make_artifact(models, "PROJECT_STATE.md"),
+            "taxonomy": None,
+            "audit_records": make_artifact(models, "task6_audit_records.json"),
+            "audit_report": make_artifact(models, "task6_audit_report.json"),
+        }
+        derived = models.DerivedArtifacts(**artifacts)
+        for field_name, artifact in artifacts.items():
+            self.assertIs(getattr(derived, field_name), artifact)
+        with self.assertRaises(FrozenInstanceError):
+            derived.audit_report = artifacts["audit_report"]
+
+    def test_derived_artifacts_rejects_non_artifact_values(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        errors = import_required(self, "joy_m2.errors")
+        self.assertEqual(field_names(models.DerivedArtifacts), DERIVED_ARTIFACT_FIELDS)
+        artifacts = {
+            "csv": make_artifact(models, "questions.csv"),
+            "knowledge_markdown": make_artifact(models, "knowledge.md"),
+            "import_report": make_artifact(models, "import.md"),
+            "project_state": make_artifact(models, "PROJECT_STATE.md"),
+            "taxonomy": make_artifact(models, "taxonomy.json"),
+            "audit_records": make_artifact(models, "task6_audit_records.json"),
+            "audit_report": make_artifact(models, "task6_audit_report.json"),
+        }
+        for field_name in artifacts:
+            with self.subTest(field=field_name):
+                with self.assertRaises(errors.PipelineError):
+                    models.DerivedArtifacts(**(artifacts | {field_name: object()}))
+
+
 class PipelineModelContractTests(unittest.TestCase):
     def test_all_33_approved_shared_value_types_are_public_dataclasses(self) -> None:
         models = import_required(self, "joy_m2.models")
@@ -1930,6 +2261,8 @@ class PipelineModelContractTests(unittest.TestCase):
         )
         export_request = models.ExportRequest(
             database=make_database_artifact(models),
+            audit_result=make_audit_result(models),
+            record_batch=models.AuditedBatch(records=[]),
             output_dir=Path("staging/exports"),
             contract=make_export_contract(models),
         )
@@ -1986,6 +2319,8 @@ class PipelineModelContractTests(unittest.TestCase):
             "knowledge_markdown": make_artifact(models, "knowledge.md"),
             "import_report": make_artifact(models, "import.md"),
             "project_state": make_artifact(models, "PROJECT_STATE.md"),
+            "audit_records": make_artifact(models, "task6_audit_records.json"),
+            "audit_report": make_artifact(models, "task6_audit_report.json"),
         }
         without_taxonomy = models.DerivedArtifacts(**common, taxonomy=None)
         taxonomy = make_artifact(models, "taxonomy.json")
