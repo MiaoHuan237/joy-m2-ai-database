@@ -2320,10 +2320,72 @@ Run the complete Public Models and related model/config regressions. Phase A
 must pass independent review and be committed before any Phase B Release test or
 production file changes.
 
-The complete Release implementation scope is exactly these two Phase A files
-plus the seven Phase B files listed in Tasks 6 and 7 below. No other source,
-test, data, release, legacy, frozen artifact, or documentation file is implicitly
-authorized.
+### ReleaseContract Public Models Checkpoint: Remove Duplicate Audit Filename Authority
+
+This separately reviewed checkpoint must complete before any Release Phase B
+test or production file changes.
+
+**Files:**
+- Modify: `src/joy_m2/models.py` (only the approved `ReleaseContract` field deletion)
+- Modify: `tests/unit/test_pipeline_models.py` (only the corresponding model-contract tests)
+
+The exact target is:
+
+```python
+@dataclass(frozen=True)
+class ReleaseContract:
+    profile: str
+    approval_filename: str
+    manifest_filename: str
+    sha256sums_filename: str
+    candidate_zip_filename: str
+    formal_zip_filename: str
+    archive_root: str
+    protected_artifact_kinds: tuple[str, ...]
+    manifest_required_fields: tuple[str, ...]
+    hash_excluded_kinds: tuple[str, ...]
+    zip_excluded_kinds: tuple[str, ...]
+```
+
+Only `audit_records_filename` and `audit_report_filename` are removed. Every
+remaining field keeps its exact order, annotation, required/no-default status,
+frozen behavior, and existing validation. `ExportContract` remains the sole
+owner of those two filename fields. Release later consumes
+`DerivedArtifacts.audit_records` and `DerivedArtifacts.audit_report` as produced
+by Export and may not rename them, infer filenames, or introduce a second
+filename contract. This checkpoint does not modify `CandidateBuildRequest`, any
+other public model, or the four approved Release APIs.
+
+- [ ] **Step R1: Write the ReleaseContract Public Models RED**
+
+Modify only `tests/unit/test_pipeline_models.py`. Lock the exact remaining
+fields and order, exact annotations and runtime types, no defaults, frozen
+behavior, preserved validation, and the absence of
+`audit_records_filename`/`audit_report_filename`. Also prove that
+`ExportContract` still has both fields and retains its existing authority.
+Run the complete Public Models suite and require a real RED caused only by the
+committed `ReleaseContract` still containing the duplicate fields. Do not modify
+`models.py` yet.
+
+- [ ] **Step R2: Implement the minimal ReleaseContract migration**
+
+Only after the valid RED, modify `src/joy_m2/models.py` solely to delete the two
+fields. Do not change any remaining field, validation, `CandidateBuildRequest`,
+Audit, Task 3A, Database, Export, or unrelated verification/release models.
+
+- [ ] **Step R3: Restore Public Models GREEN, review, and commit**
+
+Run the complete Public Models and model/config regressions, obtain independent
+review, and commit this two-file migration separately. Only after that commit may
+Release Phase B restart in the existing order: Task 6 primitives RED, candidate
+orchestration RED, approval/promotion RED, verification of all three RED groups,
+and then production.
+
+The combined unique Release file set remains these two Public Models files plus
+the seven Phase B files listed in Tasks 6 and 7 below. Phase B itself remains
+strictly limited to its seven files and may not modify the Public Models files.
+No other source, test, data, release, legacy, frozen artifact, or documentation
+file is implicitly authorized.
 
 ### Release Phase B / Task 6: Implement Hashing, Verification, and Deterministic Packaging
 

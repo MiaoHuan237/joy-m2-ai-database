@@ -1078,8 +1078,51 @@ V1.17 decision to fail, and every unsupported/future version—with or without a
 V1.17 decision—to fail at `CandidateBuildRequest` construction. No hidden,
 default, registry, filesystem, or private-parameter authority is permitted.
 
-Only after the Phase A commit has passed independent review may Phase B modify
-the existing Release implementation files: `release/hashing.py`,
+Before Phase B, a second separately reviewable Release Public Models checkpoint
+must close the already-frozen `ReleaseContract` migration from section 16.3. Its
+exact final structure is:
+
+```python
+@dataclass(frozen=True)
+class ReleaseContract:
+    profile: str
+    approval_filename: str
+    manifest_filename: str
+    sha256sums_filename: str
+    candidate_zip_filename: str
+    formal_zip_filename: str
+    archive_root: str
+    protected_artifact_kinds: tuple[str, ...]
+    manifest_required_fields: tuple[str, ...]
+    hash_excluded_kinds: tuple[str, ...]
+    zip_excluded_kinds: tuple[str, ...]
+```
+
+This checkpoint removes only `audit_records_filename` and
+`audit_report_filename`; every remaining field keeps the exact order, type,
+required/no-default status, frozen behavior, and validation already approved.
+`ExportContract` remains the sole owner of both audit artifact filenames, and
+Release later consumes `DerivedArtifacts.audit_records` and
+`DerivedArtifacts.audit_report` without renaming them or creating a parallel
+filename contract. `CandidateBuildRequest`, the four Release public APIs, and
+all other public models remain unchanged.
+
+The checkpoint's complete modification scope is exactly
+`src/joy_m2/models.py` and `tests/unit/test_pipeline_models.py`, limited to that
+`ReleaseContract` field deletion and its direct contract tests. It must first
+modify only `test_pipeline_models.py` and prove RED because the committed model
+still contains the two duplicate fields. Tests lock the exact remaining fields
+and order, exact annotations and runtime types, no defaults, frozen behavior,
+preserved remaining validation, absence of both removed fields, and continued
+presence of both fields on `ExportContract`. Only after that valid RED may
+`models.py` receive the minimal deletion, followed by the complete Public Models
+GREEN, independent review, and a separate commit. This migration may not be
+mixed into a Phase B production commit.
+
+Only after both the CandidateBuildRequest Phase A commit and this
+`ReleaseContract` checkpoint commit have passed independent review may Phase B
+restart its three RED groups and modify the existing Release implementation
+files: `release/hashing.py`,
 `release/packaging.py`, `release/verification.py`, `release/pipeline.py`,
 `release/__init__.py`, `test_release_primitives.py`, and
 `test_release_pipeline.py`. Phase B first establishes the Task 6 primitive RED,
@@ -1092,10 +1135,12 @@ Task 7 RED groups and the primitive RED are valid may production begin, in the
 minimum hashing -> packaging -> verification -> pipeline dependency order,
 followed by unified focused GREEN and complete regression/frozen-compatibility
 gates. The forbidden sequence is candidate RED -> `build_candidate()`
-implementation -> promotion RED. The combined Release scope is exactly these
-seven files plus the two Phase A Public Models files; no other file is implicitly
-authorized. Release consumes the already-reviewed Audit, Task 3A, Database, and
-Export implementations and does not reimplement their authority.
+implementation -> promotion RED. Phase B itself remains closed to exactly these
+seven files; the two Public Models files are authorized only in their separate
+pre-Phase-B checkpoints. Across all Release phases the unique file set remains
+those seven files plus the two Public Models files, and no other file is
+implicitly authorized. Release consumes the already-reviewed Audit, Task 3A,
+Database, and Export implementations and does not reimplement their authority.
 
 #### Task 5 Export public carrier migration and implementation gate
 
