@@ -320,8 +320,14 @@ glob、legacy path、环境变量或私有额外参数取得它。V1.17 必须�
 `transform_v117_release(result, request.v117_release_decision)`；不得硬编码、默认、
 从 audit status/config/manifest 推断或反向恢复该 decision。V1.18 的
 `v117_release_decision` 必须为 `None`，非 `None` 作为请求合同错误拒绝，且不得
-因此获得任何 publication decision authority。高层构建顺序固定，但每个低层
-阶段仍可单独测试。
+因此获得任何 publication decision authority。当前 maintained build contract
+只接受 `release_spec.release_version` 精确为 `"V1.17"` 或 `"V1.18"`；任何其他
+版本（包括 V1.19 及以后版本）都必须在公共模型边界拒绝。未来版本只有在新的
+version-specific design、public carrier、publication authority、TDD 和独立复审
+获批后才能支持；不得复用 `V117ReleaseDecision`、把它泛化为通用 publication
+decision、为未来版本提供默认 decision、从 audit status 推断 future publication，
+或在 release pipeline 中 fallback 到 V1.17 semantics。高层构建顺序固定，但
+每个低层阶段仍可单独测试。
 
 ## 8. staging 与正式发布边界
 
@@ -1066,19 +1072,30 @@ independent review, and commit that migration. Tests must lock exact field names
 and order, exact annotations and runtime types, frozen behavior, absence of
 defaults, rejection of invalid decision/manifest types, V1.17 requiring a
 `V117ReleaseDecision`, and V1.18 requiring `None`. Both profiles require an
-`ArtifactRef` baseline manifest. No hidden, default, registry, filesystem, or
-private-parameter authority is permitted.
+`ArtifactRef` baseline manifest. Tests additionally require V1.17 plus decision
+to pass, V1.17 plus `None` to fail, V1.18 plus `None` to pass, V1.18 plus a
+V1.17 decision to fail, and every unsupported/future version—with or without a
+V1.17 decision—to fail at `CandidateBuildRequest` construction. No hidden,
+default, registry, filesystem, or private-parameter authority is permitted.
 
 Only after the Phase A commit has passed independent review may Phase B modify
 the existing Release implementation files: `release/hashing.py`,
 `release/packaging.py`, `release/verification.py`, `release/pipeline.py`,
 `release/__init__.py`, `test_release_primitives.py`, and
-`test_release_pipeline.py`. Phase B runs Task 6 primitives RED -> GREEN before
-Task 7 candidate/promotion RED -> GREEN, then focused GREEN and the complete
-regression/frozen-compatibility gates. The combined Release scope is exactly
-these seven files plus the two Phase A Public Models files; no other file is
-implicitly authorized. Release consumes the already-reviewed Audit, Task 3A,
-Database, and Export implementations and does not reimplement their authority.
+`test_release_pipeline.py`. Phase B first establishes the Task 6 primitive RED,
+then the Task 7 candidate-orchestration RED, then the Task 7 approval/promotion
+RED, without modifying any Release production file. Candidate and promotion RED
+groups must each record collected/PASS/FAIL/ERROR counts, exit code, and precise
+missing-behavior reasons; dependency, import/setup, fixture, test-construction,
+environment, or upstream regression failures are invalid RED. Only after both
+Task 7 RED groups and the primitive RED are valid may production begin, in the
+minimum hashing -> packaging -> verification -> pipeline dependency order,
+followed by unified focused GREEN and complete regression/frozen-compatibility
+gates. The forbidden sequence is candidate RED -> `build_candidate()`
+implementation -> promotion RED. The combined Release scope is exactly these
+seven files plus the two Phase A Public Models files; no other file is implicitly
+authorized. Release consumes the already-reviewed Audit, Task 3A, Database, and
+Export implementations and does not reimplement their authority.
 
 #### Task 5 Export public carrier migration and implementation gate
 

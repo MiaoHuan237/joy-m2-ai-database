@@ -2286,7 +2286,13 @@ Every field is required and has no default. Both V1.17 and V1.18 require a typed
 `baseline_manifest: ArtifactRef`, which orchestration passes unchanged to
 `DatabaseBuildRequest`. V1.17 requires an exact `V117ReleaseDecision`; V1.18
 requires `v117_release_decision is None` and rejects a non-`None` value. Release
-must not hard-code or default the V1.17 decision, infer it from audit status,
+accepts only `release_spec.release_version in {"V1.17", "V1.18"}` in this
+maintained build contract and rejects every other/future version at public-model
+construction. A future version requires a separately approved version-specific
+design, public carrier, publication authority, TDD, and independent review; it
+must not reuse `V117ReleaseDecision`, treat it as generic authority, default a
+decision, infer publication from audit status, or fall back to V1.17 semantics.
+Release must not hard-code or default the V1.17 decision, infer it from audit status,
 config, environment, or manifest, recover it from serialized data, discover a
 manifest from the filesystem, look beside the baseline database, glob/search a
 legacy path, or use a private extra pipeline parameter. All orchestration
@@ -2297,8 +2303,11 @@ authority enters through this one public carrier.
 Modify only `tests/unit/test_pipeline_models.py`. Lock exact fields and order,
 exact annotations and runtime types, frozen behavior, lack of defaults, valid
 V1.17 and V1.18 combinations, invalid decision and manifest types, V1.17 missing
-decision, and V1.18 non-`None` decision. Require a real RED caused only by the
-old `CandidateBuildRequest` shape.
+decision, V1.18 non-`None` decision, unsupported/future version rejection, and
+future version plus `V117ReleaseDecision` rejection. Explicitly prove V1.17 plus
+decision and V1.18 plus `None` are accepted, while the inverse combinations are
+rejected. Require a real RED caused only by the old `CandidateBuildRequest`
+shape.
 
 - [ ] **Step A2: Implement the minimal carrier migration**
 
@@ -2340,51 +2349,27 @@ self.assertEqual(
 )
 ```
 
-- [ ] **Step 2: Implement hashing and manifest primitives**
-
-Expose:
-
-```python
-sha256_bytes(value: bytes) -> str
-sha256_file(path: Path) -> str
-write_manifest(path: Path, payload: Mapping[str, object]) -> ArtifactRef
-write_sha256sums(path: Path, protected: tuple[ArtifactRef, ...]) -> ArtifactRef
-```
-
-Sort by POSIX relative path. Reject duplicate paths, absolute archive paths, `..`, and attempts to include the sums file or ZIP in the protected set.
-
-- [ ] **Step 3: Write failing deterministic ZIP tests**
+- [ ] **Step 2: Write failing deterministic ZIP tests**
 
 Build the same payload twice and assert identical bytes. Inspect every `ZipInfo` for fixed timestamp, `create_system=3`, regular-file `0644`, DEFLATE, sorted names, no directory entries, and the contract root.
 
-- [ ] **Step 4: Implement deterministic ZIP creation**
-
-Use `ZipInfo(name, date_time=(1980, 1, 1, 0, 0, 0))`, `external_attr=0o100644 << 16`, `create_system=3`, `ZIP_DEFLATED`, and `compresslevel=9`. Read every source as bytes, iterate by sorted archive name, and reject undeclared or missing inputs before opening the output ZIP.
-
-- [ ] **Step 5: Write failing structured verification tests**
+- [ ] **Step 3: Write failing structured verification tests**
 
 Start with a valid temporary release, then separately corrupt a protected byte, remove a sums entry, add an undeclared file, alter CSV, remove a Markdown heading, and break the audit report. Assert each fully executable case returns `VerificationReport(status="FAIL")` with its own failed check. Assert missing manifest or malformed JSON raises the appropriate input exception.
 
-- [ ] **Step 6: Implement candidate and release verification**
-
-Combine independent checks for manifest artifacts, sums file-set closure, file hashes, SQLite integrity/foreign keys/counts, CSV exact mirror, Markdown coverage, audit count/status, baseline hash, package metadata, and extracted-package self-verification. Do not call builder functions from verifier code.
-
-- [ ] **Step 7: Run release primitive tests**
+- [ ] **Step 4: Validate the complete Release primitive RED without production**
 
 ```bash
 $task8_python -m unittest -v tests.unit.test_release_primitives
 $task8_python -m unittest -v tests.regression.test_task7_project_initialization
 ```
 
-Expected: PASS.
-
-- [ ] **Step 8: Commit release primitives**
-
-```bash
-git add src/joy_m2/release tests/unit/test_release_primitives.py
-git diff --cached --check
-git commit -m "feat: add deterministic release primitives"
-```
+Expected at this point: non-zero exit because the approved Release primitives are
+absent. Record collected, PASS, FAIL, ERROR, exit code, and each precise missing
+behavior. Import/setup, fixture, test-construction, environment, Public Models
+dependency, or upstream regression errors are not valid RED. Do not create or
+modify any Release production file; production remains blocked until both Task 7
+RED groups below are also valid.
 
 ---
 
@@ -2399,9 +2384,17 @@ git commit -m "feat: add deterministic release primitives"
 - Consumes: `CandidateBuildRequest`, low-level audit/db/export/release APIs, `ApprovalRecord`, `PipelineConfig`.
 - Produces: `build_candidate(request) -> CandidateRelease` and `promote_candidate(candidate, approval, config) -> FormalRelease`.
 
-- [ ] **Step 1: Write failing atomic candidate tests**
+- [ ] **Step 1: Write the complete candidate-orchestration RED group**
 
-In a temporary repository-shaped root, assert a successful build appears only at `data/staging/<run_id>/` after all checks pass. Inject an export failure and assert the valid run directory never appears; diagnostics may exist only under `.failed/<run_id>/` with a non-formal status.
+In a temporary repository-shaped root, cover `build_candidate(request)`, the
+typed `CandidateBuildRequest`, explicit V1.17 decision, V1.18 `None`, explicit
+`baseline_manifest`, Audit -> transformer -> Database -> Export ordering,
+manifest projection, exact artifact set, invalid upstream gating, existing run,
+ZIP and declared-output conflicts, and stale-candidate rejection. A successful
+build may appear only at `data/staging/<run_id>/` after every check passes.
+Inject an export failure and assert the valid run directory never appears;
+diagnostics may exist only under `.failed/<run_id>/` with a non-formal status.
+Do not modify any Release production file.
 
 Run:
 
@@ -2409,74 +2402,95 @@ Run:
 $task8_python -m unittest -v tests.integration.test_release_pipeline.CandidateBuildTests
 ```
 
-Expected: FAIL because `build_candidate` is absent.
+Expected: explicit assertion failures because `build_candidate` behavior is absent.
 
-- [ ] **Step 2: Implement `build_candidate` orchestration**
+- [ ] **Step 2: Write the complete approval/promotion RED group**
 
-Preflight every input and output conflict before creating the hidden temporary
-run. Require `request.baseline_manifest` to be the explicit typed expected
-identity and never discover it from the filesystem or baseline path. Call
-`audit_batch()` and retain its `AuditResult`. For V1.17 require and pass
-`request.v117_release_decision` directly to
-`transform_v117_release(result, request.v117_release_decision)`, which calls
-`require_passed()` internally; for V1.18 require that field to be `None`, call
-`result.require_passed()` in the orchestrator, and pass the `AuditedBatch`
-unchanged. Pass the resulting batch and the exact request baseline manifest to
-`build_database()`, then pass the database artifact, original audit result, and
-same matching batch to `export_database()`. Collect its audit evidence
-artifacts, then have the release manifest serializer read the original
-`AuditResult.input_evidence` and write only the frozen scalar projections before
-writing sums, building ZIP, and calling `verify_candidate()`. Release must not encode audit JSON,
-recompute report statistics, reread/rehash candidate or baseline, accept raw
-input digests, or reverse manifest scalars into evidence. If candidate
-status is not `PASS`, raise `PipelineError` with the failed check names;
-otherwise atomically rename the hidden run to `<run_id>`.
+Still without modifying any Release production file, cover
+`promote_candidate(...)`, approval binding, fresh candidate verification, wrong
+version, wrong candidate manifest hash, wrong approver, empty scope, invalid
+approval timestamp, failed or stale candidate rejection, existing formal-release
+conflict, atomic promotion, and frozen promotion semantics. Include successful
+synthetic promotion into a temporary `releases/V9.99/`, followed by rejection of
+a second promotion. Never exercise promotion against the real workspace.
 
-Catch `PipelineError` only to write deterministic failure metadata and relocate
-the known temporary run under `.failed/<request.run_id>`; re-raise the original
-typed exception. A failed audit may persist its existing `AuditResult` and
-`AuditReport` as diagnostics, but must not call transformer/database or produce
-normal candidate artifacts.
+- [ ] **Step 3: Validate both Task 7 RED groups before production**
 
-Add orchestration tests proving V1.17 calls transformer with the exact result,
-the exact request decision and no hidden/default authority; V1.18 requires a
-`None` decision and skips the transformer; both profiles pass the exact typed
-request baseline manifest to database without sibling lookup, glob, discovery,
-or private arguments; passed and failed results preserve request baseline evidence,
-preflight failures produce no result, manifest projections use only the result
-evidence plus the V1.17 historical ZIP constant, and no stage rereads or
-rehashes the two inputs after audit.
+Run candidate-orchestration and approval/promotion groups separately. For each,
+record collected, PASS, FAIL, ERROR, exit code, and precise missing Release
+behavior. Both groups must be importable and fail only because the corresponding
+Release behavior is absent. Public Models dependency, import/setup, fixture,
+test-construction, environment, or upstream Audit/Database/Export regression is
+not a valid RED. The Task 6 primitive RED must also remain valid.
+
+The forbidden sequence is:
+
+```text
+candidate RED -> implement build_candidate() -> promotion RED
+```
+
+The only approved Phase B sequence is:
+
+```text
+Task 6 primitive RED
+-> candidate orchestration RED
+-> approval/promotion RED
+-> verify both Task 7 RED groups (and retain the primitive RED)
+-> minimal Release production implementation
+-> unified focused GREEN
+-> full regression/frozen compatibility gates
+```
+
+Before this gate passes, do not create or modify `release/hashing.py`,
+`release/packaging.py`, `release/verification.py`, `release/pipeline.py`, or
+`release/__init__.py`.
+
+- [ ] **Step 4: Implement minimal Release production in dependency order**
+
+First expose the approved hashing and manifest primitives:
+
+```python
+sha256_bytes(value: bytes) -> str
+sha256_file(path: Path) -> str
+write_manifest(path: Path, payload: Mapping[str, object]) -> ArtifactRef
+write_sha256sums(path: Path, protected: tuple[ArtifactRef, ...]) -> ArtifactRef
+```
+
+Sort protected paths by POSIX relative path and reject duplicate paths, absolute
+archive paths, `..`, or inclusion of sums/ZIP. Implement deterministic ZIP with
+fixed 1980 timestamp, Unix regular-file `0644`, `create_system=3`, DEFLATE level
+9, sorted names and no directory entries. Implement independent candidate and
+release verification without calling builder functions. Only then implement
+`build_candidate` and `promote_candidate`.
+
+`build_candidate` preflights every input and output conflict before creating its
+hidden temporary run, consumes the exact request `baseline_manifest`, calls
+`audit_batch()`, passes the V1.17 request decision unchanged to
+`transform_v117_release()` or requires V1.18 `None`, then calls Database and
+Export with the matching typed values. It projects manifest scalars only from
+the original `AuditResult.input_evidence` plus the V1.17 historical ZIP constant,
+writes sums/ZIP, independently verifies, and atomically renames only a PASS
+candidate. It never re-encodes audit JSON, recomputes audit authority, rereads or
+rehashes candidate/baseline, accepts raw digest parameters, discovers the
+manifest, or reverses manifest scalars. A typed failure may create only the
+deterministic `.failed/<run_id>/` diagnostic and must re-raise the original
+exception without transformer/database/normal candidate output after failed
+audit.
 
 For V1.17 assert `task4_candidate_sha256` and
-`baseline_v116_sqlite_sha256` map from evidence, while
-`baseline_v116_zip_sha256` maps only from
-`V117_BASELINE_V116_ZIP_SHA256 ==
-"5f73f541f5c2da5bf3e5540daf7dbfb40566a339eaee79ef3e25d8eabd0404ae"`.
-Prove no legacy `BASE_ZIP_SHA256` access, no raw digest parameter, no new
-digest field/node, `PipelineError` for projection inconsistency, and historical
-oracle/byte-equivalence. For V1.18 assert only
-`baseline_v117_sqlite_sha256` maps from evidence, no V1.16 ZIP field appears,
-and frozen `verify_task6_release.py` passes.
+`baseline_v116_sqlite_sha256` come from evidence and
+`baseline_v116_zip_sha256` comes only from
+`V117_BASELINE_V116_ZIP_SHA256`. For V1.18 assert only
+`baseline_v117_sqlite_sha256`, no V1.16 ZIP field, and the frozen validator.
 
-- [ ] **Step 3: Add output conflict and stale candidate tests**
+`promote_candidate` requires fresh candidate PASS, validates version, exact
+candidate manifest hash, `approved_by == "Joy"`, timezone-aware timestamp and
+non-empty scope, builds only in an unexposed temporary release directory, writes
+approval/candidate bindings, regenerates sums/ZIP, independently verifies, and
+atomically renames. It never deletes or replaces an existing release and cleans
+up only its known temporary directory on failure.
 
-Assert existing run, ZIP, formal target, or declared artifact produces `OutputConflictError` without changing existing bytes. Mutate a candidate after its verification and assert both `verify_candidate` and promotion reject it.
-
-- [ ] **Step 4: Write failing approval tests**
-
-Cover wrong version, wrong candidate manifest hash, wrong approver, empty scope, invalid approval timestamp, failed candidate verification, and real V1.18 target protection. Every case must leave the temporary `releases/` tree unchanged.
-
-- [ ] **Step 5: Implement `promote_candidate`**
-
-Require a fresh candidate PASS; validate approval version, exact candidate manifest hash, `approved_by == "Joy"`, a timezone-aware ISO timestamp, and non-empty scope. Build a formal temporary directory inside `releases/`, add approval evidence, record both candidate-manifest and approval-evidence hashes in the formal manifest, regenerate sums and ZIP, independently verify, then atomically rename to the non-existing target.
-
-Never delete or replace an existing release. Clean up only the known unexposed promotion temporary directory on failure.
-
-- [ ] **Step 6: Add a successful promotion test in a temporary repository**
-
-Promote a small synthetic PASS candidate into a temporary `releases/V9.99/`. Assert the final directory appeared atomically, contains approval evidence and formal manifest binding, verifies PASS, and rejects a second promotion with `OutputConflictError`. Do not exercise promotion against the real workspace.
-
-- [ ] **Step 7: Run release integration and primitive tests**
+- [ ] **Step 5: Restore unified focused GREEN**
 
 ```bash
 $task8_python -m unittest -v tests.integration.test_release_pipeline tests.unit.test_release_primitives
@@ -2485,13 +2499,11 @@ $task8_python -m unittest -v tests.regression.test_task7_project_initialization
 
 Expected: PASS.
 
-- [ ] **Step 8: Commit safe orchestration**
+- [ ] **Step 6: Run full gates, obtain independent review, and commit**
 
-```bash
-git add src/joy_m2/release tests/integration/test_release_pipeline.py
-git diff --cached --check
-git commit -m "feat: add safe release orchestration"
-```
+Only after focused GREEN, run every approved maintained, legacy-oracle, Task 7,
+and V1.18 frozen-compatibility gate. After independent review, commit only the
+seven Phase B files.
 
 ---
 
