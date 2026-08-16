@@ -2260,7 +2260,63 @@ public carriers and must not repeat or assume ownership of this migration.
 
 ---
 
-### Task 6: Implement Hashing, Verification, and Deterministic Packaging
+### Release Phase A: Migrate the CandidateBuildRequest Public Carrier
+
+**Files:**
+- Modify: `src/joy_m2/models.py` (only the approved `CandidateBuildRequest` migration)
+- Modify: `tests/unit/test_pipeline_models.py` (only the corresponding model-contract tests)
+
+The exact target is:
+
+```python
+@dataclass(frozen=True)
+class CandidateBuildRequest:
+    config: PipelineConfig
+    run_id: str
+    release_spec: ReleaseSpec
+    audit_request: AuditRequest
+    v117_release_decision: V117ReleaseDecision | None
+    baseline_manifest: ArtifactRef
+    database_contract: DatabaseContract
+    export_contract: ExportContract
+    release_contract: ReleaseContract
+```
+
+Every field is required and has no default. Both V1.17 and V1.18 require a typed
+`baseline_manifest: ArtifactRef`, which orchestration passes unchanged to
+`DatabaseBuildRequest`. V1.17 requires an exact `V117ReleaseDecision`; V1.18
+requires `v117_release_decision is None` and rejects a non-`None` value. Release
+must not hard-code or default the V1.17 decision, infer it from audit status,
+config, environment, or manifest, recover it from serialized data, discover a
+manifest from the filesystem, look beside the baseline database, glob/search a
+legacy path, or use a private extra pipeline parameter. All orchestration
+authority enters through this one public carrier.
+
+- [ ] **Step A1: Write the Public Models RED**
+
+Modify only `tests/unit/test_pipeline_models.py`. Lock exact fields and order,
+exact annotations and runtime types, frozen behavior, lack of defaults, valid
+V1.17 and V1.18 combinations, invalid decision and manifest types, V1.17 missing
+decision, and V1.18 non-`None` decision. Require a real RED caused only by the
+old `CandidateBuildRequest` shape.
+
+- [ ] **Step A2: Implement the minimal carrier migration**
+
+Only after the valid RED, minimally modify `src/joy_m2/models.py`. Do not change
+Audit, Export, Database, Task 3A, or any unrelated public model.
+
+- [ ] **Step A3: Restore Public Models GREEN, review, and commit**
+
+Run the complete Public Models and related model/config regressions. Phase A
+must pass independent review and be committed before any Phase B Release test or
+production file changes.
+
+The complete Release implementation scope is exactly these two Phase A files
+plus the seven Phase B files listed in Tasks 6 and 7 below. No other source,
+test, data, release, legacy, frozen artifact, or documentation file is implicitly
+authorized.
+
+### Release Phase B / Task 6: Implement Hashing, Verification, and Deterministic Packaging
 
 **Files:**
 - Create: `src/joy_m2/release/hashing.py`
@@ -2332,7 +2388,7 @@ git commit -m "feat: add deterministic release primitives"
 
 ---
 
-### Task 7: Implement Atomic Candidate Builds and Approval-Bound Promotion
+### Release Phase B / Task 7: Implement Atomic Candidate Builds and Approval-Bound Promotion
 
 **Files:**
 - Modify: `src/joy_m2/release/pipeline.py`
@@ -2358,10 +2414,14 @@ Expected: FAIL because `build_candidate` is absent.
 - [ ] **Step 2: Implement `build_candidate` orchestration**
 
 Preflight every input and output conflict before creating the hidden temporary
-run. Call `audit_batch()` and retain its `AuditResult`. For V1.17 pass that
-result directly to `transform_v117_release(result, decision)`, which calls
-`require_passed()` internally; for V1.18 call `result.require_passed()` in the
-orchestrator and pass the `AuditedBatch` unchanged. Pass the resulting batch to
+run. Require `request.baseline_manifest` to be the explicit typed expected
+identity and never discover it from the filesystem or baseline path. Call
+`audit_batch()` and retain its `AuditResult`. For V1.17 require and pass
+`request.v117_release_decision` directly to
+`transform_v117_release(result, request.v117_release_decision)`, which calls
+`require_passed()` internally; for V1.18 require that field to be `None`, call
+`result.require_passed()` in the orchestrator, and pass the `AuditedBatch`
+unchanged. Pass the resulting batch and the exact request baseline manifest to
 `build_database()`, then pass the database artifact, original audit result, and
 same matching batch to `export_database()`. Collect its audit evidence
 artifacts, then have the release manifest serializer read the original
@@ -2379,7 +2439,10 @@ typed exception. A failed audit may persist its existing `AuditResult` and
 normal candidate artifacts.
 
 Add orchestration tests proving V1.17 calls transformer with the exact result,
-V1.18 skips it, passed and failed results preserve request baseline evidence,
+the exact request decision and no hidden/default authority; V1.18 requires a
+`None` decision and skips the transformer; both profiles pass the exact typed
+request baseline manifest to database without sibling lookup, glob, discovery,
+or private arguments; passed and failed results preserve request baseline evidence,
 preflight failures produce no result, manifest projections use only the result
 evidence plus the V1.17 historical ZIP constant, and no stage rereads or
 rehashes the two inputs after audit.

@@ -296,7 +296,32 @@ promote_candidate(
 ) -> FormalRelease
 ```
 
-`CandidateBuildRequest` 包含配置、run ID、`ReleaseSpec`、audit/db/export/release contracts 和所需输入。高层构建顺序固定，但每个低层阶段仍可单独测试。
+`CandidateBuildRequest` 的最终公共结构精确为：
+
+```python
+@dataclass(frozen=True)
+class CandidateBuildRequest:
+    config: PipelineConfig
+    run_id: str
+    release_spec: ReleaseSpec
+    audit_request: AuditRequest
+    v117_release_decision: V117ReleaseDecision | None
+    baseline_manifest: ArtifactRef
+    database_contract: DatabaseContract
+    export_contract: ExportContract
+    release_contract: ReleaseContract
+```
+
+所有字段均无默认值。`baseline_manifest` 对 V1.17 和 V1.18 都是必需的
+typed expected identity，并原样进入 `DatabaseBuildRequest`；release 不得根据
+baseline database path 查找 sibling manifest，也不得使用 filesystem discovery、
+glob、legacy path、环境变量或私有额外参数取得它。V1.17 必须显式提供精确的
+`V117ReleaseDecision`，并由 orchestration 原样传给
+`transform_v117_release(result, request.v117_release_decision)`；不得硬编码、默认、
+从 audit status/config/manifest 推断或反向恢复该 decision。V1.18 的
+`v117_release_decision` 必须为 `None`，非 `None` 作为请求合同错误拒绝，且不得
+因此获得任何 publication decision authority。高层构建顺序固定，但每个低层
+阶段仍可单独测试。
 
 ## 8. staging 与正式发布边界
 
@@ -994,7 +1019,7 @@ export artifacts in manifest and verification. CSV、Markdown 等数据库派生
 成功路径固定为：
 
 ```text
-CandidateBuildRequest (explicit run_id and contracts)
+CandidateBuildRequest (explicit run_id, V1.17 decision-or-None, baseline manifest, and contracts)
 → AuditRequest (candidate JSON + baseline SQLite + asset root)
 → audit/pipeline preflight and JSON decoding
 → audit/profiles exact record parsing
@@ -1024,6 +1049,36 @@ CandidateBuildRequest (explicit run_id and contracts)
 测试；JSON-backed audit profiles/pipeline；V1.17 transformer；database batch
 消费；typed audit evidence export；最后才是 release orchestration 和端到端
 等价验证。任何一个提交都需要单独授权，本次文档提交不启动这些工作。
+
+#### Release public carrier migration and implementation gate
+
+Release implementation begins with a separately reviewable Public Models phase.
+Its complete modification scope is limited to `src/joy_m2/models.py` and
+`tests/unit/test_pipeline_models.py`, and only to the exact
+`CandidateBuildRequest` migration defined in section 7.5. It may not modify any
+Audit, Export, Database, Task 3A, or unrelated shared carrier.
+
+Phase A must follow this exact TDD sequence: first modify only
+`test_pipeline_models.py` and prove RED because the old carrier cannot express
+the explicit V1.17 decision and typed baseline manifest; only then minimally
+modify `models.py`, restore the complete Public Models suite to GREEN, obtain an
+independent review, and commit that migration. Tests must lock exact field names
+and order, exact annotations and runtime types, frozen behavior, absence of
+defaults, rejection of invalid decision/manifest types, V1.17 requiring a
+`V117ReleaseDecision`, and V1.18 requiring `None`. Both profiles require an
+`ArtifactRef` baseline manifest. No hidden, default, registry, filesystem, or
+private-parameter authority is permitted.
+
+Only after the Phase A commit has passed independent review may Phase B modify
+the existing Release implementation files: `release/hashing.py`,
+`release/packaging.py`, `release/verification.py`, `release/pipeline.py`,
+`release/__init__.py`, `test_release_primitives.py`, and
+`test_release_pipeline.py`. Phase B runs Task 6 primitives RED -> GREEN before
+Task 7 candidate/promotion RED -> GREEN, then focused GREEN and the complete
+regression/frozen-compatibility gates. The combined Release scope is exactly
+these seven files plus the two Phase A Public Models files; no other file is
+implicitly authorized. Release consumes the already-reviewed Audit, Task 3A,
+Database, and Export implementations and does not reimplement their authority.
 
 #### Task 5 Export public carrier migration and implementation gate
 
