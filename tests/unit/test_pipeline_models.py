@@ -138,6 +138,20 @@ DERIVED_ARTIFACT_FIELDS = (
     "audit_report",
 )
 
+RELEASE_CONTRACT_FIELDS = (
+    "profile",
+    "approval_filename",
+    "manifest_filename",
+    "sha256sums_filename",
+    "candidate_zip_filename",
+    "formal_zip_filename",
+    "archive_root",
+    "protected_artifact_kinds",
+    "manifest_required_fields",
+    "hash_excluded_kinds",
+    "zip_excluded_kinds",
+)
+
 EXACT_FIELD_CONTRACTS = {
     "ReleaseSpec": (
         "release_version",
@@ -255,21 +269,7 @@ EXACT_FIELD_CONTRACTS = {
     "ExportRequest": EXPORT_REQUEST_FIELDS,
     "ExportVerificationRequest": ("database", "artifacts", "contract"),
     "DerivedArtifacts": DERIVED_ARTIFACT_FIELDS,
-    "ReleaseContract": (
-        "profile",
-        "audit_records_filename",
-        "audit_report_filename",
-        "approval_filename",
-        "manifest_filename",
-        "sha256sums_filename",
-        "candidate_zip_filename",
-        "formal_zip_filename",
-        "archive_root",
-        "protected_artifact_kinds",
-        "manifest_required_fields",
-        "hash_excluded_kinds",
-        "zip_excluded_kinds",
-    ),
+    "ReleaseContract": RELEASE_CONTRACT_FIELDS,
     "CandidateBuildRequest": (
         "config",
         "run_id",
@@ -588,8 +588,6 @@ def make_database_contract(models, **overrides):
 def make_release_contract(models, **overrides):
     values = {
         "profile": "V1.18",
-        "audit_records_filename": "audited.json",
-        "audit_report_filename": "audit-report.json",
         "approval_filename": "approval.json",
         "manifest_filename": "manifest.json",
         "sha256sums_filename": "SHA256SUMS.txt",
@@ -1843,6 +1841,76 @@ class ExportPublicModelContractTests(unittest.TestCase):
             with self.subTest(field=field_name):
                 with self.assertRaises(errors.PipelineError):
                     models.DerivedArtifacts(**(artifacts | {field_name: object()}))
+
+
+class ReleaseContractMigrationTests(unittest.TestCase):
+    def test_release_contract_has_only_the_exact_remaining_required_fields(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        value_type = models.ReleaseContract
+        self.assertEqual(field_names(value_type), RELEASE_CONTRACT_FIELDS)
+        self.assertEqual(
+            typing.get_type_hints(value_type),
+            {
+                "profile": str,
+                "approval_filename": str,
+                "manifest_filename": str,
+                "sha256sums_filename": str,
+                "candidate_zip_filename": str,
+                "formal_zip_filename": str,
+                "archive_root": str,
+                "protected_artifact_kinds": tuple[str, ...],
+                "manifest_required_fields": tuple[str, ...],
+                "hash_excluded_kinds": tuple[str, ...],
+                "zip_excluded_kinds": tuple[str, ...],
+            },
+        )
+        self.assertTrue(value_type.__dataclass_params__.frozen)
+        for field in fields(value_type):
+            with self.subTest(field=field.name):
+                self.assertIs(field.default, MISSING)
+                self.assertIs(field.default_factory, MISSING)
+
+    def test_release_contract_preserves_existing_tuple_normalization(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        protected = ["database", "csv"]
+        required = ["release_version", "artifacts"]
+        hash_excluded = ["sha256sums", "zip"]
+        zip_excluded = ["zip"]
+        contract = make_release_contract(
+            models,
+            protected_artifact_kinds=protected,
+            manifest_required_fields=required,
+            hash_excluded_kinds=hash_excluded,
+            zip_excluded_kinds=zip_excluded,
+        )
+        protected.append("late")
+        required.append("late")
+        hash_excluded.append("late")
+        zip_excluded.append("late")
+        self.assertEqual(contract.protected_artifact_kinds, ("database", "csv"))
+        self.assertEqual(
+            contract.manifest_required_fields,
+            ("release_version", "artifacts"),
+        )
+        self.assertEqual(contract.hash_excluded_kinds, ("sha256sums", "zip"))
+        self.assertEqual(contract.zip_excluded_kinds, ("zip",))
+        with self.assertRaises(FrozenInstanceError):
+            contract.archive_root = "changed"
+
+    def test_export_contract_retains_the_two_audit_filename_fields(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        self.assertEqual(field_names(models.ExportContract), EXPORT_CONTRACT_FIELDS)
+        self.assertEqual(
+            typing.get_type_hints(models.ExportContract)["audit_records_filename"],
+            str,
+        )
+        self.assertEqual(
+            typing.get_type_hints(models.ExportContract)["audit_report_filename"],
+            str,
+        )
+        contract = make_export_contract(models)
+        self.assertEqual(contract.audit_records_filename, "task6_audit_records.json")
+        self.assertEqual(contract.audit_report_filename, "task6_audit_report.json")
 
 
 class PipelineModelContractTests(unittest.TestCase):

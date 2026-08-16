@@ -729,8 +729,6 @@ class DerivedArtifacts:
 @dataclass(frozen=True)
 class ReleaseContract:
     profile: str
-    audit_records_filename: str
-    audit_report_filename: str
     approval_filename: str
     manifest_filename: str
     sha256sums_filename: str
