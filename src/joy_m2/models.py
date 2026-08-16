@@ -763,9 +763,35 @@ class CandidateBuildRequest:
     run_id: str
     release_spec: ReleaseSpec
     audit_request: AuditRequest
+    v117_release_decision: V117ReleaseDecision | None
+    baseline_manifest: ArtifactRef
     database_contract: DatabaseContract
     export_contract: ExportContract
     release_contract: ReleaseContract
+
+    def __post_init__(self) -> None:
+        expected_types = (
+            ("config", _config.PipelineConfig),
+            ("run_id", str),
+            ("release_spec", ReleaseSpec),
+            ("audit_request", AuditRequest),
+            ("baseline_manifest", ArtifactRef),
+            ("database_contract", DatabaseContract),
+            ("export_contract", ExportContract),
+            ("release_contract", ReleaseContract),
+        )
+        for field_name, value_type in expected_types:
+            if type(getattr(self, field_name)) is not value_type:
+                raise PipelineError(f"{field_name} must be a {value_type.__name__}")
+        if self.release_spec.release_version not in {"V1.17", "V1.18"}:
+            raise PipelineError("release_version must be V1.17 or V1.18")
+        if self.release_spec.release_version == "V1.17":
+            if type(self.v117_release_decision) is not V117ReleaseDecision:
+                raise PipelineError(
+                    "V1.17 requires an explicit V117ReleaseDecision"
+                )
+        elif self.v117_release_decision is not None:
+            raise PipelineError("V1.18 requires v117_release_decision to be None")
 
 
 @dataclass(frozen=True)

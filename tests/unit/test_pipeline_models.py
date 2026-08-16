@@ -275,6 +275,8 @@ EXACT_FIELD_CONTRACTS = {
         "run_id",
         "release_spec",
         "audit_request",
+        "v117_release_decision",
+        "baseline_manifest",
         "database_contract",
         "export_contract",
         "release_contract",
@@ -1366,6 +1368,175 @@ class V117ReleaseModelContractTests(unittest.TestCase):
         self.assertIs(models.DatabaseBuildRequest(batch=release_batch, **common).batch, release_batch)
         with self.assertRaises(errors.PipelineError):
             models.DatabaseBuildRequest(batch=object(), **common)
+
+
+class CandidateBuildRequestContractTests(unittest.TestCase):
+    def make_decision(self, models):
+        return models.V117ReleaseDecision(
+            formal_release_version="V1.17",
+            selectable=True,
+            record_status="published",
+            joy_approval="approved_by_joy",
+            approved_at="2026-08-08T20:00:00+08:00",
+            schema_version="complete-question-v1.0",
+        )
+
+    def request_values(self, models, release_version, decision):
+        config = import_required(self, "joy_m2.config")
+        audit_profile = (
+            release_version
+            if release_version in {"V1.17", "V1.18"}
+            else "V1.18"
+        )
+        return {
+            "config": config.PipelineConfig(ROOT),
+            "run_id": "release-phase-a",
+            "release_spec": make_release_spec(
+                models,
+                release_version=release_version,
+                baseline_version="V1.16" if release_version == "V1.17" else "V1.17",
+            ),
+            "audit_request": models.AuditRequest(
+                candidate_path=Path("candidate.json"),
+                baseline_database=make_artifact(models, "baseline.sqlite3"),
+                asset_root=Path("assets"),
+                contract=make_audit_contract(
+                    models,
+                    profile=audit_profile,
+                    release_version=audit_profile,
+                ),
+                selected_source_ids=[],
+            ),
+            "v117_release_decision": decision,
+            "baseline_manifest": make_artifact(models, "manifest.json"),
+            "database_contract": make_database_contract(models, profile=audit_profile),
+            "export_contract": make_export_contract(models),
+            "release_contract": make_release_contract(models, profile=audit_profile),
+        }
+
+    def test_candidate_build_request_has_exact_required_typed_fields(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        config = import_required(self, "joy_m2.config")
+        value_type = models.CandidateBuildRequest
+        self.assertEqual(
+            field_names(value_type),
+            (
+                "config",
+                "run_id",
+                "release_spec",
+                "audit_request",
+                "v117_release_decision",
+                "baseline_manifest",
+                "database_contract",
+                "export_contract",
+                "release_contract",
+            ),
+        )
+        self.assertEqual(
+            typing.get_type_hints(value_type),
+            {
+                "config": config.PipelineConfig,
+                "run_id": str,
+                "release_spec": models.ReleaseSpec,
+                "audit_request": models.AuditRequest,
+                "v117_release_decision": models.V117ReleaseDecision | None,
+                "baseline_manifest": models.ArtifactRef,
+                "database_contract": models.DatabaseContract,
+                "export_contract": models.ExportContract,
+                "release_contract": models.ReleaseContract,
+            },
+        )
+        for field in fields(value_type):
+            with self.subTest(field=field.name):
+                self.assertIs(field.default, MISSING)
+                self.assertIs(field.default_factory, MISSING)
+
+    def test_candidate_build_request_accepts_only_the_two_version_decision_pairs(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        errors = import_required(self, "joy_m2.errors")
+        decision = self.make_decision(models)
+        v117 = models.CandidateBuildRequest(
+            **self.request_values(models, "V1.17", decision)
+        )
+        v118 = models.CandidateBuildRequest(
+            **self.request_values(models, "V1.18", None)
+        )
+        self.assertIs(v117.v117_release_decision, decision)
+        self.assertIsNone(v118.v117_release_decision)
+        with self.assertRaises(FrozenInstanceError):
+            v117.run_id = "changed"
+        with self.assertRaises(errors.PipelineError):
+            models.CandidateBuildRequest(
+                **self.request_values(models, "V1.17", None)
+            )
+        with self.assertRaises(errors.PipelineError):
+            models.CandidateBuildRequest(
+                **self.request_values(models, "V1.17", object())
+            )
+        with self.assertRaises(errors.PipelineError):
+            models.CandidateBuildRequest(
+                **self.request_values(models, "V1.18", decision)
+            )
+
+    def test_candidate_build_request_rejects_every_unsupported_version(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        errors = import_required(self, "joy_m2.errors")
+        decision = self.make_decision(models)
+        for release_version in ("V1.16", "V1.19", "V2.0", "future"):
+            for supplied_decision in (None, decision):
+                with self.subTest(
+                    release_version=release_version,
+                    supplied_decision=supplied_decision is not None,
+                ):
+                    with self.assertRaises(errors.PipelineError):
+                        models.CandidateBuildRequest(
+                            **self.request_values(
+                                models,
+                                release_version,
+                                supplied_decision,
+                            )
+                        )
+
+    def test_candidate_build_request_requires_an_explicit_artifact_manifest(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        errors = import_required(self, "joy_m2.errors")
+        values = self.request_values(models, "V1.18", None)
+        manifest = values["baseline_manifest"]
+        request = models.CandidateBuildRequest(**values)
+        self.assertIs(request.baseline_manifest, manifest)
+        for invalid in (Path("manifest.json"), "manifest.json", object(), None):
+            with self.subTest(invalid_type=type(invalid).__name__):
+                with self.assertRaises(errors.PipelineError):
+                    models.CandidateBuildRequest(
+                        **{**values, "baseline_manifest": invalid}
+                    )
+
+    def test_candidate_build_request_rejects_wrong_runtime_types_and_hidden_defaults(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        errors = import_required(self, "joy_m2.errors")
+        values = self.request_values(models, "V1.18", None)
+        invalid_values = {
+            "config": object(),
+            "run_id": Path("run"),
+            "release_spec": object(),
+            "audit_request": object(),
+            "database_contract": object(),
+            "export_contract": object(),
+            "release_contract": object(),
+        }
+        for field_name, invalid in invalid_values.items():
+            with self.subTest(field=field_name):
+                with self.assertRaises(errors.PipelineError):
+                    models.CandidateBuildRequest(
+                        **{**values, field_name: invalid}
+                    )
+        for omitted in ("v117_release_decision", "baseline_manifest"):
+            with self.subTest(omitted=omitted):
+                incomplete = {
+                    name: value for name, value in values.items() if name != omitted
+                }
+                with self.assertRaises(TypeError):
+                    models.CandidateBuildRequest(**incomplete)
 
 
 class ExportPublicModelContractTests(unittest.TestCase):
