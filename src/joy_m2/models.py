@@ -796,13 +796,30 @@ class CandidateBuildRequest:
 class CandidateRelease:
     run_id: str
     release_version: str
+    release_contract: ReleaseContract
     candidate_manifest_sha256: str
     verification_report: VerificationReport
     artifacts: tuple[ArtifactRef, ...]
     candidate_zip: ArtifactRef
 
     def __post_init__(self) -> None:
-        object.__setattr__(self, "artifacts", tuple(self.artifacts))
+        expected_types = (
+            ("run_id", str),
+            ("release_version", str),
+            ("release_contract", ReleaseContract),
+            ("candidate_manifest_sha256", str),
+            ("verification_report", VerificationReport),
+            ("candidate_zip", ArtifactRef),
+        )
+        for field_name, value_type in expected_types:
+            if type(getattr(self, field_name)) is not value_type:
+                raise PipelineError(f"{field_name} must be a {value_type.__name__}")
+        if type(self.artifacts) not in {list, tuple}:
+            raise PipelineError("artifacts must be a list or tuple of ArtifactRef values")
+        artifacts = tuple(self.artifacts)
+        if any(type(artifact) is not ArtifactRef for artifact in artifacts):
+            raise PipelineError("artifacts must contain only ArtifactRef values")
+        object.__setattr__(self, "artifacts", artifacts)
 
 
 @dataclass(frozen=True)

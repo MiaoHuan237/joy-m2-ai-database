@@ -152,6 +152,16 @@ RELEASE_CONTRACT_FIELDS = (
     "zip_excluded_kinds",
 )
 
+CANDIDATE_RELEASE_FIELDS = (
+    "run_id",
+    "release_version",
+    "release_contract",
+    "candidate_manifest_sha256",
+    "verification_report",
+    "artifacts",
+    "candidate_zip",
+)
+
 EXACT_FIELD_CONTRACTS = {
     "ReleaseSpec": (
         "release_version",
@@ -283,14 +293,7 @@ EXACT_FIELD_CONTRACTS = {
     ),
     "VerificationCheck": ("name", "passed", "detail"),
     "VerificationReport": ("status", "checks"),
-    "CandidateRelease": (
-        "run_id",
-        "release_version",
-        "candidate_manifest_sha256",
-        "verification_report",
-        "artifacts",
-        "candidate_zip",
-    ),
+    "CandidateRelease": CANDIDATE_RELEASE_FIELDS,
     "FormalRelease": ("release_dir", "manifest", "verification_report", "final_hashes"),
 }
 
@@ -601,6 +604,23 @@ def make_release_contract(models, **overrides):
     }
     values.update(overrides)
     return models.ReleaseContract(**values)
+
+
+def candidate_release_values(models, **overrides):
+    values = {
+        "run_id": "run-1",
+        "release_version": "V1.18",
+        "release_contract": make_release_contract(models),
+        "candidate_manifest_sha256": "b" * 64,
+        "verification_report": models.VerificationReport(
+            status="PASS",
+            checks=[models.VerificationCheck("hashes", True, "matched")],
+        ),
+        "artifacts": [make_artifact(models, "artifact.json")],
+        "candidate_zip": make_artifact(models, "candidate.zip"),
+    }
+    values.update(overrides)
+    return values
 
 
 def make_database_artifact(models, release_version="V1.18"):
@@ -2569,26 +2589,83 @@ class PipelineModelContractTests(unittest.TestCase):
         with self.assertRaises(FrozenInstanceError):
             with_taxonomy.taxonomy = None
 
+    def test_candidate_release_has_exact_required_typed_fields(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        value_type = models.CandidateRelease
+        self.assertEqual(field_names(value_type), CANDIDATE_RELEASE_FIELDS)
+        self.assertEqual(
+            typing.get_type_hints(value_type),
+            {
+                "run_id": str,
+                "release_version": str,
+                "release_contract": models.ReleaseContract,
+                "candidate_manifest_sha256": str,
+                "verification_report": models.VerificationReport,
+                "artifacts": tuple[models.ArtifactRef, ...],
+                "candidate_zip": models.ArtifactRef,
+            },
+        )
+        self.assertTrue(value_type.__dataclass_params__.frozen)
+        for field in fields(value_type):
+            with self.subTest(field=field.name):
+                self.assertIs(field.default, MISSING)
+                self.assertIs(field.default_factory, MISSING)
+
+    def test_candidate_release_accepts_only_a_typed_release_contract(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        errors = import_required(self, "joy_m2.errors")
+        self.assertEqual(field_names(models.CandidateRelease), CANDIDATE_RELEASE_FIELDS)
+        contract = make_release_contract(models)
+        candidate = models.CandidateRelease(
+            **candidate_release_values(models, release_contract=contract)
+        )
+        self.assertIs(candidate.release_contract, contract)
+
+        for invalid in (None, "release", Path("release"), {"archive_root": "release"}):
+            with self.subTest(value=invalid):
+                with self.assertRaises(errors.PipelineError):
+                    models.CandidateRelease(
+                        **candidate_release_values(models, release_contract=invalid)
+                    )
+
+    def test_candidate_release_rejects_wrong_existing_field_types(self) -> None:
+        models = import_required(self, "joy_m2.models")
+        errors = import_required(self, "joy_m2.errors")
+        self.assertEqual(field_names(models.CandidateRelease), CANDIDATE_RELEASE_FIELDS)
+        invalid_values = (
+            ("run_id", Path("run-1")),
+            ("release_version", 118),
+            ("candidate_manifest_sha256", Path("manifest.sha256")),
+            ("verification_report", object()),
+            ("candidate_zip", object()),
+        )
+        for field_name, invalid in invalid_values:
+            with self.subTest(field=field_name):
+                with self.assertRaises(errors.PipelineError):
+                    models.CandidateRelease(
+                        **candidate_release_values(models, **{field_name: invalid})
+                    )
+
     def test_candidate_release_normalizes_complete_artifact_set_and_is_frozen(self) -> None:
         models = import_required(self, "joy_m2.models")
+        errors = import_required(self, "joy_m2.errors")
+        self.assertEqual(field_names(models.CandidateRelease), CANDIDATE_RELEASE_FIELDS)
         artifact = make_artifact(models, "artifact.json")
-        package = make_artifact(models, "candidate.zip")
-        report = models.VerificationReport(
-            status="PASS",
-            checks=[models.VerificationCheck("hashes", True, "matched")],
-        )
+        source_artifacts = [artifact]
         candidate = models.CandidateRelease(
-            run_id="run-1",
-            release_version="V1.19",
-            candidate_manifest_sha256="b" * 64,
-            verification_report=report,
-            artifacts=[artifact],
-            candidate_zip=package,
+            **candidate_release_values(models, artifacts=source_artifacts)
         )
+        source_artifacts.append(make_artifact(models, "late.json"))
         self.assertEqual(candidate.artifacts, (artifact,))
         self.assertIsInstance(candidate.artifacts, tuple)
         with self.assertRaises(FrozenInstanceError):
             candidate.artifacts = ()
+        for invalid in (object(), [object()], (artifact, object())):
+            with self.subTest(value=invalid):
+                with self.assertRaises(errors.PipelineError):
+                    models.CandidateRelease(
+                        **candidate_release_values(models, artifacts=invalid)
+                    )
 
     def test_formal_release_normalizes_final_hashes_and_is_frozen(self) -> None:
         models = import_required(self, "joy_m2.models")
