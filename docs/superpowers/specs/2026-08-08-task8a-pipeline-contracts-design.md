@@ -817,6 +817,15 @@ and V1.18 verifier regressions are GREEN may Task 3A be reviewed and committed.
 The transformer must not be implemented before its public models, and its tests
 must not be backfilled after production behavior.
 
+At the Task 3A checkpoint, the exact package surface
+`release.__all__ == ("transform_v117_release",)` is a temporal gate proving
+that Phase B orchestration APIs were not exposed early. The historical Task 3A
+`6/6 PASS` remains valid; this was not an erroneous acceptance criterion. When
+Phase B intentionally extends the package, only the public-surface assertion in
+`tests/unit/test_v117_release_transformer.py` is migrated to the final tuple
+below. Every transformer behavior, failed-audit gate, V1.17 profile,
+deterministic mapping, and other Task 3A protection remains unchanged.
+
 V1.17 profile 只接受 `V117ReleaseBatch`，V1.18 profile 只接受
 `AuditedBatch`；不匹配在创建输出前使用现有 `PipelineError` 边界拒绝。
 Task 4 may begin only after this complete Task 3A change has passed independent
@@ -1104,8 +1113,8 @@ required/no-default status, frozen behavior, and validation already approved.
 `ExportContract` remains the sole owner of both audit artifact filenames, and
 Release later consumes `DerivedArtifacts.audit_records` and
 `DerivedArtifacts.audit_report` without renaming them or creating a parallel
-filename contract. `CandidateBuildRequest`, the four Release public APIs, and
-all other public models remain unchanged.
+filename contract. `CandidateBuildRequest`, the four Phase B orchestration
+APIs, and all other public models remain unchanged.
 
 The checkpoint's complete modification scope is exactly
 `src/joy_m2/models.py` and `tests/unit/test_pipeline_models.py`, limited to that
@@ -1125,7 +1134,11 @@ restart its three RED groups and modify the existing Release implementation
 files: `release/hashing.py`,
 `release/packaging.py`, `release/verification.py`, `release/pipeline.py`,
 `release/__init__.py`, `test_release_primitives.py`, and
-`test_release_pipeline.py`. Phase B first establishes the Task 6 primitive RED,
+`test_release_pipeline.py`; it may also modify
+`tests/unit/test_v117_release_transformer.py` only to migrate the single
+package-public-surface assertion described above. These eight files are the
+complete and closed Phase B modification scope. Phase B first establishes the
+Task 6 primitive RED,
 then the Task 7 candidate-orchestration RED, then the Task 7 approval/promotion
 RED, without modifying any Release production file. Candidate and promotion RED
 groups must each record collected/PASS/FAIL/ERROR counts, exit code, and precise
@@ -1135,10 +1148,33 @@ Task 7 RED groups and the primitive RED are valid may production begin, in the
 minimum hashing -> packaging -> verification -> pipeline dependency order,
 followed by unified focused GREEN and complete regression/frozen-compatibility
 gates. The forbidden sequence is candidate RED -> `build_candidate()`
-implementation -> promotion RED. Phase B itself remains closed to exactly these
-seven files; the two Public Models files are authorized only in their separate
+implementation -> promotion RED. During the promotion/public-surface RED, the
+only permitted change to `test_v117_release_transformer.py` is replacing the
+temporal one-name `__all__` expectation with the final five-name tuple; this
+must fail before production because the four Phase B APIs are still absent.
+`release/__init__.py` remains unchanged throughout all three RED groups. Only
+after all three RED groups are valid may production expose the four orchestration
+APIs and migrate `release.__all__` to:
+
+```python
+(
+    "transform_v117_release",
+    "build_candidate",
+    "verify_candidate",
+    "verify_release",
+    "promote_candidate",
+)
+```
+
+The order is frozen, every name must remain directly importable, and no helper,
+private implementation API, or compatibility shim may be exposed. This is the
+union of the existing Task 3A transformer surface and the four Phase B
+orchestration/verification/promotion APIs, not a merge of their authority.
+Transformer ownership and V1.17 publication authority remain with Task 3A;
+CandidateBuildRequest, Database, Export, and manifest-projection authority are
+unchanged. The two Public Models files are authorized only in their separate
 pre-Phase-B checkpoints. Across all Release phases the unique file set remains
-those seven files plus the two Public Models files, and no other file is
+these eight Phase B files plus the two Public Models files, and no other file is
 implicitly authorized. Release consumes the already-reviewed Audit, Task 3A,
 Database, and Export implementations and does not reimplement their authority.
 

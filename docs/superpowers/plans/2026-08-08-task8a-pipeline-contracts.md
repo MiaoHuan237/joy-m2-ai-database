@@ -1811,6 +1811,14 @@ Modify `src/joy_m2/release/__init__.py` only to expose the approved
 manifest, database, export, file, hashing, clock, environment, registry, or
 V1.16 ZIP behavior.
 
+At this Task 3A checkpoint, lock the exact temporal package surface as
+`release.__all__ == ("transform_v117_release",)`. This proves that Phase B
+orchestration APIs were not exposed early and preserves the historical Task 3A
+`6/6 PASS` as valid. It is not a permanent post-Phase-B architecture invariant:
+Phase B is separately authorized below to migrate only this one public-surface
+assertion to the final five-name tuple, without changing any transformer
+behavior or other Task 3A protection.
+
 - [ ] **Step 6: Prove source-order and record equivalence**
 
 Compare all 45 transformed records against the protected legacy oracle,
@@ -2354,7 +2362,7 @@ owner of those two filename fields. Release later consumes
 `DerivedArtifacts.audit_records` and `DerivedArtifacts.audit_report` as produced
 by Export and may not rename them, infer filenames, or introduce a second
 filename contract. This checkpoint does not modify `CandidateBuildRequest`, any
-other public model, or the four approved Release APIs.
+other public model, or the four approved Phase B orchestration APIs.
 
 - [ ] **Step R1: Write the ReleaseContract Public Models RED**
 
@@ -2382,8 +2390,8 @@ orchestration RED, approval/promotion RED, verification of all three RED groups,
 and then production.
 
 The combined unique Release file set remains these two Public Models files plus
-the seven Phase B files listed in Tasks 6 and 7 below. Phase B itself remains
-strictly limited to its seven files and may not modify the Public Models files.
+the eight Phase B files listed in Tasks 6 and 7 below. Phase B itself remains
+strictly limited to its eight files and may not modify the Public Models files.
 No other source, test, data, release, legacy, frozen artifact, or documentation
 file is implicitly authorized.
 
@@ -2441,6 +2449,8 @@ RED groups below are also valid.
 - Modify: `src/joy_m2/release/pipeline.py`
 - Modify: `src/joy_m2/release/__init__.py`
 - Create: `tests/integration/test_release_pipeline.py`
+- Modify: `tests/unit/test_v117_release_transformer.py` (only the exact
+  package-public-surface assertion)
 
 **Interfaces:**
 - Consumes: `CandidateBuildRequest`, low-level audit/db/export/release APIs, `ApprovalRecord`, `PipelineConfig`.
@@ -2475,6 +2485,26 @@ approval timestamp, failed or stale candidate rejection, existing formal-release
 conflict, atomic promotion, and frozen promotion semantics. Include successful
 synthetic promotion into a temporary `releases/V9.99/`, followed by rejection of
 a second promotion. Never exercise promotion against the real workspace.
+
+In this same promotion/public-surface RED group, modify only the existing
+`release.__all__` assertion in `tests/unit/test_v117_release_transformer.py`.
+Replace its temporal Task 3A expectation with the final exact tuple:
+
+```python
+(
+    "transform_v117_release",
+    "build_candidate",
+    "verify_candidate",
+    "verify_release",
+    "promote_candidate",
+)
+```
+
+Also require all five names to be directly importable and reject any additional
+public name. Do not change the transformer behavior tests, failed-audit gates,
+V1.17 profile tests, deterministic mapping tests, or any other Task 3A
+protection. This assertion must be RED because the four Phase B APIs have not
+yet been exposed; `release/__init__.py` remains unchanged.
 
 - [ ] **Step 3: Validate both Task 7 RED groups before production**
 
@@ -2525,6 +2555,15 @@ fixed 1980 timestamp, Unix regular-file `0644`, `create_system=3`, DEFLATE level
 release verification without calling builder functions. Only then implement
 `build_candidate` and `promote_candidate`.
 
+After all three RED groups are valid, update `release/__init__.py` to retain
+`transform_v117_release` and expose the four Phase B APIs. Its final exact
+`__all__` is the five-name tuple above in that order. Expose no hashing,
+packaging, verification helper, private API, or compatibility shim. This public
+surface union does not merge authority: Task 3A retains transformer and V1.17
+publication ownership; the four new names retain only their approved
+orchestration, verification, and promotion responsibilities. CandidateBuildRequest,
+Database, Export, and manifest-projection authority remain unchanged.
+
 `build_candidate` preflights every input and output conflict before creating its
 hidden temporary run, consumes the exact request `baseline_manifest`, calls
 `audit_batch()`, passes the V1.17 request decision unchanged to
@@ -2555,7 +2594,10 @@ up only its known temporary directory on failure.
 - [ ] **Step 5: Restore unified focused GREEN**
 
 ```bash
-$task8_python -m unittest -v tests.integration.test_release_pipeline tests.unit.test_release_primitives
+$task8_python -m unittest -v \
+  tests.integration.test_release_pipeline \
+  tests.unit.test_release_primitives \
+  tests.unit.test_v117_release_transformer
 $task8_python -m unittest -v tests.regression.test_task7_project_initialization
 ```
 
@@ -2565,7 +2607,7 @@ Expected: PASS.
 
 Only after focused GREEN, run every approved maintained, legacy-oracle, Task 7,
 and V1.18 frozen-compatibility gate. After independent review, commit only the
-seven Phase B files.
+eight Phase B files.
 
 ---
 
