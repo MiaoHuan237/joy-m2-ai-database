@@ -2385,15 +2385,84 @@ Audit, Task 3A, Database, Export, or unrelated verification/release models.
 
 Run the complete Public Models and model/config regressions, obtain independent
 review, and commit this two-file migration separately. Only after that commit may
-Release Phase B restart in the existing order: Task 6 primitives RED, candidate
-orchestration RED, approval/promotion RED, verification of all three RED groups,
-and then production.
+the separate `CandidateRelease` Public Models checkpoint below begin.
 
 The combined unique Release file set remains these two Public Models files plus
 the eight Phase B files listed in Tasks 6 and 7 below. Phase B itself remains
 strictly limited to its eight files and may not modify the Public Models files.
 No other source, test, data, release, legacy, frozen artifact, or documentation
 file is implicitly authorized.
+
+### CandidateRelease Public Models Checkpoint: Carry the Release Contract
+
+This separately reviewed checkpoint must complete after the `ReleaseContract`
+checkpoint and before Release Phase B resumes.
+
+**Files:**
+- Modify: `src/joy_m2/models.py` (only the approved `CandidateRelease` field migration)
+- Modify: `tests/unit/test_pipeline_models.py` (only the corresponding model-contract tests)
+
+The exact target is:
+
+```python
+@dataclass(frozen=True)
+class CandidateRelease:
+    run_id: str
+    release_version: str
+    release_contract: ReleaseContract
+    candidate_manifest_sha256: str
+    verification_report: VerificationReport
+    artifacts: tuple[ArtifactRef, ...]
+    candidate_zip: ArtifactRef
+```
+
+Every field is required and has no default. `release_contract` is placed
+immediately after `release_version`. `CandidateBuildRequest` remains the input
+authority; later `build_candidate()` must preserve exact object identity:
+`candidate.release_contract is request.release_contract`. It may not copy,
+reconstruct, canonicalize, infer, or look up an equal contract. This is carrier
+propagation only. It grants `CandidateRelease` no new manifest, packaging,
+publication, or promotion authority, and neither `ApprovalRecord` nor
+`FormalRelease` gains a `ReleaseContract` field. The exact field set forbids
+`release_contract_path`, `archive_root`, `formal_zip_filename`,
+`approval_filename`, or any other split/parallel contract field.
+`ApprovalRecord` remains approval authority only; packaging/location authority
+stays separate. None of the four existing Release orchestration API signatures
+changes because of this migration.
+
+- [ ] **Step C1: Write the CandidateRelease Public Models RED**
+
+Modify only `tests/unit/test_pipeline_models.py`. Lock the exact seven fields and
+order, exact annotations and runtime types, no defaults, frozen behavior,
+required typed `ReleaseContract`, rejection of missing/wrong contract values,
+and preservation of every other public model. Run the complete Public Models
+suite and require a real RED caused only by the committed six-field
+`CandidateRelease`. Do not modify `models.py` yet.
+
+- [ ] **Step C2: Implement the minimal CandidateRelease migration**
+
+Only after the valid RED, modify `src/joy_m2/models.py` solely to add
+`release_contract: ReleaseContract` in the frozen position. Do not modify
+`CandidateBuildRequest`, `ReleaseContract`, `ApprovalRecord`, `FormalRelease`,
+or any Audit, Task 3A, Database, Export, verification, or unrelated model.
+
+- [ ] **Step C3: Restore Public Models GREEN, review, and commit**
+
+Run the complete Public Models and model/config regressions, obtain independent
+review, and commit this two-file migration separately. Only after that commit may
+Release Phase B resume. The existing uncommitted
+`tests/unit/test_release_primitives.py` already established a valid Task 6
+primitive RED on the approved baseline; it remains valid but must be preserved
+unchanged through this checkpoint and must not be treated as a permanently
+satisfied gate. It must first be rerun after this checkpoint commit and
+confirmed to retain the same valid missing-production failure surface. Then
+continue in the approved
+order: candidate orchestration RED, approval/promotion RED, verification of all
+three RED groups, and only then production.
+
+This checkpoint reuses the same two Public Models files already counted in the
+combined Release file set. It does not add files to the eight-file Phase B scope
+and does not authorize any Release production implementation.
 
 ### Release Phase B / Task 6: Implement Hashing, Verification, and Deterministic Packaging
 
@@ -2456,12 +2525,21 @@ RED groups below are also valid.
 - Consumes: `CandidateBuildRequest`, low-level audit/db/export/release APIs, `ApprovalRecord`, `PipelineConfig`.
 - Produces: `build_candidate(request) -> CandidateRelease` and `promote_candidate(candidate, approval, config) -> FormalRelease`.
 
+`CandidateRelease` must carry the exact request contract by identity:
+`candidate.release_contract is request.release_contract`. Promotion keeps its
+approved three-parameter signature and consumes only
+`candidate.release_contract` for `approval_filename`, `formal_zip_filename`,
+`archive_root`, and every other `ReleaseContract` value. It must not accept a
+parallel contract parameter, reconstruct a contract from manifest scalars,
+hard-code values, consult a registry, discover files, or read the environment.
+
 - [ ] **Step 1: Write the complete candidate-orchestration RED group**
 
 In a temporary repository-shaped root, cover `build_candidate(request)`, the
 typed `CandidateBuildRequest`, explicit V1.17 decision, V1.18 `None`, explicit
 `baseline_manifest`, Audit -> transformer -> Database -> Export ordering,
-manifest projection, exact artifact set, invalid upstream gating, existing run,
+exact identity preservation of `request.release_contract` on the resulting
+`CandidateRelease`, manifest projection, exact artifact set, invalid upstream gating, existing run,
 ZIP and declared-output conflicts, and stale-candidate rejection. A successful
 build may appear only at `data/staging/<run_id>/` after every check passes.
 Inject an export failure and assert the valid run directory never appears;
@@ -2484,7 +2562,11 @@ version, wrong candidate manifest hash, wrong approver, empty scope, invalid
 approval timestamp, failed or stale candidate rejection, existing formal-release
 conflict, atomic promotion, and frozen promotion semantics. Include successful
 synthetic promotion into a temporary `releases/V9.99/`, followed by rejection of
-a second promotion. Never exercise promotion against the real workspace.
+a second promotion. Prove promotion obtains all Release contract values only
+from `candidate.release_contract` while keeping the exact three-parameter API;
+manifest reverse reconstruction, hard-coded or registry values, filesystem
+discovery, environment lookup, and a parallel contract parameter are forbidden.
+Never exercise promotion against the real workspace.
 
 In this same promotion/public-surface RED group, modify only the existing
 `release.__all__` assertion in `tests/unit/test_v117_release_transformer.py`.
@@ -2524,7 +2606,8 @@ candidate RED -> implement build_candidate() -> promotion RED
 The only approved Phase B sequence is:
 
 ```text
-Task 6 primitive RED
+CandidateRelease Public Models checkpoint committed and independently approved
+-> rerun and revalidate Task 6 primitive RED
 -> candidate orchestration RED
 -> approval/promotion RED
 -> verify both Task 7 RED groups (and retain the primitive RED)
@@ -2568,7 +2651,9 @@ Database, Export, and manifest-projection authority remain unchanged.
 hidden temporary run, consumes the exact request `baseline_manifest`, calls
 `audit_batch()`, passes the V1.17 request decision unchanged to
 `transform_v117_release()` or requires V1.18 `None`, then calls Database and
-Export with the matching typed values. It projects manifest scalars only from
+Export with the matching typed values. It stores the exact
+`request.release_contract` object on the returned `CandidateRelease`, without
+copying or reconstructing it. It projects manifest scalars only from
 the original `AuditResult.input_evidence` plus the V1.17 historical ZIP constant,
 writes sums/ZIP, independently verifies, and atomically renames only a PASS
 candidate. It never re-encodes audit JSON, recomputes audit authority, rereads or
@@ -2588,7 +2673,11 @@ For V1.17 assert `task4_candidate_sha256` and
 candidate manifest hash, `approved_by == "Joy"`, timezone-aware timestamp and
 non-empty scope, builds only in an unexposed temporary release directory, writes
 approval/candidate bindings, regenerates sums/ZIP, independently verifies, and
-atomically renames. It never deletes or replaces an existing release and cleans
+atomically renames. Its only Release contract source is
+`candidate.release_contract`; the three-parameter signature remains unchanged.
+It never reconstructs the contract from manifest data, hard-codes it, consults
+a registry, discovers it from the filesystem, or reads it from the environment.
+It never deletes or replaces an existing release and cleans
 up only its known temporary directory on failure.
 
 - [ ] **Step 5: Restore unified focused GREEN**

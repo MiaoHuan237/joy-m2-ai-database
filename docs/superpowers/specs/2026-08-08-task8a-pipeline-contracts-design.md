@@ -194,7 +194,7 @@ ApprovalRecord(
 
 `ReleaseSpec` 的时间、版本和哈希由调用方显式提供，核心逻辑不读取系统时钟。`ApprovalRecord` 必须绑定候选 manifest SHA-256，`approved_by` 必须是 `Joy`，版本和审批范围必须与候选一致。
 
-代表文件的 `ArtifactRef` 至少包含绝对路径、SHA-256、字节数和 artifact kind。`CandidateRelease` 记录 run ID、版本、候选 manifest 哈希、验证报告、完整文件集合和候选 ZIP。`FormalRelease` 记录不可覆盖的正式目录、正式 manifest、验证报告和最终哈希。
+代表文件的 `ArtifactRef` 至少包含绝对路径、SHA-256、字节数和 artifact kind。`CandidateRelease` 记录 run ID、版本、调用方提供且原样携带的 `ReleaseContract`、候选 manifest 哈希、验证报告、完整文件集合和候选 ZIP。`FormalRelease` 记录不可覆盖的正式目录、正式 manifest、验证报告和最终哈希。
 
 JSON 是持久化审计与发布证据，不是进程内主要数据总线。
 
@@ -312,6 +312,28 @@ class CandidateBuildRequest:
     release_contract: ReleaseContract
 ```
 
+`CandidateRelease` 的最终公共结构精确为：
+
+```python
+@dataclass(frozen=True)
+class CandidateRelease:
+    run_id: str
+    release_version: str
+    release_contract: ReleaseContract
+    candidate_manifest_sha256: str
+    verification_report: VerificationReport
+    artifacts: tuple[ArtifactRef, ...]
+    candidate_zip: ArtifactRef
+```
+
+所有字段均无默认值。`build_candidate()` 必须把
+`request.release_contract` 的同一对象原样放入结果；精确不变量为
+`candidate.release_contract is request.release_contract`。它不得复制、重建、
+规范化或从等价值重新构造 `ReleaseContract`。这是 typed carrier 传播，不把
+manifest、ZIP、审批或 publication authority 转移给 `CandidateRelease`。精确
+字段集合禁止另加 `release_contract_path`、`archive_root`、
+`formal_zip_filename`、`approval_filename` 或其他拆分/平行 contract 字段。
+
 所有字段均无默认值。`baseline_manifest` 对 V1.17 和 V1.18 都是必需的
 typed expected identity，并原样进入 `DatabaseBuildRequest`；release 不得根据
 baseline database path 查找 sibling manifest，也不得使用 filesystem discovery、
@@ -352,6 +374,15 @@ decision、为未来版本提供默认 decision、从 audit status 推断 future
 7. 使用同文件系统原子改名发布正式目录。
 
 任一步失败均不得出现正式目标目录。正式 release 一旦存在便不可覆盖、原地回滚、原地修补或由流水线删除。
+
+上述提升步骤使用 `candidate.release_contract` 作为唯一 Release contract
+来源，包括 `approval_filename`、`formal_zip_filename`、`archive_root` 及其余
+contract 值。`promote_candidate()` 的三参数签名保持不变；不得增加 contract
+参数，不得从 manifest 反向恢复，不得硬编码、查询 registry、扫描文件系统或
+读取环境变量。`ApprovalRecord` 和 `FormalRelease` 不持有 `ReleaseContract`。
+`ApprovalRecord` 继续只表达 approval authority；Release packaging/location
+authority 与 approval authority 保持分离。四个既有 Release orchestration API
+的名称、参数和返回类型均不因该 carrier 迁移而改变。
 
 ## 9. 数据与确定性契约
 
@@ -1052,7 +1083,7 @@ CandidateBuildRequest (explicit run_id, V1.17 decision-or-None, baseline manifes
 → release manifest serializer projects frozen scalars from AuditResult.input_evidence
   (plus V1.17-only frozen historical ZIP constant)
 → SHA-256 sums + deterministic ZIP + independent verification
-→ CandidateRelease
+→ CandidateRelease(release_contract is request.release_contract)
 ```
 
 失败路径固定为：input/profile 错误在 `AuditResult` 前 fail-fast；业务 blocker
@@ -1128,18 +1159,37 @@ presence of both fields on `ExportContract`. Only after that valid RED may
 GREEN, independent review, and a separate commit. This migration may not be
 mixed into a Phase B production commit.
 
-Only after both the CandidateBuildRequest Phase A commit and this
-`ReleaseContract` checkpoint commit have passed independent review may Phase B
-restart its three RED groups and modify the existing Release implementation
-files: `release/hashing.py`,
+After the `ReleaseContract` checkpoint, a third separately reviewable Public
+Models checkpoint must migrate only `CandidateRelease`. Its exact target is the
+seven-field frozen dataclass in section 7.5, with `release_contract` placed
+immediately after `release_version`; every field is required and has no default.
+The checkpoint's complete modification scope is exactly
+`src/joy_m2/models.py` and `tests/unit/test_pipeline_models.py`, limited to this
+one field addition, exact field/order/type/default/frozen tests, constructor
+rejection without a typed `ReleaseContract`, and preservation of every other
+public model. The model test must be written and run first to prove a valid RED
+caused only by the committed six-field `CandidateRelease`; only then may the
+minimal model change be made, followed by complete Public Models GREEN,
+independent review, and a separate commit. This checkpoint does not implement
+`build_candidate()` or `promote_candidate()`.
+
+Only after the CandidateBuildRequest Phase A commit, the `ReleaseContract`
+checkpoint commit, and this `CandidateRelease` checkpoint commit have each
+passed independent review may Phase B restart its three RED groups and modify
+the existing Release implementation files: `release/hashing.py`,
 `release/packaging.py`, `release/verification.py`, `release/pipeline.py`,
 `release/__init__.py`, `test_release_primitives.py`, and
 `test_release_pipeline.py`; it may also modify
 `tests/unit/test_v117_release_transformer.py` only to migrate the single
 package-public-surface assertion described above. These eight files are the
-complete and closed Phase B modification scope. Phase B first establishes the
-Task 6 primitive RED,
-then the Task 7 candidate-orchestration RED, then the Task 7 approval/promotion
+complete and closed Phase B modification scope. The existing
+`tests/unit/test_release_primitives.py` has already established the Task 6
+primitive RED on a valid Phase B baseline and remains valid, but it may not be
+treated as a permanently satisfied gate. It must be preserved unchanged during
+this remediation, then rerun after the `CandidateRelease` checkpoint commit and
+independently confirmed to retain the same valid missing-production failure
+surface before the candidate RED begins. Phase B then establishes the Task 7
+candidate-orchestration RED, then the Task 7 approval/promotion
 RED, without modifying any Release production file. Candidate and promotion RED
 groups must each record collected/PASS/FAIL/ERROR counts, exit code, and precise
 missing-behavior reasons; dependency, import/setup, fixture, test-construction,
@@ -1173,7 +1223,8 @@ orchestration/verification/promotion APIs, not a merge of their authority.
 Transformer ownership and V1.17 publication authority remain with Task 3A;
 CandidateBuildRequest, Database, Export, and manifest-projection authority are
 unchanged. The two Public Models files are authorized only in their separate
-pre-Phase-B checkpoints. Across all Release phases the unique file set remains
+pre-Phase-B checkpoints, including the later `CandidateRelease` migration in
+those same two files. Across all Release phases the unique file set remains
 these eight Phase B files plus the two Public Models files, and no other file is
 implicitly authorized. Release consumes the already-reviewed Audit, Task 3A,
 Database, and Export implementations and does not reimplement their authority.
