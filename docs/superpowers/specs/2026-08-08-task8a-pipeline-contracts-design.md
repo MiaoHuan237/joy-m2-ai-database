@@ -1169,9 +1169,42 @@ one field addition, exact field/order/type/default/frozen tests, constructor
 rejection without a typed `ReleaseContract`, and preservation of every other
 public model. The model test must be written and run first to prove a valid RED
 caused only by the committed six-field `CandidateRelease`; only then may the
-minimal model change be made, followed by complete Public Models GREEN,
-independent review, and a separate commit. This checkpoint does not implement
-`build_candidate()` or `promote_candidate()`.
+minimal model change be made. The focused Public Models suite and combined
+Models + Config suite must then pass with their final accurate collected counts;
+this is only the first GREEN layer and does not authorize review or commit.
+
+Before independent review, the checkpoint must also pass the complete maintained
+regression gate: Public Models and Models + Config with their final accurate
+counts, Audit `21/21`, Task 3A `6/6`, Database `14/14`, Export `22/22`, Task 7
+`7/7`, Task 6 oracle `22/22`, and Task 3-6 maintained/legacy gates `54/54`.
+Any stricter regression set already approved at execution time also applies.
+The frozen compatibility gate additionally requires the V1.18 independent
+validator to PASS and confirms no changes under frozen V1.17/V1.18 artifacts,
+`data/`, `releases/`, or `legacy/`, no change to the V1.16 ZIP historical rule,
+and no new frozen compatibility regression. If the known legacy attribution
+suite is run, only its existing `9 PASS / 2 FAIL` baseline is permitted; both
+failure tests and categories must remain identical and no third failure category
+may appear.
+
+Only after focused GREEN, the complete maintained regressions, and frozen
+compatibility all pass may independent review begin. Only an independent review
+PASS permits a separate commit containing exactly `src/joy_m2/models.py` and
+`tests/unit/test_pipeline_models.py`. The frozen sequence is therefore:
+
+```text
+CandidateRelease model tests RED
+-> minimal models.py GREEN
+-> Public Models GREEN
+-> complete maintained regressions
+-> frozen compatibility gates
+-> independent review PASS
+-> separate two-file commit
+-> resume Release Phase B
+```
+
+This checkpoint does not implement `build_candidate()` or
+`promote_candidate()` and may not include the existing primitives RED asset or
+any Release Phase B file.
 
 Only after the CandidateBuildRequest Phase A commit, the `ReleaseContract`
 checkpoint commit, and this `CandidateRelease` checkpoint commit have each

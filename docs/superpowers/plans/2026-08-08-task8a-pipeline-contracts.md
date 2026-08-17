@@ -2446,11 +2446,56 @@ Only after the valid RED, modify `src/joy_m2/models.py` solely to add
 `CandidateBuildRequest`, `ReleaseContract`, `ApprovalRecord`, `FormalRelease`,
 or any Audit, Task 3A, Database, Export, verification, or unrelated model.
 
-- [ ] **Step C3: Restore Public Models GREEN, review, and commit**
+- [ ] **Step C3: Restore focused Public Models GREEN**
 
-Run the complete Public Models and model/config regressions, obtain independent
-review, and commit this two-file migration separately. Only after that commit may
-Release Phase B resume. The existing uncommitted
+Run the complete Public Models focused suite and the combined Models + Config
+suite. Both must pass with their final accurate collected counts. This is only
+the first GREEN layer and does not authorize independent review or commit.
+
+- [ ] **Step C4: Run complete maintained and frozen compatibility gates**
+
+Before independent review, run and pass the complete maintained regression gate:
+
+- Public Models: final accurate collected count / PASS;
+- Models + Config: final accurate collected count / PASS;
+- Audit: `21/21 PASS`;
+- Task 3A: `6/6 PASS`;
+- Database: `14/14 PASS`;
+- Export: `22/22 PASS`;
+- Task 7: `7/7 PASS`;
+- Task 6 oracle: `22/22 PASS`;
+- Task 3-6 maintained/legacy gates: `54/54 PASS`.
+
+Any stricter regression set already approved at execution time also applies.
+Then require the V1.18 independent validator to PASS and confirm no frozen
+V1.17/V1.18 artifact, `data/`, `releases/`, or `legacy/` change, no change to the
+V1.16 ZIP historical rule, and no new frozen compatibility regression. If the
+known legacy attribution suite is run, only its existing `9 PASS / 2 FAIL`
+baseline is permitted: the two failing tests and failure categories must remain
+identical, and no third failure category may appear.
+
+- [ ] **Step C5: Obtain independent review and commit separately**
+
+Only after focused Public Models GREEN, the complete maintained regressions, and
+the frozen compatibility gate all pass may independent review begin. Only an
+independent review PASS permits a commit, and that commit may contain exactly
+`src/joy_m2/models.py` and `tests/unit/test_pipeline_models.py`. It must not
+contain the primitives RED asset or any Release Phase B file.
+
+The complete checkpoint sequence is frozen as:
+
+```text
+CandidateRelease model tests RED
+-> minimal models.py GREEN
+-> Public Models GREEN
+-> complete maintained regressions
+-> frozen compatibility gates
+-> independent review PASS
+-> separate two-file commit
+-> resume Release Phase B
+```
+
+Only after that commit may Release Phase B resume. The existing uncommitted
 `tests/unit/test_release_primitives.py` already established a valid Task 6
 primitive RED on the approved baseline; it remains valid but must be preserved
 unchanged through this checkpoint and must not be treated as a permanently
