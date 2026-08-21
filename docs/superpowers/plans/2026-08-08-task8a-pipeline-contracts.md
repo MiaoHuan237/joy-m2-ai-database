@@ -2537,9 +2537,34 @@ self.assertEqual(
 
 Build the same payload twice and assert identical bytes. Inspect every `ZipInfo` for fixed timestamp, `create_system=3`, regular-file `0644`, DEFLATE, sorted names, no directory entries, and the contract root.
 
+Add four independent deterministic negative controls that mutate exactly one ZIP
+metadata dimension at a time: timestamp, Unix permissions, `create_system`, and
+compression method. Each case must return a structured
+`VerificationReport(status="FAIL")`, identify the failed ZIP-metadata check, and
+leave every candidate/formal artifact byte unchanged. A positive metadata test
+or a timestamp-only negative control is not sufficient for implementation
+review.
+
 - [ ] **Step 3: Write failing structured verification tests**
 
-Start with a valid temporary release, then separately corrupt a protected byte, remove a sums entry, add an undeclared file, alter CSV, remove a Markdown heading, and break the audit report. Assert each fully executable case returns `VerificationReport(status="FAIL")` with its own failed check. Assert missing manifest or malformed JSON raises the appropriate input exception.
+Start with a valid temporary release, then separately corrupt a protected byte,
+remove a sums entry, add an undeclared file, alter CSV, remove a Markdown
+heading, and break the audit report. Assert each fully executable case returns
+`VerificationReport(status="FAIL")` with its own failed check. Apply the same
+error boundary to `verify_candidate()` and `verify_release()`: manifest bytes
+that are not valid JSON, or from which no JSON payload can be established, raise
+`InputFormatError`; the existing malformed-manifest test is the approved
+contract and must not be inverted to a FAIL-report expectation. Missing manifest
+continues to raise its approved input-missing exception.
+
+Once JSON parsing succeeds, wrong top-level structure, missing required fields,
+wrong field types, wrong `release_version`, `schema_version`, or
+`release_status`, artifact-map mismatch, SHA closure mismatch, ZIP closure or
+metadata mismatch, wrong `ArtifactRef` hash/size, and missing, extra, or tampered
+artifacts are normal verification failures. Each must add its own failed check
+and return `VerificationReport(status="FAIL")`; it must not raise a normal
+corruption exception, repair or rewrite the artifact, or reverse the manifest
+into maintained authority.
 
 - [ ] **Step 4: Validate the complete Release primitive RED without production**
 

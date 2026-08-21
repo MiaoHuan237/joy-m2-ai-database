@@ -465,6 +465,23 @@ PipelineError
 
 `verify_*()` 在检查可以完整执行但产物不合格时返回 `VerificationReport(status=FAIL)`，并包含全部检查项。路径不可读、JSON 损坏、SQLite 无法打开等导致验证无法执行时抛领域异常。调用方不得通过忽略返回值继续发布；`release` 编排者必须显式要求 PASS。
 
+对 `verify_candidate()` 与 `verify_release()`，manifest error boundary 必须
+完全一致。manifest 字节不是合法 JSON，或 JSON payload 根本无法建立时，
+验证上下文尚未形成，必须抛 `InputFormatError`；现有 malformed-manifest
+测试即锁定该批准合同，不得改写为 FAIL-report expectation。JSON 一旦成功
+解析，top-level structure、required field、field type、`release_version`、
+`schema_version`、`release_status`、artifact map、SHA closure、ZIP closure、
+ZIP metadata 或 `ArtifactRef` hash/size 的任何不合格均属于普通 artifact
+verification failure，必须形成 failed check 并返回
+`VerificationReport(status="FAIL")`，不得改抛普通 corruption exception。
+missing/extra/tampered artifact 同样走 structured FAIL；verifier 不修复、删除、
+重写或重新生成被检产物。
+
+Release Phase B 在 implementation review 前必须用 deterministic negative
+controls 分别锁定 ZIP 的错误 timestamp、Unix permissions、`create_system`
+和 compression method 均被拒绝。四类测试必须验证 structured FAIL 与产物
+不变；仅有正向 metadata 检查或单一 timestamp 反例不足以关闭该门禁。
+
 ### 10.2 输入失败
 
 candidate/asset 输入缺失在任何写入前抛 `InputMissingError`；格式不可解析抛
