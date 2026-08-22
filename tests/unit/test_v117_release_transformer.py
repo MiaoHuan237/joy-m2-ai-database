@@ -165,7 +165,19 @@ class V117ReleaseTransformerTests(unittest.TestCase):
                 "return": models.V117ReleaseBatch,
             },
         )
-        self.assertEqual(release.__all__, ("transform_v117_release",))
+        self.assertEqual(
+            release.__all__,
+            (
+                "transform_v117_release",
+                "build_candidate",
+                "verify_candidate",
+                "verify_release",
+                "promote_candidate",
+            ),
+        )
+        for name in release.__all__:
+            with self.subTest(public_name=name):
+                self.assertTrue(callable(getattr(release, name, None)))
         with self.assertRaises(errors.PipelineError):
             transform(self.audit_result.records, self.decision)
         with self.assertRaises(errors.PipelineError):
