@@ -630,11 +630,37 @@ Task 4 implementation 的顺序固定为：
 ### 12.1 分层等价
 
 - `releases/V1.18/` 全目录始终逐字节不变。
-- 新流水线重放产生的 SQLite、CSV、审计 JSON 和 Markdown 等核心数据产物与 legacy 产物逐字节比较。
+- Task 8 的 maintained completion authority 按以下优先级唯一确定：maintained
+  重放产物与已批准 frozen/protected baseline 的精确字节或已冻结兼容映射；其次是
+  compatibility tables/views、manifest、SHA/file-set/ZIP closure 和独立 verifier
+  等 approved compatibility objects/contracts。只有这一 maintained/frozen
+  authority 决定 Task 8 PASS/FAIL。
+- fresh legacy generation 只提供 provenance comparison 和 historical attribution
+  evidence，不是 maintained compatibility authority。fresh legacy 与 maintained
+  不同但落入既有 deterministic SQLite hash attribution 或 frozen artifact
+  byte-equivalence attribution 时，只记录 hash mapping，不构成 maintained Task 8
+  blocker。既有 legacy attribution suite 的 `9 PASS / 2 FAIL`、两项失败名称和类别
+  必须保持，且不得出现第三类失败。
+- Task 8 的 before/after evidence 对每个相关 artifact 明确区分 approved
+  frozen/reference hash、maintained generated hash 和 fresh legacy comparison hash；
+  仅当某一 artifact 已有明确 maintained/frozen byte-equivalence 合同时才要求前两者
+  相等，不得把全部 artifact 一律提升为 maintained/fresh-legacy raw-byte equality。
 - V1.17/V1.18 冻结 manifest 的字段、结构和 legacy digest scalar 必须满足
   historical oracle/byte-equivalence；不得新增结构化 evidence 节点。新构建
   运行产生的 SHA 清单和 ZIP 本身不要求复用历史 ZIP 摘要，但必须满足冻结
   文件集、哈希闭包、独立验证和重复构建确定性契约。
+- maintained V1.17 ZIP 继续服从已冻结 Release Phase B authority：归档 entry 必须
+  精确为 `ReleaseContract.archive_root/<candidate-root-relative-path>`，并满足 approved
+  相对路径、完整 artifact closure、排序、固定 metadata 和跨独立 root 的逐字节
+  确定性。历史 `01_数据/`、`02_知识文档/` 等 categorized layout 仅是 legacy
+  attribution/historical layout evidence，不是 maintained acceptance contract，也不得
+  反向要求 Release 重新构造该目录层级。
+- Task 8 compatibility object 只表达 approved maintained/frozen identity、release
+  version、artifact mapping、protected hash 和 historical compatibility scalar；它可由
+  regression/report 本地构造，但不得把 fresh legacy bytes 提升为 authority，也不得
+  新增 production model/API。
+- V1.17 `baseline_v116_zip_sha256` 继续只来自 approved historical constant；Task 8
+  不搜索、不读取且不重新哈希已经缺失的实际 V1.16 ZIP。
 - 不通过“更新黄金哈希”处理等价性失败。
 
 ### 12.2 并行迁移边界

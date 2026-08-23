@@ -2781,17 +2781,64 @@ eight Phase B files.
 - Consumes: all maintained APIs and Task 1 legacy oracle fixtures.
 - Produces: the final regression gate and evidence that maintained code can replace legacy execution without modifying formal data.
 
+**Task 8 authority hierarchy:**
+
+Task 8 PASS/FAIL is controlled first by maintained generated output against the
+approved frozen/protected baseline and approved compatibility objects/contracts.
+Fresh legacy generation is provenance and historical-attribution evidence only.
+Its known deterministic SQLite hash and frozen artifact byte-equivalence
+differences must be recorded, but they do not override a passing
+maintained/frozen compatibility result. The existing legacy attribution baseline
+remains exactly `9 PASS / 2 FAIL`, with those same two failure categories and no
+third category.
+
 - [ ] **Step 1: Write the end-to-end V1.18 equivalence test**
 
-Build one legacy V1.18 candidate and one maintained V1.18 candidate in separate temporary roots. Assert byte equality for SQLite, CSV, audited-question JSON, audit-report JSON, knowledge Markdown, import report, and generated project-state artifact. Assert the maintained manifest/sums/package satisfy their new contracts and two maintained builds produce byte-identical ZIPs.
+Build one fresh legacy V1.18 candidate for attribution and two maintained V1.18
+candidates in separate temporary roots. For SQLite, CSV, audited-question JSON,
+audit-report JSON, knowledge Markdown, import report, and generated project-state
+artifact, assert each maintained result against its approved frozen/protected
+V1.18 authority. Record the fresh legacy hash separately; a known-category fresh
+legacy mismatch is attribution evidence rather than a maintained failure. Assert
+the maintained manifest/sums/package satisfy the frozen Release Phase B contract,
+the candidate verifier passes, and the two maintained builds produce
+byte-identical ZIPs. V1.18 must not use a V1.17 decision or read/hash a V1.16 ZIP.
 
 - [ ] **Step 2: Add V1.17 equivalence coverage**
 
-Build Task 5 through both oracles in temporary roots and compare SQLite, CSV, approved JSON, taxonomy JSON, knowledge Markdown, report, and generated state bytes. Verify the maintained Task 5 layout profile produces the categorized archive paths required by its contract.
+Build one fresh legacy Task 5 result for attribution and two maintained V1.17
+candidates in separate temporary roots. For SQLite, CSV, approved JSON, taxonomy
+JSON, knowledge Markdown, report, and generated state, assert each maintained
+result against its approved frozen/protected V1.17 authority and record the fresh
+legacy hash separately. Known fresh-legacy SQLite/report differences remain the
+existing attribution surface and are not maintained completion failures.
+
+Verify each maintained ZIP entry is exactly
+`ReleaseContract.archive_root/<candidate-root-relative-path>` and satisfies the
+approved relative-path, complete artifact closure, deterministic ordering, fixed
+timestamp, Unix `0644`, `create_system=3`, DEFLATE, and cross-root byte identity
+contracts. The historical categorized Task 5 layout (`01_数据/`, `02_知识文档/`,
+and related directories) is recorded only as legacy historical-layout evidence;
+it is not a maintained Release Phase B acceptance gate and must not be recreated
+by production.
 
 - [ ] **Step 3: Add frozen and compatibility assertions**
 
-Hash every file under `releases/V1.18/` before and after both builds and assert the mappings are identical. Query maintained outputs to assert compatibility tables/views still exist and their logical digests match the frozen inputs.
+Hash every file under `releases/V1.18/` and `data/baselines/V1.18/` before and
+after all builds and assert the before/after mappings are identical. For every
+compared core artifact, retain three explicitly labelled values: approved
+frozen/reference hash, maintained generated hash, and fresh legacy comparison
+hash. Assert equality only where the approved maintained/frozen contract requires
+it; never use fresh legacy bytes as the compatibility authority.
+
+Query maintained outputs to assert compatibility tables/views still exist and
+their logical digests match the frozen inputs. Construct the Task 8 compatibility
+object locally in the regression/report from the approved maintained/frozen
+identity, release version, artifact mapping, protected hashes, and historical
+compatibility scalars. Do not add a production model/API or reconstruct this
+authority from fresh legacy bytes. For V1.17, assert
+`baseline_v116_zip_sha256` comes only from the approved historical constant and
+prove the test does not search, read, or rehash the actual V1.16 ZIP.
 
 - [ ] **Step 4: Run all new tests**
 
@@ -2814,6 +2861,11 @@ $task8_python releases/V1.18/verify_task6_release.py releases/V1.18
 
 Expected: Task 7 7/7, V1.18 status PASS, and Task 3–6 54/54.
 
+If the separate legacy attribution suite is run, its only accepted result remains
+`9 PASS / 2 FAIL`: deterministic SQLite hash attribution and frozen artifact
+byte-equivalence attribution. Record both as known evidence, not maintained Task
+8 blockers, and stop on any third failure category.
+
 - [ ] **Step 6: Inspect the complete change set**
 
 ```bash
@@ -2833,9 +2885,20 @@ Record in `docs/reports/TASK8B_VERIFICATION.md`:
 - Python version;
 - every command above and its result count;
 - V1.17/V1.18 core artifact hash comparisons;
+- the three-column authority mapping for approved frozen/reference, maintained
+  generated, and fresh legacy comparison hashes, including classification of
+  every known mismatch;
 - maintained double-build ZIP hashes;
+- maintained ZIP entry/metadata/artifact-closure verification under the frozen
+  `ReleaseContract.archive_root` relative-path contract, with the historical
+  categorized V1.17 layout recorded only as attribution evidence;
 - confirmation that `releases/V1.18/` and `data/baselines/V1.18/` are unchanged;
-- compatibility objects retained;
+- compatibility objects retained and bound only to approved maintained/frozen
+  authority;
+- the unchanged `9 PASS / 2 FAIL` legacy attribution surface and confirmation
+  that no third category appeared;
+- confirmation that the actual V1.16 ZIP was not searched, read, or rehashed and
+  its digest came only from the approved historical constant;
 - remaining limitation that CLI and consumer migration are not implemented.
 
 - [ ] **Step 8: Update project state only after all gates pass**
