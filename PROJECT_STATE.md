@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-08-09 (Asia/Shanghai)
+Updated: 2026-08-23 (Asia/Shanghai)
 
 ## Formal data
 
@@ -15,29 +15,46 @@ Updated: 2026-08-09 (Asia/Shanghai)
 
 ## Current task
 
-Task 8A — unified pipeline interface design and Task 8B implementation plan are complete. Task 8B has not started.
+Task 8B — the maintained audit/database/export/release pipeline implementation is complete, and pre-commit Task 8 completion evidence is ready for independent review.
 
 Scope:
 
-- Accepted wording: “Task 8A 设计与计划阶段通过；新增测试延期至 Task 8B。”
+- Task 8A's approved design and plan were implemented layer by layer with TDD and independent review checkpoints.
 - The approved design is `docs/superpowers/specs/2026-08-08-task8a-pipeline-contracts-design.md`.
 - The follow-up implementation plan is `docs/superpowers/plans/2026-08-08-task8a-pipeline-contracts.md`.
-- The design fixes the future responsibilities, typed Python interfaces, path/configuration rules, failure boundaries, deterministic artifact contracts, behavior-lock matrix, and Task 8B compatibility/rollback strategy.
-- Task 8A changed documentation only; no maintained pipeline implementation, CLI, formal database, frozen hash, compatibility view, or question data changed.
-- Task 8B execution requires separate explicit approval and has not started.
-- Task 8A was developed from verified baseline `295c8ae38b5b22c6ba449d2af7562cb1516cca4c`, whose history includes `e3c9f61eebb72beedaf0aaf845b525e690b7bffe`.
+- Audit: `COMPLETED`.
+- Task 3A: `COMPLETED`.
+- Database: `COMPLETED`.
+- Export: `COMPLETED`.
+- Release: `COMPLETED`.
+- Task 8 completion evidence implementation: `COMPLETED`.
+- Maintained typed implementations now exist under `src/joy_m2/audit/`, `db/`, `export/`, and `release/`; no CLI or consumer migration was added.
+- Task 8 completion authority is the maintained replay against approved protected/frozen references and compatibility contracts. Fresh legacy generation remains attribution evidence only.
+- Evidence HEAD is `f4ca148b631e48246710380cf4b3f11f28e5d0dd`; the pending evidence files are not yet committed.
+- Current branch is `task8b/pipeline-migration`; status is `READY FOR TASK 8 COMPLETION EVIDENCE REVIEW`.
+- V1.18 remains the current formal release. No formal database, frozen hash, compatibility object, question data, `data/`, `releases/`, or `legacy/` file changed.
+- Current blockers: none. The remaining review, commit, and post-commit gate are ordered checkpoints rather than implementation blockers.
+- Production contracts remain frozen; the actual V1.16 ZIP is not a maintained runtime input.
+- Completion evidence is uncommitted; post-commit clean-tree checkpoint: `PENDING`.
+- Push: not performed. Pull request: not created.
 - Safety branch `backup/task-7.1-ceb179e-20260808` remains retained.
 
 ## Completion gate
 
-- Task 8A closeout reran the Task 7 structure and frozen-baseline tests: 7/7 passed.
-- Task 8A closeout reran the V1.18 independent verifier: `PASS` with 497/452/45 counts.
-- Task 8A closeout reran the Task 3–6 executable regressions: 13 + 9 + 10 + 22 = 54/54 passed.
-- The Task 8A specification and implementation plan contain no unresolved placeholders; the plan has not been executed.
-- Final acceptance record: `docs/reports/TASK8A_FINAL_ACCEPTANCE.md`; behavior-lock tests and pipeline interface-contract tests both remain at 0 and are deferred to Task 8B. Zero does not mean PASS.
+- Explicit complete maintained suite: 195/195 passed, including Task 8 completion 3/3; skip=0 and expectedFailure=0.
+- Task 8 equivalence: 3/3 passed.
+- Task 7 structure and frozen-baseline tests: 7/7 passed.
+- V1.18 independent verifier: `PASS` with 497/452/45 counts, integrity `ok`, and 0 foreign-key errors.
+- Task 3–6 executable regressions: 13 + 9 + 10 + 22 = 54/54 passed.
+- Task 6 oracle: 22/22 passed.
+- Release focused tests: 48/48; Public Models: 66/66; Models + Config: 80/80; Audit: 21/21; Task 3A: 6/6; Database: 14/14; Export: 22/22; Export + Database: 36/36.
+- Legacy attribution remains the approved 9 PASS / 2 FAIL surface: deterministic SQLite hash attribution and frozen artifact byte-equivalence attribution, with no third failure.
+- Task 8B verification record: `docs/reports/TASK8B_VERIFICATION.md`.
+- Task 8B is not finally closed until this completion evidence passes independent review, is committed, and the post-commit clean-tree gate passes.
+- Task 8A final acceptance record remains `docs/reports/TASK8A_FINAL_ACCEPTANCE.md`.
 - Verification record: `docs/reports/TASK7_VERIFICATION.md`.
 - Remote backup branch remains retained; no cleanup has been performed.
 
 ## Next task
 
-After separate explicit approval, execute the Task 8B plan to migrate the Task 5/6 behavior into focused `src/joy_m2/` modules with test-first, layer-by-layer equivalence checks. Task 8B must not implement the CLI or write a formal release.
+Task 8 completion evidence independent review → evidence commit → post-commit clean-tree checkpoint → final Task 8B completion classification → wait for explicit next authorization. Do not start Task 8C, CLI/consumer migration, formal promotion, push, or PR work without separate explicit approval.
