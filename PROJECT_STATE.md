@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-08-23 (Asia/Shanghai)
+Updated: 2026-08-24 (Asia/Shanghai)
 
 ## Formal data
 
@@ -15,7 +15,7 @@ Updated: 2026-08-23 (Asia/Shanghai)
 
 ## Current task
 
-Task 8B — the maintained audit/database/export/release pipeline implementation is complete, and pre-commit Task 8 completion evidence is ready for independent review.
+Task 8B: `CLOSED / PASS`. The maintained audit/database/export/release pipeline implementation, completion evidence, post-commit clean-tree checkpoint, and GitHub backup are complete.
 
 Scope:
 
@@ -27,16 +27,19 @@ Scope:
 - Database: `COMPLETED`.
 - Export: `COMPLETED`.
 - Release: `COMPLETED`.
-- Task 8 completion evidence implementation: `COMPLETED`.
+- Task 8 completion evidence: `COMPLETED`.
 - Maintained typed implementations now exist under `src/joy_m2/audit/`, `db/`, `export/`, and `release/`; no CLI or consumer migration was added.
 - Task 8 completion authority is the maintained replay against approved protected/frozen references and compatibility contracts. Fresh legacy generation remains attribution evidence only.
-- Evidence HEAD is `f4ca148b631e48246710380cf4b3f11f28e5d0dd`; the pending evidence files are not yet committed.
-- Current branch is `task8b/pipeline-migration`; status is `READY FOR TASK 8 COMPLETION EVIDENCE REVIEW`.
+- Completion evidence commit: `6969f3d88b00537386212bc91203c837cac58915`.
+- Current branch is `task8b/pipeline-migration`; upstream is `origin/task8b/pipeline-migration`; local and remote HEAD both equal the completion evidence commit.
 - V1.18 remains the current formal release. No formal database, frozen hash, compatibility object, question data, `data/`, `releases/`, or `legacy/` file changed.
-- Current blockers: none. The remaining review, commit, and post-commit gate are ordered checkpoints rather than implementation blockers.
+- Unresolved blockers: `NONE`.
 - Production contracts remain frozen; the actual V1.16 ZIP is not a maintained runtime input.
-- Completion evidence is uncommitted; post-commit clean-tree checkpoint: `PENDING`.
-- Push: not performed. Pull request: not created.
+- Post-commit clean-tree checkpoint: `PASS`; working tree and staging are clean, with 0 untracked files.
+- GitHub backup: `COMPLETE`; branch push and annotated tag push both completed.
+- Tag: `joy-m2-task8b-closed-20260824`, targeting `6969f3d88b00537386212bc91203c837cac58915`.
+- Pull request: not created.
+- Task 8C: `NOT STARTED — PENDING EXPLICIT AUTHORIZATION`.
 - Safety branch `backup/task-7.1-ceb179e-20260808` remains retained.
 
 ## Completion gate
@@ -50,11 +53,11 @@ Scope:
 - Release focused tests: 48/48; Public Models: 66/66; Models + Config: 80/80; Audit: 21/21; Task 3A: 6/6; Database: 14/14; Export: 22/22; Export + Database: 36/36.
 - Legacy attribution remains the approved 9 PASS / 2 FAIL surface: deterministic SQLite hash attribution and frozen artifact byte-equivalence attribution, with no third failure.
 - Task 8B verification record: `docs/reports/TASK8B_VERIFICATION.md`.
-- Task 8B is not finally closed until this completion evidence passes independent review, is committed, and the post-commit clean-tree gate passes.
+- Task 8B implementation and completion evidence are fully closed; no next implementation stage is authorized.
 - Task 8A final acceptance record remains `docs/reports/TASK8A_FINAL_ACCEPTANCE.md`.
 - Verification record: `docs/reports/TASK7_VERIFICATION.md`.
 - Remote backup branch remains retained; no cleanup has been performed.
 
 ## Next task
 
-Task 8 completion evidence independent review → evidence commit → post-commit clean-tree checkpoint → final Task 8B completion classification → wait for explicit next authorization. Do not start Task 8C, CLI/consumer migration, formal promotion, push, or PR work without separate explicit approval.
+No next implementation task is authorized. `WAIT FOR EXPLICIT NEXT-TASK AUTHORIZATION`. Any future stage must first establish new Design / Plan authority before implementation. Do not start Task 8C, Phase 2A, CLI/consumer migration, or formal promotion without separate explicit approval.

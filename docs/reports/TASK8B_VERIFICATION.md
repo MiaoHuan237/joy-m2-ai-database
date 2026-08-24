@@ -1,10 +1,10 @@
 # Task 8B Completion Evidence
 
-Evidence date: 2026-08-23 (Asia/Shanghai)
+Evidence date: 2026-08-23 (Asia/Shanghai); final delivery synchronized 2026-08-24.
 
 Branch: `task8b/pipeline-migration`
 
-Evidence HEAD: `f4ca148b631e48246710380cf4b3f11f28e5d0dd`
+Completion evidence commit: `6969f3d88b00537386212bc91203c837cac58915`
 
 Python: `3.12.13`
 
@@ -13,18 +13,20 @@ Task 6).
 
 ## 1. Result and authority
 
-The pre-commit Task 8 completion evidence is complete and ready for independent
-review. Maintained V1.17 and V1.18 replay outputs match their approved
-protected/frozen authorities, all maintained and frozen gates pass, and no
-formal data changed.
+Task 8B is `CLOSED / PASS`. The completion evidence is committed, the
+post-commit clean-tree checkpoint passed, and the GitHub branch and annotated
+tag backup are complete. Maintained V1.17 and V1.18 replay outputs match their
+approved protected/frozen authorities, all maintained and frozen gates pass,
+and no formal data changed.
 
 Fresh legacy generation is attribution evidence only. Its known SQLite/report
 differences remain the approved `9 PASS / 2 FAIL` attribution surface; neither
 failure overrides the passing maintained/frozen result, and no third failure
 category appeared.
 
-This report is pre-commit evidence. The plan's post-commit clean-tree rerun and
-final Task 8B closure remain pending independent review and commit authorization.
+The completion evidence commit is
+`6969f3d88b00537386212bc91203c837cac58915`. Its post-commit rerun passed with a
+clean working tree, clean staging area, and 0 untracked files.
 
 ## 2. Test-first evidence
 
@@ -171,21 +173,25 @@ complete maintained collection and passed 195/195.
 ## 7. Remaining boundaries
 
 - CLI and consumer migration are not implemented.
-- Task 8C is not started and is not authorized by this evidence run.
-- Push, pull request creation, merge, formal promotion, and legacy removal were
-  not performed.
-- Post-commit clean-tree verification remains pending the separately authorized
-  completion-evidence commit.
-
-Current delivery status is limited to exactly three unstaged files:
-`tests/regression/test_task8b_pipeline_equivalence.py`, this report, and
-`PROJECT_STATE.md`. `git diff --check` and both untracked no-index whitespace
-checks pass. No push or pull request was created.
+- Task 8C is `NOT STARTED — PENDING EXPLICIT AUTHORIZATION`.
+- Branch backup is `COMPLETE`: `origin/task8b/pipeline-migration` and the local
+  branch both point to `6969f3d88b00537386212bc91203c837cac58915`.
+- Annotated tag backup is `COMPLETE`:
+  `joy-m2-task8b-closed-20260824` points to the same commit.
+- Post-commit clean-tree checkpoint: `PASS`; working tree and staging are clean,
+  with 0 untracked files.
+- Pull request creation, merge, formal promotion, and legacy removal were not
+  performed.
+- No next implementation task is authorized. The next action is
+  `WAIT FOR EXPLICIT NEXT-TASK AUTHORIZATION`; any future stage must first
+  establish new Design / Plan authority before implementation.
 
 ## 8. Conclusion
 
 `TASK 8B VERIFICATION — PASS`
 
-Status: `READY FOR TASK 8 COMPLETION EVIDENCE REVIEW`.
+Status: `TASK 8B — CLOSED / PASS`.
 
-Post-commit clean-tree checkpoint: `PENDING`.
+Post-commit clean-tree checkpoint: `PASS`.
+
+GitHub backup: `COMPLETE`.
