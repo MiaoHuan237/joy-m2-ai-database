@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-08-24 (Asia/Shanghai)
+Updated: 2026-08-25 (Asia/Shanghai)
 
 ## Formal data
 
@@ -15,7 +15,7 @@ Updated: 2026-08-24 (Asia/Shanghai)
 
 ## Current task
 
-Task 8B: `CLOSED / PASS`. The maintained audit/database/export/release pipeline implementation, completion evidence, post-commit clean-tree checkpoint, and GitHub backup are complete.
+Task 9 authority/workflow recovery: `DEFINED — PENDING INDEPENDENT REVIEW`. Task 8B remains `CLOSED / PASS`; no Task 9 implementation or real import has started.
 
 Scope:
 
@@ -31,15 +31,27 @@ Scope:
 - Maintained typed implementations now exist under `src/joy_m2/audit/`, `db/`, `export/`, and `release/`; no CLI or consumer migration was added.
 - Task 8 completion authority is the maintained replay against approved protected/frozen references and compatibility contracts. Fresh legacy generation remains attribution evidence only.
 - Completion evidence commit: `6969f3d88b00537386212bc91203c837cac58915`.
-- Current branch is `task8b/pipeline-migration`; upstream is `origin/task8b/pipeline-migration`; local and remote HEAD both equal the completion evidence commit.
+- Current branch is `task8b/pipeline-migration`; the pre-Task-9-design local and remote HEAD is `2f14a99cde2199945194cdc57bd6f3d622a3fea1` with ahead/behind `0/0`.
 - V1.18 remains the current formal release. No formal database, frozen hash, compatibility object, question data, `data/`, `releases/`, or `legacy/` file changed.
 - Unresolved blockers: `NONE`.
 - Production contracts remain frozen; the actual V1.16 ZIP is not a maintained runtime input.
-- Post-commit clean-tree checkpoint: `PASS`; working tree and staging are clean, with 0 untracked files.
+- Historical Task 8B post-commit clean-tree checkpoint: `PASS`; Task 9 now has only the explicitly authorized docs draft changes.
 - GitHub backup: `COMPLETE`; branch push and annotated tag push both completed.
 - Tag: `joy-m2-task8b-closed-20260824`, targeting `6969f3d88b00537386212bc91203c837cac58915`.
 - Pull request: not created.
 - Task 8C: `NOT STARTED — PENDING EXPLICIT AUTHORIZATION`.
+- Task 9 design: `docs/superpowers/specs/2026-08-25-task9-batch-import-design.md`.
+- Task 9A implementation plan: `docs/superpowers/plans/2026-08-25-task9a-import-contract-preflight.md`.
+- Task 9 recovered scope is batch-import manifest and preflight first; no new questions, SQLite writes, formal version changes, CLI, App/API, worksheet generation, or promotion are authorized.
+- Task 9A: `NOT STARTED — PENDING DESIGN/PLAN REVIEW`; exact target identity is V1.19, while frozen V1.18 remains the read-only 497-question baseline.
+- Task 9B: `NOT STARTED`; its priority scope is a separately approved Mathpix MMD/MMD.ZIP-to-canonical-JSON adapter.
+- Task 9C: `NOT STARTED`; V1.19 database/manifest serialization, writer, image destination, schema policy, and rollback authority remain deferred.
+- Task 9D: `NOT STARTED`; no real batch acceptance has begun.
+- `teacher_notes` and `common_errors` are Task 9A hashed import evidence/enrichment metadata, not current V2 formal fields; future formal representation requires separate schema authority.
+- Task 9A images are read-only deterministic evidence only; no copy, move, rename, destination, or formal image identity change is authorized.
+- Import approval binds `(batch_id, preflight_sha256, V1.19)` and is strictly separate from formal release/promotion authorization.
+- Task 9 authority revision freezes path-independent preflight digests, explicit translation/explanation provenance, and manifest-declared candidate ordering; no unresolved Task 9A design blocker remains pending independent review.
+- Formal database remains V1.18 with 497 questions; no new questions have been imported, no writer is authorized, and no promotion is authorized.
 - Safety branch `backup/task-7.1-ceb179e-20260808` remains retained.
 
 ## Completion gate
@@ -60,4 +72,4 @@ Scope:
 
 ## Next task
 
-No next implementation task is authorized. `WAIT FOR EXPLICIT NEXT-TASK AUTHORIZATION`. Any future stage must first establish new Design / Plan authority before implementation. Do not start Task 8C, Phase 2A, CLI/consumer migration, or formal promotion without separate explicit approval.
+Independent review of the defined Task 9 authority and Task 9A plan. The first proposed implementation task is `TASK 9A — IMPORT CONTRACT + READ-ONLY PREFLIGHT TDD`, but implementation remains `NOT STARTED — PENDING DESIGN/PLAN REVIEW AND EXPLICIT AUTHORIZATION`. Do not start Task 8C, Phase 2A, CLI/consumer migration, Task 9B/9C/9D, a real import, SQLite mutation, or formal promotion.
