@@ -1,6 +1,6 @@
 # Task 9 Batch Import Workflow Recovery Design
 
-Status: `TASK 9 AUTHORITY DEFINED — PENDING INDEPENDENT REVIEW`
+Status: `TASK 9A TDD SCAFFOLD SEQUENCING REMEDIATION IN REVIEW`
 
 Date: 2026-08-25 (Asia/Shanghai)
 
@@ -356,6 +356,61 @@ artifacts and never opens SQLite in write mode. `data/`, `releases/`, `legacy/`,
 formal image assets, and the V1.18 SQLite must have identical inventories and
 hashes before and after Task 9A.
 
+The exact public APIs and parameter order are:
+
+```python
+def load_import_manifest(
+    path: Path,
+    package_root: Path,
+) -> BatchImportManifest
+
+def preflight_import(
+    manifest: BatchImportManifest,
+    package_root: Path,
+    baseline_database: ArtifactRef,
+) -> ImportPreflightResult
+```
+
+`package_root` is an explicit transient runtime locator, not typed authority.
+Its annotation is exactly `Path` and its runtime contract follows the existing
+repository convention `isinstance(value, Path)` (therefore accepting the
+platform concrete `PosixPath`/`WindowsPath`); strings and all non-Path values
+are rejected rather than converted. The root must exist, be a directory, and
+resolve safely. The caller retains it explicitly across the call chain:
+
+```text
+package_root
+→ load_import_manifest(manifest_path, package_root)
+→ manifest
+→ preflight_import(manifest, package_root, baseline_database)
+```
+
+`load_import_manifest()` reads and parses the manifest, validates containment,
+constructs the exact manifest carrier, and validates canonical declared paths.
+Its existing Task 2 inventory checks may read declared bytes to verify file
+identity, but it does not parse candidate records, construct candidates, or
+retain `package_root`. `preflight_import()` independently resolves the
+manifest-declared relative paths beneath the explicit root, rechecks the bytes
+it consumes, reads canonical candidate/source/image evidence, constructs
+candidates, and produces issues, report, and digest.
+
+Every declared path is joined to the resolved root and then resolved before
+use. The resolved path must be contained within the resolved root by a path-
+aware containment check; string-prefix checks are insufficient. Absolute
+paths, `..`, normalization escape, nonexistent/non-directory roots, and symlink
+escape are rejected. Neither function may discover a root through cwd,
+repository lookup, manifest-parent inference, environment variables, global
+registries, or hidden maps.
+
+The locator is never stored in `BatchImportManifest`, `ImportFileEvidence`,
+`ImportCandidate`, `ImportIssue`, `ImportPreflightReport`, or
+`ImportPreflightResult`; no new context/evidence carrier is introduced. It is
+also excluded from approval identity and every canonical report/digest
+projection. Two byte- and semantics-equivalent packages under different
+absolute roots must yield identical typed file evidence, candidates, issues,
+report authority, and `preflight_sha256`, and neither absolute root may appear
+in canonical report or digest serialization.
+
 The report includes package inventory/readability, input hashes, baseline
 identity (`V1.18`, 497 rows) and `before_count`, target identity (`V1.19`),
 candidate IDs/count, duplicates, rejections, ambiguous splits/collisions,
@@ -400,6 +455,9 @@ USER APPROVED IMPORT BATCH <batch_id> <preflight_sha256> <target_release_version
 For the present authority, the final token is exactly `V1.19`.
 
 Any input, ID, enrichment, report, or target-version change invalidates it.
+Moving an otherwise identical package to a different absolute root does not:
+approval remains bound only to `(batch_id, preflight_sha256, V1.19)` and never
+to `package_root`.
 
 `preflight_sha256` is path-independent. Equivalent canonical packages and
 baseline bytes placed under different absolute roots must produce the same
@@ -551,7 +609,11 @@ Task 9A authority is now closed as follows:
 - images: read-only deterministic evidence only;
 - import approval and formal promotion: separate checkpoints.
 
-Task 9A has no remaining authority blocker. Before Task 9C writer
+The explicit `package_root` transport closes the Task 3 API authority gap. The
+two-stage scaffold sequencing remediation closes the remaining TDD execution
+gap subject to independent review. Task 1–2 remain valid and completed; Task 3
+is blocked until that review passes and implementation is explicitly resumed.
+Before Task 9C writer
 authorization, a separate reviewed decision must still freeze the V1.19
 database/manifest profile, `PRAGMA user_version`, teacher/common-error formal
 representation or exclusion, image serialization/destination, migration and
@@ -614,13 +676,40 @@ exact implementation gate for these requirements. GREEN requires Task 9A tests
 plus Public Models, Audit, Database, Release, Task 7, Task 8 equivalence, and
 V1.18 validator gates.
 
+Task 3 uses two distinct RED stages. Stage 3A first records an API-existence RED
+for the exact `preflight_import(manifest, package_root, baseline_database)`
+signature, including exact parameter names/order/annotations, return annotation,
+and absence of extra runtime authority. Module missing, symbol missing, or an
+unavailable exact signature is valid only for this API-existence RED; it is not
+a behavior RED.
+
+Only after that RED is observed may `src/joy_m2/ingest/preflight.py` first be
+created as a minimal importable scaffold. The scaffold contains only required
+imports, the exact approved function signature, and an immediate
+`NotImplementedError`. It performs no root validation, containment, file read,
+parsing, hashing, candidate/issue/report construction, or digest work. Import
+and exact-signature tests then become GREEN, but Task 3 remains in RED and the
+scaffold is not production behavior.
+
+Stage 3B then establishes the independent behavior REDs. Every behavior test
+must import the module and symbol successfully, pass the exact-signature gate,
+construct its fixtures successfully, reach the scaffold call, and fail only
+with `NotImplementedError` or the specific missing behavior. These REDs cover
+root runtime type, nonexistent/file roots, absolute/`..`/normalization/symlink
+escape, root-authority contamination, and cross-root equivalence. Only after all
+behavior REDs are observed may production behavior replace the scaffold, one
+minimal RED→GREEN group at a time. `NotImplementedError` is scaffold-only and
+must be absent from completed Task 3 runtime behavior and regression
+expectations.
+
 Task 9A requires independent review and explicit implementation authorization.
 
 ## 19. Classification
 
-The current architecture and Task 9A authority are sufficiently recovered and
-defined for independent review. No implementation, import, writer, candidate
-database, release artifact, or promotion has started. Task 9C retains the
-explicit downstream authority decisions listed in section 15.
+The Task 9A TDD scaffold sequencing remediation is ready for independent review. Task 1
+and Task 2 implementation checkpoints are complete and remain uncommitted;
+Task 3, import, writer, candidate database, release artifact, and promotion have
+not started. Task 9C retains the explicit downstream authority decisions listed
+in section 15.
 
-`READY FOR TASK 9 AUTHORITY INDEPENDENT REVIEW`
+`READY FOR TASK 9A TDD SEQUENCING REMEDIATION REVIEW`

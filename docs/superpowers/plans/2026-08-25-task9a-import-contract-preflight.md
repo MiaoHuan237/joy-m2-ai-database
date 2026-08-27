@@ -22,14 +22,19 @@
 - Teacher/common-error files are evidence only; no schema projection is allowed.
 - Typed evidence, reports, issues, and `preflight_sha256` use canonical package-
   relative paths only; absolute roots, cwd, and temporary paths are forbidden.
+- `package_root` is an explicit transient runtime `Path` passed separately to
+  manifest loading and preflight; it is never retained in a carrier, report,
+  digest, or approval identity, and no implicit root discovery is permitted.
 - Candidate semantic order is manifest-declared `candidate_records` order,
   followed by record-array order inside each canonical JSON file.
 - Translation/explanation provenance is approval-relevant and distinguishes
   `source_present`, `ai_proposed`, `verified`, and `missing`.
 - Do not add dependencies, CLI, `__main__.py`, project scripts, pipeline modules,
   staging writes, formal writes, or release behavior.
-- Task 9A has no remaining authority blocker. V1.19 serialization/profile,
-  writer, formal release, and promotion authority remain deferred to Task 9C.
+- Task 3 remains blocked until the TDD scaffold sequencing remediation passes
+  independent review and implementation is explicitly resumed. V1.19
+  serialization/profile, writer, formal release, and promotion authority remain
+  deferred to Task 9C.
 
 ---
 
@@ -49,9 +54,32 @@ def load_import_manifest(path: Path, package_root: Path) -> BatchImportManifest
 
 def preflight_import(
     manifest: BatchImportManifest,
+    package_root: Path,
     baseline_database: ArtifactRef,
 ) -> ImportPreflightResult
 ```
+
+The parameter order and `Path` annotation are exact. Runtime validation uses
+the existing repository convention `isinstance(package_root, Path)`, accepting
+the platform concrete `PosixPath`/`WindowsPath`; strings and all non-Path values
+are rejected without conversion. It must exist, be a directory, and resolve
+safely. No additional runtime authority parameter is allowed.
+
+Caller flow is explicit:
+
+```text
+package_root
+→ load_import_manifest(manifest_path, package_root)
+→ manifest
+→ preflight_import(manifest, package_root, baseline_database)
+```
+
+The root is only a locator for path-aware containment, existence/readability
+checks, and reading/hashing manifest-declared candidate/source/image bytes.
+Neither API may infer it from cwd, repository layout, manifest parent,
+environment variables, global registries, or hidden maps. It never becomes a
+field of any of the six public carriers and is excluded from canonical report,
+digest, and approval projections.
 
 Exact `joy_m2.ingest.__all__`:
 
@@ -316,7 +344,9 @@ missing manifest behavior.
 
 Decode standard JSON, enforce exact order/values, prove containment, stream
 SHA-256, compare size, and construct immutable evidence. Do not discover cwd or
-repo paths and do not write normalized output.
+repo paths and do not write normalized output. The loader may read declared
+bytes for its existing inventory identity checks, but it does not parse
+candidate records, construct `ImportCandidate`, or retain `package_root`.
 
 - [ ] **Step 4: Run focused GREEN**
 
@@ -330,7 +360,98 @@ Require the unit module PASS.
 
 **Interfaces:** Produces `preflight_import()` and compact private indexes.
 
-- [ ] **Step 1: Add baseline/zero-mutation RED tests**
+- [ ] **Step 3.1: Write the API-existence and exact-signature test**
+
+Before `src/joy_m2/ingest/preflight.py` exists, add a focused test that requires
+the exact function name, parameter names/order/annotations, return annotation,
+and no extra runtime authority parameter:
+
+```python
+def preflight_import(
+    manifest: BatchImportManifest,
+    package_root: Path,
+    baseline_database: ArtifactRef,
+) -> ImportPreflightResult
+```
+
+This is the only RED group for which module missing, symbol missing, or exact
+signature unavailable is valid. It is an API-existence RED, not a behavior RED.
+
+- [ ] **Step 3.2: Run and record the API RED**
+
+Run the focused integration test. Require failure specifically because the
+approved API/signature does not yet exist. Syntax, fixture, and unrelated setup
+errors remain invalid.
+
+- [ ] **Step 3.3: Create the minimal importable scaffold**
+
+Only after the API RED is recorded, create
+`src/joy_m2/ingest/preflight.py` with exactly the required imports, approved
+signature, and immediate scaffold exception:
+
+```python
+from pathlib import Path
+
+from joy_m2.models import ArtifactRef
+
+from .models import BatchImportManifest, ImportPreflightResult
+
+
+def preflight_import(
+    manifest: BatchImportManifest,
+    package_root: Path,
+    baseline_database: ArtifactRef,
+) -> ImportPreflightResult:
+    raise NotImplementedError
+```
+
+The scaffold must not validate a root, resolve/read/hash a file, parse a
+candidate, construct evidence/issues/report, or compute a digest.
+
+- [ ] **Step 3.4: Run the import/signature test GREEN**
+
+Require successful module/symbol import and exact signature equality. Task 3
+remains RED; scaffold importability is test infrastructure, not behavior GREEN.
+
+- [ ] **Step 3.5: Add root type and validity behavior RED tests**
+
+With the scaffold importable, add independent calls for a non-Path runtime
+value, nonexistent root, and root that is a file. Each test must reach
+`preflight_import()` and fail with scaffold `NotImplementedError`, proving the
+approved typed failure behavior is not yet implemented. No cwd/default fallback
+is permitted.
+
+- [ ] **Step 3.6: Run and record root-validation RED**
+
+Require successful import, exact-signature GREEN, valid fixtures, an actual
+function call, and behavior RED only from scaffold/missing root validation.
+
+- [ ] **Step 3.7: Add containment and symlink behavior RED tests**
+
+Add independent calls for an absolute declared child path, `..`, normalization
+escape, and an in-root symlink resolving outside the root. Require path-aware
+resolved containment; a string-prefix check is explicitly insufficient.
+
+- [ ] **Step 3.8: Run and record containment RED**
+
+Require every case to import and reach the scaffold. Module/symbol/import,
+syntax, fixture, setup, or environment errors are invalid behavior REDs.
+
+- [ ] **Step 3.9: Add root-contamination and cross-root behavior RED tests**
+
+Add a targeted test proving the absolute root never occurs in typed evidence,
+issue evidence, report serialization, canonical digest payload, or approval
+identity. Separately copy one equivalent package beneath two distinct absolute
+roots and require identical file evidence, candidate tuple, issue tuple, report
+authority, and `preflight_sha256`.
+
+- [ ] **Step 3.10: Run and record authority behavior REDs**
+
+Require both groups to import and call the scaffold successfully, then fail with
+`NotImplementedError` or their specific missing behavior. Cross-root equality
+does not replace the targeted root-string contamination assertion.
+
+- [ ] **Step 3.11: Add baseline/zero-mutation behavior RED tests**
 
 Snapshot V1.18 SQLite, `releases/`, `data/`, `legacy/`, and existing formal image
 assets before/after. Assert exact SQLite `ArtifactRef`,
@@ -338,7 +459,7 @@ assets before/after. Assert exact SQLite `ArtifactRef`,
 FK errors, V1.18 metadata, compact ID/source-locator/fragment/text/image/
 source-order indexes, and no created, deleted, or modified file.
 
-- [ ] **Step 2: Add candidate identity RED tests**
+- [ ] **Step 3.12: Add candidate identity behavior RED tests**
 
 Canonical records decode into exact `ImportCandidate` values from these input
 identity/content keys:
@@ -372,20 +493,33 @@ filesystem discovery order while holding the manifest fixed and require the
 same candidate tuple. Explicitly reorder the manifest and require the candidate
 tuple to reflect that semantic change.
 
-- [ ] **Step 3: Prove preflight RED**
+- [ ] **Step 3.13: Verify the complete behavior RED gate**
 
 ```bash
 python -m unittest -v tests.integration.test_ingest_preflight
 ```
 
-Expected: successful imports with failures only for absent preflight behavior.
+Require successful imports, exact-signature GREEN, valid fixtures, and actual
+calls reaching the scaffold. Root type/validity, containment/symlink,
+contamination/cross-root, baseline/zero-mutation, and candidate-identity groups
+must all be RED because their production behavior is absent. Only now may
+production behavior replace the scaffold.
 
-- [ ] **Step 4: Implement read-only extraction**
+- [ ] **Step 3.14: Implement minimum behavior group by group**
 
-Read only required columns. Parse candidates without constructing publication
+Validate the explicit root again at the consumption boundary. Resolve every
+manifest relative path against that root with path-aware containment; reread
+and hash the bytes consumed by preflight; read only required baseline columns.
+Parse candidates without retaining the root or constructing publication
 evidence, `AuditedRecord`, database rows, or output files.
 
-- [ ] **Step 5: Run focused GREEN**
+Implement one approved behavior group at a time using
+`RED → minimum behavior GREEN → focused tests → next RED group`; do not replace
+the scaffold with the complete preflight in one pass. `NotImplementedError` is
+valid only at the scaffold checkpoint and must disappear from final Task 3
+runtime behavior and regression expectations.
+
+- [ ] **Step 3.15: Run focused GREEN**
 
 Require integration and model modules PASS.
 
@@ -554,6 +688,10 @@ Require all PASS, skip=0, expectedFailure=0.
 The focused TDD sequence must establish all 24 contracts before its respective
 minimum implementation step; an import/setup/fixture/environment failure is
 never valid RED evidence:
+
+The preliminary Stage 3A API-existence RED is a separate testability gate and
+does not replace, merge, or delete any item below. Stage 3B establishes the
+applicable behavior REDs only after the importable scaffold exists.
 
 1. exact six-carrier fields/order/types/frozen semantics;
 2. exact manifest fields/order/policy values and V1.19 target;
