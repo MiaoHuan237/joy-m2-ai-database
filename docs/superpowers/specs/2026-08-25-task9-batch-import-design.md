@@ -344,10 +344,56 @@ prompt:
 
 Blockers include baseline/batch ID collision, fragment/text exact duplicate,
 source-locator conflict, image path with different bytes, and mutation of any
-protected baseline row or dependent tag/correction identity. An adaptation is
-a warning/manual decision and must carry `duplicate_status="adapted"`, a stable
-reference, and evidence. Semantic similarity never replaces deterministic
-checks.
+protected baseline row or dependent tag/correction identity. Adaptation is not
+intrinsic question data and therefore never adds `duplicate_status`,
+`duplicate_reference`, or `duplicate_evidence` to `ImportCandidate` or the
+canonical raw-record field set. It is separate read-only preflight evidence:
+
+```python
+@dataclass(frozen=True)
+class ImportAdaptation:
+    candidate_id: str
+    reference_question_id: str
+    adaptation_kind: str
+    evidence: str
+    reason: str
+```
+
+All five fields have exact runtime type `str`, no defaults, and must be
+non-empty. The only Task 9A `adaptation_kind` is exactly `"adapted"`; any future
+taxonomy requires separate authority. `evidence` and `reason` are
+path-independent stable values, never filesystem or runtime locators.
+
+Task 9A derives an adaptation only from deterministic baseline comparison. The
+candidate proposed ID must not collide; its stable source locator and
+`source_fragment_hash` must both resolve uniquely to the same one baseline
+question; its normalized-original-text digest must differ from that reference;
+and no identity signal may resolve to a different question. The exact Task 9A
+reason is `stable_source_identity_matches_with_transformed_text`. Evidence binds
+the matched locator/fragment signals plus candidate and reference normalized-
+text digests in this exact path-independent form:
+
+```text
+matched=source_locator+source_fragment_hash;candidate_normalized_text_sha256=<lowercase-64-hex>;reference_normalized_text_sha256=<lowercase-64-hex>
+```
+
+Semantic similarity alone is never evidence.
+
+If the normalized text also matches the single reference, the relationship is
+an exact duplicate, not an adaptation. Signals resolving to multiple references
+are ambiguous and blocking/rejected. Adaptation is warning-only and remains
+distinct from duplicate counts. An adaptation with no independent blocker may
+remain `READY FOR USER IMPORT APPROVAL`; if the same candidate has an
+independent blocker it is rejected/BLOCKED while the adaptation evidence is
+retained.
+
+Each adaptation has exactly one derived warning issue:
+`ImportIssue(code="adaptation", severity="warning",
+proposed_question_id=adaptation.candidate_id, field="adaptation",
+evidence=adaptation.evidence)`. `report.warnings` receives the code in issue
+order. This issue is a one-way status projection, not a second adaptation
+carrier. With no independent blocker the candidate remains `new_candidate` and
+is neither duplicate nor rejected.
 
 ## 11. Preflight and approval
 
@@ -394,6 +440,14 @@ manifest-declared relative paths beneath the explicit root, rechecks the bytes
 it consumes, reads canonical candidate/source/image evidence, constructs
 candidates, and produces issues, report, and digest.
 
+`preflight_import()` is an independent consumption boundary. Before opening or
+reading the baseline, resolving/reading/hashing any package file, or constructing
+a candidate, it requires `type(manifest) is BatchImportManifest` and
+`manifest.target_release_version == "V1.19"`. It never trusts prior loader
+validation as a substitute. V1.18, V1.17, arbitrary future values, `None`, an
+empty string, and wrong runtime types are rejected before I/O, and no result may
+be constructed whose manifest and report target identities differ.
+
 Every declared path is joined to the resolved root and then resolved before
 use. The resolved path must be contained within the resolved root by a path-
 aware containment check; string-prefix checks are insufficient. Absolute
@@ -403,20 +457,45 @@ repository lookup, manifest-parent inference, environment variables, global
 registries, or hidden maps.
 
 The locator is never stored in `BatchImportManifest`, `ImportFileEvidence`,
-`ImportCandidate`, `ImportIssue`, `ImportPreflightReport`, or
-`ImportPreflightResult`; no new context/evidence carrier is introduced. It is
+`ImportCandidate`, `ImportAdaptation`, `ImportIssue`, `ImportPreflightReport`, or
+`ImportPreflightResult`; no locator/context carrier is introduced.
+`ImportAdaptation` carries only logical comparison evidence and never the root.
+The locator is
 also excluded from approval identity and every canonical report/digest
 projection. Two byte- and semantics-equivalent packages under different
 absolute roots must yield identical typed file evidence, candidates, issues,
 report authority, and `preflight_sha256`, and neither absolute root may appear
 in canonical report or digest serialization.
 
+`ImportAdaptation` is a public typed preflight carrier, following the repository
+convention that public typed carriers are exported. The exact final
+`joy_m2.ingest.__all__` order is:
+
+```python
+(
+    "BatchImportManifest",
+    "ImportAdaptation",
+    "ImportCandidate",
+    "ImportFileEvidence",
+    "ImportIssue",
+    "ImportPreflightReport",
+    "ImportPreflightResult",
+    "load_import_manifest",
+    "preflight_import",
+)
+```
+
 The report includes package inventory/readability, input hashes, baseline
 identity (`V1.18`, 497 rows) and `before_count`, target identity (`V1.19`),
 candidate IDs/count, duplicates, rejections, ambiguous splits/collisions,
 missing answers/explanations/images, orphan images, enrichment completeness,
 teacher/common-error evidence availability, tag and Level distributions,
-warnings, blockers, proposed IDs, and exact projected counts:
+warnings, blockers, proposed IDs, and
+`adaptations: tuple[ImportAdaptation, ...]`. The exact report field is placed
+immediately after `proposed_ids` and before `warnings`; `ImportPreflightResult`
+does not repeat adaptation authority. Adaptations are stable-sorted by exactly
+`(candidate_id, reference_question_id, adaptation_kind, evidence, reason)`.
+The report also carries these exact projected counts:
 
 ```text
 before_count
@@ -523,7 +602,10 @@ duplicate_classifications, image_evidence, report
   paths and all report/count closure values are included. File lists use
   canonical `relative_path` order; candidate/proposed-ID/missing/ambiguous lists
   use candidate order; `level_counts` uses ascending Level; warnings and
-  blockers retain the corresponding issue order.
+  blockers retain the corresponding issue order. The report projection contains
+  the exact ordered `adaptations` tuple, so adaptation kind/reference/evidence/
+  reason changes are approval-relevant without adding a thirteenth top-level
+  digest key.
 
 Encode that object using the maintained deterministic JSON convention:
 `joy_m2.export.formats.canonical_json_bytes(payload) + b"\n"`, reusing the
@@ -539,6 +621,16 @@ Changing candidate manifest order changes the ordered candidate projections
 and digest. Merely changing filesystem discovery order, cwd, or absolute root
 does not. This makes approval bind exactly
 `(batch_id, preflight_sha256, V1.19)`.
+
+Digest regression authority is independent of production. At least one frozen
+fixture contains non-empty candidates, provenance, issues, image evidence,
+duplicate/adaptation evidence, and count closure. Tests construct the approved
+12-key payload independently and may reuse only the canonical serializer, not a
+production-captured payload or production projection helper as the expected
+oracle. Removing or changing `issues`, `image_evidence`, `candidates`,
+provenance, duplicate classifications, adaptations, counts, or baseline
+projection must fail at least one regression; adaptation evidence mutation must
+change `preflight_sha256`.
 
 Import approval and formal promotion are separate authorities. Import approval
 only permits a later maintained writer to produce a V1.19 candidate. It never
@@ -671,7 +763,7 @@ zero mutation. They also independently lock cross-absolute-root digest equality,
 absence of absolute-path authority contamination, exact translation and
 explanation provenance values/consistency, AI-proposed versus source authority,
 candidate independence from filesystem discovery order, and manifest-declared
-candidate reorder/digest semantics. The Plan's 24-item RED inventory is the
+candidate reorder/digest semantics. The Plan's 28-item RED inventory is the
 exact implementation gate for these requirements. GREEN requires Task 9A tests
 plus Public Models, Audit, Database, Release, Task 7, Task 8 equivalence, and
 V1.18 validator gates.
@@ -704,12 +796,51 @@ expectations.
 
 Task 9A requires independent review and explicit implementation authorization.
 
-## 19. Classification
+## 19. Task 3 authority remediation and mandatory restart
 
-The Task 9A TDD scaffold sequencing remediation is ready for independent review. Task 1
-and Task 2 implementation checkpoints are complete and remain uncommitted;
-Task 3, import, writer, candidate database, release artifact, and promotion have
-not started. Task 9C retains the explicit downstream authority decisions listed
-in section 15.
+Task 1–2 are completed and committed at
+`dd1cfed2cf3d09caf9136d3c9e2cc8d487186221`. Their history is retained. The
+later model-remediation checkpoint may extend only `src/joy_m2/ingest/models.py`
+and `tests/unit/test_ingest_models.py` with the exact `ImportAdaptation` carrier,
+the exact `ImportPreflightReport.adaptations` field, validation/order/digest
+contracts. It does not implement `joy_m2.ingest.__all__`; the already-frozen
+nine-name surface is implemented and tested later when the restarted Task 3/5
+scope recreates `ingest/__init__.py`. The model checkpoint does not reopen the
+manifest carrier or authorize `manifest.py` changes: adaptations are derived by
+preflight comparison, not declared by canonical raw records.
 
-`READY FOR TASK 9A TDD SEQUENCING REMEDIATION REVIEW`
+The current uncommitted Task 3 implementation did not establish the approved
+group-by-group GREEN sequence and is not commit-eligible even though the current
+focused suite is GREEN. This history must not be rewritten as compliant. After
+this authority remediation passes independent review and is committed, restart
+requires separate explicit authorization and this exact order:
+
+1. record the current three Task 3 file SHA-256 values as historical diagnostic
+   evidence;
+2. clear only the current uncommitted Task 3 assets, restoring the worktree to
+   committed Task 1–2 state without rewriting their commit;
+3. add adaptation-model RED, implement the minimum model change, run model
+   focused GREEN, obtain independent review, and commit that model remediation;
+4. re-establish the Task 3 API/signature RED and minimal scaffold;
+5. establish and record every approved behavior RED group, including boundary-
+   first V1.19 rejection and adaptation controls;
+6. implement one minimum behavior group at a time with focused GREEN before the
+   next group;
+7. establish the exact nine-name public-surface RED when `ingest/__init__.py`
+   enters its approved restarted scope;
+8. establish the independent digest-oracle RED and mutation locks, implement
+   minimum GREEN, run complete regressions, and obtain final independent review.
+
+The current Task 3 assets remain untouched until authority review, docs commit,
+and explicit restart authorization. No implementation, import, V1.19 artifact,
+writer, or promotion is authorized by this remediation.
+
+## 20. Classification
+
+Task 9A Task 1–2 are `COMPLETED / COMMITTED`. Task 3 is
+`IMPLEMENTED LOCALLY BUT NOT COMMIT-ELIGIBLE — TDD SEQUENCE REMEDIATION
+REQUIRED`. Its restart is pending authority review and explicit authorization.
+Task 9B/9C/9D remain not started, and Task 9C retains the downstream authority
+decisions listed in section 15.
+
+`READY FOR TASK 9A ADAPTATION/DIGEST AUTHORITY REMEDIATION REVIEW`

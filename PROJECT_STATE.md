@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-08-25 (Asia/Shanghai)
+Updated: 2026-08-28 (Asia/Shanghai)
 
 ## Formal data
 
@@ -15,7 +15,9 @@ Updated: 2026-08-25 (Asia/Shanghai)
 
 ## Current task
 
-Task 9A: `BLOCKED — TDD SCAFFOLD SEQUENCING REMEDIATION IN REVIEW`. Task 8B remains `CLOSED / PASS`; Task 1–2 of Task 9A completed RED→GREEN, while no real import has started.
+Task 9A: `BLOCKED — ADAPTATION/DIGEST AUTHORITY REMEDIATION IN REVIEW`.
+Task 8B remains `CLOSED / PASS`; Task 1–2 of Task 9A are completed and committed,
+while no real import has started.
 
 Scope:
 
@@ -33,9 +35,9 @@ Scope:
 - Completion evidence commit: `6969f3d88b00537386212bc91203c837cac58915`.
 - Current branch is `task8b/pipeline-migration`; the pre-Task-9-design local and remote HEAD is `2f14a99cde2199945194cdc57bd6f3d622a3fea1` with ahead/behind `0/0`.
 - V1.18 remains the current formal release. No formal database, frozen hash, compatibility object, question data, `data/`, `releases/`, or `legacy/` file changed.
-- Task 8B unresolved blockers: `NONE`. Task 9A Task 3 is blocked pending independent review of the two-stage API-RED/scaffold/behavior-RED sequencing remediation.
+- Task 8B unresolved blockers: `NONE`. Task 9A Task 3 is blocked by adaptation-carrier authority, V1.19 consumption-boundary enforcement, independent digest-oracle coverage, and mandatory TDD restart policy.
 - Production contracts remain frozen; the actual V1.16 ZIP is not a maintained runtime input.
-- Historical Task 8B post-commit clean-tree checkpoint: `PASS`; Task 9 now has only the explicitly authorized docs draft changes.
+- Historical Task 8B post-commit clean-tree checkpoint: `PASS`; the current Task 9 worktree contains only the three preserved Task 3 diagnostic assets plus the three explicitly authorized authority-doc changes.
 - GitHub backup: `COMPLETE`; branch push and annotated tag push both completed.
 - Tag: `joy-m2-task8b-closed-20260824`, targeting `6969f3d88b00537386212bc91203c837cac58915`.
 - Pull request: not created.
@@ -43,9 +45,12 @@ Scope:
 - Task 9 design: `docs/superpowers/specs/2026-08-25-task9-batch-import-design.md`.
 - Task 9A implementation plan: `docs/superpowers/plans/2026-08-25-task9a-import-contract-preflight.md`.
 - Task 9 recovered scope is batch-import manifest and preflight first; no new questions, SQLite writes, formal version changes, CLI, App/API, worksheet generation, or promotion are authorized.
-- Task 9A Task 1 immutable carriers: `RED→GREEN COMPLETED` (uncommitted).
-- Task 9A Task 2 typed manifest/inventory: `RED→GREEN COMPLETED` (uncommitted).
-- Task 9A Task 3 baseline/candidate preflight: `NOT STARTED / BLOCKED`; the explicit `package_root` API is defined, while behavior REDs require an importable no-behavior scaffold after the API-existence RED. That TDD sequencing remediation is pending independent review.
+- Task 9A Task 1 immutable carriers: `RED→GREEN COMPLETED / COMMITTED`.
+- Task 9A Task 2 typed manifest/inventory: `RED→GREEN COMPLETED / COMMITTED`.
+- Task 9A Task 1–2 checkpoint commit: `dd1cfed2cf3d09caf9136d3c9e2cc8d487186221`; its history must not be rewritten.
+- Task 9A Task 3 baseline/candidate preflight: `IMPLEMENTED LOCALLY BUT NOT COMMIT-ELIGIBLE — TDD SEQUENCE REMEDIATION REQUIRED`.
+- Task 3 authority remediation: `INDEPENDENT REVIEW PASSED`; the adaptation carrier, pre-I/O V1.19 consumption boundary, and independent 12-key digest-oracle contracts are closed.
+- Task 3 restart: `NOT YET AUTHORIZED — PENDING DOCS COMMIT + EXPLICIT AUTHORIZATION`. Current Task 3 assets remain untouched until then; the existing complete implementation cannot be incrementally patched into eligibility.
 - Task 9A exact target identity remains V1.19, while frozen V1.18 remains the read-only 497-question baseline.
 - Task 9B: `NOT STARTED`; its priority scope is a separately approved Mathpix MMD/MMD.ZIP-to-canonical-JSON adapter.
 - Task 9C: `NOT STARTED`; V1.19 database/manifest serialization, writer, image destination, schema policy, and rollback authority remain deferred.
@@ -53,7 +58,7 @@ Scope:
 - `teacher_notes` and `common_errors` are Task 9A hashed import evidence/enrichment metadata, not current V2 formal fields; future formal representation requires separate schema authority.
 - Task 9A images are read-only deterministic evidence only; no copy, move, rename, destination, or formal image identity change is authorized.
 - Import approval binds `(batch_id, preflight_sha256, V1.19)` and is strictly separate from formal release/promotion authorization.
-- Task 9 authority continues to freeze path-independent preflight digests, explicit translation/explanation provenance, and manifest-declared candidate ordering. The two-stage API-existence RED → scaffold → behavior RED remediation is pending independent review before Task 3 may resume.
+- Task 9 authority continues to freeze path-independent preflight digests, explicit translation/explanation provenance, and manifest-declared candidate ordering. The remediation additionally freezes warning-only adaptation evidence, pre-read V1.19 consumption validation, independent digest-oracle tests, and a full Task 3 restart before implementation may resume.
 - Formal database remains V1.18 with 497 questions; no new questions have been imported, no V1.19 artifact exists, no writer is authorized, and no promotion is authorized.
 - Safety branch `backup/task-7.1-ceb179e-20260808` remains retained.
 
@@ -69,10 +74,17 @@ Scope:
 - Legacy attribution remains the approved 9 PASS / 2 FAIL surface: deterministic SQLite hash attribution and frozen artifact byte-equivalence attribution, with no third failure.
 - Task 8B verification record: `docs/reports/TASK8B_VERIFICATION.md`.
 - Task 8B implementation and completion evidence are fully closed; no next implementation stage is authorized.
+- Current Task 9A focused suite remains 45/45 PASS, but that result does not make the local Task 3 implementation commit-eligible while the mandatory TDD restart remains pending.
 - Task 8A final acceptance record remains `docs/reports/TASK8A_FINAL_ACCEPTANCE.md`.
 - Verification record: `docs/reports/TASK7_VERIFICATION.md`.
 - Remote backup branch remains retained; no cleanup has been performed.
 
 ## Next task
 
-Independent review of the Task 9A TDD scaffold sequencing remediation. Task 1–2 remain completed and uncommitted; Task 3 must remain `NOT STARTED / BLOCKED` until the remediation review passes and implementation is explicitly resumed. Do not create the scaffold during this docs review, and do not start Task 8C, Phase 2A, CLI/consumer migration, Task 9B/9C/9D, a real import, SQLite mutation, or formal promotion.
+Commit the independently reviewed Task 9A adaptation/digest authority docs
+checkpoint. Task 1–2 remain completed/committed. Task 3 remains locally
+implemented but not commit-eligible; do not modify or clear its three assets
+until the docs commit and explicit restart authorization. The future first
+implementation action is adaptation-model RED in the separately authorized
+model-remediation checkpoint. Do not start Task 8C, Phase 2A, CLI/consumer
+migration, Task 9B/9C/9D, a real import, SQLite mutation, or formal promotion.

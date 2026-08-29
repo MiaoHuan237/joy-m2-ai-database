@@ -31,8 +31,9 @@
   `source_present`, `ai_proposed`, `verified`, and `missing`.
 - Do not add dependencies, CLI, `__main__.py`, project scripts, pipeline modules,
   staging writes, formal writes, or release behavior.
-- Task 3 remains blocked until the TDD scaffold sequencing remediation passes
-  independent review and implementation is explicitly resumed. V1.19
+- Task 3 remains blocked until the adaptation/digest authority remediation
+  passes independent review, is committed, and restart is explicitly authorized.
+  The current local Task 3 assets are not commit-eligible. V1.19
   serialization/profile, writer, formal release, and promotion authority remain
   deferred to Task 9C.
 
@@ -78,7 +79,7 @@ The root is only a locator for path-aware containment, existence/readability
 checks, and reading/hashing manifest-declared candidate/source/image bytes.
 Neither API may infer it from cwd, repository layout, manifest parent,
 environment variables, global registries, or hidden maps. It never becomes a
-field of any of the six public carriers and is excluded from canonical report,
+field of any of the seven public carriers and is excluded from canonical report,
 digest, and approval projections.
 
 Exact `joy_m2.ingest.__all__`:
@@ -86,6 +87,7 @@ Exact `joy_m2.ingest.__all__`:
 ```python
 (
     "BatchImportManifest",
+    "ImportAdaptation",
     "ImportCandidate",
     "ImportFileEvidence",
     "ImportIssue",
@@ -102,7 +104,7 @@ Exact `joy_m2.ingest.__all__`:
 - Create: `tests/unit/test_ingest_models.py`
 - Create: `src/joy_m2/ingest/models.py`
 
-**Interfaces:** Produces the six typed carriers consumed by manifest/preflight.
+**Interfaces:** Produces the seven typed carriers consumed by manifest/preflight.
 
 - [ ] **Step 1: Write exact-shape RED tests**
 
@@ -136,6 +138,14 @@ class BatchImportManifest:
     tag_policy: str
     answer_policy: str
     explanation_policy: str
+
+@dataclass(frozen=True)
+class ImportAdaptation:
+    candidate_id: str
+    reference_question_id: str
+    adaptation_kind: str
+    evidence: str
+    reason: str
 
 @dataclass(frozen=True)
 class ImportCandidate:
@@ -202,6 +212,7 @@ class ImportPreflightReport:
     orphan_images: tuple[str, ...]
     level_counts: tuple[tuple[int, int], ...]
     proposed_ids: tuple[str, ...]
+    adaptations: tuple[ImportAdaptation, ...]
     warnings: tuple[str, ...]
     blocking_errors: tuple[str, ...]
 
@@ -219,6 +230,22 @@ The report's baseline version/count, manifest target, and the digest-only
 baseline logical identity are one-way deterministic projections, not parallel
 evidence carriers. No projection contains `baseline_database.path`, and no
 projection may reconstruct an `ArtifactRef`.
+
+`ImportAdaptation` is separate read-only preflight classification evidence, not
+intrinsic `ImportCandidate` data and not a future formal row field. Its five
+fields have exact runtime type `str`, no defaults, and must be non-empty;
+`adaptation_kind` is exactly `"adapted"`. Do not add `duplicate_status`,
+`duplicate_reference`, or `duplicate_evidence` to `ImportCandidate` or the
+canonical raw-record field set. `ImportPreflightResult` does not repeat the
+adaptation tuple: the single maintained authority is
+`ImportPreflightReport.adaptations`, placed immediately after `proposed_ids` and
+before `warnings`.
+
+Each adaptation deterministically projects one
+`ImportIssue("adaptation", "warning", adaptation.candidate_id, "adaptation",
+adaptation.evidence)`. `report.warnings` contains the derived code in issue
+order; the issue is not a second adaptation carrier. Without an independent
+blocker, the candidate remains `new_candidate` rather than duplicate/rejected.
 
 Test frozen assignment rejection, tuple copying/no alias, exact runtime types,
 lowercase SHA-256, non-negative counts, deterministic issues, and arithmetic:
@@ -351,6 +378,27 @@ candidate records, construct `ImportCandidate`, or retain `package_root`.
 - [ ] **Step 4: Run focused GREEN**
 
 Require the unit module PASS.
+
+## Task 2A: Adaptation model remediation checkpoint
+
+Task 1–2 are already committed at
+`dd1cfed2cf3d09caf9136d3c9e2cc8d487186221`; do not rewrite that history. After
+this authority remediation is independently reviewed and committed, a separate
+explicit authorization may modify only:
+
+- `tests/unit/test_ingest_models.py`
+- `src/joy_m2/ingest/models.py`
+
+First add RED tests for exact `ImportAdaptation` fields/order/types/no-defaults,
+frozen semantics, non-empty values, exact `adaptation_kind="adapted"`, tuple
+copy/no-alias behavior, exact report-field placement, and rejection of every
+unapproved kind/type. Then implement the minimum model change, run model-focused
+GREEN, stop for independent review, and commit the model remediation before
+Task 3 restarts. `manifest.py` and canonical raw-record fields remain unchanged;
+adaptations are produced by deterministic preflight comparison.
+The final nine-name `joy_m2.ingest.__all__` is already frozen above but is not
+implemented during this two-file model checkpoint; its RED/GREEN occurs later
+when restarted Task 5 authorizes `ingest/__init__.py`.
 
 ## Task 3: Baseline and candidate identity
 
@@ -507,6 +555,15 @@ production behavior replace the scaffold.
 
 - [ ] **Step 3.14: Implement minimum behavior group by group**
 
+At the first consumption-boundary group, before baseline SQLite access,
+candidate/source/image reads, hashing, or candidate construction, require
+`type(manifest) is BatchImportManifest` and
+`manifest.target_release_version == "V1.19"`. Independently reject wrong runtime
+types, V1.18, V1.17, arbitrary future versions, `None`, and `""`, and prove with
+mocked/spied readers that rejection occurs before any baseline or package I/O.
+Prior loader validation is not trusted as a substitute. Invalid input constructs
+no result, and a result manifest/report target mismatch is forbidden.
+
 Validate the explicit root again at the consumption boundary. Resolve every
 manifest relative path against that root with path-aware containment; reread
 and hash the bytes consumed by preflight; read only required baseline columns.
@@ -537,7 +594,33 @@ orphan image, unknown primary type/tag, unsupported MMD/MMD.ZIP/PDF, and
 malformed item.
 Test `missing_from_source` succeeds only with empty solutions. Test adaptations
 require stable reference/evidence and remain warnings, not exact-duplicate
-bypasses.
+bypasses. The deterministic Task 9A rule is exact:
+
+- proposed ID collision is blocking and never adaptation;
+- source locator and `source_fragment_hash` must both resolve uniquely to the
+  same one baseline `reference_question_id`;
+- candidate and reference normalized-original-text digests must differ;
+- no identity signal may resolve to another question;
+- `adaptation_kind` is `"adapted"`, reason is exactly
+  `stable_source_identity_matches_with_transformed_text`, and evidence is exactly
+  `matched=source_locator+source_fragment_hash;candidate_normalized_text_sha256=<lowercase-64-hex>;reference_normalized_text_sha256=<lowercase-64-hex>`.
+
+If normalized text also matches the one reference, classify exact duplicate.
+Multiple reference IDs are ambiguous/blocking. Stable-sort adaptations by
+exactly `(candidate_id, reference_question_id, adaptation_kind, evidence,
+reason)`.
+
+Add independent RED controls:
+
+1. adaptation only produces the exact report carrier and warning while status
+   remains `READY FOR USER IMPORT APPROVAL`;
+2. adaptation evidence/kind/reference/reason mutation changes
+   `preflight_sha256`;
+3. adaptation plus an independent blocker rejects the candidate and blocks the
+   report while retaining adaptation evidence;
+4. exact duplicate is never classified as adaptation;
+5. each adaptation yields the exact derived warning issue/code, while an
+   adaptation-only candidate remains `new_candidate` and READY.
 
 - [ ] **Step 2: Prove behavior RED**
 
@@ -631,7 +714,9 @@ The projections are exact:
   `preflight_sha256`, including complete count closure. File lists use
   canonical `relative_path` order; candidate/proposed-ID/missing/ambiguous lists
   use candidate order; `level_counts` uses ascending Level; warnings and
-  blockers retain the corresponding issue order.
+  blockers retain the corresponding issue order. It includes the exact ordered
+  `adaptations` tuple, so the existing 12-key top-level shape remains unchanged
+  while adaptation reference/kind/evidence/reason remain digest-bound.
 
 Every path-bearing projection uses canonical package-relative POSIX paths.
 Issue diagnostics may append only a stable source locator. Exclude timestamps,
@@ -647,6 +732,20 @@ validation admits no float/NaN value, and arrays follow the ordering rules
 above. Do not create a second JSON encoding convention.
 
 Add independent RED controls:
+
+- Construct at least one frozen fixture containing non-empty candidates,
+  provenance, issues, image evidence, duplicate/adaptation evidence, and count
+  closure. Build the exact approved 12-key expected payload independently from
+  fixture authority, serialize it with `canonical_json_bytes`, and compare its
+  digest with the production result.
+- Do not capture a production payload and hash it back as expected. Do not use a
+  production projection helper as the sole expected oracle. Only the maintained
+  canonical serializer may be shared.
+- Mutation-lock every critical projection: removing or changing `issues`,
+  `image_evidence`, `candidates`, provenance, duplicate classifications,
+  adaptations, counts, or baseline projection must fail at least one test.
+  Explicitly demonstrate `issues` deletion and `image_evidence` deletion each
+  fail independently.
 
 - Copy one canonical package and the same baseline bytes beneath two different
   absolute roots. Manifest/file/candidate/issue values, report authority, and
@@ -685,7 +784,7 @@ Require all PASS, skip=0, expectedFailure=0.
 
 ### Task 9A complete RED gate inventory
 
-The focused TDD sequence must establish all 24 contracts before its respective
+The focused TDD sequence must establish all 28 contracts before its respective
 minimum implementation step; an import/setup/fixture/environment failure is
 never valid RED evidence:
 
@@ -693,7 +792,7 @@ The preliminary Stage 3A API-existence RED is a separate testability gate and
 does not replace, merge, or delete any item below. Stage 3B establishes the
 applicable behavior REDs only after the importable scaffold exists.
 
-1. exact six-carrier fields/order/types/frozen semantics;
+1. exact seven-carrier fields/order/types/frozen semantics;
 2. exact manifest fields/order/policy values and V1.19 target;
 3. canonical relative-path containment and symlink/undeclared-file rejection;
 4. file kind/SHA-256/size/readability identity;
@@ -716,7 +815,42 @@ applicable behavior REDs only after the importable scaffold exists.
 21. explanation payload/status/evidence consistency;
 22. AI-proposed versus source-authenticated authority distinction;
 23. candidate order independence from filesystem discovery order;
-24. manifest-declared candidate reorder semantics and digest change.
+24. manifest-declared candidate reorder semantics and digest change;
+25. exact manifest runtime type and V1.19 target rejected before any I/O;
+26. exact adaptation/duplicate/ambiguous precedence and warning-only READY;
+27. exact public `ImportAdaptation`/report field/order/digest binding;
+28. independent 12-key digest oracle and critical-projection mutation locks.
+
+## Mandatory Task 3 restart policy
+
+The current uncommitted Task 3 implementation is
+`IMPLEMENTED LOCALLY BUT NOT COMMIT-ELIGIBLE — TDD SEQUENCE REMEDIATION
+REQUIRED`. Its current GREEN suite does not retroactively prove the required
+group-by-group sequence, and no report may claim otherwise.
+
+During this docs remediation, record and preserve byte-identical SHA-256 values
+for `src/joy_m2/ingest/preflight.py`, `src/joy_m2/ingest/__init__.py`, and
+`tests/integration/test_ingest_preflight.py`; do not clear or modify them. Only
+after authority review PASS, a docs commit, and separate explicit restart
+authorization may the following occur:
+
+1. retain the recorded three-file hashes as historical diagnostic evidence;
+2. clear only those uncommitted Task 3 assets and restore committed Task 1–2
+   state; never rewrite `dd1cfed2cf3d09caf9136d3c9e2cc8d487186221`;
+3. execute Task 2A adaptation-model RED → minimum GREEN → focused GREEN →
+   independent review → model-remediation commit;
+4. re-establish Task 3 API/signature RED and the immediate-`NotImplementedError`
+   scaffold;
+5. establish and record all behavior RED groups before their implementations;
+6. implement group-by-group minimum GREEN;
+7. establish and satisfy the exact nine-name public-surface RED only when
+   restarted Task 5 brings `ingest/__init__.py` into scope;
+8. establish independent digest-oracle/mutation RED, implement minimum GREEN,
+   run full gates, and stop for final independent review.
+
+The existing complete preflight implementation is not a production base for
+incremental patching. Task 9B/9C/9D, imports, writers, V1.19 artifacts, and
+promotion remain forbidden.
 
 ## Task 6: Regression and review gate
 
@@ -754,9 +888,11 @@ Report RED/GREEN evidence, supported/unsupported formats, deterministic report,
 zero mutation, gates, and deferred Task 9C decisions. Do not commit, push, or
 start Task 9B/9C/9D.
 
-- [ ] **Step 4: Commit only after explicit approval**
+- [ ] **Step 4: Commit only after restarted Task 3 review and explicit approval**
 
-After review PASS and commit authorization, stage exactly six files and use:
+Only after the mandatory restart, every new RED→GREEN checkpoint, final
+independent implementation review PASS, and explicit commit authorization may
+the completed Task 9A implementation stage exactly six files and use:
 
 ```text
 feat: add batch import preflight contract
@@ -778,3 +914,11 @@ promotion remain separate checkpoints.
 Task 9B may define adapter-side image extraction and canonical evidence mapping,
 but it may not choose the formal image destination reserved for Task 9C writer
 authority.
+
+Current checkpoint: Task 1–2 are `COMPLETED / COMMITTED` at
+`dd1cfed2cf3d09caf9136d3c9e2cc8d487186221`. Task 3 is implemented locally but
+not commit-eligible; restart is pending authority review, docs commit, and
+explicit authorization. No current implementation asset may be modified or
+committed during this authority remediation.
+
+`READY FOR TASK 9A ADAPTATION/DIGEST AUTHORITY REMEDIATION REVIEW`
