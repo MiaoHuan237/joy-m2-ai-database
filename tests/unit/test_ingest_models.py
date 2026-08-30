@@ -7,6 +7,7 @@ import json
 import sys
 import tempfile
 import unittest
+from typing import get_type_hints
 
 ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / "src"
@@ -15,6 +16,7 @@ if str(SRC) not in sys.path:
 
 from joy_m2.errors import PipelineError
 from joy_m2.models import ArtifactRef
+import joy_m2.ingest.models as ingest_models
 from joy_m2.ingest.models import (
     BatchImportManifest,
     ImportCandidate,
@@ -98,18 +100,104 @@ def report(**overrides):
         orphan_images=(), level_counts=((2, 1),), proposed_ids=("NEW-Q1",),
         warnings=(), blocking_errors=(),
     )
+    if "adaptations" in {field.name for field in fields(ImportPreflightReport)}:
+        values["adaptations"] = ()
     values.update(overrides)
     return ImportPreflightReport(**values)
 
 
 class IngestModelTests(unittest.TestCase):
+    def test_import_adaptation_exact_contract(self):
+        adaptation_type = getattr(ingest_models, "ImportAdaptation", None)
+        self.assertIsNotNone(adaptation_type, "ImportAdaptation must exist")
+        expected = (
+            "candidate_id",
+            "reference_question_id",
+            "adaptation_kind",
+            "evidence",
+            "reason",
+        )
+        self.assertEqual(tuple(field.name for field in fields(adaptation_type)), expected)
+        self.assertEqual(
+            get_type_hints(adaptation_type),
+            {name: str for name in expected},
+        )
+        self.assertTrue(
+            all(
+                field.default is MISSING and field.default_factory is MISSING
+                for field in fields(adaptation_type)
+            )
+        )
+        value = adaptation_type(
+            "NEW-Q1",
+            "V118-Q1",
+            "adapted",
+            "stable evidence",
+            "stable reason",
+        )
+        with self.assertRaises(FrozenInstanceError):
+            value.reason = "changed"
+
+    def test_import_adaptation_rejects_empty_wrong_type_and_unapproved_kind(self):
+        adaptation_type = getattr(ingest_models, "ImportAdaptation", None)
+        self.assertIsNotNone(adaptation_type, "ImportAdaptation must exist")
+        valid = {
+            "candidate_id": "NEW-Q1",
+            "reference_question_id": "V118-Q1",
+            "adaptation_kind": "adapted",
+            "evidence": "stable evidence",
+            "reason": "stable reason",
+        }
+        for field_name in valid:
+            for invalid in ("", None, True, 1):
+                with self.subTest(field=field_name, invalid=invalid):
+                    values = dict(valid)
+                    values[field_name] = invalid
+                    with self.assertRaises(PipelineError):
+                        adaptation_type(**values)
+        with self.assertRaises(PipelineError):
+            adaptation_type(**dict(valid, adaptation_kind="transformed"))
+
+    def test_report_adaptations_field_order_type_and_alias_isolation(self):
+        adaptation_type = getattr(ingest_models, "ImportAdaptation", None)
+        self.assertIsNotNone(adaptation_type, "ImportAdaptation must exist")
+        report_fields = tuple(field.name for field in fields(ImportPreflightReport))
+        proposed_index = report_fields.index("proposed_ids")
+        self.assertEqual(
+            report_fields[proposed_index : proposed_index + 3],
+            ("proposed_ids", "adaptations", "warnings"),
+        )
+        self.assertEqual(
+            get_type_hints(ImportPreflightReport)["adaptations"],
+            tuple[adaptation_type, ...],
+        )
+        ordered = (
+            adaptation_type("A", "1", "adapted", "a", "a"),
+            adaptation_type("A", "1", "adapted", "a", "z"),
+            adaptation_type("A", "1", "adapted", "z", "a"),
+            adaptation_type("A", "2", "adapted", "a", "a"),
+            adaptation_type("B", "1", "adapted", "a", "a"),
+        )
+        source = list(reversed(ordered))
+        value = report(adaptations=source)
+        source.clear()
+        self.assertEqual(value.adaptations, ordered)
+        with self.assertRaises(PipelineError):
+            report(adaptations=[object()])
+
+    def test_preflight_result_does_not_duplicate_adaptation_authority(self):
+        self.assertNotIn(
+            "adaptations",
+            tuple(field.name for field in fields(ImportPreflightResult)),
+        )
+
     def test_exact_fields_order_no_defaults_and_frozen(self):
         expected = {
             ImportFileEvidence: ("relative_path", "sha256", "size_bytes", "kind"),
             BatchImportManifest: ("schema_version", "batch_id", "project", "module", "chapter", "target_release_version", "candidate_records", "source_files", "answer_files", "image_files", "teacher_notes_files", "common_errors_files", "language_policy", "split_policy", "difficulty_policy", "tag_policy", "answer_policy", "explanation_policy"),
             ImportCandidate: ("proposed_question_id", "source_id", "source_question_number", "source_section", "source_fragment_hash", "normalized_text_sha256", "question_text_original", "question_text_zh", "translation_status", "translation_evidence", "solution_original", "solution_verified", "answer_status", "explanation_text", "explanation_status", "explanation_evidence", "image_paths", "image_sha256s", "image_roles", "primary_type", "tags", "tag_status", "difficulty_level", "difficulty_status", "enrichment_status"),
             ImportIssue: ("code", "severity", "proposed_question_id", "field", "evidence"),
-            ImportPreflightReport: ("batch_id", "status", "preflight_sha256", "manifest_sha256", "baseline_version", "before_count", "target_release_version", "detected_count", "new_candidate_count", "duplicate_count", "rejected_count", "ambiguous_count", "approved_count", "projected_after_count", "readable_files", "unreadable_files", "unsupported_files", "teacher_notes_file_count", "common_errors_file_count", "ambiguous_splits", "missing_answers", "missing_explanations", "incomplete_enrichments", "missing_images", "orphan_images", "level_counts", "proposed_ids", "warnings", "blocking_errors"),
+            ImportPreflightReport: ("batch_id", "status", "preflight_sha256", "manifest_sha256", "baseline_version", "before_count", "target_release_version", "detected_count", "new_candidate_count", "duplicate_count", "rejected_count", "ambiguous_count", "approved_count", "projected_after_count", "readable_files", "unreadable_files", "unsupported_files", "teacher_notes_file_count", "common_errors_file_count", "ambiguous_splits", "missing_answers", "missing_explanations", "incomplete_enrichments", "missing_images", "orphan_images", "level_counts", "proposed_ids", "adaptations", "warnings", "blocking_errors"),
             ImportPreflightResult: ("manifest", "baseline_database", "candidates", "issues", "report"),
         }
         instances = [file_evidence(), manifest(), candidate(), ImportIssue("z", "warning", None, "f", "e"), report()]

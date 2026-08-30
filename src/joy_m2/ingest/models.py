@@ -130,6 +130,24 @@ class BatchImportManifest:
             object.__setattr__(self, name, values)
 
 
+@dataclass(frozen=True)
+class ImportAdaptation:
+    candidate_id: str
+    reference_question_id: str
+    adaptation_kind: str
+    evidence: str
+    reason: str
+
+    def __post_init__(self) -> None:
+        _require_str(self.candidate_id, "candidate_id")
+        _require_str(self.reference_question_id, "reference_question_id")
+        _require_str(self.adaptation_kind, "adaptation_kind")
+        _require_str(self.evidence, "evidence")
+        _require_str(self.reason, "reason")
+        if self.adaptation_kind != "adapted":
+            raise PipelineError("adaptation_kind must be exactly 'adapted'")
+
+
 def _validate_payload_evidence(status: str, payload: str, evidence: str | None, name: str) -> None:
     if status not in _TRANSLATION:
         raise PipelineError(f"{name}_status is invalid")
@@ -271,6 +289,7 @@ class ImportPreflightReport:
     orphan_images: tuple[str, ...]
     level_counts: tuple[tuple[int, int], ...]
     proposed_ids: tuple[str, ...]
+    adaptations: tuple[ImportAdaptation, ...]
     warnings: tuple[str, ...]
     blocking_errors: tuple[str, ...]
 
@@ -296,6 +315,23 @@ class ImportPreflightReport:
             raise PipelineError("preflight approval or ambiguity count is invalid")
         for name in ("readable_files", "unreadable_files", "unsupported_files", "ambiguous_splits", "missing_answers", "missing_explanations", "incomplete_enrichments", "missing_images", "orphan_images", "proposed_ids", "warnings", "blocking_errors"):
             object.__setattr__(self, name, _string_tuple(getattr(self, name), name))
+        adaptations = _exact_tuple(self.adaptations, ImportAdaptation, "adaptations")
+        object.__setattr__(
+            self,
+            "adaptations",
+            tuple(
+                sorted(
+                    adaptations,
+                    key=lambda adaptation: (
+                        adaptation.candidate_id,
+                        adaptation.reference_question_id,
+                        adaptation.adaptation_kind,
+                        adaptation.evidence,
+                        adaptation.reason,
+                    ),
+                )
+            ),
+        )
         levels = tuple(tuple(value) for value in self.level_counts)
         if any(len(value) != 2 or type(value[0]) is not int or type(value[1]) is not int or not 1 <= value[0] <= 5 or value[1] < 0 for value in levels):
             raise PipelineError("level_counts is invalid")
