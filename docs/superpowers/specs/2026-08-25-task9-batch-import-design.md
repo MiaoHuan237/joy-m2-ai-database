@@ -322,6 +322,29 @@ The carrier is preflight evidence only and cannot become a database row or
 publication decision. Formal, import-only, and unsupported fields remain
 explicitly classified.
 
+`normalized_text_sha256` is derived only from the exact raw/carrier field
+`question_text_original`; callers never supply it as authority. The unique
+normalization algorithm is:
+
+1. require `type(question_text_original) is str`;
+2. apply Unicode NFC normalization;
+3. replace CRLF with LF, then replace remaining CR with LF;
+4. split on LF;
+5. on each line, trim leading and trailing ASCII whitespace characters
+   `U+0020`, `U+0009`, `U+000B`, and `U+000C`, then collapse each non-empty
+   run of those characters inside the line to one `U+0020` space;
+6. remove only leading and trailing empty lines, preserving every interior
+   empty line and therefore preserving line-break structure;
+7. join the remaining lines with exactly one LF and add no trailing LF.
+
+The algorithm never lowercases, removes punctuation, changes LaTeX delimiters,
+rewrites mathematical symbols, or performs semantic rewriting. Its digest is
+exactly
+`SHA-256(normalized_text.encode("utf-8")).hexdigest()`. Consequently CRLF/LF,
+NFC/NFD, harmless surrounding ASCII whitespace, and repeated intra-line ASCII
+spaces normalize identically. Case, punctuation, mathematical-symbol,
+substantive-word, line-order, and semantic line-break changes remain distinct.
+
 Candidate semantic order is exactly the canonical manifest-declared order:
 first the order of `candidate_records` entries, then record-array order inside
 each referenced canonical JSON file. If the declared semantic order is
@@ -379,21 +402,188 @@ matched=source_locator+source_fragment_hash;candidate_normalized_text_sha256=<lo
 
 Semantic similarity alone is never evidence.
 
+A proposed-ID collision makes the adaptation predicate false. For that
+candidate, `collision_candidate_id` therefore emits no `ImportAdaptation`,
+classifies the candidate `rejected`, and makes the report BLOCKED. Likewise, if
+the approved identity signals reach competing references, no adaptation is
+emitted; the candidate follows the approved `duplicate_ambiguous` or applicable
+blocking-collision path instead.
+
 If the normalized text also matches the single reference, the relationship is
 an exact duplicate, not an adaptation. Signals resolving to multiple references
-are ambiguous and blocking/rejected. Adaptation is warning-only and remains
-distinct from duplicate counts. An adaptation with no independent blocker may
-remain `READY FOR USER IMPORT APPROVAL`; if the same candidate has an
-independent blocker it is rejected/BLOCKED while the adaptation evidence is
-retained.
+are ambiguous and blocking/rejected. Adaptation is non-blocking
+warning-classification evidence only in `report.adaptations` and remains
+distinct from both issues and duplicate counts. An adaptation with no
+independent blocker may remain `READY FOR USER IMPORT APPROVAL`. An approved
+independent blocker may coexist only when it does not negate the unique-reference
+adaptation predicate. In that case the candidate is rejected/BLOCKED while the
+adaptation evidence is retained. The representative coexistence case is an
+independently conflicting additional image binding described below, not a
+proposed-ID collision or competing identity reference.
 
-Each adaptation has exactly one derived warning issue:
-`ImportIssue(code="adaptation", severity="warning",
-proposed_question_id=adaptation.candidate_id, field="adaptation",
-evidence=adaptation.evidence)`. `report.warnings` receives the code in issue
-order. This issue is a one-way status projection, not a second adaptation
-carrier. With no independent blocker the candidate remains `new_candidate` and
-is neither duplicate nor rejected.
+Adaptation does not project an `ImportIssue`: there is no
+`ImportIssue(code="adaptation", ...)`. Its sole authoritative carrier is
+`ImportPreflightReport.adaptations`; it is neither a blocking issue nor a
+duplicate classification. With no independent blocker the candidate remains
+`new_candidate`, `issues` may be empty, and the report may remain
+`READY FOR USER IMPORT APPROVAL`. `report.warnings` does not copy adaptation
+evidence and, because Task 9A currently approves no separate warning issue
+code, is the exact empty sequence for adaptation-only input. Any future warning
+taxonomy requires separate authority.
+
+All non-adaptation duplicate/collision diagnostics use this closed blocking
+taxonomy; no runtime-selected code or field spelling is permitted:
+
+| code | severity | field |
+| --- | --- | --- |
+| `duplicate_exact` | `blocking` | `candidate` |
+| `collision_candidate_id` | `blocking` | `proposed_question_id` |
+| `collision_source_locator` | `blocking` | `source_locator` |
+| `collision_fragment_sha256` | `blocking` | `source_fragment_hash` |
+| `collision_normalized_text_sha256` | `blocking` | `normalized_text_sha256` |
+| `collision_image_sha256` | `blocking` | `image_sha256s` |
+| `duplicate_ambiguous` | `blocking` | `duplicate` |
+
+Their `ImportIssue.evidence` is never prose. It is the UTF-8 string obtained by
+decoding `canonical_json_bytes(exact_object)` with no trailing LF. Object keys
+are sorted by that maintained serializer, separators are compact, Unicode is
+not ASCII-escaped, and all arrays use the semantic orders below. Absolute
+paths, timestamps, machine data, session data, and unordered representations
+are forbidden. The exact per-code objects are:
+
+- `duplicate_exact`: `candidate_id`, `reference_question_id`,
+  `normalized_text_sha256`.
+- `collision_candidate_id`: `candidate_id`, `reference_question_id`,
+  `candidate_fragment_sha256`, `reference_fragment_sha256`.
+- `collision_source_locator`: `candidate_id`, `candidate_source_locator`,
+  `candidate_fragment_sha256`, `reference_question_id`,
+  `reference_source_locator`, `reference_fragment_sha256`. Each locator is the
+  JSON array `[source_id, source_question_number, source_section]` in that exact
+  order.
+- `collision_fragment_sha256`: `candidate_id`, `candidate_source_locator`,
+  `reference_question_id`, `reference_source_locator`,
+  `source_fragment_sha256`; locator arrays use the same exact order.
+- `collision_normalized_text_sha256`: `candidate_id`,
+  `reference_question_id`, `normalized_text_sha256`.
+- `collision_image_sha256`: `candidate_id`, `candidate_image_path`,
+  `candidate_image_role`, `candidate_image_sha256`, `reference_question_id`,
+  `reference_image_path`, `reference_image_role`, `reference_image_sha256`.
+  Both paths are logical canonical relative paths.
+- `duplicate_ambiguous`: `candidate_id`, `matches`. `matches` is an array
+  stable-sorted by `reference_question_id`; every element has exactly
+  `reference_question_id` and `signals`, and `signals` is the sorted unique
+  array drawn from `candidate_id`, `source_locator`, `source_fragment_sha256`,
+  `normalized_text_sha256`, and `image_sha256`.
+
+Issue ordering remains exactly `(proposed_question_id or "", code, field,
+evidence)`. The canonical evidence string makes equal logical diagnostics sort
+identically across roots and runtimes. Adaptation remains only the separately
+frozen warning-classification evidence in `report.adaptations`; it never enters
+`issues`, `duplicate_classifications`, or a blocking duplicate/collision code.
+
+Issue emission is also closed. Evaluate each candidate against the compact
+baseline indexes, collect the reference IDs reached by the approved identity
+signals, and apply this precedence in order:
+
+1. If the signals reach more than one distinct reference and no unique result
+   survives the rules below, emit only `duplicate_ambiguous` for those competing
+   references and classify the candidate `rejected` with `ambiguous=true`.
+2. For one reference, `duplicate_exact` requires equality of the stable source
+   locator `(source_id, source_question_number, source_section)`,
+   `source_fragment_hash`, `normalized_text_sha256`, and the complete declared
+   image identity tuple `(logical relative path, role, sha256)`; `size_bytes` is
+   file-integrity evidence and is not part of image identity. An empty image
+   tuple equals only an empty image tuple. It classifies the candidate
+   `duplicate` only when no independent blocker exists and suppresses
+   `collision_candidate_id`,
+   `collision_source_locator`, `collision_fragment_sha256`,
+   `collision_normalized_text_sha256`, and `collision_image_sha256` produced by
+   those same constituent signals against that same reference.
+3. The already-approved adaptation predicate is evaluated next. When one unique
+   reference has equal locator and fragment digest, a different normalized-text
+   digest, no proposed-ID collision, and no signal reaching a second reference,
+   retain the exact adaptation carrier and suppress only the same-reference
+   locator and fragment constituent collisions that establish the adaptation.
+   An independent blocker may coexist only when it does not invalidate that
+   unique adapted reference. The approved representative is an additional image
+   binding at the same logical path/role whose different SHA independently emits
+   `collision_image_sha256`: locator/fragment/normalized signals still identify
+   the single adapted reference, the adaptation is retained, and the candidate
+   is rejected/BLOCKED. A proposed-ID collision, `duplicate_ambiguous` from a
+   competing identity reference, or any other predicate that negates adaptation
+   identity prevents the adaptation carrier from being created.
+4. Otherwise apply each blocking collision predicate independently. One
+   candidate may therefore have multiple issues when predicates concern
+   different references or unrelated independent blockers. Any independent
+   blocker makes the final classification `rejected`, even when a
+   `duplicate_exact` issue is retained. Each candidate is counted in exactly one
+   of `new_candidate`, `duplicate`, or `rejected`.
+
+The exact predicate/precedence table is:
+
+| code | trigger | suppresses | can coexist with | classification result |
+| --- | --- | --- | --- | --- |
+| `duplicate_exact` | one reference has equal stable locator, fragment digest, normalized-text digest, and complete `(relative_path, role, sha256)` image tuple | all same-reference constituent ID/locator/fragment/text/image collision issues | unrelated blockers against other identities | `duplicate`, `ambiguous=false` only with no independent blocker; otherwise retain this issue/evidence and classify `rejected` |
+| `collision_candidate_id` | `proposed_question_id` equals an existing or earlier-batch question ID but the candidate is not its exact duplicate | nothing | any independent blocking collision, including against another reference; never `ImportAdaptation` for the same candidate | `rejected`, `ambiguous=false` unless the multi-reference rule applies |
+| `collision_source_locator` | the stable locator equals a reference locator but at least one of fragment, normalized text, or complete image identity differs, and adaptation did not suppress it | nothing | ID, fragment, normalized-text, or image collisions | `rejected`, `ambiguous=false` unless the multi-reference rule applies |
+| `collision_fragment_sha256` | `source_fragment_hash` equals a reference digest but the candidate is neither exact duplicate nor approved adaptation of that reference | nothing | independent ID, locator, normalized-text, or image collisions | `rejected`, `ambiguous=false` unless the multi-reference rule applies |
+| `collision_normalized_text_sha256` | normalized-text digest equals a reference digest but exact duplicate is false | nothing; it never creates adaptation | independent ID, locator, fragment, or image collisions | `rejected`, `ambiguous=false` unless the multi-reference rule applies |
+| `collision_image_sha256` | equal logical relative image path and role bind different SHA-256; equal path/role/SHA is the same image regardless of redundant declared size | nothing | every independent blocker | `rejected`, `ambiguous=false` unless the multi-reference rule applies |
+| `duplicate_ambiguous` | approved signals reach multiple competing references and precedence cannot select one unique duplicate/adaptation | all constituent per-reference duplicate/collision issues for those competing references | unrelated non-identity blockers only; never `ImportAdaptation` for the same candidate | `rejected`, `ambiguous=true` |
+
+The separate non-issue adaptation precedence row is:
+
+| carrier | trigger | suppresses | can coexist with | cannot coexist with | final classification |
+| --- | --- | --- | --- | --- | --- |
+| `ImportAdaptation` | one unique adapted reference; equal locator and fragment digest; different normalized-text digest; not exact duplicate; no proposed-ID collision; no competing identity reference | only the same-reference locator/fragment constituent signals that establish this adaptation | independent blockers that do not invalidate the unique adapted reference, represented by an additional same-reference image path/role binding with conflicting SHA | `collision_candidate_id`; `duplicate_ambiguous` caused by competing identity; any blocker whose predicate negates adaptation identity | `new_candidate` when no blocker exists; with an approved coexisting blocker, `rejected` while retaining the adaptation and blocker |
+
+For the same candidate, `collision_candidate_id` and `ImportAdaptation` are
+mutually exclusive because the ID collision directly falsifies the adaptation
+predicate. `duplicate_ambiguous` caused by competing identity references and
+`ImportAdaptation` are also mutually exclusive. The blocking-code table's other
+references to ID coexistence describe collisions coexisting with other blocking
+issues, never an ID collision coexisting with an adaptation.
+
+For a non-ambiguous rejected candidate that also has one unique
+`duplicate_exact` relationship, `duplicate_classifications` retains that
+duplicate reference ID and exact evidence while setting `classification` to
+`rejected`; the independent blocking issues state why it is rejected. If the
+duplicate reference is not unique, use the existing ambiguous rule: reference
+is `null`, `duplicate_ambiguous` supplies evidence, and classification is
+`rejected`. Thus `duplicate_exact` alone increments only `duplicate_count`,
+whereas `duplicate_exact` plus an independent blocker increments only
+`rejected_count`. Adaptation alone increments only `new_candidate_count`. An
+adaptation plus an approved independent blocker that preserves the unique
+adapted reference increments only `rejected_count` while retaining the
+adaptation carrier. Apparent adaptation signals plus an ID collision or
+competing reference also increment only `rejected_count`, but emit no
+adaptation.
+
+Image integrity and collision are separate. A declared `size_bytes` that does
+not match actual bytes is handled by the existing package/file-evidence
+integrity validation and blocks preflight without emitting
+`collision_image_sha256`; it does not add an eighth duplicate/collision code.
+Image collision identity uses only logical path, role, and SHA-256, and its
+existing evidence object therefore needs no size fields.
+
+Tests must lock the overlap cases: exact duplicate with equal locator/fragment/
+text/image and no independent blocker yields only `duplicate_exact` and final
+`duplicate`; exact duplicate plus an independent blocker yields final
+`rejected` while retaining both issues and the unique duplicate reference/
+evidence; exact duplicate against reference A plus an independent blocker
+against reference B also yields final `rejected`; multiple competing duplicate
+references yield `duplicate_ambiguous` and final `rejected`; adaptation-only
+retains the adaptation and remains `new_candidate`/READY; adaptation plus an
+independent additional-image SHA blocker retains the adaptation and image issue
+but is rejected/BLOCKED; adaptation-like locator/fragment/text signals plus a
+proposed-ID collision emit no adaptation and yield `collision_candidate_id`/
+rejected/BLOCKED; adaptation-like signals reaching competing references emit no
+adaptation and yield the approved ambiguous/rejected path; exact duplicate emits
+no adaptation; equal normalized text with different locator and fragment yields
+`collision_normalized_text_sha256`; equal image path/role/SHA and bytes is not a
+collision; equal image path/role with different SHA/bytes is
+`collision_image_sha256`; and equal SHA with incorrect declared size is a
+package/file-integrity failure, not `collision_image_sha256`.
 
 ## 11. Preflight and approval
 
@@ -562,6 +752,36 @@ Preflight first validates the exact baseline kind as `sqlite`, lowercase digest,
 exact integer size, bytes, schema/version, and count. The projection contains no
 path and is not a second typed carrier or reverse-reconstruction source.
 
+`manifest_sha256` is not the hash of source `import_manifest.json` bytes,
+because `preflight_import()` consumes the typed `BatchImportManifest`, not the
+raw file. It is exactly
+
+```python
+sha256(
+    canonical_json_bytes(manifest_logical_projection) + b"\n"
+).hexdigest()
+```
+
+`manifest_logical_projection` contains all and only the approved manifest
+fields: `schema_version`, `batch_id`, `project`, `module`, `chapter`,
+`target_release_version`, `candidate_records`, `source_files`, `answer_files`,
+`image_files`, `teacher_notes_files`, `common_errors_files`, `language_policy`,
+`split_policy`, `difficulty_policy`, `tag_policy`, `answer_policy`, and
+`explanation_policy`. Each of the six file arrays preserves its approved
+manifest semantic order and projects every entry as the exact object
+`relative_path`, `sha256`, `size_bytes`, `kind`. The maintained serializer
+provides UTF-8, sorted object keys, compact separators, `ensure_ascii=False`,
+and exact-type validation excludes NaN/Infinity before encoding; arrays are
+never sorted by the serializer. Exactly one LF byte is appended: neither zero
+LF, platform newline, nor two LF is valid. The projection excludes absolute
+paths, `package_root`, cwd, temporary/repository roots, runtime metadata,
+object repr, and memory identity. A target-version or policy-scalar change, a
+`candidate_records` reorder, or a change to any file entry's `relative_path`,
+`sha256`, `size_bytes`, or `kind` changes `manifest_sha256`. The same four-field
+projection rule applies to all six file arrays. Changing only the absolute
+package root while retaining every logical relative value does not change the
+digest.
+
 The canonical `task9-preflight-v1` digest object has exactly these top-level
 keys:
 
@@ -571,41 +791,75 @@ candidate_record_order, file_evidence, candidates, issues,
 duplicate_classifications, image_evidence, report
 ```
 
-- `schema` is `task9-preflight-v1`; target is exactly `V1.19`.
-- `manifest_policies` projects manifest schema/project/module/chapter and the
-  exact fields `schema_version`, `project`, `module`, `chapter`,
-  `language_policy`, `split_policy`, `difficulty_policy`, `tag_policy`,
-  `answer_policy`, and `explanation_policy`.
-- `candidate_record_order` is the manifest-declared tuple of canonical relative
-  candidate-record paths.
-- `file_evidence` is every manifest file entry projected as
-  `(relative_path, sha256, size_bytes, kind)` and sorted by exactly
-  `relative_path`; duplicate paths are already invalid and paths are canonical
-  package-relative POSIX strings.
-- `candidates` contains every exact `ImportCandidate` field in manifest-
-  declared semantic order, including translation/explanation payloads,
-  evidence, and provenance statuses.
-- `issues` contains every exact `ImportIssue` field in the existing stable
-  order `(proposed_question_id, code, field, evidence)`. File diagnostics may
-  use only a canonical relative path plus a stable source locator; absolute
-  paths, cwd, user names, OS roots, and runtime temporary directories are
-  forbidden.
-- `duplicate_classifications` has one entry per candidate in candidate order:
-  `(proposed_question_id, classification, ambiguous)`, where classification is
-  exactly `new_candidate | duplicate | rejected` and `ambiguous` is an exact
-  boolean. These values close against report counts and issues.
-- `image_evidence` is ordered by candidate order and then declared image tuple
-  position, projecting `(proposed_question_id, relative_path, sha256, role,
-  size_bytes, kind)` from candidate bindings plus declared file evidence.
-- `report` contains every `ImportPreflightReport` field except
-  `preflight_sha256`; all path-bearing report values use canonical relative
-  paths and all report/count closure values are included. File lists use
-  canonical `relative_path` order; candidate/proposed-ID/missing/ambiguous lists
-  use candidate order; `level_counts` uses ascending Level; warnings and
-  blockers retain the corresponding issue order. The report projection contains
-  the exact ordered `adaptations` tuple, so adaptation kind/reference/evidence/
-  reason changes are approval-relevant without adding a thirteenth top-level
-  digest key.
+Every typed carrier/dataclass is projected as a JSON object with named keys,
+never as a positional array. A field whose authority is a tuple/list is a JSON
+array. Optional absence is JSON `null`; empty sequences and mappings are `[]`
+and `{}`; legal empty text is `""`; no key may be omitted in place of `null`.
+Booleans are JSON `true`/`false`, exact integers are JSON numbers, `bool` never
+satisfies an integer contract, and floats/NaN/Infinity are forbidden.
+
+The nested representations are exact:
+
+- `schema` is the string `task9-preflight-v1`; `batch_id` is the manifest
+  string; `target_release_version` is exactly `V1.19`.
+- `baseline` is the exact six-key object `release_version`, `schema_version`,
+  `question_count`, `sha256`, `size_bytes`, `kind` shown above.
+- `manifest_policies` is the exact ten-key object `schema_version`, `project`,
+  `module`, `chapter`, `language_policy`, `split_policy`, `difficulty_policy`,
+  `tag_policy`, `answer_policy`, `explanation_policy`.
+- `candidate_record_order` is the JSON array of canonical relative-path strings
+  in manifest-declared order.
+- `file_evidence` is an array sorted by exactly `relative_path`; each entry is
+  the exact object `{relative_path, sha256, size_bytes, kind}`. It contains every
+  manifest entry and no absolute/root or extra key.
+- `candidates` is in manifest semantic order. Every entry is the exact 25-key
+  `ImportCandidate` object: `proposed_question_id`, `source_id`,
+  `source_question_number`, `source_section`, `source_fragment_hash`,
+  `normalized_text_sha256`, `question_text_original`, `question_text_zh`,
+  `translation_status`, `translation_evidence`, `solution_original`,
+  `solution_verified`, `answer_status`, `explanation_text`,
+  `explanation_status`, `explanation_evidence`, `image_paths`,
+  `image_sha256s`, `image_roles`, `primary_type`, `tags`, `tag_status`,
+  `difficulty_level`, `difficulty_status`, `enrichment_status`.
+- `issues` contains exact objects `{code, severity, proposed_question_id, field,
+  evidence}` and is stable-sorted by exactly
+  `(proposed_question_id or "", code, field, evidence)`. File diagnostics use
+  only a canonical relative path plus stable source locator; runtime paths and
+  roots are forbidden.
+- `duplicate_classifications` is in candidate order. Each exact object has
+  `{candidate_id, classification, reference_question_id, evidence}`;
+  `classification` is `new_candidate | duplicate | rejected`. The last two keys
+  are both `null` for `new_candidate`. For `duplicate`, they are the unique
+  reference ID and the `duplicate_exact` evidence. For a non-ambiguous
+  `rejected` candidate that retains one unique `duplicate_exact` relationship,
+  those same duplicate reference/evidence values are retained. Every other
+  non-ambiguous rejection uses the first blocking issue's evidence under
+  approved issue order and that issue's unique reference when its schema has
+  one, otherwise `null`. For ambiguous rejection, reference is `null` and
+  evidence is the `duplicate_ambiguous` evidence. Adaptations are never stored
+  here.
+- `image_evidence` is ordered by candidate order and then declared image
+  position. Every exact object has `{proposed_question_id, relative_path,
+  sha256, size_bytes, kind, role}` and is derived from candidate binding plus
+  declared logical file evidence, never a destination or runtime path.
+- `report` is one exact object containing every `ImportPreflightReport` field
+  except `preflight_sha256`: `batch_id`, `status`, `manifest_sha256`,
+  `baseline_version`, `before_count`, `target_release_version`,
+  `detected_count`, `new_candidate_count`, `duplicate_count`, `rejected_count`,
+  `ambiguous_count`, `approved_count`, `projected_after_count`,
+  `readable_files`, `unreadable_files`, `unsupported_files`,
+  `teacher_notes_file_count`, `common_errors_file_count`, `ambiguous_splits`,
+  `missing_answers`, `missing_explanations`, `incomplete_enrichments`,
+  `missing_images`, `orphan_images`, `level_counts`, `proposed_ids`,
+  `adaptations`, `warnings`, `blocking_errors`. File lists use relative-path
+  order; candidate/proposed-ID/missing/ambiguous lists use candidate order;
+  `level_counts` is an array of exact two-integer arrays in ascending Level;
+  blockers retain issue order. `warnings` contains only approved warning issue
+  codes; Task 9A currently has none, so adaptation does not add an entry and an
+  adaptation-only fixture uses `[]`. Each adaptation is the exact object
+  `{candidate_id, reference_question_id, adaptation_kind, evidence, reason}`
+  sorted by `(candidate_id, reference_question_id, adaptation_kind, evidence,
+  reason)`. This binds adaptation changes without a thirteenth top-level key.
 
 Encode that object using the maintained deterministic JSON convention:
 `joy_m2.export.formats.canonical_json_bytes(payload) + b"\n"`, reusing the
@@ -631,6 +885,30 @@ oracle. Removing or changing `issues`, `image_evidence`, `candidates`,
 provenance, duplicate classifications, adaptations, counts, or baseline
 projection must fail at least one regression; adaptation evidence mutation must
 change `preflight_sha256`.
+
+The minimum independent literal oracle fixture is a two-candidate batch over
+the frozen 497-row baseline: `TASK9-NEW-001` is a new candidate with non-empty
+translation/explanation provenance, one declared image and one exact
+`ImportAdaptation`; `TASK9-DUP-001` is an exact duplicate of the frozen
+reference `M2QD-DA-EXAMPLE-Q1`. It therefore has non-empty candidate,
+provenance, image, adaptation, duplicate-classification and issue projections:
+one adaptation in `report.adaptations` plus one `duplicate_exact` blocking
+issue, with no adaptation issue and an empty `report.warnings`. Counts
+are exactly `before=497`, `detected=2`, `new=1`, `duplicate=1`, `rejected=0`,
+`ambiguous=0`, `approved=0`, and `projected_after=498`. Test literals provide
+all source text/evidence/image bytes and compute their hashes only with the
+formulae above. The test constructs the full 12-key expected payload without a
+production projection helper and separately proves that deleting `issues` or
+`image_evidence`, or mutating candidates, provenance, duplicate
+classifications, adaptations, counts, or baseline projection, cannot match the
+production digest.
+
+The Task 9A Plan is the executable literal-oracle authority: it records the
+complete raw candidate/file bytes, full 18-field manifest object, normalized
+text and digest, complete named-key 12-key payload, exact one-issue outcome, and
+independently precomputed manifest/preflight SHA-256 values. A reviewer can copy
+those literals and recompute both digests without importing or inspecting
+`ingest.preflight` or any future production projection helper.
 
 Import approval and formal promotion are separate authorities. Import approval
 only permits a later maintained writer to produce a V1.19 candidate. It never
@@ -796,7 +1074,7 @@ expectations.
 
 Task 9A requires independent review and explicit implementation authorization.
 
-## 19. Task 3 authority remediation and mandatory restart
+## 19. Task 3 authority remediation and Stage 3B entry
 
 Task 1–2 are completed and committed at
 `dd1cfed2cf3d09caf9136d3c9e2cc8d487186221`. Their history is retained. The
@@ -804,43 +1082,40 @@ later model-remediation checkpoint may extend only `src/joy_m2/ingest/models.py`
 and `tests/unit/test_ingest_models.py` with the exact `ImportAdaptation` carrier,
 the exact `ImportPreflightReport.adaptations` field, validation/order/digest
 contracts. It does not implement `joy_m2.ingest.__all__`; the already-frozen
-nine-name surface is implemented and tested later when the restarted Task 3/5
-scope recreates `ingest/__init__.py`. The model checkpoint does not reopen the
+nine-name surface is implemented and tested later when Task 5 first creates
+`ingest/__init__.py`. The model checkpoint does not reopen the
 manifest carrier or authorize `manifest.py` changes: adaptations are derived by
 preflight comparison, not declared by canonical raw records.
 
-The current uncommitted Task 3 implementation did not establish the approved
-group-by-group GREEN sequence and is not commit-eligible even though the current
-focused suite is GREEN. This history must not be rewritten as compliant. After
-this authority remediation passes independent review and is committed, restart
-requires separate explicit authorization and this exact order:
+The adaptation-model checkpoint is already completed and committed. Stage 3A
+then correctly recorded the API/signature RED, created only
+`src/joy_m2/ingest/preflight.py` as the immediate-`NotImplementedError`
+scaffold, and made the one signature test GREEN. Those two current Stage 3A
+assets are preserved byte-identically; `src/joy_m2/ingest/__init__.py` has not
+been created. Stage 3A is `COMPLETED / GREEN` and must not be cleared, recreated,
+or rerun.
 
-1. record the current three Task 3 file SHA-256 values as historical diagnostic
-   evidence;
-2. clear only the current uncommitted Task 3 assets, restoring the worktree to
-   committed Task 1–2 state without rewriting their commit;
-3. add adaptation-model RED, implement the minimum model change, run model
-   focused GREEN, obtain independent review, and commit that model remediation;
-4. re-establish the Task 3 API/signature RED and minimal scaffold;
-5. establish and record every approved behavior RED group, including boundary-
-   first V1.19 rejection and adaptation controls;
-6. implement one minimum behavior group at a time with focused GREEN before the
-   next group;
-7. establish the exact nine-name public-surface RED when `ingest/__init__.py`
-   enters its approved restarted scope;
-8. establish the independent digest-oracle RED and mutation locks, implement
-   minimum GREEN, run complete regressions, and obtain final independent review.
+Stage 3B is `NOT STARTED / BLOCKED` with behavior RED count exactly zero. Only
+after this digest/taxonomy Revision 4 passes independent review, the three docs
+are committed, and the user gives a new explicit Stage 3B authorization may the
+existing integration test be extended with the complete approved behavior RED
+suite. The suite must include exact issue ordering with both `None` and string
+IDs, overlap-signal precedence, independent manifest/normalized-text/full
+12-key digest oracles, all critical-projection mutation locks, file-entry
+mutations, and existing boundary/zero-write contracts. Every fixture must build
+successfully, reach the existing scaffold, and fail only with
+`NotImplementedError` or the specific missing behavior. Production behavior may
+replace the scaffold only after the applicable behavior RED group is observed.
 
-The current Task 3 assets remain untouched until authority review, docs commit,
-and explicit restart authorization. No implementation, import, V1.19 artifact,
-writer, or promotion is authorized by this remediation.
+No asset deletion, API RED replay, behavior test, implementation, import,
+V1.19 artifact, writer, or promotion is authorized by this docs remediation.
 
 ## 20. Classification
 
-Task 9A Task 1–2 are `COMPLETED / COMMITTED`. Task 3 is
-`IMPLEMENTED LOCALLY BUT NOT COMMIT-ELIGIBLE — TDD SEQUENCE REMEDIATION
-REQUIRED`. Its restart is pending authority review and explicit authorization.
-Task 9B/9C/9D remain not started, and Task 9C retains the downstream authority
-decisions listed in section 15.
+Task 9A Task 1–2 and the adaptation-model checkpoint are
+`COMPLETED / COMMITTED`. Task 3 Stage 3A is `COMPLETED / GREEN`; Stage 3B is
+`BLOCKED — DIGEST/TAXONOMY REVISION 4 IN REVIEW`, behavior RED count is zero,
+and production behavior is unimplemented. Task 9B/9C/9D remain not started, and
+Task 9C retains the downstream authority decisions listed in section 15.
 
-`READY FOR TASK 9A ADAPTATION/DIGEST AUTHORITY REMEDIATION REVIEW`
+`READY FOR TASK 9A DIGEST/TAXONOMY AUTHORITY REVISION 4 REVIEW`

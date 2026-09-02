@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-08-28 (Asia/Shanghai)
+Updated: 2026-08-30 (Asia/Shanghai)
 
 ## Formal data
 
@@ -15,9 +15,11 @@ Updated: 2026-08-28 (Asia/Shanghai)
 
 ## Current task
 
-Task 9A: `BLOCKED — ADAPTATION/DIGEST AUTHORITY REMEDIATION IN REVIEW`.
-Task 8B remains `CLOSED / PASS`; Task 1–2 of Task 9A are completed and committed,
-while no real import has started.
+Task 9A: `BLOCKED — DIGEST/TAXONOMY REVISION 4 IN REVIEW`.
+Task 8B remains `CLOSED / PASS`; Task 1–2 and the adaptation-model checkpoint
+are completed and committed. Restarted Task 3 Stage 3A is API/signature GREEN;
+Stage 3B behavior RED count is 0 while the independent-oracle contract is under
+docs-only remediation. No real import has started.
 
 Scope:
 
@@ -33,11 +35,11 @@ Scope:
 - Maintained typed implementations now exist under `src/joy_m2/audit/`, `db/`, `export/`, and `release/`; no CLI or consumer migration was added.
 - Task 8 completion authority is the maintained replay against approved protected/frozen references and compatibility contracts. Fresh legacy generation remains attribution evidence only.
 - Completion evidence commit: `6969f3d88b00537386212bc91203c837cac58915`.
-- Current branch is `task8b/pipeline-migration`; the pre-Task-9-design local and remote HEAD is `2f14a99cde2199945194cdc57bd6f3d622a3fea1` with ahead/behind `0/0`.
+- Current branch is `task8b/pipeline-migration`; current committed HEAD is `4c028b0a65194686fe392ba642ce8fc3f9d55dfe`.
 - V1.18 remains the current formal release. No formal database, frozen hash, compatibility object, question data, `data/`, `releases/`, or `legacy/` file changed.
-- Task 8B unresolved blockers: `NONE`. Task 9A Task 3 is blocked by adaptation-carrier authority, V1.19 consumption-boundary enforcement, independent digest-oracle coverage, and mandatory TDD restart policy.
+- Task 8B unresolved blockers: `NONE`. Task 9A Task 3 Stage 3B remains blocked while Revision 4 closes the remaining adaptation-predicate versus independent-blocker coexistence precedence gap.
 - Production contracts remain frozen; the actual V1.16 ZIP is not a maintained runtime input.
-- Historical Task 8B post-commit clean-tree checkpoint: `PASS`; the current Task 9 worktree contains only the three preserved Task 3 diagnostic assets plus the three explicitly authorized authority-doc changes.
+- Historical Task 8B post-commit clean-tree checkpoint: `PASS`; the current Task 9 worktree contains the two byte-preserved Stage 3A files plus the three explicitly authorized authority-doc changes.
 - GitHub backup: `COMPLETE`; branch push and annotated tag push both completed.
 - Tag: `joy-m2-task8b-closed-20260824`, targeting `6969f3d88b00537386212bc91203c837cac58915`.
 - Pull request: not created.
@@ -48,9 +50,10 @@ Scope:
 - Task 9A Task 1 immutable carriers: `RED→GREEN COMPLETED / COMMITTED`.
 - Task 9A Task 2 typed manifest/inventory: `RED→GREEN COMPLETED / COMMITTED`.
 - Task 9A Task 1–2 checkpoint commit: `dd1cfed2cf3d09caf9136d3c9e2cc8d487186221`; its history must not be rewritten.
-- Task 9A Task 3 baseline/candidate preflight: `IMPLEMENTED LOCALLY BUT NOT COMMIT-ELIGIBLE — TDD SEQUENCE REMEDIATION REQUIRED`.
-- Task 3 authority remediation: `INDEPENDENT REVIEW PASSED`; the adaptation carrier, pre-I/O V1.19 consumption boundary, and independent 12-key digest-oracle contracts are closed.
-- Task 3 restart: `NOT YET AUTHORIZED — PENDING DOCS COMMIT + EXPLICIT AUTHORIZATION`. Current Task 3 assets remain untouched until then; the existing complete implementation cannot be incrementally patched into eligibility.
+- Task 9A Task 3 Stage 3A: `COMPLETED / GREEN`; its only current assets are the approved immediate-`NotImplementedError` `preflight.py` scaffold (`edcad17caf8f57e9ba7037c502d32091b1e0c0aecd9012005556cf116e186e24`) and integration signature test (`7ffc163ac105cb0257042567fa512492d0bd08d5a261ab0f418ffbcd9626a2d6`).
+- Task 9A Task 3 Stage 3B: `BLOCKED — DIGEST/TAXONOMY REVISION 4 IN REVIEW`; behavior RED count is exactly 0 and production behavior is unimplemented.
+- `src/joy_m2/ingest/__init__.py`: `NOT CREATED`; it is not a Stage 3A asset and remains deferred to its approved later task.
+- Task 3 authority Revision 4 retains all approved Revision 3 manifest/normalization/digest, adaptation/issue, image-identity, and duplicate/rejected rules. It additionally freezes that proposed-ID collision or competing-reference identity makes the adaptation predicate false, while only an independent blocker that preserves the unique adapted reference—represented by an additional same-reference image path/role SHA conflict—may coexist with and retain an adaptation. Independent review and a docs checkpoint are required before a new explicit Stage 3B authorization.
 - Task 9A exact target identity remains V1.19, while frozen V1.18 remains the read-only 497-question baseline.
 - Task 9B: `NOT STARTED`; its priority scope is a separately approved Mathpix MMD/MMD.ZIP-to-canonical-JSON adapter.
 - Task 9C: `NOT STARTED`; V1.19 database/manifest serialization, writer, image destination, schema policy, and rollback authority remain deferred.
@@ -58,7 +61,7 @@ Scope:
 - `teacher_notes` and `common_errors` are Task 9A hashed import evidence/enrichment metadata, not current V2 formal fields; future formal representation requires separate schema authority.
 - Task 9A images are read-only deterministic evidence only; no copy, move, rename, destination, or formal image identity change is authorized.
 - Import approval binds `(batch_id, preflight_sha256, V1.19)` and is strictly separate from formal release/promotion authorization.
-- Task 9 authority continues to freeze path-independent preflight digests, explicit translation/explanation provenance, and manifest-declared candidate ordering. The remediation additionally freezes warning-only adaptation evidence, pre-read V1.19 consumption validation, independent digest-oracle tests, and a full Task 3 restart before implementation may resume.
+- Task 9 authority continues to freeze path-independent preflight digests, explicit translation/explanation provenance, and manifest-declared candidate ordering. The pending remediation additionally makes the manifest digest, normalized-text digest, duplicate/collision issue taxonomy, and independent literal oracle fully reproducible without inspecting production projection code.
 - Formal database remains V1.18 with 497 questions; no new questions have been imported, no V1.19 artifact exists, no writer is authorized, and no promotion is authorized.
 - Safety branch `backup/task-7.1-ceb179e-20260808` remains retained.
 
@@ -74,17 +77,17 @@ Scope:
 - Legacy attribution remains the approved 9 PASS / 2 FAIL surface: deterministic SQLite hash attribution and frozen artifact byte-equivalence attribution, with no third failure.
 - Task 8B verification record: `docs/reports/TASK8B_VERIFICATION.md`.
 - Task 8B implementation and completion evidence are fully closed; no next implementation stage is authorized.
-- Current Task 9A focused suite remains 45/45 PASS, but that result does not make the local Task 3 implementation commit-eligible while the mandatory TDD restart remains pending.
+- Current Task 9A Stage 3A checkpoint is API/signature 1/1 plus models/manifest 14/14 PASS. Stage 3B behavior RED count remains 0; no behavior implementation is commit-eligible or authorized.
 - Task 8A final acceptance record remains `docs/reports/TASK8A_FINAL_ACCEPTANCE.md`.
 - Verification record: `docs/reports/TASK7_VERIFICATION.md`.
 - Remote backup branch remains retained; no cleanup has been performed.
 
 ## Next task
 
-Commit the independently reviewed Task 9A adaptation/digest authority docs
-checkpoint. Task 1–2 remain completed/committed. Task 3 remains locally
-implemented but not commit-eligible; do not modify or clear its three assets
-until the docs commit and explicit restart authorization. The future first
-implementation action is adaptation-model RED in the separately authorized
-model-remediation checkpoint. Do not start Task 8C, Phase 2A, CLI/consumer
-migration, Task 9B/9C/9D, a real import, SQLite mutation, or formal promotion.
+Independently review the Task 9A digest/taxonomy authority Revision 4. Preserve
+the byte-identical Stage 3A scaffold and API test. After a reviewed docs
+checkpoint and a new explicit authorization, directly extend the existing
+integration test with the complete Stage 3B behavior RED suite before any
+production behavior; do not delete or recreate Stage 3A. Do not
+start Task 8C, Phase 2A, CLI/consumer migration, Task 9B/9C/9D, a real import,
+SQLite mutation, or formal promotion.
