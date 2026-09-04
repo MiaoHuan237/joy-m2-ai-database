@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-08-30 (Asia/Shanghai)
+Updated: 2026-09-04 (Asia/Shanghai)
 
 ## Formal data
 
@@ -15,11 +15,14 @@ Updated: 2026-08-30 (Asia/Shanghai)
 
 ## Current task
 
-Task 9A: `BLOCKED — DIGEST/TAXONOMY REVISION 4 IN REVIEW`.
-Task 8B remains `CLOSED / PASS`; Task 1–2 and the adaptation-model checkpoint
-are completed and committed. Restarted Task 3 Stage 3A is API/signature GREEN;
-Stage 3B behavior RED count is 0 while the independent-oracle contract is under
-docs-only remediation. No real import has started.
+Task 9A: `BLOCKED — MISSING-IMAGE REPRESENTABILITY AUTHORITY IN REVIEW`.
+Task 8B remains `CLOSED / PASS`; Task 9A Task 1–2 and the adaptation-model
+checkpoint are completed and committed. Restarted Task 3 dependency-aware
+behavior groups C1–C4 are implemented/GREEN. C5 has not started. The current
+docs remediation resolves `missing_image` representability by making it a
+pre-candidate/package-level blocking issue that constructs no incomplete public
+candidate, while preserving the fifteen-code authority and the separate C4
+private signal-shape alignment checkpoint before C5. No real import has started.
 
 Scope:
 
@@ -35,11 +38,11 @@ Scope:
 - Maintained typed implementations now exist under `src/joy_m2/audit/`, `db/`, `export/`, and `release/`; no CLI or consumer migration was added.
 - Task 8 completion authority is the maintained replay against approved protected/frozen references and compatibility contracts. Fresh legacy generation remains attribution evidence only.
 - Completion evidence commit: `6969f3d88b00537386212bc91203c837cac58915`.
-- Current branch is `task8b/pipeline-migration`; current committed HEAD is `4c028b0a65194686fe392ba642ce8fc3f9d55dfe`.
+- Current branch is `task8b/pipeline-migration`; current committed HEAD is `05e099a666839858247d233d48dad1a74194292c`.
 - V1.18 remains the current formal release. No formal database, frozen hash, compatibility object, question data, `data/`, `releases/`, or `legacy/` file changed.
-- Task 8B unresolved blockers: `NONE`. Task 9A Task 3 Stage 3B remains blocked while Revision 4 closes the remaining adaptation-predicate versus independent-blocker coexistence precedence gap.
+- Task 8B unresolved blockers: `NONE`. Task 9A C5 remains unimplemented while this docs-only remediation freezes formal authority for all eight non-duplicate signals. `missing_image` is pre-candidate/package-level, has `proposed_question_id=None`, constructs no `ImportCandidate`, contributes no candidate count, and blocks only through the unified issue/report/digest authority.
 - Production contracts remain frozen; the actual V1.16 ZIP is not a maintained runtime input.
-- Historical Task 8B post-commit clean-tree checkpoint: `PASS`; the current Task 9 worktree contains the two byte-preserved Stage 3A files plus the three explicitly authorized authority-doc changes.
+- Historical Task 8B post-commit clean-tree checkpoint: `PASS`; the current Task 9 worktree contains the two byte-preserved C4 assets plus the three explicitly authorized authority-doc changes.
 - GitHub backup: `COMPLETE`; branch push and annotated tag push both completed.
 - Tag: `joy-m2-task8b-closed-20260824`, targeting `6969f3d88b00537386212bc91203c837cac58915`.
 - Pull request: not created.
@@ -50,10 +53,10 @@ Scope:
 - Task 9A Task 1 immutable carriers: `RED→GREEN COMPLETED / COMMITTED`.
 - Task 9A Task 2 typed manifest/inventory: `RED→GREEN COMPLETED / COMMITTED`.
 - Task 9A Task 1–2 checkpoint commit: `dd1cfed2cf3d09caf9136d3c9e2cc8d487186221`; its history must not be rewritten.
-- Task 9A Task 3 Stage 3A: `COMPLETED / GREEN`; its only current assets are the approved immediate-`NotImplementedError` `preflight.py` scaffold (`edcad17caf8f57e9ba7037c502d32091b1e0c0aecd9012005556cf116e186e24`) and integration signature test (`7ffc163ac105cb0257042567fa512492d0bd08d5a261ab0f418ffbcd9626a2d6`).
-- Task 9A Task 3 Stage 3B: `BLOCKED — DIGEST/TAXONOMY REVISION 4 IN REVIEW`; behavior RED count is exactly 0 and production behavior is unimplemented.
+- Task 9A Task 3 Stage 3A: `COMPLETED / GREEN`; its historical immediate-`NotImplementedError` scaffold and signature-only test have since evolved through approved dependency groups C1–C4. The current byte-preserved C4 assets are `preflight.py` (`610e144a808bf88b69dcf3cc9e1f1d8d153a477fbae9eee274d1e1c5786abb33`) and `test_ingest_preflight.py` (`0fb7401c4a8b5b3a9fc1b9a07d2936a37e97f47b0045617f7ca5be4b2a029720`).
+- Task 9A Task 3 dependency-aware behavior: C1–C4 `IMPLEMENTED / GREEN`; C5 `NOT STARTED`. Current status is `BLOCKED — MISSING-IMAGE REPRESENTABILITY AUTHORITY IN REVIEW`. The approved C4 production and integration-test assets remain uncommitted and byte-preserved; C5 production behavior is unimplemented.
 - `src/joy_m2/ingest/__init__.py`: `NOT CREATED`; it is not a Stage 3A asset and remains deferred to its approved later task.
-- Task 3 authority Revision 4 retains all approved Revision 3 manifest/normalization/digest, adaptation/issue, image-identity, and duplicate/rejected rules. It additionally freezes that proposed-ID collision or competing-reference identity makes the adaptation predicate false, while only an independent blocker that preserves the unique adapted reference—represented by an additional same-reference image path/role SHA conflict—may coexist with and retain an adaptation. Independent review and a docs checkpoint are required before a new explicit Stage 3B authorization.
+- Task 3 authority Revision 4 retains all approved Revision 3 manifest/normalization/digest, adaptation/issue, image-identity, and duplicate/rejected rules. It freezes that proposed-ID collision or competing-reference identity makes the adaptation predicate false, while only an independent candidate-bound blocker that preserves the unique adapted reference may coexist with and retain an adaptation. The current remediation preserves the seven-code duplicate/collision taxonomy and eight non-duplicate blocking codes, yielding the complete fifteen-code authority. It also freezes `missing_image` before typed candidate construction: raw candidate ID/path/role are issue evidence, no placeholder digest/carrier is allowed, and no adaptation, matching, classification, or count is produced for that record. Independent review and a docs checkpoint are required before the separately authorized C4 signal-shape alignment; that checkpoint must pass review and be committed before any explicit C5 authorization.
 - Task 9A exact target identity remains V1.19, while frozen V1.18 remains the read-only 497-question baseline.
 - Task 9B: `NOT STARTED`; its priority scope is a separately approved Mathpix MMD/MMD.ZIP-to-canonical-JSON adapter.
 - Task 9C: `NOT STARTED`; V1.19 database/manifest serialization, writer, image destination, schema policy, and rollback authority remain deferred.
@@ -77,17 +80,18 @@ Scope:
 - Legacy attribution remains the approved 9 PASS / 2 FAIL surface: deterministic SQLite hash attribution and frozen artifact byte-equivalence attribution, with no third failure.
 - Task 8B verification record: `docs/reports/TASK8B_VERIFICATION.md`.
 - Task 8B implementation and completion evidence are fully closed; no next implementation stage is authorized.
-- Current Task 9A Stage 3A checkpoint is API/signature 1/1 plus models/manifest 14/14 PASS. Stage 3B behavior RED count remains 0; no behavior implementation is commit-eligible or authorized.
+- Current Task 9A dependency-aware implementation is GREEN through C4. C5 has not started. The next possible implementation after this missing-image authority review and docs commit is only the separately authorized C4 private signal-shape alignment checkpoint; C5 classification remains unauthorized until that checkpoint passes review and is committed.
 - Task 8A final acceptance record remains `docs/reports/TASK8A_FINAL_ACCEPTANCE.md`.
 - Verification record: `docs/reports/TASK7_VERIFICATION.md`.
 - Remote backup branch remains retained; no cleanup has been performed.
 
 ## Next task
 
-Independently review the Task 9A digest/taxonomy authority Revision 4. Preserve
-the byte-identical Stage 3A scaffold and API test. After a reviewed docs
-checkpoint and a new explicit authorization, directly extend the existing
-integration test with the complete Stage 3B behavior RED suite before any
-production behavior; do not delete or recreate Stage 3A. Do not
-start Task 8C, Phase 2A, CLI/consumer migration, Task 9B/9C/9D, a real import,
-SQLite mutation, or formal promotion.
+Independently review Task 9A missing-image representability authority while
+preserving the byte-identical C4 production and integration-test assets. After
+that review passes and the docs checkpoint is committed, the next separately
+authorized action is only C4 private signal-shape alignment. C5 classification
+may begin only after the alignment checkpoint passes independent review, is
+committed, and receives another explicit authorization. Do not start Task 8C,
+Phase 2A, CLI/consumer migration, Task 9B/9C/9D, a real import, SQLite mutation,
+or formal promotion.

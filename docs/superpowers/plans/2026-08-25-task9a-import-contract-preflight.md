@@ -245,14 +245,15 @@ before `warnings`.
 Adaptation does not project an `ImportIssue`; `code="adaptation"` is forbidden
 in `issues`. Its only authoritative carrier is
 `ImportPreflightReport.adaptations`, and it is neither a blocking issue nor a
-duplicate classification. Without an independent blocker, the candidate
+duplicate classification. Without an independent candidate-bound blocker, the
+candidate
 remains `new_candidate`, `issues` may be empty, and the report may remain READY.
 `report.warnings` does not copy adaptation evidence and, because Task 9A
 currently approves no separate warning issue code, is exactly empty for an
 adaptation-only input. Any future warning taxonomy needs separate authority.
 
-Freeze the closed non-adaptation blocking issue taxonomy and exact field
-mapping:
+Freeze the closed duplicate/collision blocking issue taxonomy and exact field
+mapping. It is not the complete set of Task 9A blocking `ImportIssue` codes:
 
 | code | severity | field |
 | --- | --- | --- |
@@ -299,6 +300,183 @@ the separate warning-classification evidence in `report.adaptations`; it never
 enters `issues`, `duplicate_classifications`, or a blocking duplicate/collision
 code.
 
+Freeze eight non-duplicate blocking codes alongside the unchanged seven-code
+duplicate/collision taxonomy. These two sets are the complete fifteen-code Task
+9A blocking `ImportIssue` authority; no other blocking code is approved:
+
+| code | severity | field | `proposed_question_id` | exact evidence object |
+| --- | --- | --- | --- | --- |
+| `missing_image` | `blocking` | `images` | `None` | `{candidate_id, relative_path, role}` |
+| `orphan_image` | `blocking` | `images` | `None` | `{relative_path, sha256}` |
+| `unsupported_source_format` | `blocking` | `source_format` | `None` | `{relative_path, format}` |
+| `unknown_primary_type` | `blocking` | `primary_type` | candidate ID | `{candidate_id, value}` |
+| `unknown_tag` | `blocking` | `tags` | candidate ID | `{candidate_id, unknown_tags}` |
+| `malformed_candidate_json` | `blocking` | `candidate_records` | `None` | `{relative_path}` |
+| `invalid_candidate_top_level` | `blocking` | `candidate_records` | `None` | `{relative_path, expected}` |
+| `invalid_candidate_record` | `blocking` | `candidate_records` | `None` | `{relative_path, record_index}` |
+
+Every evidence string is exactly
+`canonical_json_bytes(exact_object).decode("utf-8")`, with no trailing LF and
+the existing sorted-key, compact, `ensure_ascii=False`, path-independent rules.
+Exclude absolute paths, package/baseline/cwd/temp/repository roots, timestamps,
+parser or validation prose, runtime type names, machine/session data, and
+unordered values.
+
+`malformed_candidate_json` means an approved `candidate_records` file cannot be
+decoded and parsed as strict UTF-8 JSON. It excludes deferred MMD/MMD.ZIP/PDF,
+parsed wrong-top-level JSON, and an invalid element within a valid array. Its
+exact evidence is `{relative_path}`. `invalid_candidate_top_level` means JSON
+parsed but the top level is not the approved array; its exact evidence is
+`{relative_path, expected}` with `expected="array"` exactly.
+
+`invalid_candidate_record` is one issue for each zero-based array element that
+cannot construct the exact typed `ImportCandidate`: wrong/missing keys, wrong
+scalar or container types, invalid status/payload or difficulty combinations,
+or malformed enrichment disclosure. Its exact evidence is
+`{relative_path, record_index}`; the index is an exact non-negative `int`, with
+`bool` forbidden. Its `proposed_question_id` is always `None`, including when
+the untrusted record contains a string resembling an ID. Do not merge distinct
+invalid indexes.
+
+The three candidate-input issues, `missing_image`, `orphan_image`, and
+`unsupported_source_format` are package/pre-candidate or file-level blockers.
+They create no placeholder candidate or formal candidate ID, do not directly
+change a successfully constructed candidate classification, and add nothing to
+detected/new/duplicate/rejected counts. Candidate counts include only
+successfully constructed typed candidates. Every package/file-level issue still
+enters `issues` and makes the C6 report BLOCKED.
+
+The complete package/pre-candidate blocker set is exactly
+`malformed_candidate_json`, `invalid_candidate_top_level`,
+`invalid_candidate_record`, `missing_image`, `orphan_image`, and
+`unsupported_source_format`. The complete candidate-bound blocker set is
+exactly `unknown_primary_type`, `unknown_tag`, and the seven approved
+duplicate/collision codes. No package/pre-candidate issue claims formal
+candidate identity or changes a successfully constructed candidate's
+classification.
+
+Process each candidate source record in this exact order: parse the raw record;
+validate its exact structure, runtime types, candidate ID,
+status/payload combinations, basic fields, taxonomy-field structure and
+vocabulary membership, and positional `(relative_path, role)` image bindings;
+verify that every binding has approved manifest/package image evidence
+supplying an actual SHA-256; only then construct the exact typed
+`ImportCandidate`. An unknown but correctly typed taxonomy value does not
+prevent typed construction when image evidence is complete; emit its
+candidate-bound taxonomy issue only after that construction. Perform all
+candidate-level taxonomy issue emission, duplicate/collision matching,
+adaptation, and classification only after construction.
+
+A record that fails validation before image-evidence checking emits only
+`invalid_candidate_record`: no missing-image, unknown-taxonomy,
+duplicate/collision, or adaptation signal. A missing or wrong-type
+`primary_type` is invalid-candidate-record input; an exact `str` outside the
+vocabulary is eligible for `unknown_primary_type` only if the record later
+constructs a typed candidate. A malformed `tags` container or non-string member
+is invalid-candidate-record input; valid unknown strings are eligible for one
+`unknown_tag` issue with a sorted unique `unknown_tags` array only after typed
+candidate construction.
+
+Treat `missing_image` as a pre-candidate/package-level issue. Emit it once for
+each structurally valid raw-record binding whose canonical relative path has no
+approved manifest/package image evidence capable of supplying the required
+actual SHA-256. The raw record ID must already be an exact valid, non-empty
+`str`, but it is locating evidence rather than formal candidate identity:
+`ImportIssue.proposed_question_id` is exactly `None`, and evidence is exactly
+`{candidate_id, relative_path, role}`. The private signal must retain
+`("missing_image", raw_candidate_id, relative_path, role)` or an exactly
+equivalent carrier. Its raw candidate ID may not be `None`, and C5 must not
+guess `role`.
+
+A missing-image record constructs no `ImportCandidate`, creates no candidate
+classification, adaptation, duplicate/collision result, or candidate count,
+and never enters C5 matching. Do not use a `None`, empty, or placeholder digest;
+do not delete the missing binding and pretend the candidate is complete; and do
+not introduce an incomplete public candidate carrier. Preserve the public
+frozen 25-field `ImportCandidate`: `image_paths`, `image_sha256s`, and
+`image_roles` remain equal-length tuples and every image SHA remains a valid
+lowercase 64-character SHA-256. A complete same-path/role image with a
+candidate/reference SHA conflict remains `collision_image_sha256`, not
+`missing_image`.
+
+For `orphan_image`, compare each manifest image's canonical `relative_path`
+against the canonical relative paths in valid image bindings of successfully
+constructed typed candidates. This reference identity is path-only because the
+manifest carrier has no independent role authority. Invalid record references
+do not bind an image. Emit one issue for each unbound manifest image with exact
+evidence `{relative_path, sha256}` and no invented role.
+
+For `unsupported_source_format`, ASCII-lowercase the canonical logical path and
+match deferred source suffixes longest first: `.mmd.zip -> "mmd_zip"`,
+`.mmd -> "mmd"`, `.pdf -> "pdf"`. Its exact evidence is
+`{relative_path, format}`. Task 9A identifies but does not parse those files;
+malformed canonical candidate JSON is `malformed_candidate_json` instead.
+`unknown_primary_type` evidence is `{candidate_id, value}` with no correction,
+mapping, or inference. `unknown_tag` evidence is
+`{candidate_id, unknown_tags}` and is emitted at most once per candidate with a
+sorted unique array of unknown valid strings.
+
+Non-duplicate blockers do not suppress one another or independent issues from
+other successfully constructed candidates. Candidate-bound
+`unknown_primary_type` and `unknown_tag` make the typed candidate rejected and
+count it only as rejected; retain any independently established duplicate
+reference or adaptation evidence. A clean duplicate plus an independent
+package-level blocker remains duplicate and increments only duplicate count
+while the report is BLOCKED. A duplicate plus a candidate-level taxonomy
+blocker retains the duplicate evidence but is rejected and increments only
+rejected count. A missing-image record never reaches duplicate/collision
+classification.
+
+The adaptation interaction is exact. Its unique reference is established only
+for a successfully constructed typed candidate. A missing-image record creates
+or retains no `ImportAdaptation` and never enters candidate matching. Unknown
+taxonomy may retain an independently established adaptation and issue, reject
+that typed candidate, and block the report.
+Package-level `orphan_image` or an independent `unsupported_source_format`
+retains an otherwise-valid adaptation and the candidate's `new_candidate`
+classification/count while blocking the report. An input available only in an
+unsupported format constructs no candidate, placeholder, or adaptation.
+
+Stable-sort all fifteen issue codes by exactly
+`(proposed_question_id or "", code, field, evidence)` and project them through
+the existing `issues` member of the 12-key digest payload. There is no
+`report_only_blockers`, `package_blockers`, `validation_blockers`, second
+ordering, or thirteenth key. Any membership, code, field, or evidence change
+changes the final digest; any blocking issue makes C6 report BLOCKED.
+`report.blocking_errors`, where rendered, is a deterministic derived projection
+of `issues`, not independent blocker authority.
+
+The current C4 private raw-signal inventory is exactly these eight
+non-duplicate codes and has no ninth blocking signal. After this docs revision
+passes review and is committed, do not proceed directly to C5. First require a
+separately authorized **C4 signal-shape alignment checkpoint**, limited to
+private raw-signal construction:
+
+- malformed/top-level retains canonical `relative_path`;
+- invalid-record retains canonical `relative_path` and a zero-based exact
+  integer `record_index`, never a candidate ID;
+- missing-image retains valid raw `candidate_id`, canonical `relative_path`,
+  and `role` after structural/basic validation but before, and without, typed
+  candidate construction;
+- invalid candidates never emit missing-image or later candidate-level signals;
+- missing-image records construct no typed candidate and never reach C5
+  matching, duplicate/collision, adaptation, or classification;
+- orphan detection uses canonical relative-path matching only.
+
+That checkpoint must not classify candidates, construct `ImportIssue`, or
+construct report/result. Require its independent review and checkpoint commit,
+then a separate C5 authorization to convert all eight private signals.
+`test_candidate_json_parsing_accepts_only_exact_canonical_record_objects` locks
+the three candidate-input codes as structured BLOCKED results, not
+`PipelineError`. `test_missing_orphan_images_and_unknown_taxonomy_are_blockers`
+locks the first, second, fourth, and fifth semantic/package codes;
+`test_unsupported_mmd_mmd_zip_and_pdf_are_blockers` locks the third. No new
+public API is authorized. API/carrier/root/baseline boundary errors remain
+eligible for early `PipelineError`; safely read package-internal candidate
+content errors use formal issues. Any future blocking raw signal without
+approved code, field, evidence, scope, count, and digest semantics is a new
+authority gap and must stop implementation.
+
 Freeze issue predicates and precedence before behavior tests:
 
 1. Signals resolving to multiple competing reference IDs with no unique result
@@ -309,7 +487,7 @@ Freeze issue predicates and precedence before behavior tests:
    `source_fragment_hash`, `normalized_text_sha256`, and the complete declared
    image tuple `(logical relative path, role, sha256)` (empty equals only empty);
    `size_bytes` is integrity evidence and is excluded from image identity. It
-   classifies duplicate only when no independent blocker exists and suppresses
+   classifies duplicate only when no independent candidate-bound blocker exists and suppresses
    candidate-ID, locator, fragment,
    normalized-text, and image constituent issues against that same reference.
 3. The approved adaptation predicate then suppresses only the same-reference
@@ -323,15 +501,16 @@ Freeze issue predicates and precedence before behavior tests:
    creation of the adaptation carrier.
 4. Otherwise collect every independently true collision. One candidate may have
    multiple blockers for unrelated signals or different references. Any
-   independent blocker makes the final classification `rejected`, including
-   when a `duplicate_exact` issue is retained; each candidate contributes to
-   exactly one of new/duplicate/rejected counts.
+   independent candidate-bound blocker makes the final classification
+   `rejected`, including when a `duplicate_exact` issue is retained. A
+   package/file-level blocker leaves candidate classification unchanged; each
+   candidate contributes to exactly one of new/duplicate/rejected counts.
 
 The exact predicate/precedence table is:
 
 | code | trigger | suppresses | can coexist with | classification result |
 | --- | --- | --- | --- | --- |
-| `duplicate_exact` | one reference has equal stable locator, fragment digest, normalized-text digest, and complete `(relative_path, role, sha256)` image tuple | all same-reference constituent ID/locator/fragment/text/image collisions | unrelated blockers against other identities | `duplicate`, `ambiguous=false` only without an independent blocker; otherwise retain this issue/evidence and classify `rejected` |
+| `duplicate_exact` | one reference has equal stable locator, fragment digest, normalized-text digest, and complete `(relative_path, role, sha256)` image tuple | all same-reference constituent ID/locator/fragment/text/image collisions | unrelated blockers against other identities | `duplicate`, `ambiguous=false` without an independent candidate-bound blocker; a candidate-bound blocker retains this issue/evidence and classifies `rejected`, while a package/file-level blocker leaves it `duplicate` |
 | `collision_candidate_id` | proposed ID equals an existing/earlier-batch ID but is not its exact duplicate | nothing | any independent blocking collision; never `ImportAdaptation` for the same candidate | `rejected`, `ambiguous=false` unless multi-reference |
 | `collision_source_locator` | locator equals but fragment, normalized text, or complete image identity differs, and adaptation did not suppress it | nothing | independent ID/fragment/text/image collisions | `rejected`, `ambiguous=false` unless multi-reference |
 | `collision_fragment_sha256` | fragment digest equals but neither exact duplicate nor approved adaptation applies | nothing | independent ID/locator/text/image collisions | `rejected`, `ambiguous=false` unless multi-reference |
@@ -343,7 +522,7 @@ The separate non-issue adaptation precedence row is:
 
 | carrier | trigger | suppresses | can coexist with | cannot coexist with | final classification |
 | --- | --- | --- | --- | --- | --- |
-| `ImportAdaptation` | one unique adapted reference; equal locator and fragment digest; different normalized-text digest; not exact duplicate; no proposed-ID collision; no competing identity reference | only same-reference locator/fragment constituent signals establishing the adaptation | independent blockers that preserve the unique adapted reference, represented by an additional same-reference image path/role binding with conflicting SHA | `collision_candidate_id`; competing-reference `duplicate_ambiguous`; every blocker whose predicate negates adaptation identity | `new_candidate` without a blocker; with an approved coexisting blocker, `rejected` while retaining the adaptation and blocker |
+| `ImportAdaptation` | one unique adapted reference; equal locator and fragment digest; different normalized-text digest; not exact duplicate; no proposed-ID collision; no competing identity reference | only same-reference locator/fragment constituent signals establishing the adaptation | independent blockers that preserve the unique adapted reference, represented by an additional same-reference image path/role binding with conflicting SHA | `collision_candidate_id`; competing-reference `duplicate_ambiguous`; every blocker whose predicate negates adaptation identity | `new_candidate` without a candidate-bound blocker; an approved coexisting candidate-bound blocker makes it `rejected`, while a package/file-level blocker retains `new_candidate`; retain the adaptation and blocker in both cases |
 
 For one candidate, `collision_candidate_id` cannot coexist with
 `ImportAdaptation`: the collision makes the adaptation predicate false.
@@ -357,11 +536,14 @@ while retaining that duplicate reference ID and evidence; independent issues
 record the rejection reason. If the duplicate reference is not unique, retain
 the existing ambiguous rule with null reference and `duplicate_ambiguous`
 evidence. Consequently duplicate-only increments only duplicate count;
-duplicate plus blocker increments only rejected count; adaptation-only
-increments only new count; adaptation plus an approved independent blocker that
-preserves the unique adapted reference increments only rejected count while
-retaining `report.adaptations`. Adaptation-like signals plus an ID collision or
-competing reference increment only rejected count and emit no adaptation.
+duplicate plus a candidate-bound blocker increments only rejected count, while
+duplicate plus a package/file-level blocker remains duplicate; adaptation-only
+increments only new count; adaptation plus an approved independent
+candidate-bound blocker that preserves the unique adapted reference increments
+only rejected count while retaining `report.adaptations`, whereas a package/
+file-level blocker retains the new count. Adaptation-like signals plus an ID
+collision or competing reference increment only rejected count and emit no
+adaptation.
 
 Treat image metadata integrity separately from image collision. Same logical
 path/role/SHA is no collision. Different SHA at the same logical path/role is
@@ -371,9 +553,10 @@ existing package/file-evidence integrity failure, never
 the existing image-collision evidence schema therefore remains size-free.
 
 Add independent overlap REDs for: duplicate-only producing final duplicate;
-duplicate plus independent blocker producing final rejected while retaining
-the duplicate issue/reference/evidence; duplicate reference A plus blocker
-reference B producing rejected; competing duplicate references producing
+duplicate plus an independent candidate-bound blocker producing final rejected
+while retaining the duplicate issue/reference/evidence; duplicate reference A
+plus a candidate-bound blocker against reference B producing rejected;
+competing duplicate references producing
 ambiguous/rejected; adaptation-only producing new/READY; adaptation plus an
 independent additional-image SHA blocker retaining adaptation and image issue but
 producing rejected/BLOCKED; adaptation-like signals plus proposed-ID collision
@@ -400,6 +583,12 @@ projected_after_count == before_count + new_candidate_count
 approved_count == 0
 ambiguous_count <= rejected_count
 ```
+
+`detected_count` and all three classification counts include only records that
+successfully construct the exact typed `ImportCandidate`. Malformed,
+wrong-top-level, invalid-record, missing-image, orphan-image, and unsupported-
+format package/pre-candidate facts block through `issues` and add no candidate
+count.
 
 `new_candidate_count` means candidates eligible for user approval after
 duplicate/rejection classification. `projected_after_count` is the count if the
@@ -805,6 +994,22 @@ Add independent RED controls:
 
 Run integration tests. Each new test must fail for its missing production check.
 
+- [ ] **Step 2.5: Complete the separately reviewed C4 signal-shape alignment**
+
+This step requires the non-duplicate authority docs review and commit plus a
+new explicit authorization. It is a checkpoint before C5, not C5 itself. Modify
+only private raw-signal construction to preserve the exact shapes frozen above:
+canonical relative paths for malformed/top-level input; relative path plus
+zero-based exact integer index for invalid records; valid raw candidate ID,
+relative path, and role for missing images after structural/basic validation
+but before, and without, typed candidate construction; path-only orphan
+reference identity. Invalid records must emit no missing-image or later
+candidate-level signal. Missing-image records must construct no typed candidate
+and must not reach C5 matching, duplicate/collision, adaptation, or
+classification. Do not classify candidates or construct `ImportIssue`, report,
+or result. Independently review and commit this checkpoint before a separate C5
+authorization.
+
 - [ ] **Step 3: Implement deterministic issue collection**
 
 Collect every per-record issue and stable-sort by exactly:
@@ -814,6 +1019,22 @@ Collect every per-record issue and stable-sort by exactly:
 ```
 
 Do not silently deduplicate records or issues.
+
+Only after the signal-shape checkpoint passes independent review and is
+committed, and C5 receives a new explicit authorization, convert all eight C4
+raw signals into the exact formal non-duplicate issues above. The existing
+`test_candidate_json_parsing_accepts_only_exact_canonical_record_objects` locks
+`malformed_candidate_json`, `invalid_candidate_top_level`, and
+`invalid_candidate_record` as structured BLOCKED results. The existing
+`missing_image` behavior is likewise a structured `ImportIssue`/BLOCKED result,
+not an early `PipelineError`. The existing
+`test_missing_orphan_images_and_unknown_taxonomy_are_blockers` locks
+`missing_image`, `orphan_image`, `unknown_primary_type`, and `unknown_tag`; the
+existing `test_unsupported_mmd_mmd_zip_and_pdf_are_blockers` locks
+`unsupported_source_format`. These use the existing `ImportIssue` carrier and
+require no new public API. If another C4 raw signal needs an issue but has no
+approved code, field, evidence object, scope, count, and digest semantics, stop
+with an authority gap rather than inventing a code.
 
 Issue `evidence` that identifies an input file is limited to a canonical
 package-relative path plus stable source locator. Reject/normalize away any
