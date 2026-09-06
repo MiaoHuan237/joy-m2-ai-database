@@ -1,6 +1,6 @@
 # Task 9 Batch Import Workflow Recovery Design
 
-Status: `TASK 9A TDD SCAFFOLD SEQUENCING REMEDIATION IN REVIEW`
+Status: `TASK 9A FILE-INTEGRITY AUTHORITY REVISION IN REVIEW`
 
 Date: 2026-08-25 (Asia/Shanghai)
 
@@ -485,13 +485,18 @@ identically across roots and runtimes. Adaptation remains only the separately
 frozen warning-classification evidence in `report.adaptations`; it never enters
 `issues`, `duplicate_classifications`, or a blocking duplicate/collision code.
 
-### Non-duplicate blocking import issues
+### Non-duplicate and file-integrity blocking import issues
 
 The duplicate/collision taxonomy above retains its existing triggers, fields,
 evidence, severity, precedence, suppression, and coexistence rules. It contains
-seven codes. The separate closed non-duplicate taxonomy below contains eight
-codes. Together they are the complete fifteen-code Task 9A blocking
-`ImportIssue` authority; no other blocking code is approved:
+seven codes. The existing closed non-duplicate taxonomy below contains eight
+codes, and the file-integrity taxonomy adds exactly one code. Together they are
+the complete sixteen-code Task 9A blocking `ImportIssue` authority; no other
+blocking code is approved:
+
+The independent 37-method / 29-RED blocker scan found no other structured-
+BLOCKED condition lacking an approved `ImportIssue` code. This preserves the
+closed sixteen-code inventory and does not authorize a seventeenth code.
 
 | code | severity | field | `proposed_question_id` | exact evidence object |
 | --- | --- | --- | --- | --- |
@@ -503,6 +508,47 @@ codes. Together they are the complete fifteen-code Task 9A blocking
 | `malformed_candidate_json` | `blocking` | `candidate_records` | `None` | `{relative_path}` |
 | `invalid_candidate_top_level` | `blocking` | `candidate_records` | `None` | `{relative_path, expected}` |
 | `invalid_candidate_record` | `blocking` | `candidate_records` | `None` | `{relative_path, record_index}` |
+| `file_integrity_mismatch` | `blocking` | `file_integrity` | `None` | `{relative_path, expected_sha256, actual_sha256, expected_size_bytes, actual_size_bytes}` |
+
+`file_integrity_mismatch` applies only after a manifest-declared package path
+has passed containment, existence, regular-file, and readability checks and its
+raw bytes have been read. Emit it when either the actual byte length differs
+from declared `size_bytes` or `sha256(actual_bytes)` differs from the declared
+digest. Missing, unreadable, non-regular, or escaping paths remain existing C1
+early `PipelineError` cases. The five evidence keys are always present even
+when only size or only SHA differs. Both sizes are exact non-negative `int`
+values with `bool` forbidden, both digests are lowercase 64-character
+hexadecimal SHA-256 values, and `relative_path` is the canonical package-
+relative path. The canonical evidence has no trailing LF, absolute path, or
+exception prose. A mutated carrier with a wrong metadata runtime type,
+malformed declared digest, invalid kind, or invalid relative path cannot supply
+this exact evidence and remains an API/carrier-contract `PipelineError`; the
+structured issue covers comparison failure between valid declared scalars and
+actual readable bytes.
+
+An integrity-failed file is untrusted and its bytes are excluded from all
+downstream parsing, provenance, image evidence, matching, adaptation, and
+classification. An integrity-failed `candidate_records` file is not parsed and
+emits no additional `malformed_candidate_json`,
+`invalid_candidate_top_level`, or `invalid_candidate_record`. A candidate that
+declares an integrity-failed image is not constructed and does not also emit
+`missing_image`; it enters no detected/new/duplicate/rejected count. The same
+rule applies when a candidate's `source:` translation or explanation evidence
+names an integrity-failed source file. Task 9A defines no per-candidate binding
+for answer, teacher-note, or common-error files, so their integrity failures
+block the package but do not invalidate otherwise independent typed candidates.
+Do not infer a dependency that the manifest schema does not express. Thus a
+clean duplicate plus an unrelated teacher-note integrity mismatch remains
+classified and counted once as duplicate while the report is BLOCKED. An
+adaptation is likewise retained for an unrelated failed file, but an
+integrity-failed image or source evidence required by that candidate prevents
+both candidate construction and adaptation creation.
+
+The canonical `file_evidence` projection continues to record the declared
+manifest inventory, not to certify that every entry passed consumption-time
+integrity. The actual and expected identities of a failed entry are represented
+only by its `file_integrity_mismatch` issue. The failed file remains readable
+for report inventory purposes, but its bytes are not trusted downstream.
 
 Every evidence string is exactly
 `canonical_json_bytes(exact_object).decode("utf-8")`, with no trailing LF and
@@ -542,7 +588,8 @@ and make the final report `BLOCKED — IMPORT PREFLIGHT FAILED`.
 The complete package/pre-candidate blocker set is exactly
 `malformed_candidate_json`, `invalid_candidate_top_level`,
 `invalid_candidate_record`, `missing_image`, `orphan_image`, and
-`unsupported_source_format`. The complete candidate-bound blocker set is
+`unsupported_source_format`, plus `file_integrity_mismatch`. The complete
+candidate-bound blocker set is
 exactly `unknown_primary_type`, `unknown_tag`, and the seven approved
 duplicate/collision codes. No package/pre-candidate issue claims formal
 candidate identity or changes a successfully constructed candidate's
@@ -634,7 +681,7 @@ candidate's `new_candidate` classification/count while blocking the report. If
 an input exists only in an unsupported format and no typed candidate is
 constructed, no placeholder candidate or adaptation exists.
 
-All fifteen codes share the existing global ordering exactly as
+All sixteen codes share the existing global ordering exactly as
 `(proposed_question_id or "", code, field, evidence)` and the existing `issues`
 projection of the 12-key digest payload. There is no `report_only_blockers`,
 `package_blockers`, `validation_blockers`, second ordering, or thirteenth
@@ -643,26 +690,30 @@ final `preflight_sha256`; any blocking issue makes C6 close the report as
 BLOCKED. `report.blocking_errors`, where rendered, is only a deterministic
 derived projection of `issues`, never independent blocker authority.
 
-The current C4 private raw-signal inventory is exactly the eight non-duplicate
-codes above and has no ninth blocking signal. Before C5, after this docs change
-passes review and is committed, a separately authorized **C4 signal-shape
-alignment checkpoint** must adjust only private signal construction so that:
+**HISTORICAL COMPLETED C4 SIGNAL-SHAPE ALIGNMENT — NO LONGER CURRENT EXECUTION
+AUTHORITY.** The C4 private raw-signal inventory remained exactly the eight
+non-duplicate codes and had no ninth C4 blocking signal. The separately
+approved C1 file-integrity signal does not alter that historical inventory.
+After the earlier docs change passed review and was committed, the separately
+authorized **C4 SIGNAL-SHAPE ALIGNMENT** adjusted only private signal
+construction and completed with status `COMPLETED / GREEN`:
 
-- malformed/top-level signals retain canonical `relative_path`;
-- invalid-record signals retain canonical `relative_path` plus zero-based exact
-  integer `record_index` and never claim a candidate ID;
-- missing-image signals retain valid raw `candidate_id`, canonical
+- malformed/top-level signals retained canonical `relative_path`;
+- invalid-record signals retained canonical `relative_path` plus zero-based
+  exact integer `record_index` and never claimed a candidate ID;
+- missing-image signals retained valid raw `candidate_id`, canonical
   `relative_path`, and `role` after structural/basic validation but before, and
   without, typed candidate construction;
-- invalid candidates never emit missing-image or later candidate-level signals;
-- missing-image records construct no typed candidate and never reach C5
+- invalid candidates emitted no missing-image or later candidate-level signals;
+- missing-image records constructed no typed candidate and never reached C5
   matching, duplicate/collision, adaptation, or classification;
-- orphan reference detection uses canonical relative-path matching only.
+- orphan reference detection used canonical relative-path matching only.
 
-That checkpoint must not classify candidates, construct `ImportIssue`, or
-construct the report/result. Only after its independent review and checkpoint
-commit may a separately authorized C5 convert all eight private signals to the
-formal non-duplicate issues. The existing integration test
+That checkpoint did not classify candidates, construct `ImportIssue`, or
+construct the report/result. Its independent review passed, its checkpoint was
+committed, and C5 was subsequently authorized and completed, converting all
+eight private signals to the formal non-duplicate issues. The existing
+integration test
 `test_candidate_json_parsing_accepts_only_exact_canonical_record_objects` locks
 the three candidate-input issues as structured BLOCKED results, not
 `PipelineError`. `missing_image` is the same structured `ImportIssue`/BLOCKED
@@ -670,9 +721,11 @@ boundary and is not an early `PipelineError`.
 `test_missing_orphan_images_and_unknown_taxonomy_are_blockers`
 locks the first, second, fourth, and fifth semantic/package codes, and
 `test_unsupported_mmd_mmd_zip_and_pdf_are_blockers` locks the third. No new
-public API is authorized. API/carrier/root/baseline boundary errors remain
-eligible for early `PipelineError`; safely read package-internal candidate
-content errors use the formal issues above. Any future raw blocking signal
+public API is authorized. API/carrier/root/baseline boundary errors and package
+containment/missing/unreadable/non-regular file failures remain eligible for
+early `PipelineError`; readable package-file size/SHA identity mismatch is the
+single exception and uses `file_integrity_mismatch`. Safely read package-
+internal candidate content errors use the formal issues above. Any future raw blocking signal
 without approved code, field, evidence, scope, count, and digest semantics is a
 new authority gap and must stop implementation.
 
@@ -756,12 +809,15 @@ the adaptation carrier; a package/file-level blocker retains the new-candidate
 count. Apparent adaptation signals plus an ID collision or competing reference
 also increment only `rejected_count`, but emit no adaptation.
 
-Image integrity and collision are separate. A declared `size_bytes` that does
-not match actual bytes is handled by the existing package/file-evidence
-integrity validation and blocks preflight without emitting
-`collision_image_sha256`; it does not add an eighth duplicate/collision code.
-Image collision identity uses only logical path, role, and SHA-256, and its
-existing evidence object therefore needs no size fields.
+Image integrity and collision are separate. A declared image whose actual
+bytes differ from its own declared size or SHA emits
+`file_integrity_mismatch`, never `collision_image_sha256`, and its untrusted
+manifest SHA is not used for candidate/reference matching. In particular, a
+same-path/role image with matching actual and declared SHA but incorrect
+declared size emits `file_integrity_mismatch`; it is not an image collision.
+`collision_image_sha256` remains limited to two independently valid image
+identities with the same logical path/role and different approved SHA values.
+Image collision identity therefore remains size-free.
 
 Tests must lock the overlap cases: exact duplicate with equal locator/fragment/
 text/image and no independent candidate-bound blocker yields only
@@ -782,7 +838,72 @@ no adaptation; equal normalized text with different locator and fragment yields
 `collision_normalized_text_sha256`; equal image path/role/SHA and bytes is not a
 collision; equal image path/role with different SHA/bytes is
 `collision_image_sha256`; and equal SHA with incorrect declared size is a
-package/file-integrity failure, not `collision_image_sha256`.
+`file_integrity_mismatch`, not `collision_image_sha256`.
+
+### Post-C5 file-integrity alignment sequence
+
+After this authority remediation passes independent review and is committed,
+do not modify production. First authorize a **test-only file-integrity
+migration checkpoint** that changes only
+`tests/integration/test_ingest_preflight.py`. Narrowly split/migrate
+`test_preflight_rechecks_every_consumed_package_file_hash_size_and_existence`
+and, only where directly necessary, a file-integrity-specific fixture/helper.
+Missing, unreadable, non-regular, and containment cases continue to expect
+`PipelineError`. A size-only case must retain identical actual and declared SHA
+while declaring a different size; a SHA-only case must use equal actual and
+declared sizes with different same-length bytes. Both cases must expect a
+structured `ImportPreflightResult` containing `file_integrity_mismatch`, and the
+wrong-image-size case must continue to require that code with no
+`collision_image_sha256`. Do not alter duplicate, adaptation, count, oracle, or
+unrelated fixtures.
+
+Run the migrated tests before any production change. A valid RED imports and
+constructs fixtures normally, calls the approved `preflight_import` API, reaches
+the current integrity gate, and fails only because current production raises
+`PipelineError` where the test expects a structured result. Report the exact
+failure, keep the production SHA byte-identical, confirm the missing-file and
+unaffected Group 1/2/C1 tests remain GREEN, confirm 0 ERROR, and stop. This is an
+authority migration from a superseded assertion, not weakened coverage.
+
+Only a later explicit authorization may start the **FILE-INTEGRITY SIGNAL
+ALIGNMENT checkpoint**. It changes only
+`src/joy_m2/ingest/preflight.py`; the migrated tests remain byte-identical.
+After a safe read, size/SHA mismatch becomes the exact private signal
+`("file_integrity_mismatch", relative_path, expected_sha256, actual_sha256,
+expected_size_bytes, actual_size_bytes)` (or a semantically identical private
+carrier), corrupted bytes are excluded from downstream authority, and missing,
+unreadable, non-regular, and containment failures remain `PipelineError`. The
+checkpoint constructs no formal `ImportIssue`, `ImportPreflightReport`,
+`ImportPreflightResult`, classification, count, or final digest and adds no
+public API. A private helper invocation or temporary in-process diagnostic may
+verify the raw signal and exclusion but must leave no debug file.
+
+Consequently, after FILE-INTEGRITY SIGNAL ALIGNMENT the migrated size-only and
+SHA-only public tests must advance beyond the old `PipelineError` but remain RED solely
+at `NotImplementedError` or the exact approved C6 stop. That remaining RED is
+the evidence that alignment did not absorb C6. Independently review production
+scope, all six signal values, corrupted-byte exclusion, the preserved missing
+boundary, test immutability, and the changed RED failure point before C6 may be
+authorized.
+
+C6 final closure requires committed authority docs, the test-only migration
+committed or checkpointed under the approved workflow, both valid REDs, reviewed
+FILE-INTEGRITY SIGNAL ALIGNMENT, the remaining C6-only RED, maintained
+regressions, and frozen-boundary PASS. C6 alone converts the private signal into the formal
+issue and constructs counts, status, report, result, exact 12-key payload, and
+final `preflight_sha256`. Only C6 makes the size-only, SHA-only, and wrong-image-
+size structured tests GREEN; then require full integration 37/37, maintained
+and frozen gates, final independent review, and the separately authorized
+implementation commit.
+
+The issue enters the existing globally ordered `issues` array and therefore the
+existing 12-key digest payload; no thirteenth key or second integrity channel is
+allowed. Mutating relative path, either digest, either size, or issue membership
+must change the final digest. The happy-path literal fixture contains no
+integrity mismatch, so its frozen `manifest_sha256` remains
+`b5a0ae6597028c48c6f7cdc81bd7e67d61dd369cbf96d7c6a4e96efd73984c5d`
+and its frozen final `preflight_sha256` remains
+`087574a8af6fe28ac65a5b5810794952044cb5f0778ed3492d1e7819a4be33c2`.
 
 ## 11. Preflight and approval
 
@@ -836,6 +957,17 @@ a candidate, it requires `type(manifest) is BatchImportManifest` and
 validation as a substitute. V1.18, V1.17, arbitrary future values, `None`, an
 empty string, and wrong runtime types are rejected before I/O, and no result may
 be constructed whose manifest and report target identities differ.
+
+The post-C5 file-integrity authority refines only this independent preflight
+consumption boundary; it does not rewrite the historical Task 2 loader contract.
+The previously approved C1 implementation is historically GREEN, and its
+containment, missing, unreadable, and non-regular cases remain GREEN. Its current
+readable size/SHA behavior still raises `PipelineError`, however, and is
+`SUPERSEDED TARGET BEHAVIOR — PENDING RED-FIRST MIGRATION`. The approved target
+is a private `file_integrity_mismatch` signal with corrupted bytes excluded from
+downstream consumption, followed only later by C6 formal issue/result closure.
+The mandatory migration method is test-only RED first, separately authorized
+production alignment second, and C6 GREEN last.
 
 Every declared path is joined to the resolved root and then resolved before
 use. The resolved path must be contained within the resolved root by a path-
@@ -1184,10 +1316,15 @@ Task 9A authority is now closed as follows:
 - images: read-only deterministic evidence only;
 - import approval and formal promotion: separate checkpoints.
 
-The explicit `package_root` transport closes the Task 3 API authority gap. The
-two-stage scaffold sequencing remediation closes the remaining TDD execution
-gap subject to independent review. Task 1–2 remain valid and completed; Task 3
-is blocked until that review passes and implementation is explicitly resumed.
+**HISTORICAL COMPLETED — NO LONGER CURRENT EXECUTION AUTHORITY.** The explicit
+`package_root` transport closed the Task 3 API authority gap. The two-stage
+scaffold sequencing remediation was completed and passed independent review.
+Stage 3A completed its API/signature gate, Stage 3B completed its full behavior
+RED gate, and dependency-aware checkpoints C1–C5 were subsequently completed.
+This paragraph remains only as TDD audit history; current execution authority is
+defined exclusively by section 20 and the post-C5 file-integrity RED-first
+sequence.
+
 Before Task 9C writer
 authorization, a separate reviewed decision must still freeze the V1.19
 database/manifest profile, `PRAGMA user_version`, teacher/common-error formal
@@ -1223,7 +1360,13 @@ commits stay separate. Every batch must be independently revertible.
   candidate build, verification, independent review, then separately authorized
   promotion if requested.
 
-## 18. Exact first implementation proposal
+## 18. Historical initial implementation proposal
+
+**HISTORICAL COMPLETED INITIAL AUTHORITY — NO CURRENT EXECUTION EFFECT.** This
+section records the original Task 9A implementation proposal and its completed
+Stage 3A/Stage 3B entry sequence. It does not authorize replaying the scaffold,
+behavior RED entry, or any pre-C5 checkpoint. Current execution authority is
+defined only by section 20 and the post-C5 file-integrity RED-first sequence.
 
 `TASK 9A — IMPORT CONTRACT + READ-ONLY PREFLIGHT TDD`
 
@@ -1251,35 +1394,41 @@ exact implementation gate for these requirements. GREEN requires Task 9A tests
 plus Public Models, Audit, Database, Release, Task 7, Task 8 equivalence, and
 V1.18 validator gates.
 
-Task 3 uses two distinct RED stages. Stage 3A first records an API-existence RED
+The following Stage 3A/Stage 3B sequence is a historical completed TDD audit
+record, not current execution authority. Task 3 used two distinct RED stages.
+Stage 3A first recorded an API-existence RED
 for the exact `preflight_import(manifest, package_root, baseline_database)`
 signature, including exact parameter names/order/annotations, return annotation,
 and absence of extra runtime authority. Module missing, symbol missing, or an
 unavailable exact signature is valid only for this API-existence RED; it is not
 a behavior RED.
 
-Only after that RED is observed may `src/joy_m2/ingest/preflight.py` first be
-created as a minimal importable scaffold. The scaffold contains only required
+Only after that RED was observed could `src/joy_m2/ingest/preflight.py` first be
+created as a minimal importable scaffold. The scaffold contained only required
 imports, the exact approved function signature, and an immediate
-`NotImplementedError`. It performs no root validation, containment, file read,
+`NotImplementedError`. It performed no root validation, containment, file read,
 parsing, hashing, candidate/issue/report construction, or digest work. Import
-and exact-signature tests then become GREEN, but Task 3 remains in RED and the
-scaffold is not production behavior.
+and exact-signature tests then became GREEN, but Task 3 remained in RED and the
+scaffold was not production behavior.
 
-Stage 3B then establishes the independent behavior REDs. Every behavior test
-must import the module and symbol successfully, pass the exact-signature gate,
+Stage 3B then established the independent behavior REDs. Every behavior test
+had to import the module and symbol successfully, pass the exact-signature gate,
 construct its fixtures successfully, reach the scaffold call, and fail only
 with `NotImplementedError` or the specific missing behavior. These REDs cover
 root runtime type, nonexistent/file roots, absolute/`..`/normalization/symlink
 escape, root-authority contamination, and cross-root equivalence. Only after all
-behavior REDs are observed may production behavior replace the scaffold, one
-minimal RED→GREEN group at a time. `NotImplementedError` is scaffold-only and
-must be absent from completed Task 3 runtime behavior and regression
+behavior REDs were observed could production behavior replace the scaffold, one
+minimal RED→GREEN group at a time. `NotImplementedError` was scaffold-only and
+was required to be absent from completed Task 3 runtime behavior and regression
 expectations.
 
-Task 9A requires independent review and explicit implementation authorization.
+Task 9A required independent review and explicit implementation authorization;
+those historical entry gates were satisfied for the completed checkpoints
+recorded above.
 
-## 19. Task 3 authority remediation and Stage 3B entry
+## 19. Historical Task 3 authority remediation and Stage 3B entry
+
+**HISTORICAL COMPLETED PHASE — NO LONGER CURRENT EXECUTION AUTHORITY.**
 
 Task 1–2 are completed and committed at
 `dd1cfed2cf3d09caf9136d3c9e2cc8d487186221`. Their history is retained. The
@@ -1292,35 +1441,42 @@ nine-name surface is implemented and tested later when Task 5 first creates
 manifest carrier or authorize `manifest.py` changes: adaptations are derived by
 preflight comparison, not declared by canonical raw records.
 
-The adaptation-model checkpoint is already completed and committed. Stage 3A
-then correctly recorded the API/signature RED, created only
+The adaptation-model checkpoint was completed and committed. Stage 3A then
+recorded the API/signature RED and created only
 `src/joy_m2/ingest/preflight.py` as the immediate-`NotImplementedError`
-scaffold, and made the one signature test GREEN. Those two current Stage 3A
-assets are preserved byte-identically; `src/joy_m2/ingest/__init__.py` has not
-been created. Stage 3A is `COMPLETED / GREEN` and must not be cleared, recreated,
-or rerun.
+scaffold and made the one signature test GREEN. Stage 3A and the later Stage 3B
+entry/restart sequence are completed historical TDD audit records. They must not
+be cleared, recreated, replayed, or treated as a current execution entry.
 
-Stage 3B is `NOT STARTED / BLOCKED` with behavior RED count exactly zero. Only
-after this digest/taxonomy Revision 4 passes independent review, the three docs
-are committed, and the user gives a new explicit Stage 3B authorization may the
-existing integration test be extended with the complete approved behavior RED
-suite. The suite must include exact issue ordering with both `None` and string
-IDs, overlap-signal precedence, independent manifest/normalized-text/full
-12-key digest oracles, all critical-projection mutation locks, file-entry
-mutations, and existing boundary/zero-write contracts. Every fixture must build
-successfully, reach the existing scaffold, and fail only with
-`NotImplementedError` or the specific missing behavior. Production behavior may
-replace the scaffold only after the applicable behavior RED group is observed.
+The complete behavior RED suite was subsequently established and implemented
+dependency group by dependency group. C1–C5 are now GREEN; the fresh integration
+baseline is 37 collected, 8 PASS methods, 29 RED methods, 58 failure instances,
+0 ERROR, and 0 skip. The current production asset is no longer the immediate
+scaffold, although C6 formal closure remains unimplemented.
 
 No asset deletion, API RED replay, behavior test, implementation, import,
 V1.19 artifact, writer, or promotion is authorized by this docs remediation.
 
-## 20. Classification
+## 20. Current classification and single execution entry
 
 Task 9A Task 1–2 and the adaptation-model checkpoint are
-`COMPLETED / COMMITTED`. Task 3 Stage 3A is `COMPLETED / GREEN`; Stage 3B is
-`BLOCKED — DIGEST/TAXONOMY REVISION 4 IN REVIEW`, behavior RED count is zero,
-and production behavior is unimplemented. Task 9B/9C/9D remain not started, and
-Task 9C retains the downstream authority decisions listed in section 15.
+`COMPLETED / COMMITTED`; historical Stage 3A/Stage 3B entry work is completed;
+C1 is `GREEN`; C2 is `GREEN`; C3 is `GREEN`; C4 is `GREEN`; C4 SIGNAL-SHAPE
+ALIGNMENT is `COMPLETED / GREEN`; the C5 classification layer is `COMPLETED /
+GREEN`; and C6 is `BLOCKED / NOT IMPLEMENTED`. Current authority is `TASK 9A
+FILE-INTEGRITY AUTHORITY REVISION IN REVIEW`. The completed C4 SIGNAL-SHAPE
+ALIGNMENT is distinct from the not-yet-executed FILE-INTEGRITY SIGNAL ALIGNMENT. The
+closed 16-code taxonomy is pending only this execution-sequence authority
+review. No writer, V1.19 artifact, imported question, or promotion exists.
 
-`READY FOR TASK 9A DIGEST/TAXONOMY AUTHORITY REVISION 4 REVIEW`
+The only current sequence is: authority review PASS; docs commit; test-only C1
+integrity migration and valid size-only/SHA-only REDs; separately authorized
+FILE-INTEGRITY SIGNAL ALIGNMENT; confirmation that the public REDs advance past
+the old `PipelineError` but remain RED only at the C6 stop; independent
+FILE-INTEGRITY SIGNAL ALIGNMENT review; C6 final-closure authorization;
+structured tests and full integration
+37/37 GREEN; maintained/frozen gates; final independent review; implementation
+commit. Task 9B/9C/9D remain not started, and Task 9C retains the downstream
+authority decisions listed in section 15.
+
+`READY FOR TASK 9A FILE-INTEGRITY AUTHORITY REVISION REVIEW`
