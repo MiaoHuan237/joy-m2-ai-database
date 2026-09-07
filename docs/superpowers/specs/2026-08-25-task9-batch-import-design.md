@@ -840,7 +840,12 @@ collision; equal image path/role with different SHA/bytes is
 `collision_image_sha256`; and equal SHA with incorrect declared size is a
 `file_integrity_mismatch`, not `collision_image_sha256`.
 
-### Post-C5 file-integrity alignment sequence
+### Historical completed post-C5 file-integrity alignment sequence
+
+**HISTORICAL COMPLETED — NO LONGER CURRENT EXECUTION AUTHORITY.** The following
+RED-first sequence is retained as Task 9A implementation audit evidence. Every
+checkpoint in it completed before the final implementation commit; it must not
+be replayed as current work.
 
 After this authority remediation passes independent review and is committed,
 do not modify production. First authorize a **test-only file-integrity
@@ -859,7 +864,7 @@ unrelated fixtures.
 
 Run the migrated tests before any production change. A valid RED imports and
 constructs fixtures normally, calls the approved `preflight_import` API, reaches
-the current integrity gate, and fails only because current production raises
+the then-current integrity gate, and fails only because then-current production raises
 `PipelineError` where the test expects a structured result. Report the exact
 failure, keep the production SHA byte-identical, confirm the missing-file and
 unaffected Group 1/2/C1 tests remain GREEN, confirm 0 ERROR, and stop. This is an
@@ -958,16 +963,15 @@ validation as a substitute. V1.18, V1.17, arbitrary future values, `None`, an
 empty string, and wrong runtime types are rejected before I/O, and no result may
 be constructed whose manifest and report target identities differ.
 
-The post-C5 file-integrity authority refines only this independent preflight
-consumption boundary; it does not rewrite the historical Task 2 loader contract.
-The previously approved C1 implementation is historically GREEN, and its
-containment, missing, unreadable, and non-regular cases remain GREEN. Its current
-readable size/SHA behavior still raises `PipelineError`, however, and is
-`SUPERSEDED TARGET BEHAVIOR — PENDING RED-FIRST MIGRATION`. The approved target
-is a private `file_integrity_mismatch` signal with corrupted bytes excluded from
-downstream consumption, followed only later by C6 formal issue/result closure.
-The mandatory migration method is test-only RED first, separately authorized
-production alignment second, and C6 GREEN last.
+The post-C5 file-integrity authority historically refined only this independent
+preflight consumption boundary; it did not rewrite the Task 2 loader contract.
+The C1 containment, missing, unreadable, and non-regular cases remain GREEN. The
+former readable size/SHA `PipelineError` behavior was superseded through the
+completed RED-first migration, signal alignment, and C6 closure. Current
+production emits the exact structured `file_integrity_mismatch` issue, excludes
+corrupted bytes from downstream consumption, and closes the result through the
+single approved issue/report/digest authority. The completed migration order is
+retained in the historical sequence above and is not a current execution entry.
 
 Every declared path is joined to the resolved root and then resolved before
 use. The resolved path must be contained within the resolved root by a path-
@@ -1321,9 +1325,10 @@ Task 9A authority is now closed as follows:
 scaffold sequencing remediation was completed and passed independent review.
 Stage 3A completed its API/signature gate, Stage 3B completed its full behavior
 RED gate, and dependency-aware checkpoints C1–C5 were subsequently completed.
-This paragraph remains only as TDD audit history; current execution authority is
-defined exclusively by section 20 and the post-C5 file-integrity RED-first
-sequence.
+This paragraph remains only as TDD audit history. Current Task 9A status and the
+Task 9B planning entry are defined exclusively by section 20. The post-C5 file-
+integrity RED-first sequence is retained only as historical audit evidence and
+has no current execution effect.
 
 Before Task 9C writer
 authorization, a separate reviewed decision must still freeze the V1.19
@@ -1365,8 +1370,10 @@ commits stay separate. Every batch must be independently revertible.
 **HISTORICAL COMPLETED INITIAL AUTHORITY — NO CURRENT EXECUTION EFFECT.** This
 section records the original Task 9A implementation proposal and its completed
 Stage 3A/Stage 3B entry sequence. It does not authorize replaying the scaffold,
-behavior RED entry, or any pre-C5 checkpoint. Current execution authority is
-defined only by section 20 and the post-C5 file-integrity RED-first sequence.
+behavior RED entry, or any pre-C5 checkpoint. Current Task 9A status and the
+Task 9B planning entry are defined only by section 20; the post-C5 file-
+integrity RED-first sequence is historical audit evidence with no current
+execution effect.
 
 `TASK 9A — IMPORT CONTRACT + READ-ONLY PREFLIGHT TDD`
 
@@ -1449,34 +1456,71 @@ entry/restart sequence are completed historical TDD audit records. They must not
 be cleared, recreated, replayed, or treated as a current execution entry.
 
 The complete behavior RED suite was subsequently established and implemented
-dependency group by dependency group. C1–C5 are now GREEN; the fresh integration
-baseline is 37 collected, 8 PASS methods, 29 RED methods, 58 failure instances,
-0 ERROR, and 0 skip. The current production asset is no longer the immediate
-scaffold, although C6 formal closure remains unimplemented.
+dependency group by dependency group. At that checkpoint C1–C5 were GREEN; its
+fresh integration baseline was 37 collected, 8 PASS methods, 29 RED methods, 58
+failure instances, 0 ERROR, and 0 skip. The production asset at that checkpoint
+was no longer the immediate scaffold, while C6 formal closure remained
+unimplemented.
+
+**HISTORICAL / CLOSED AUDIT EVIDENCE — NO CURRENT EXECUTION EFFECT.** At the
+later FILE-INTEGRITY / C6 STOP-TYPE FIX checkpoint, the suite had 39 collected,
+8 PASS methods, 31 RED methods, 60 failure instances, 0 ERROR, and 0 skip.
+Readable size/SHA mismatches had advanced beyond the former integrity
+`PipelineError` gate, and `_C6NotImplementedError` was a pure
+`NotImplementedError` for which `isinstance(exc, PipelineError) == False`; C6
+formal result/report/digest closure was still unimplemented at that historical
+checkpoint, so the 39-test suite remained RED.
+
+**HISTORICAL / CLOSED AUDIT EVIDENCE — NO CURRENT EXECUTION EFFECT.** The
+subsequent C6 FINAL CLOSURE checkpoint had 39 collected, 39 PASS, 0 FAIL, 0
+ERROR, and 0 skip. It closed the formal sixteen-code structured result pipeline,
+including `file_integrity_mismatch`, counts, status, report, result, and digest.
+The frozen happy-path oracle
+`087574a8af6fe28ac65a5b5810794952044cb5f0778ed3492d1e7819a4be33c2`,
+zero-write gate, and the unchanged V1.18 count of 497 all passed. Final
+independent review then found two previously uncovered IMPORTANT regressions:
+`missing_images` semantic ordering and duplicate-ID occurrence ambiguity
+accounting. Adding those two regression tests expanded the suite from 39 to 41;
+the final remediation closure was 41/41 PASS. These checkpoints are audit
+history only and must not be replayed as active work.
 
 No asset deletion, API RED replay, behavior test, implementation, import,
 V1.19 artifact, writer, or promotion is authorized by this docs remediation.
 
-## 20. Current classification and single execution entry
+## 20. Current classification and next planning entry
 
-Task 9A Task 1–2 and the adaptation-model checkpoint are
-`COMPLETED / COMMITTED`; historical Stage 3A/Stage 3B entry work is completed;
-C1 is `GREEN`; C2 is `GREEN`; C3 is `GREEN`; C4 is `GREEN`; C4 SIGNAL-SHAPE
-ALIGNMENT is `COMPLETED / GREEN`; the C5 classification layer is `COMPLETED /
-GREEN`; and C6 is `BLOCKED / NOT IMPLEMENTED`. Current authority is `TASK 9A
-FILE-INTEGRITY AUTHORITY REVISION IN REVIEW`. The completed C4 SIGNAL-SHAPE
-ALIGNMENT is distinct from the not-yet-executed FILE-INTEGRITY SIGNAL ALIGNMENT. The
-closed 16-code taxonomy is pending only this execution-sequence authority
-review. No writer, V1.19 artifact, imported question, or promotion exists.
+Task 9A is `CLOSED / PASS`. Task 1–2, the adaptation-model checkpoint,
+historical Stage 3A/Stage 3B work, C1–C6, both signal-alignment checkpoints,
+final independent implementation review, and the remediation review are
+completed. The final integration suite is 41/41 PASS with zero failures,
+errors, or skips. The implementation commit is
+`6fec37c45346b1680fb0bf0676c38e515c18cacd` (`feat: implement Task 9A import
+preflight`). Zero-write verification is `PASS`. Current remaining Task 9A
+implementation work is `NONE`.
 
-The only current sequence is: authority review PASS; docs commit; test-only C1
-integrity migration and valid size-only/SHA-only REDs; separately authorized
-FILE-INTEGRITY SIGNAL ALIGNMENT; confirmation that the public REDs advance past
-the old `PipelineError` but remain RED only at the C6 stop; independent
-FILE-INTEGRITY SIGNAL ALIGNMENT review; C6 final-closure authorization;
-structured tests and full integration
-37/37 GREEN; maintained/frozen gates; final independent review; implementation
-commit. Task 9B/9C/9D remain not started, and Task 9C retains the downstream
-authority decisions listed in section 15.
+Task 9A remains canonical-JSON, deterministic, path-independent, and strictly
+read-only preflight. Its completion creates no writer, V1.19 database or other
+artifact, imported question, or promotion. V1.18 remains the immutable
+497-question baseline. The exact future approval text remains
+`USER APPROVED IMPORT BATCH <batch_id> <preflight_sha256> V1.19`; that approval
+binds preflight evidence only and does not itself write data. Writer and formal
+import authority remain deferred to Task 9C.
 
-`READY FOR TASK 9A FILE-INTEGRITY AUTHORITY REVISION REVIEW`
+The current phase boundary is:
+
+- **Task 9A — canonical JSON read-only preflight:** `COMPLETE / PASS`;
+- **Task 9B — MMD/MMD.ZIP source adapter:** `NOT STARTED`; next planning phase;
+- **Task 9C — V1.19 incremental writer + verification:** `NOT STARTED`;
+- **Task 9D — first real batch acceptance:** `NOT STARTED`.
+
+Task 9B's high-level role is deterministic conversion from representative
+Mathpix MMD/MMD.ZIP inputs to the canonical Task 9 JSON/package consumed by
+Task 9A. It is not a writer, direct PDF remains deferred, and its executable
+authority is `NOT YET CLOSED`. Before implementation, a separate reviewed Task
+9B specification and TDD plan must freeze its exact API/file scope, canonical
+input/output, MMD semantic mapping, image/provenance mapping, ZIP safety and
+ordering policies, malformed/unsupported-input taxonomy, fixtures, execution
+sequence, and exit gates. This checkpoint does not define those behaviors or
+authorize adapter code.
+
+`READY FOR TASK 9B PLANNING / AUTHORITY CLOSURE`

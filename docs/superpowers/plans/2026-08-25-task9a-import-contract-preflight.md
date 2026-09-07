@@ -10,6 +10,15 @@
 
 **Spec:** `docs/superpowers/specs/2026-08-25-task9-batch-import-design.md`
 
+## Current plan status
+
+Task 9A has completed this plan's execution objective and is `CLOSED / PASS` at
+implementation commit `6fec37c45346b1680fb0bf0676c38e515c18cacd`. All Task
+9A implementation instructions and checklist steps below are
+`HISTORICAL / CLOSED`; they retain contract and TDD audit evidence but authorize
+no replay or further implementation. The only next phase is a separately
+reviewed Task 9B planning/authority closure.
+
 ## Global Constraints
 
 - Implementation requires explicit authorization after independent review.
@@ -31,20 +40,13 @@
   `source_present`, `ai_proposed`, `verified`, and `missing`.
 - Do not add dependencies, CLI, `__main__.py`, project scripts, pipeline modules,
   staging writes, formal writes, or release behavior.
-- Historical Stage 3A/Stage 3B entry work is completed. C1 is GREEN; C2 is
-  GREEN; C3 is GREEN; C4 is GREEN; C4 SIGNAL-SHAPE ALIGNMENT is COMPLETED /
-  GREEN; the C5
-  classification layer is COMPLETED / GREEN; and C6 is blocked/not implemented.
-  Current authority is TASK 9A FILE-INTEGRITY AUTHORITY REVISION IN REVIEW.
-  The completed C4 SIGNAL-SHAPE ALIGNMENT is distinct from the not-yet-executed
-  FILE-INTEGRITY SIGNAL ALIGNMENT.
-  The fresh integration baseline is
-  37 collected, 8 PASS methods, 29 RED methods, 58 failure instances, 0 ERROR,
-  and 0 skip. The only current entry is the file-integrity authority review,
-  followed after PASS by docs commit, test-only integrity migration with
-  independent valid size-only and SHA-only REDs, separately authorized FILE-
-  INTEGRITY SIGNAL ALIGNMENT, advancement to the C6-only RED stop, independent
-  FILE-INTEGRITY SIGNAL ALIGNMENT review, and later C6 final closure.
+- Task 9A execution is complete. Historical Stage 3A/Stage 3B, C1–C6, both
+  signal-alignment checkpoints, final independent implementation review, and
+  the remediation review are completed. The final integration suite is 41/41
+  PASS with 0 failures, errors, or skips. Current implementation status is
+  `CLOSED / PASS` at commit
+  `6fec37c45346b1680fb0bf0676c38e515c18cacd`. All earlier RED-first sequences
+  remain historical audit evidence and are not current execution authority.
   V1.19 serialization/profile, writer, formal release, and promotion authority
   remain deferred to Task 9C.
 
@@ -630,7 +632,9 @@ image path/role with different SHA/bytes producing image collision; and equal
 SHA with incorrect declared size producing `file_integrity_mismatch` but not
 `collision_image_sha256`.
 
-After this authority remediation passes independent review and is committed,
+**HISTORICAL COMPLETED FILE-INTEGRITY RED-FIRST SEQUENCE — NO CURRENT EXECUTION
+EFFECT.** The following steps are retained as audit evidence and must not be
+replayed. After this authority remediation passes independent review and is committed,
 do not modify production. First require a **test-only file-integrity migration
 checkpoint** that changes only `tests/integration/test_ingest_preflight.py`.
 Narrowly split/migrate
@@ -647,7 +651,7 @@ or unrelated behavior tests.
 
 Run this migration before any production change. Valid RED requires successful
 imports and fixture construction, an actual call through the approved API to
-the current integrity gate, and a failure caused only by current `PipelineError`
+the then-current integrity gate, and a failure caused only by then-current `PipelineError`
 versus the expected structured result. Fixture, syntax, import, setup, or
 unrelated validation failures are invalid RED. Report the exact failure; keep
 the production SHA byte-identical; confirm missing-file and unaffected Group
@@ -861,7 +865,8 @@ Require the unit module PASS.
 **HISTORICAL COMPLETED — NO CURRENT EXECUTION EFFECT.** This historical section
 records a completed TDD checkpoint only. It has no current execution authority.
 If any historical wording conflicts with the current-status section, the
-current-status and current FILE-INTEGRITY RED-first sequence control.
+current-status section controls. The FILE-INTEGRITY RED-first sequence is
+historical audit evidence only and has no current execution effect.
 
 Task 1–2 are already committed at
 `dd1cfed2cf3d09caf9136d3c9e2cc8d487186221`; that history was not rewritten.
@@ -886,8 +891,8 @@ deferred to the separately governed Task 5 creation of `ingest/__init__.py`.
 **HISTORICAL COMPLETED TASK — NO LONGER CURRENT EXECUTION AUTHORITY.** This
 historical section records completed TDD checkpoints only. It has no current
 execution authority. If any historical wording conflicts with the current-
-status section, the current-status and current FILE-INTEGRITY RED-first sequence
-control.
+status section, the current-status section controls. The FILE-INTEGRITY RED-first
+sequence is historical audit evidence only and has no current execution effect.
 
 **HISTORICAL EXECUTION RESULT:** Stage 3A was completed; the Stage 3B behavior
 RED gate was completed; and dependency-aware GREEN checkpoints C1–C5 were
@@ -1077,19 +1082,18 @@ from the completed C1–C5 runtime paths.
 
 The integration and model modules passed at the completed checkpoint.
 
-### Current post-C5 FILE-INTEGRITY execution authority
+### Completed post-C5 FILE-INTEGRITY execution authority
 
-**CURRENT AUTHORITY — NOT A HISTORICAL TASK 3 REPLAY.** The post-C5 file-
-integrity authority refines the C1 `preflight_import()` consumption rule without
+**HISTORICAL COMPLETED — NO CURRENT EXECUTION EFFECT.** The post-C5 file-
+integrity work refined the C1 `preflight_import()` consumption rule without
 rewriting the historical C1 GREEN result or the Task 2
-`load_import_manifest()` inventory-validation contract. C1 remains GREEN for
-containment, missing, unreadable, and non-regular `PipelineError`. Its current
-readable size/SHA behavior still raises `PipelineError` and is `SUPERSEDED
-TARGET BEHAVIOR — PENDING RED-FIRST MIGRATION`. The target is a private
-`file_integrity_mismatch` signal with no downstream use of corrupted bytes,
-followed only later by C6 formal issue/result closure. The mandatory method is
-test-only RED first, separately authorized FILE-INTEGRITY SIGNAL ALIGNMENT
-second, public tests still RED only at the C6 stop, and C6 GREEN last.
+`load_import_manifest()` inventory-validation contract. Containment, missing,
+unreadable, and non-regular failures remain `PipelineError`; readable size/SHA
+mismatches now produce the exact structured `file_integrity_mismatch` issue and
+exclude corrupted bytes from downstream authority. The test-only migration,
+FILE-INTEGRITY SIGNAL ALIGNMENT, C6 closure, and final GREEN/reviews completed in
+their approved order. They are retained as audit history and provide no pending
+execution step.
 
 ## Historical completed Task 4: Duplicate/content/image controls
 
@@ -1538,17 +1542,17 @@ immediate-`NotImplementedError` scaffold in
 `src/joy_m2/ingest/preflight.py`, and made the single signature test GREEN.
 The subsequent Stage 3B restart established the behavior suite and proceeded
 dependency group by dependency group. These are completed historical TDD audit
-records and must not be replayed as the current entry. The production asset is
-no longer the immediate scaffold. C1 is GREEN; C2 is GREEN; C3 is GREEN; C4 is
-GREEN; C4 SIGNAL-SHAPE ALIGNMENT is COMPLETED / GREEN; the C5 classification
-layer is COMPLETED / GREEN; and C6 remains BLOCKED / NOT IMPLEMENTED.
+records and must not be replayed as the current entry. At that checkpoint the
+production asset was no longer the immediate scaffold. C1–C5 and C4
+SIGNAL-SHAPE ALIGNMENT were GREEN/completed, while C6 remained BLOCKED / NOT
+IMPLEMENTED.
 `src/joy_m2/ingest/__init__.py` still does not exist and remains deferred to
 Task 5.
 
-The fresh integration baseline is 37 collected, 8 PASS methods, 29 RED methods,
-58 failure instances, 0 ERROR, and 0 skip. The only current entry is the file-
-integrity authority review and the RED-first sequence frozen above; no Stage 3A
-or Stage 3B restart is authorized.
+The fresh integration baseline at that checkpoint was 37 collected, 8 PASS
+methods, 29 RED methods, 58 failure instances, 0 ERROR, and 0 skip. Its next
+entry was the file-integrity authority review and RED-first sequence frozen
+above; no Stage 3A or Stage 3B restart was authorized.
 
 This docs remediation authorizes no behavior RED, production change, import,
 writer, V1.19 artifact, promotion, or Task 9B/9C/9D work.
@@ -1589,25 +1593,40 @@ Report RED/GREEN evidence, supported/unsupported formats, deterministic report,
 zero mutation, gates, and deferred Task 9C decisions. Do not commit, push, or
 start Task 9B/9C/9D.
 
-- [ ] **Step 4: Complete the remaining Task 3 gates before commit authorization**
+- [x] **Historical completed Step 4: Complete the remaining Task 3 gates and implementation commit**
 
-The remaining current gates are exactly: file-integrity authority review PASS;
-docs commit; test-only migration with valid size-only/SHA-only structured REDs;
-separately authorized FILE-INTEGRITY SIGNAL ALIGNMENT; verification that both public
-tests advance beyond `PipelineError` but remain RED only at the C6 stop;
-independent FILE-INTEGRITY SIGNAL ALIGNMENT review; C6 final-closure
-authorization; complete focused
-37/37 GREEN; maintained/frozen gates; and final independent implementation
-review. Completed Stage 3A/Stage 3B work is not rerun. Only after these gates and
-explicit commit authorization may the completed Task 9A implementation stage
-exactly six files and use:
+**HISTORICAL / CLOSED AUDIT EVIDENCE — NO CURRENT EXECUTION EFFECT.** The
+authority closure, behavior RED gates, C1–C5, file-integrity RED migration, and
+FILE-INTEGRITY SIGNAL ALIGNMENT completed first. At the following C6 STOP-TYPE
+FIX checkpoint, the suite had 39 collected, 8 PASS methods, 31 RED methods, 60
+failure instances, 0 ERROR, and 0 skip. Readable size/SHA mismatches had moved
+beyond the old integrity `PipelineError` boundary; `_C6NotImplementedError` was
+a pure `NotImplementedError` with `isinstance(exc, PipelineError) == False`,
+while formal C6 result/report/digest closure was still unimplemented at that
+historical checkpoint, so the 39-test suite remained RED.
 
-```text
-feat: add batch import preflight contract
-```
+**HISTORICAL / CLOSED AUDIT EVIDENCE — NO CURRENT EXECUTION EFFECT.** C6 FINAL
+CLOSURE then produced 39 collected, 39 PASS, 0 FAIL, 0 ERROR, and 0 skip. It
+implemented the formal sixteen-code structured result pipeline, the
+`file_integrity_mismatch` issue, counts, status, report, result, and digest; the
+frozen happy-path oracle
+`087574a8af6fe28ac65a5b5810794952044cb5f0778ed3492d1e7819a4be33c2`,
+zero-write gate, and unchanged V1.18 count of 497 passed. Final independent
+review subsequently found two uncovered IMPORTANT regressions:
+`missing_images` semantic ordering and duplicate-ID occurrence ambiguity
+accounting. Their two new tests expanded the complete suite from 39 to 41, and
+the final remediation closure was 41/41 PASS. These checkpoints are audit
+history only and must not be replayed as current work.
 
-No raw/staging/formal artifacts or documentation enter that implementation
-commit.
+Maintained/frozen gates, final independent review, two-finding remediation, and
+final remediation review all completed. The final implementation was committed
+as `6fec37c45346b1680fb0bf0676c38e515c18cacd` with message
+`feat: implement Task 9A import preflight`. That checkpoint contains only
+`src/joy_m2/ingest/preflight.py` and
+`tests/integration/test_ingest_preflight.py`; the other Task 9A assets were
+already committed in their earlier reviewed checkpoints. Current remaining Task
+9A implementation work is `NONE`. This completed sequence is historical/closed
+and must not be replayed by a later agent.
 
 ## Downstream hold point
 
@@ -1623,23 +1642,23 @@ Task 9B may define adapter-side image extraction and canonical evidence mapping,
 but it may not choose the formal image destination reserved for Task 9C writer
 authority.
 
-Current checkpoint: Task 1–2 and the adaptation model are completed/committed;
-historical Stage 3A/Stage 3B entry work is completed; C1 is `GREEN`; C2 is
-`GREEN`; C3 is `GREEN`; C4 is `GREEN`; C4 SIGNAL-SHAPE ALIGNMENT is `COMPLETED
-/ GREEN`; the C5 classification layer is `COMPLETED / GREEN`; and C6 is
-`BLOCKED / NOT IMPLEMENTED`. The
-completed C4 SIGNAL-SHAPE ALIGNMENT is distinct from the not-yet-executed
-FILE-INTEGRITY SIGNAL ALIGNMENT. Current integration baseline:
-37 collected, 8 PASS methods, 29 RED methods, 58 failure instances, 0 ERROR,
-0 skip. The 16-code taxonomy is closed; only its file-integrity execution
-sequence is in authority review. No writer, V1.19 artifact, imported question,
-or promotion exists.
+Current checkpoint: `TASK 9A CLOSED / PASS`. Task 1–2, the adaptation model,
+historical Stage 3A/Stage 3B, C1–C6, the final independent implementation
+review, remediation, 41/41 integration GREEN, and the implementation commit are
+complete. The implementation commit is
+`6fec37c45346b1680fb0bf0676c38e515c18cacd`. Task 9A produced only deterministic
+read-only preflight evidence: no writer, V1.19 artifact, imported question, or
+promotion exists. Future implementation instructions in this plan are
+historical/closed and provide no new execution authority.
 
-The sole current next sequence is: authority review PASS; docs commit; test-only
-integrity migration; independent valid size-only RED; independent valid SHA-only
-RED; separately authorized FILE-INTEGRITY SIGNAL ALIGNMENT; public RED
-advancement to the C6-only stop; independent FILE-INTEGRITY SIGNAL ALIGNMENT
-review; C6 authorization and formal closure; 37/37 GREEN; maintained/frozen
-gates; final independent review; implementation commit.
+The current next phase is Task 9B planning/authority closure, not Task 9B
+implementation. Task 9B remains `NOT STARTED`; its high-level MMD/MMD.ZIP adapter
+role exists, but executable authority is `NOT YET CLOSED`. A separate reviewed
+specification and TDD plan must freeze exact API/file scope, canonical adapter
+input/output, MMD question/sub-question and answer mapping, image/provenance
+mapping, ZIP traversal/absolute-path/symlink/duplicate-member/nested-archive and
+deterministic ordering policies, malformed/unsupported-input taxonomy, fixtures,
+execution sequence, and exit gates. Direct PDF remains deferred, and writer,
+V1.19 serialization, formal import, and promotion remain Task 9C/9D boundaries.
 
-`READY FOR TASK 9A FILE-INTEGRITY AUTHORITY REVISION REVIEW`
+`READY FOR TASK 9B PLANNING / AUTHORITY CLOSURE`
