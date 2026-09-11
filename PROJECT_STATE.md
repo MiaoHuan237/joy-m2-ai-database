@@ -13,19 +13,29 @@ Updated: 2026-09-11 (Asia/Shanghai)
 - Answer identity: 392 `source_provided`, 71 `ai_solved_verified`, 34 `missing_from_source`
 - P0/P1 audit blockers: 0/0
 - V1.18 is frozen and must not be edited in place.
-- V1.19 artifacts: `0`; imported questions: `0`; Task 9/V1.19 writer:
-  `NOT IMPLEMENTED`; promotion: `NOT STARTED`.
+- V1.19 artifacts: `0`; imported questions: `0`; Task 9C writer public
+  contracts: `COMPLETED / COMMITTED`; writer/verifier behavior:
+  `NOT STARTED`; promotion: `NOT STARTED`.
 
 ## Current task
 
-Task 9B: `CLOSED / PASS` locally at implementation commit
-`35778b80f931ecf4903ca553ab0fb1b1bb5e8110` (`feat: add deterministic
-Mathpix MMD adapter`), parent golden checkpoint
-`141d2c8daf431a7512d689395c5b31f84c8a8251`. Final independent review is
-`CLEAN` with 0 Critical, 0 Important, and 0 Minor findings. Task 9B remains a
-staging-only adapter; it imported no question and created no V1.19 database or
-formal artifact. Ordinary push is pending a retry because GitHub connectivity
-was unavailable at this evidence checkpoint.
+Task 9C Phase A public contracts are `COMPLETED / COMMITTED` at
+`fbbcea03c9d5775e6553ccbe2460ee098ecd3fc4` (`feat: add Task 9C writer public
+contracts`). The independently reviewed Design is committed at
+`9dbe183f6506ac350cb52f6ae8c3daba12b06874`; the Plan at
+`94d35c106946aa80e41d058ce4927ed8dfcb0cd7`; and its reproducible src-layout
+test environment correction at `5e034dc96a91c00357725f97053e1176ec180d2b`.
+Phase A recorded a valid 9-test RED caused only by the absent Task 9C surface,
+then 9/9 GREEN. Final independent review is 0 Critical / 0 Important after the
+error-surface, exact-subclass, tuple, image-order, and command-environment
+remediations. The two public writer APIs remain signature-only, no-I/O
+scaffolds; Phase B behavior has not started. Ordinary push of the newest local
+checkpoints is pending a retry because GitHub connectivity was unavailable.
+
+Task 9B remains `CLOSED / PASS` at implementation commit
+`35778b80f931ecf4903ca553ab0fb1b1bb5e8110` and docs closure commit
+`e3cb1ea75cb049e4bf0fffdbf3726ae79bcf4b06`. It remains a staging-only adapter;
+it imported no question and created no V1.19 database or formal artifact.
 
 Task 9A remains `CLOSED / PASS` at implementation commit
 `6fec37c45346b1680fb0bf0676c38e515c18cacd` (`feat: implement Task 9A import
@@ -61,8 +71,8 @@ Scope:
 - Task 8 completion authority is the maintained replay against approved protected/frozen references and compatibility contracts. Fresh legacy generation remains attribution evidence only.
 - Completion evidence commit: `6969f3d88b00537386212bc91203c837cac58915`.
 - Current branch is `task8b/pipeline-migration`. The latest implementation
-  checkpoint is `35778b80f931ecf4903ca553ab0fb1b1bb5e8110`; its separately reviewed
-  golden parent is `141d2c8daf431a7512d689395c5b31f84c8a8251`. Local history is ahead of
+  checkpoint is Task 9C Phase A commit
+  `fbbcea03c9d5775e6553ccbe2460ee098ecd3fc4`. Local history is ahead of
   `origin/task8b/pipeline-migration` while the ordinary push awaits network
   recovery; no force push or history rewrite is authorized.
 - V1.18 remains the current formal release. No formal database, frozen hash, compatibility object, question data, `data/`, `releases/`, or `legacy/` file changed.
@@ -102,7 +112,10 @@ Scope:
   the committed integration test is
   `tests/integration/test_ingest_preflight.py`, SHA-256
   `5e5f01271dbbe67ad8b0119781af223d9c1d29a68254eecf0689520c8c83975b`.
-- `src/joy_m2/ingest/__init__.py`: `NOT CREATED`; it is not a Stage 3A asset and remains deferred to its approved later task.
+- `src/joy_m2/ingest/__init__.py`: `CREATED` by approved Task 9C Phase A; its
+  exact 22-name public surface combines the frozen Task 9A, Task 9B, and Task
+  9C public contracts without exporting private helpers or
+  `ImportApprovalError`.
 - Task 3 authority preserves all approved manifest/normalization/digest, adaptation/issue, image-identity, duplicate/rejected, and missing-image rules. The completed remediation left the existing seven duplicate/collision and eight non-duplicate codes unchanged and added exactly one package/file-level code, yielding a closed sixteen-code authority. A safely read file with a size/SHA mismatch emits `file_integrity_mismatch`; missing, unreadable, non-regular, and containment failures remain early `PipelineError`. Corrupted bytes are excluded from downstream parsing/evidence/matching, affected candidates are not constructed, and no second integrity channel or thirteenth digest key is allowed.
 - The independent 37-method / 29-RED blocker scan found no other structured-BLOCKED condition lacking an approved `ImportIssue` code. That result preserves the closed sixteen-code inventory and does not authorize a seventeenth code.
 - Historical audit sequence only, with no current execution effect: the earlier
@@ -125,7 +138,11 @@ Scope:
   golden equivalence, diagnostics, and frozen boundaries are implemented.
   Direct PDF remains deferred. Task 9B unresolved implementation blockers:
   `NONE`.
-- Task 9C: `NOT STARTED`; V1.19 database/manifest serialization, writer, image destination, schema policy, and rollback authority remain deferred.
+- Task 9C: Phase A public contracts `COMPLETED / COMMITTED`; Phase B behavior
+  `NOT STARTED`. No V1.19 database, manifest, sums, rollback, or image tree
+  exists. The approved next checkpoint is the complete four-group Phase B
+  behavior RED gate in OS-temporary roots; no production behavior may change
+  until every RED group is valid.
 - Task 9D: `NOT STARTED`; no real batch acceptance has begun.
 - `teacher_notes` and `common_errors` are Task 9A hashed import evidence/enrichment metadata, not current V2 formal fields; future formal representation requires separate schema authority.
 - Task 9A images are read-only deterministic evidence only; no copy, move, rename, destination, or formal image identity change is authorized.
@@ -150,14 +167,17 @@ Scope:
   `93566e4fb4f95d1258f83ae2da3bcaad9573a737`; `AGENTS.md` and
   `docs/AUTONOMY_POLICY.md` define the default checkpoint sequence, independent
   review requirements, session recovery, ordinary Git authority, and HUMAN
-  GATES A–F. Task 9B remains staging-only; Task 9C stops before its first formal
-  V1.19 write; Task 9D stops before the first real digest-bound import approval.
+  GATES A–F. Task 9B remains staging-only; Task 9C stops before its first real
+  candidate or formal V1.19 write; Task 9D stops before the first real
+  digest-bound import approval.
 - Safety branch `backup/task-7.1-ceb179e-20260808` remains retained.
 
 ## Completion gate
 
 - Current explicit maintained suite, excluding the separately attributed legacy
-  behavior module: 464/464 passed; skip=0 and expectedFailure=0.
+  behavior module: 473/473 passed; skip=0 and expectedFailure=0.
+- Task 9C Phase A public contracts: 9/9 passed; independent review:
+  Critical 0 / Important 0.
 - Task 9B focused adapter suite: 214/214 passed; final independent review:
   `CLEAN` (Critical 0, Important 0, Minor 0).
 - Task 8 equivalence: 3/3 passed.
@@ -188,12 +208,13 @@ Scope:
 
 ## Next task
 
-Proceed only to separately authorized Task 9C planning under
-`docs/AUTONOMY_POLICY.md`: recover authority, create and independently review a
-Task 9C Design and Plan, then use strict TDD for in-memory/temporary/dry-run
-writer work. Stop at HUMAN GATE B before the first real V1.19 candidate database
-or formal write artifact. Preserve Task 9A as the deterministic read-only
-preflight, Task 9B as the staging-only adapter, and V1.18 at 497 questions. Do
-not start Task 8C, Phase 2A, CLI/consumer migration, a real Task 9D import, or
-promotion. The first real digest-bound import and promotion remain HUMAN GATES
-C and D.
+Proceed under the committed Task 9C Design and Plan to the Phase B complete
+behavior RED gate: create only the approved primitive/integration tests and
+prove all four behavior groups fail for absent private behavior or the approved
+API scaffolds before modifying any writer/profile/verifier production file.
+All execution remains in memory or OS-temporary roots. Stop at HUMAN GATE B
+before the first real repository V1.19 candidate database or formal write
+artifact. Preserve Task 9A as the deterministic read-only preflight, Task 9B as
+the staging-only adapter, and V1.18 at 497 questions. Do not start Task 8C,
+Phase 2A, CLI/consumer migration, a real Task 9D import, or promotion. The first
+real digest-bound import and promotion remain HUMAN GATES C and D.
