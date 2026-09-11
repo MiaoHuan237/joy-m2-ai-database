@@ -18,7 +18,16 @@ Updated: 2026-09-11 (Asia/Shanghai)
 
 ## Current task
 
-Task 9A: `CLOSED / PASS` at implementation commit
+Task 9B: `CLOSED / PASS` locally at implementation commit
+`35778b80f931ecf4903ca553ab0fb1b1bb5e8110` (`feat: add deterministic
+Mathpix MMD adapter`), parent golden checkpoint
+`141d2c8daf431a7512d689395c5b31f84c8a8251`. Final independent review is
+`CLEAN` with 0 Critical, 0 Important, and 0 Minor findings. Task 9B remains a
+staging-only adapter; it imported no question and created no V1.19 database or
+formal artifact. Ordinary push is pending a retry because GitHub connectivity
+was unavailable at this evidence checkpoint.
+
+Task 9A remains `CLOSED / PASS` at implementation commit
 `6fec37c45346b1680fb0bf0676c38e515c18cacd` (`feat: implement Task 9A import
 preflight`), parent `a742f56bb49e644ed062d78ec2de9505d47b593d`.
 Task 8B remains `CLOSED / PASS`; Task 9A Task 1–2, the adaptation-model
@@ -40,7 +49,7 @@ Current Task 3 execution state:
 Scope:
 
 - Task 8A's approved design and plan were implemented layer by layer with TDD and independent review checkpoints.
-- The approved design is `docs/superpowers/specs/2026-08-08-task8a-pipeline-contracts-design.md`.
+- The approved Task 8 design is `docs/superpowers/specs/2026-08-08-task8a-pipeline-contracts-design.md`.
 - The follow-up implementation plan is `docs/superpowers/plans/2026-08-08-task8a-pipeline-contracts.md`.
 - Audit: `COMPLETED`.
 - Task 3A: `COMPLETED`.
@@ -51,11 +60,11 @@ Scope:
 - Maintained typed implementations now exist under `src/joy_m2/audit/`, `db/`, `export/`, and `release/`; no CLI or consumer migration was added.
 - Task 8 completion authority is the maintained replay against approved protected/frozen references and compatibility contracts. Fresh legacy generation remains attribution evidence only.
 - Completion evidence commit: `6969f3d88b00537386212bc91203c837cac58915`.
-- Current branch is `task8b/pipeline-migration`. The latest completed execution
-  authority checkpoint is `93566e4fb4f95d1258f83ae2da3bcaad9573a737`
-  (`docs: define autonomous execution policy`), parent
-  `d19baa812213c8015dbb63a9ce3f431eaa077f42`; local and upstream were aligned
-  at that checkpoint.
+- Current branch is `task8b/pipeline-migration`. The latest implementation
+  checkpoint is `35778b80f931ecf4903ca553ab0fb1b1bb5e8110`; its separately reviewed
+  golden parent is `141d2c8daf431a7512d689395c5b31f84c8a8251`. Local history is ahead of
+  `origin/task8b/pipeline-migration` while the ordinary push awaits network
+  recovery; no force push or history rewrite is authorized.
 - V1.18 remains the current formal release. No formal database, frozen hash, compatibility object, question data, `data/`, `releases/`, or `legacy/` file changed.
 - Task 8B unresolved blockers: `NONE`. Task 9A unresolved implementation
   blockers: `NONE`. Its exact sixteen-code issue pipeline includes
@@ -105,14 +114,17 @@ Scope:
   expanded the suite to its current final 41/41 PASS. All intermediate
   checkpoints are `HISTORICAL / CLOSED` audit evidence and must not be replayed.
 - Task 9A exact target identity remains V1.19, while frozen V1.18 remains the read-only 497-question baseline.
-- Task 9B implementation: `NOT STARTED`. Its independently reviewed executable
-  Design is committed at `d19baa812213c8015dbb63a9ce3f431eaa077f42` in
-  `docs/superpowers/specs/2026-09-07-task9b-mmd-adapter-design.md`; its exact
-  API, file scope, archive safety, parser/mapping, provenance, fixture, TDD,
-  deterministic-equivalence, and exit contracts are closed. Direct PDF remains
-  deferred. The next autonomous action is to create and independently review
-  the Task 9B implementation Plan; production implementation must not begin
-  until that Plan is committed.
+- Task 9B implementation: `COMPLETED / PASS`. The independently reviewed Design
+  is committed at `d19baa812213c8015dbb63a9ce3f431eaa077f42`; the Plan at
+  `e46bd5b856591b36f69fbaa5fc80738335ba3c66`; representative fixtures at
+  `c1125252efea59805f616d6347960b81f5d4f08c`; independently authored golden
+  reconciliation at `141d2c8daf431a7512d689395c5b31f84c8a8251`; and implementation at
+  `35778b80f931ecf4903ca553ab0fb1b1bb5e8110`. Its exact API, five carriers,
+  D0-D7 ordering, bounded archive safety, private parser/IR, explicit mapping,
+  provenance, canonical Task 9A package, atomic publication, deterministic
+  golden equivalence, diagnostics, and frozen boundaries are implemented.
+  Direct PDF remains deferred. Task 9B unresolved implementation blockers:
+  `NONE`.
 - Task 9C: `NOT STARTED`; V1.19 database/manifest serialization, writer, image destination, schema policy, and rollback authority remain deferred.
 - Task 9D: `NOT STARTED`; no real batch acceptance has begun.
 - `teacher_notes` and `common_errors` are Task 9A hashed import evidence/enrichment metadata, not current V2 formal fields; future formal representation requires separate schema authority.
@@ -144,7 +156,10 @@ Scope:
 
 ## Completion gate
 
-- Explicit complete maintained suite: 195/195 passed, including Task 8 completion 3/3; skip=0 and expectedFailure=0.
+- Current explicit maintained suite, excluding the separately attributed legacy
+  behavior module: 464/464 passed; skip=0 and expectedFailure=0.
+- Task 9B focused adapter suite: 214/214 passed; final independent review:
+  `CLEAN` (Critical 0, Important 0, Minor 0).
 - Task 8 equivalence: 3/3 passed.
 - Task 7 structure and frozen-baseline tests: 7/7 passed.
 - V1.18 independent verifier: `PASS` with 497/452/45 counts, integrity `ok`, and 0 foreign-key errors.
@@ -164,16 +179,21 @@ Scope:
 - Task 8A final acceptance record remains `docs/reports/TASK8A_FINAL_ACCEPTANCE.md`.
 - Verification record: `docs/reports/TASK7_VERIFICATION.md`.
 - Remote backup branch remains retained; no cleanup has been performed.
+- Task 9B golden-equivalence preflight is `READY FOR USER IMPORT APPROVAL` with
+  17 candidates, 0 issues, and path-independent preflight SHA-256
+  `49ab71e26cf2256581ecb5ada14b0eefc601317169ee897599aeb9a39976187b`.
+  This is verification evidence only: no approval was issued and no import was
+  performed.
+- Task 9B verification record: `docs/reports/TASK9B_VERIFICATION.md`.
 
 ## Next task
 
-Create the Task 9B implementation Plan from the committed, independently
-reviewed Mathpix MMD adapter Design, obtain independent Plan review, and commit
-the Plan before any production implementation. Then execute the approved B1–B9
-TDD sequence autonomously. Preserve Task 9A as the deterministic read-only
-preflight and keep V1.18 frozen at 497 questions. Do not start Task 8C, Phase
-2A, CLI/consumer migration, or Task 9C/9D prematurely. When the approved
-sequence reaches them, Task 9C Design/Plan and pre-write dry-run work and Task
-9D pre-approval preparation may proceed autonomously. The first formal V1.19
-write, first real batch write, and release promotion remain HUMAN GATES B, C,
-and D respectively under `docs/AUTONOMY_POLICY.md`.
+Proceed only to separately authorized Task 9C planning under
+`docs/AUTONOMY_POLICY.md`: recover authority, create and independently review a
+Task 9C Design and Plan, then use strict TDD for in-memory/temporary/dry-run
+writer work. Stop at HUMAN GATE B before the first real V1.19 candidate database
+or formal write artifact. Preserve Task 9A as the deterministic read-only
+preflight, Task 9B as the staging-only adapter, and V1.18 at 497 questions. Do
+not start Task 8C, Phase 2A, CLI/consumer migration, a real Task 9D import, or
+promotion. The first real digest-bound import and promotion remain HUMAN GATES
+C and D.
