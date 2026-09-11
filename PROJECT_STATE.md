@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-09-06 (Asia/Shanghai)
+Updated: 2026-09-11 (Asia/Shanghai)
 
 ## Formal data
 
@@ -51,9 +51,11 @@ Scope:
 - Maintained typed implementations now exist under `src/joy_m2/audit/`, `db/`, `export/`, and `release/`; no CLI or consumer migration was added.
 - Task 8 completion authority is the maintained replay against approved protected/frozen references and compatibility contracts. Fresh legacy generation remains attribution evidence only.
 - Completion evidence commit: `6969f3d88b00537386212bc91203c837cac58915`.
-- Current branch is `task8b/pipeline-migration`; current committed HEAD is
-  `6fec37c45346b1680fb0bf0676c38e515c18cacd`, parent
-  `a742f56bb49e644ed062d78ec2de9505d47b593d`.
+- Current branch is `task8b/pipeline-migration`. The latest completed execution
+  authority checkpoint is `93566e4fb4f95d1258f83ae2da3bcaad9573a737`
+  (`docs: define autonomous execution policy`), parent
+  `d19baa812213c8015dbb63a9ce3f431eaa077f42`; local and upstream were aligned
+  at that checkpoint.
 - V1.18 remains the current formal release. No formal database, frozen hash, compatibility object, question data, `data/`, `releases/`, or `legacy/` file changed.
 - Task 8B unresolved blockers: `NONE`. Task 9A unresolved implementation
   blockers: `NONE`. Its exact sixteen-code issue pipeline includes
@@ -103,14 +105,14 @@ Scope:
   expanded the suite to its current final 41/41 PASS. All intermediate
   checkpoints are `HISTORICAL / CLOSED` audit evidence and must not be replayed.
 - Task 9A exact target identity remains V1.19, while frozen V1.18 remains the read-only 497-question baseline.
-- Task 9B: `NOT STARTED`; its intended responsibility is a Mathpix
-  MMD/MMD.ZIP-to-canonical-Task-9-JSON/package adapter, not a writer. Direct PDF
-  remains deferred. Task 9B executable authority is `NOT YET CLOSED`; its
-  planning must separately freeze exact API/file scope, canonical adapter
-  input/output, MMD question/sub-question and answer mapping, image/provenance
-  mapping, ZIP traversal/absolute-path/symlink/duplicate-member/nested-archive
-  policy, deterministic member ordering, malformed/unsupported-input taxonomy,
-  fixture strategy, TDD sequence, and exit gate.
+- Task 9B implementation: `NOT STARTED`. Its independently reviewed executable
+  Design is committed at `d19baa812213c8015dbb63a9ce3f431eaa077f42` in
+  `docs/superpowers/specs/2026-09-07-task9b-mmd-adapter-design.md`; its exact
+  API, file scope, archive safety, parser/mapping, provenance, fixture, TDD,
+  deterministic-equivalence, and exit contracts are closed. Direct PDF remains
+  deferred. The next autonomous action is to create and independently review
+  the Task 9B implementation Plan; production implementation must not begin
+  until that Plan is committed.
 - Task 9C: `NOT STARTED`; V1.19 database/manifest serialization, writer, image destination, schema policy, and rollback authority remain deferred.
 - Task 9D: `NOT STARTED`; no real batch acceptance has begun.
 - `teacher_notes` and `common_errors` are Task 9A hashed import evidence/enrichment metadata, not current V2 formal fields; future formal representation requires separate schema authority.
@@ -132,6 +134,12 @@ Scope:
   the frozen literal oracle, and zero-write verification.
 - Final independent implementation review: `PASS`. Remediation findings: two
   IMPORTANT found, two IMPORTANT remediated; final remediation review: `PASS`.
+- Autonomous execution policy: `ACTIVE` at
+  `93566e4fb4f95d1258f83ae2da3bcaad9573a737`; `AGENTS.md` and
+  `docs/AUTONOMY_POLICY.md` define the default checkpoint sequence, independent
+  review requirements, session recovery, ordinary Git authority, and HUMAN
+  GATES A–F. Task 9B remains staging-only; Task 9C stops before its first formal
+  V1.19 write; Task 9D stops before the first real digest-bound import approval.
 - Safety branch `backup/task-7.1-ceb179e-20260808` remains retained.
 
 ## Completion gate
@@ -159,11 +167,13 @@ Scope:
 
 ## Next task
 
-Close Task 9B planning/authority before implementation. The next separately
-authorized work may define the adapter contract and TDD plan for Mathpix
-MMD/MMD.ZIP to canonical Task 9 JSON/package input. It must close the authority
-gaps listed above and preserve Task 9A as the deterministic read-only preflight.
-Task 9B implementation remains `NOT STARTED`; do not create an adapter until its
-executable authority passes independent review. Do not start Task 8C, Phase 2A,
-CLI/consumer migration, Task 9C/9D, a real import, SQLite mutation, writer, or
-formal promotion.
+Create the Task 9B implementation Plan from the committed, independently
+reviewed Mathpix MMD adapter Design, obtain independent Plan review, and commit
+the Plan before any production implementation. Then execute the approved B1–B9
+TDD sequence autonomously. Preserve Task 9A as the deterministic read-only
+preflight and keep V1.18 frozen at 497 questions. Do not start Task 8C, Phase
+2A, CLI/consumer migration, or Task 9C/9D prematurely. When the approved
+sequence reaches them, Task 9C Design/Plan and pre-write dry-run work and Task
+9D pre-approval preparation may proceed autonomously. The first formal V1.19
+write, first real batch write, and release promotion remain HUMAN GATES B, C,
+and D respectively under `docs/AUTONOMY_POLICY.md`.
