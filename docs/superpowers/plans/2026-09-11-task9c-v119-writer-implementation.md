@@ -61,6 +61,12 @@ tests/unit/test_v119_writer_primitives.py
 tests/integration/test_v119_writer.py
 ```
 
+Phase B may additionally modify `tests/unit/test_v119_writer_models.py` only
+to replace its Phase A scaffold-only `NotImplementedError` assertion with an
+exact wrong-request rejection/no-filesystem-mutation assertion. Preserve all
+other content in that Phase A test module unchanged. No model or additional
+production file is authorized by this lifecycle migration.
+
 After Phase A implementation is reviewed and committed, one separate docs-only
 checkpoint may modify only `PROJECT_STATE.md`. After Phase B implementation is
 reviewed and committed, its separate closure checkpoint may modify only
@@ -385,13 +391,17 @@ may Phase B production change.
 
 ## Task 5 — Phase B minimal production GREEN
 
-**Modify/create only:**
+**Modify/create production files only:**
 
 ```text
 src/joy_m2/ingest/writer_profiles.py
 src/joy_m2/ingest/writer.py
 src/joy_m2/ingest/writer_verification.py
 ```
+
+The only test file modification in this Task is the previously authorized
+single lifecycle-test replacement in `tests/unit/test_v119_writer_models.py`;
+the two Phase B test files were already frozen by the complete RED gate.
 
 ### Step 1: Implement deterministic private profile primitives
 
@@ -436,6 +446,17 @@ Replace only the `writer.py` scaffold. In order:
 Run Group 4 selected tests until GREEN.
 
 ### Step 4: Unified focused GREEN
+
+Before the unified run, perform the one authorized Phase A lifecycle-test
+migration in `tests/unit/test_v119_writer_models.py`: replace only the obsolete
+scaffold `NotImplementedError` expectation. Call each API with an exact
+`object()` request and one valid exact `PipelineConfig`; each call must raise
+the existing `PipelineError` family. Create a sentinel before both calls,
+compare the complete before/after tree including each entry kind and file
+bytes, and assert that no output or private temporary entry appears. This is
+required because the same final gate runs the Phase A public-contract module
+against the implemented Phase B entry points; every other line and assertion
+in that Phase A test module remains unchanged.
 
 Run:
 

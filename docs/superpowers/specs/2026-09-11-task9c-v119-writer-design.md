@@ -843,6 +843,19 @@ tests/unit/test_v119_writer_primitives.py
 tests/integration/test_v119_writer.py
 ```
 
+Phase B may also modify `tests/unit/test_v119_writer_models.py`, but only to
+migrate the Phase A scaffold-lifecycle assertion that requires both public
+entry points to raise `NotImplementedError`. Once Phase B behavior exists,
+that assertion must instead lock exact wrong-request rejection and no
+filesystem mutation. For each public entry point, the replacement test passes
+an exact `object()` as the request with one valid exact `PipelineConfig` and
+requires the existing `PipelineError` family. It creates a sentinel first,
+compares the complete before/after tree including entry kinds and file bytes,
+and asserts that no output or private temporary entry appears. All other Phase
+A public model, signature, error, and package-surface tests remain unchanged.
+This narrow lifecycle migration is part of the Phase B implementation commit;
+it grants no production or model scope.
+
 No existing Task 9A/9B production or test file may change. No Database, Audit,
 Export, Release, CLI, data, releases, legacy, frozen artifact, or Task 8 file
 may change.
