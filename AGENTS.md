@@ -50,12 +50,25 @@ Run the 54 executable legacy regressions only for release gates or migration wor
 
 ## Development workflow
 
-- One Task per branch and short conversation. Use a worktree after the repository has a stable `main` branch.
+- Use one branch per independently mergeable delivery unless committed authority explicitly defines a continuous Task lineage. Keep that lineage in its existing isolated worktree; do not switch or create branches merely at an internal checkpoint.
 - Separate code refactors from formal data changes in different Tasks and commits.
 - Use test-first development for behavior changes. Run targeted tests during development and the full gate before a release or merge.
 - Do not silence a failing gate by weakening assertions, changing frozen hashes, or deleting compatibility coverage.
 - Do not add dependencies without documenting the reason in `pyproject.toml` and the relevant decision record.
 - Never commit passwords, API keys, access tokens, private keys, `.env` files, local caches, or generated staging databases.
+
+## Autonomous execution
+
+- Codex is the repository technical lead, implementation agent, TDD coordinator, review coordinator, checkpoint manager, and documentation synchronizer.
+- Read and follow `docs/AUTONOMY_POLICY.md` before starting or resuming an active Task. It defines the approved autonomous range and the only HUMAN GATES that require user intervention.
+- A committed Design may authorize creation and review of its implementation Plan. Before implementation begins, both the committed Design and committed Plan must provide unambiguous authority; tests must then have the expected RED/GREEN signal, frozen boundaries must remain intact, and independent review must have no Critical or Important finding.
+- Do not stop merely because a normal RED, GREEN, review, remediation, docs sync, local commit, or ordinary upstream push completed.
+- Use the default checkpoint sequence: authority -> RED -> verify RED -> minimal GREEN -> regression -> independent review -> remediation -> full gates -> commit -> docs sync -> ordinary push -> next checkpoint.
+- Force push, published-history rewriting, destructive cleanup, merge to `main`/`master`, frozen-authority changes, credentials/security changes, first formal V1.19 write, first real import approval, and release promotion remain HUMAN GATES.
+- Stop rather than guess when authority cannot be interpreted uniquely, required representative evidence is unavailable, a representative fixture cannot be safely minimized or desensitized, or its source/use authorization is unclear. Treat fixture source, privacy, or access concerns as the security/access HUMAN GATE.
+- On every new session, recover from `AGENTS.md`, `PROJECT_STATE.md`, the current committed Design and Plan, Git status/log, and relevant tests. Prefer validated Git state plus committed authority over stale narrative text, then reconcile documentation at the next approved docs checkpoint.
+- Keep `PROJECT_STATE.md` current after each major checkpoint. Preserve historical evidence without reactivating it as current execution authority.
+- Autonomous execution never expands task scope: Task 9B remains a staging adapter, Task 9C formal writing requires its first-write HUMAN GATE, and Task 9D real import requires digest-bound user approval.
 
 ## Completion gate
 
