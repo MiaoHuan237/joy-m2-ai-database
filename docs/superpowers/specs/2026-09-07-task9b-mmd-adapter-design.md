@@ -595,9 +595,25 @@ or the `題解` marker, does not trim boundary whitespace, and does not rewrite
 LaTeX. An empty body is not a source answer and cannot produce
 `answer_status="source_provided"`.
 
-The selection manifest must match every occurrence uniquely by kind, number,
-section, and declared order. Parser order never overrides manifest semantic
-order. Duplicate/absent matches block instead of causing implicit selection.
+The selection manifest binds occurrences without using selection-array
+position, filesystem order, runtime path, or proposed question ID. For each
+selection, D4 first forms the set of parsed primary occurrences whose
+`kind`, canonical `number`, and source-derived `source_section` all match
+exactly. One exact match binds; more than one emits
+`selection_not_unique/question_occurrence` with that exact match count.
+
+When there is no exact match, `source_occurrence_mismatch` is reachable only by
+this deterministic one-field counterfactual rule: consider occurrences that
+match exactly two of those three fields and differ in exactly the remaining
+field. If the union contains exactly one occurrence and exactly one field is
+different, that occurrence is independently unique and D4 emits the one
+`source_contract_mismatch` for the differing field. If the union is empty,
+contains more than one occurrence, or no single differing field is unique,
+D4 emits `selection_not_unique/question_occurrence` with `match_count=0` and
+does not guess an occurrence. A source with zero parsed questions is therefore
+an unambiguous zero-match case. Parser order never supplies the missing
+identity and never overrides manifest semantic order; after binding, output
+candidate order is the manifest selection tuple order.
 
 ## 7. Rendering, fragment identity, and provenance
 

@@ -528,10 +528,17 @@ mapping/package behavior. Re-run Task 9A and V1.18 gates.
 
 - [ ] **Step 1: Bind selections at D4 and count at D5**
 
-Match each selection uniquely by kind/number/source-derived section and declared
-semantic order. Validate local/separate answer mapping and source occurrence
-agreement. Stop D5 after D4 failure; otherwise compare complete parsed source
-occurrence count with `expected_candidate_count`.
+For each selection, first match the exact `(kind, canonical number,
+source-derived section)` triple without using selection position or parser
+order as identity. One exact match binds and multiple exact matches emit
+`selection_not_unique`. With zero exact matches, apply the Design's sole
+counterfactual rule: only one occurrence matching exactly two fields and
+differing in exactly one field may bind for that field's
+`source_occurrence_mismatch`; otherwise emit zero-match
+`selection_not_unique` and do not guess. Preserve manifest tuple order only as
+candidate semantic output order. Validate local/separate answer mapping and
+source occurrence agreement. Stop D5 after D4 failure; otherwise compare
+complete parsed source occurrence count with `expected_candidate_count`.
 
 - [ ] **Step 2: Implement the exact bilingual lexer/projection at D6**
 
