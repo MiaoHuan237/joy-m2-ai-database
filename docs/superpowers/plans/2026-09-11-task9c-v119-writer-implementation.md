@@ -30,9 +30,12 @@ From the existing `task8b/pipeline-migration` worktree:
 
 ```bash
 PY=/Users/miaohuanjoy/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3
+export PYTHONPATH=src
 ```
 
 Never use the absent system `python` as a reason to alter repository setup.
+The exported source-layout import path applies to every `$PY` test and validator
+command in this Plan.
 All tests use `tempfile.TemporaryDirectory()` or an equivalent OS-temporary
 root passed to `PipelineConfig`. They may read the frozen V1.18 SQLite only
 through its existing path/typed evidence and must never write beside it.
