@@ -651,11 +651,66 @@ run Task 9A 41/41 and V1.18 validator.
 
 ---
 
+## Task 8A: B6A parser and golden-authority reconciliation
+
+**Files:**
+
+- Modify: `tests/unit/test_mmd_parser.py`
+- Modify: `src/joy_m2/ingest/mmd_parser.py`
+- Modify: `tests/fixtures/task9b/golden/records/candidates.json`
+- Modify: `tests/fixtures/task9b/golden/source/source-map.json`
+- Modify: `tests/fixtures/task9b/golden/import_manifest.json`
+
+This is the only approved post-B1 golden reconciliation. Independent review
+found two distinct mismatches: the committed B1 golden misapplies the Design's
+exact first-onset/no-onset ASCII-whitespace ownership, while current production
+misapplies the display-closing line-terminator rule and empty `\\item[]`
+structural-prefix rule. Production must not regress its Design-correct
+whitespace behavior; golden reauthoring must preserve the Design-correct
+display-LF and empty-item semantics. Production adapter/parser helpers must not
+author the replacement golden.
+
+- [ ] **Step 1: Establish both parser REDs before production correction**
+
+Add one focused regression proving that the LF after a closing whole-line `$$`
+belongs to the same `shared` display span, and one proving that an exact empty
+`\\item[]` prefix is structural `shared`. Run both against current production.
+Each must fail for its corresponding parser gap, with no import, setup,
+fixture, environment, or test-construction error.
+
+- [ ] **Step 2: Apply the minimum parser correction and restore GREEN**
+
+Only after both valid REDs are recorded, modify `mmd_parser.py` to close those
+two exact gaps. Run the two focused tests and the complete parser suite. Do not
+change the already-approved first-onset whitespace or line-terminator rules to
+match the stale golden.
+
+- [ ] **Step 3: Independently reauthor exactly three derived golden files**
+
+Use a standalone oracle that reads the committed representative fixtures and
+Design rules but imports no Task 9B production adapter/parser/helper. Reauthor
+only `records/candidates.json` and `source/source-map.json`; then update only
+their SHA-256 and size evidence in `import_manifest.json`. Preserve the raw
+golden source, four images, representative fixtures, all other manifest fields,
+field order, file groups, and canonical-byte conventions exactly.
+
+- [ ] **Step 4: Independently review and commit the golden reconciliation**
+
+Verify the three-file-only fixture diff, source-span byte partition, raw
+fragment/solution/image reconstruction, candidate projection, manifest tree
+binding, canonical JSON, Task 9A preflight result, and absence of production-
+helper imports. Require zero Critical and zero Important findings, then commit
+only the three golden files before B7. The parser/test changes remain for the
+final Task 9B implementation commit.
+
+---
+
 ## Task 9: B7 independent Task 9A golden equivalence
 
 **Files:**
 
-- No file changes. Execute the equivalence assertions established by the Task 4
+- No file changes after the separately reviewed and committed Task 8A golden
+  reconciliation. Execute the equivalence assertions established by the Task 4
   pre-production RED gate.
 
 - [ ] **Step 1: Run adapter and golden packages independently**
@@ -671,9 +726,10 @@ classifications, adaptations, report, and `preflight_sha256`. Also compare the
 complete canonical package tree and exact bytes against the independently
 authored golden package.
 
-If an already-established equivalence assertion is RED, record that existing
-focused RED and make only the minimum production correction inside the approved
-four production files. Do not add or weaken a behavior test at B7.
+If an already-established equivalence assertion is RED after Task 8A, record
+that existing focused RED and make only the minimum production correction
+inside the approved four production files. Do not modify golden fixtures or add
+or weaken a behavior test at B7.
 
 - [ ] **Step 3: Prove Task 9A remained unchanged**
 

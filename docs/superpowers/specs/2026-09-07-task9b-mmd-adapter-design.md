@@ -628,11 +628,14 @@ classifying prose:
   followed by `$` and ends at the next unescaped `$` on the same physical line;
   the delimiters and body form one `shared` span;
 - a display block beginning on a line whose content is exactly `$$` and ending
-  at the next line whose content is exactly `$$`, including both delimiters and
-  intervening bytes, is one `shared` span;
+  at the next line whose content is exactly `$$`, including both delimiters,
+  intervening bytes, and the closing delimiter's line terminator when present,
+  is one `shared` span;
 - exact whole-line `\\begin{itemize}` / `\\end{itemize}` and the bracketed
-  prefix of a `\\item[...]` line are structural `shared` spans; any following
-  prose on that line is classified separately;
+  prefix of a `\\item[...]` line are structural `shared` spans. The exact empty
+  bracket form `\\item[]` is included: its entire prefix through `]` is
+  structural `shared`, and any following prose on that line is classified
+  separately;
 - a lexically complete image envelope is first checked by the section 8 target-
   safety rule; only a safe envelope matching `![](./images/<tail>)` becomes one
   `image_token` span with language `shared`, is not split by characters, and is
@@ -1507,12 +1510,38 @@ No production code may be written before its valid RED. The sequence is:
    manifest-only surplus image binding.
 8. **B6 — Canonical package GREEN.** Implement deterministic JSON, file groups,
    source map, byte-preserving staging, atomic publication, and cleanup.
-9. **B7 — Task 9A equivalence GREEN.** Run adapter and independent golden
+9. **B6A — Golden-authority reconciliation.** Independent review found two
+   distinct mismatches: the committed B1 golden misapplies the exact first-
+   onset/no-onset ASCII-whitespace ownership, while current production
+   misapplies the display-closing line-terminator rule and empty `\\item[]`
+   structural-prefix rule. Do not regress production's Design-correct
+   whitespace behavior, and do not copy adapter output into the golden. Golden
+   reauthoring must preserve the Design-correct display-LF and empty-item
+   semantics. Before B7, first add and run
+   independent parser regressions for (a) a display closing delimiter whose LF
+   must remain in that one `shared` display span and (b) an empty `\\item[]`
+   prefix that must be structural `shared`; both tests must be valid REDs before
+   the minimum parser correction. After they are GREEN, an independent oracle
+   that imports no Task 9B production helper must reauthor exactly these three
+   derived golden files from the reviewed representative bytes and this Design:
+
+   ```text
+   tests/fixtures/task9b/golden/records/candidates.json
+   tests/fixtures/task9b/golden/source/source-map.json
+   tests/fixtures/task9b/golden/import_manifest.json
+   ```
+
+   The raw golden source, four golden images, representative fixtures, and
+   every other file remain byte-identical. The manifest may change only the
+   candidate/source-map evidence SHA-256 and size facts implied by the two
+   independently reauthored payloads. Independently review and commit this
+   three-file golden reconciliation before B7.
+10. **B7 — Task 9A equivalence GREEN.** Run adapter and independent golden
    package through unchanged Task 9A and close every equivalence dimension.
-10. **B8 — Determinism/security gates.** Repeat under different roots, temp
+11. **B8 — Determinism/security gates.** Repeat under different roots, temp
     paths, ZIP physical orders, and container metadata; run every safety
     negative control and full maintained/frozen gates.
-11. **B9 — Final independent review.** Review implementation, provenance,
+12. **B9 — Final independent review.** Review implementation, provenance,
     deterministic bytes, security, scope, and frozen boundaries before the
     implementation commit.
 
