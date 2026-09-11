@@ -488,23 +488,33 @@ class V119WriterPublicContractTests(unittest.TestCase):
             "(request: 'V119VerificationRequest', config: 'PipelineConfig') -> 'VerificationReport'",
         )
 
-    def test_api_scaffolds_raise_without_filesystem_changes(self) -> None:
+    def test_api_entrypoints_reject_wrong_requests_without_filesystem_changes(self) -> None:
         with TemporaryDirectory() as temporary:
             root = Path(temporary)
             config = PipelineConfig(root)
-            package = root / "package"
-            package.mkdir()
-            output = config.staging_root / "candidate"
-            write = self.V119WriteRequest(_preflight(root), package, self.approval(), output, self.contract())
-            verify = self.V119VerificationRequest(output, _preflight(root), self.approval(), self.contract())
-            before = tuple(sorted(path.relative_to(root) for path in root.rglob("*")))
-            for function, request in ((self.build_v119_candidate, write), (self.verify_v119_candidate, verify)):
-                with self.subTest(function=function.__name__), self.assertRaisesRegex(
-                    NotImplementedError, "^Task 9C writer behavior is not implemented$"
-                ):
-                    function(request, config)
-            after = tuple(sorted(path.relative_to(root) for path in root.rglob("*")))
-            self.assertEqual(after, before)
+            sentinel = root / "sentinel.bin"
+            sentinel.write_bytes(b"preserve exactly")
+
+            def snapshot() -> tuple[tuple[str, str, bytes | None], ...]:
+                return tuple(
+                    (
+                        path.relative_to(root).as_posix(),
+                        "symlink"
+                        if path.is_symlink()
+                        else "directory"
+                        if path.is_dir()
+                        else "file",
+                        path.read_bytes() if path.is_file() and not path.is_symlink() else None,
+                    )
+                    for path in sorted(root.rglob("*"))
+                )
+
+            before = snapshot()
+            for function in (self.build_v119_candidate, self.verify_v119_candidate):
+                with self.subTest(function=function.__name__), self.assertRaises(PipelineError):
+                    function(object(), config)
+                self.assertEqual(snapshot(), before)
+            self.assertFalse(config.staging_root.exists())
 
 
 if __name__ == "__main__":
