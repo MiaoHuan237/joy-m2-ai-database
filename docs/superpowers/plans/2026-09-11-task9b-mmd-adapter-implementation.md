@@ -562,9 +562,29 @@ Resolve only exact `![](./images/<tail>)`; retain representable missing images
 as candidate `image_paths` without staged bytes or fabricated digest. Enforce
 explicit `expected_image_members`, candidate/source occurrence order, byte-
 identical staging identity, explicit type/tags/difficulty, Task 9A evidence
-locator wrapper, and the frozen `complete/incomplete` formula.
+locator wrapper, and the frozen `complete/incomplete` formula. A trailing
+D0-valid expected image with no source token is not a representable absent
+resource: emit the Design's exact candidate-bound
+`image_binding_invalid/selection_surplus` envelope using the surrounding
+question-fragment locator, exact declared `expected_member`, empty `matches`,
+and `raw_target=null`; never synthesize a token or candidate image path.
 
-- [ ] **Step 5: Run mapping-focused GREEN**
+- [ ] **Step 5: Establish independent-review remediation REDs**
+
+Before any further Task 7 production correction, add one focused regression
+for each independently confirmed uncovered contract case and run it against
+the current implementation: ZIP lexical member order must not select answer
+bytes as primary; `english_then_chinese` must reject non-structural `und` and
+handle empty prose without a raw exception; an explicit separate
+`answer_number` must render that selected answer; a second local solution
+marker remains a multiplicity blocker even when the first body is empty; a
+line terminator after an earlier atomic token belongs to the final non-image
+text span; and a manifest-only surplus expected image emits the exact new D7
+envelope. Each RED must fail for its corresponding production gap, with no
+import/setup/fixture/environment error. Do not change production until all six
+REDs are recorded.
+
+- [ ] **Step 6: Apply minimal Task 7 corrections and run mapping-focused GREEN**
 
 Run parser and integration subsets for selection, bilingual, answer,
 explanation, image, metadata, and provenance. All earlier archive/parser tests

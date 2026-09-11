@@ -843,6 +843,20 @@ inability to derive exactly one canonical expected path despite a safe target,
 or invalid role/binding metadata. A syntactically valid but absent image is not
 this code.
 
+The one no-token exception is a manifest-only surplus binding. After comparing
+the source-ordered safe image references with `expected_image_members` by
+position, each trailing declared member for which no source image token exists
+emits one D7 `image_binding_invalid`. It is candidate-bound to the exact
+proposed ID, uses the surrounding question-fragment locator because no image
+token exists, and has field `expected_image_members`. Its exact evidence is
+`{"expected_member":"images/<tail>","matches":[],"raw_target":null,"reason":"selection_surplus"}`.
+The `expected_member` is the already D0-validated canonical declared value;
+`raw_target` is JSON null and is never synthesized. This case blocks before
+candidate construction, so a manifest-only path can never be emitted as a
+Task 9A `image_paths` value. It is distinct from a source image token whose
+safe target exists syntactically but whose resource bytes are absent; that
+representable missing-image case remains non-blocking.
+
 Archive member-name threats, nested archives, and unsafe member types are D1
 `archive_member_unsafe` facts. A raw image target embedded in MMD cannot be
 known during metadata-only D1. After D2 integrity succeeds, D3 performs the
@@ -1146,7 +1160,7 @@ path or `null`, never a host or unsafe raw path. All rows have severity
 | `selection_not_unique` | D1: for MMD.ZIP, a declared `primary_member` or non-`None` `answer_member` is absent from the completed safe canonical inventory; D4: a typed selection's primary question, local solution, or separate answer occurrence has zero or more than one match | D1 package: `proposed_question_id=None`, `source_locator=""`; D4 candidate: exact proposed ID and unique surrounding question locator when available, otherwise empty locator | D1 exactly `primary_member` or `answer_member`; D4 exactly `selection`, `answer_mapping`, or `answer_number` | D1 exactly `{"member":...,"reason":"selected_member_missing"}` using the canonical safe declared member; D4 exactly `{"canonical_number":...,"match_count":...,"reason":...}` with reason exactly `question_occurrence | local_solution | answer_occurrence` |
 | `candidate_count_mismatch` | D5: after every selection binds uniquely, the number of complete top-level question occurrences parsed from the selected primary member differs from `expected_candidate_count` | package, `None`, empty locator | exactly `expected_candidate_count` | exactly `{"actual":...,"expected":...,"reason":"candidate_count"}` |
 | `language_mapping_ambiguous` | D6: after D3 atomic parsing succeeds, the exact section 7.1 state machine cannot satisfy the declared layout | candidate, exact proposed ID and smallest offending question byte locator | exactly `language_layout` | exactly `{"end_byte":...,"layout":...,"reason":...,"start_byte":...}`; reason exactly `missing_en | missing_zh | invalid_transition | und_prose` |
-| `image_binding_invalid` | D7: a path-safe reference has ambiguous semantic mapping, conflicts with explicit selection, has multiple matches, cannot yield exactly one canonical expected path, or has invalid role/binding metadata; a valid absent member and every unsafe raw target are not triggers | candidate, exact proposed ID and image-token locator | exactly `expected_image_members` | exactly `{"matches":...,"raw_target":...,"reason":...}` where `matches` is the canonically sorted safe member array; reason exactly `ambiguous_reference | selection_conflict | multiple_matches | canonical_path_unavailable | invalid_role` |
+| `image_binding_invalid` | D7: a path-safe reference has ambiguous semantic mapping, conflicts with explicit selection, has multiple matches, cannot yield exactly one canonical expected path, or has invalid role/binding metadata; additionally, a trailing D0-valid `expected_image_members` entry with no source image token is a manifest-only surplus; a valid absent resource for an existing safe token and every unsafe raw target are not triggers | candidate, exact proposed ID; image-token locator for a source-reference failure, or the unique surrounding question-fragment locator for manifest-only surplus | exactly `expected_image_members` | source-reference failure: exactly `{"matches":...,"raw_target":...,"reason":...}` where `matches` is the canonically sorted safe member array and reason is exactly `ambiguous_reference | selection_conflict | multiple_matches | canonical_path_unavailable | invalid_role`; manifest-only surplus: exactly `{"expected_member":...,"matches":[],"raw_target":null,"reason":"selection_surplus"}`, where `expected_member` is the exact D0-valid canonical declared path |
 
 ### 11.1 Exact D0 `source_contract_mismatch` evidence
 
@@ -1336,7 +1350,11 @@ Required precedence is exact:
 - any D4 selection failure prevents D5, so no consequential
   `candidate_count_mismatch` is emitted;
 - a safe canonical image target whose member is absent produces no Task 9B
-  issue and is preserved for Task 9A `missing_image`.
+  issue and is preserved for Task 9A `missing_image`;
+- after D4-D6 pass, a trailing manifest-only expected image with no source
+  image token emits only its D7 `image_binding_invalid/selection_surplus`
+  issue, uses the surrounding question-fragment locator, and blocks candidate
+  construction; it is not converted into a Task 9A `missing_image` path.
 
 Issues use a stable Python sort by exactly:
 
@@ -1479,7 +1497,14 @@ No production code may be written before its valid RED. The sequence is:
    immutable IR, complete-question spans, rendering, and fragment identity.
 7. **B5 — Mapping/provenance GREEN.** Implement explicit selection, answer and
    explanation independence, bilingual mapping, images, metadata, and
-   enrichment status.
+   enrichment status. Independent-review remediation remains test-first: add
+   one focused regression for each confirmed uncovered B5 counterexample and
+   prove its current failure before changing B5 production again. This includes
+   primary-member lookup independent of lexical member order, the complete
+   `english_then_chinese` state including `und`/empty prose, explicit separate
+   `answer_number` rendering, multiple local solution markers even with an
+   empty body, final-text line-terminator ownership after an atomic token, and
+   manifest-only surplus image binding.
 8. **B6 — Canonical package GREEN.** Implement deterministic JSON, file groups,
    source map, byte-preserving staging, atomic publication, and cleanup.
 9. **B7 — Task 9A equivalence GREEN.** Run adapter and independent golden
