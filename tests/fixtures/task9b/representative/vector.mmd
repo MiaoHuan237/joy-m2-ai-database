@@ -1,0 +1,1778 @@
+例題1
+
+參考
+DSE 2023 Q10
+
+Denote the origin by $O$ ．The position vectors of the points $A$ and $B$ are $5 \mathbf{i}+4 \mathbf{j}+2 \mathbf{k}$ and $5 \mathbf{i}+5 \mathbf{j}+t \mathbf{k}$ respectively，where $t$ is a real number．Denote the circle passing through $O, A$ and $B$ by $P$ ．It is given that $\overrightarrow{O A}$ is perpendicular to $\overrightarrow{A B}$ ．
+\begin{itemize}
+\item[（a）] Find $\overrightarrow{O B}$ ．
+\end{itemize}
+（2 marks）
+\begin{itemize}
+\item[（b）] Let $C$ be a point of on $O B$ such that $A C$ produced meets $P$ at a point $D$ ．It is given that $O C$ is the perpendicular bisector of $A D$ ．Find $\overrightarrow{O D}$ ． （3 marks）
+\item[（c）] Let $\Pi$ be the plane which contains $P$ ．
+\begin{itemize}
+\item[（i）] Find a unit vector which is perpendicular to $\Pi$ ．
+\item[（ii）] The position vector of the point $E$ is $\frac{3}{2} \mathbf{i}+\frac{7}{2} \mathbf{j}+\frac{1}{2} \mathbf{k}$ ．Denote the projection of $E$ on $\Pi$ by $F$ ．Find the area of $\triangle D E F$ ． （6 marks）
+\end{itemize}
+\end{itemize}
+
+將原點記為 $O$ 。點 $A$ 及點 $B$ 的位置向量分別為 $5 \mathbf{i}+4 \mathbf{j}+2 \mathbf{k}$ 和 $5 \mathbf{i}+5 \mathbf{j}+t \mathbf{k}$ ，其中 $t$ 為一實數。將通過 $O$ 、 $A$ 及 $B$ 的圓記為 $P$ 。已知 $\overrightarrow{O A}$ 垂直於 $\overrightarrow{A B}$ 。
+（a）求 $\overrightarrow{O B}$ 。
+（2分）
+\begin{itemize}
+\item[（b）] 設 $C$ 為 $O B$ 上的一點使得 $A C$ 的延線與 $P$ 相交於點 $D$ 。已知 $O C$ 為 $A D$ 的垂直平分線。求 $\overrightarrow{O D}$ 。 （3分）
+\end{itemize}
+\begin{itemize}
+\item[（C）] 設 $\Pi$ 為包含 $P$ 的平面。
+\begin{itemize}
+\item[（i）] 求一垂直於 $\Pi$ 的單位向量。
+\item[（ii）] 點 $E$ 的位置向量為 $\frac{3}{2} \mathbf{i}+\frac{7}{2} \mathbf{j}+\frac{1}{2} \mathbf{k}$ 。將 $E$ 在 $\Pi$ 上的投影記為 $F 。$ 求 $\triangle D E F$ 的面積。
+\end{itemize}
+\end{itemize}
+（6 分）
+題解 ：
+\begin{itemize}
+\item[（a）] Note that 留意
+$$
+\overrightarrow{A B}=\overrightarrow{O B}-\overrightarrow{O A}=\mathbf{j}+(t-2) \mathbf{k}
+$$
+Since $\overrightarrow{O A}$ is perpendicular to $\overrightarrow{A B}$ ，we have
+由於 $\overrightarrow{O A}$ 垂直於 $\overrightarrow{A B}$ ，可得
+$$
+\begin{aligned}
+\overrightarrow{O A} \cdot \overrightarrow{A B} & =0 \\
+(5 \mathbf{i}+4 \mathbf{j}+2 \mathbf{k}) \cdot[\mathbf{j}+(t-2) \mathbf{k}] & =0 \\
+(4)(1)+(2)(t-2) & =0 \\
+t & =0
+\end{aligned}
+$$
+Thus，we have 由此，可得
+$$
+\overrightarrow{O B}=5 \mathbf{i}+5 \mathbf{j}
+$$
+\item[（b）] Let $B C: C O=\lambda:(1-\lambda)$ ，where $0<\lambda<1$ ．
+設 $B C: C O=\lambda:(1-\lambda)$ ，其中 $0<\lambda<1$ 。
+$$
+\begin{aligned}
+\overrightarrow{A C}=\lambda \overrightarrow{A O}+(1-\lambda) \overrightarrow{A B} & =-\lambda(5 \mathbf{i}+4 \mathbf{j}+2 \mathbf{k})+(1-\lambda)(\mathbf{j}-2 \mathbf{k}) \\
+& =-5 \lambda \mathbf{i}+(1-5 \lambda) \mathbf{j}-2 \mathbf{k}
+\end{aligned}
+$$
+Since $\overrightarrow{O C}$ is perpendicular to $\overrightarrow{C A}$ ，we have
+由於 $\overrightarrow{O C}$ 垂直於 $\overrightarrow{C A}$ ，可得
+$$
+\begin{aligned}
+& \overrightarrow{O C} \cdot \overrightarrow{C A}=0 \\
+&(\overrightarrow{A C}-\overrightarrow{A O}) \cdot \overrightarrow{C A}=0 \\
+& {[(5-5 \lambda) \mathbf{i}+(5-5 \lambda) \mathbf{j}] \cdot[5 \lambda \mathbf{i}+(5 \lambda-1) \mathbf{j}+2 \mathbf{k}] }=0 \\
+&(5-5 \lambda)(5 \lambda)+(5-5 \lambda)(5 \lambda-1)=0 \\
+&-5(\lambda-1)(10 \lambda-1)=0 \\
+& \lambda=\frac{1}{10} \quad \text { or } \quad \lambda=1 \quad \text { 或 } \quad \text { (rejected) }
+\end{aligned}
+$$
+Since $C$ is the mid－point of $A D$ ，we have
+由於 $C$ 為 $A D$ 的中點，可得
+$$
+\begin{gathered}
+\overrightarrow{A D}=2 \overrightarrow{A C}=-\mathbf{i}+\mathbf{j}-4 \mathbf{k} \\
+\overrightarrow{O D}=\overrightarrow{A D}-\overrightarrow{A O}=4 \mathbf{i}+5 \mathbf{j}-2 \mathbf{k}
+\end{gathered}
+$$
+\end{itemize}
+\begin{itemize}
+\item[（c）] （i） $\overrightarrow{O A} \times \overrightarrow{O B}=\left|\begin{array}{lll}\mathbf{i} & \mathbf{j} & \mathbf{k} \\ 5 & 4 & 2 \\ 5 & 5 & 0\end{array}\right|=-10 \mathbf{i}+10 \mathbf{j}+5 \mathbf{k}$
+$$
+|\overrightarrow{O A} \times \overrightarrow{O B}|=\sqrt{(-10)^{2}+10^{2}+5^{2}}=15
+$$
+A unit vector which is perpendicular to $\Pi$
+一垂直於 $\Pi$ 的單位向量
+$$
+\begin{aligned}
+& =\frac{\overrightarrow{O A} \times \overrightarrow{O B}}{|\overrightarrow{O A} \times \overrightarrow{O B}|} \\
+& =-\frac{2}{3} \mathbf{i}+\frac{2}{3} \mathbf{j}+\frac{1}{3} \mathbf{k}
+\end{aligned}
+$$
+\item[] ${ }^{(1)}$ 「應試 小貼士
+另外一個垂直於 $\Pi$ 的單位向量
+$$
+=\frac{2}{3} \mathbf{i}-\frac{2}{3} \mathbf{j}-\frac{1}{3} \mathbf{k}
+$$
+\item[（ii）]
+$$
+\begin{aligned}
+\overrightarrow{F E} & =\left[\overrightarrow{O E} \cdot\left(-\frac{2}{3} \mathbf{i}+\frac{2}{3} \mathbf{j}+\frac{1}{3} \mathbf{k}\right)\right]\left(-\frac{2}{3} \mathbf{i}+\frac{2}{3} \mathbf{j}+\frac{1}{3} \mathbf{k}\right) \\
+& =\left[\left(\frac{3}{2} \mathbf{i}+\frac{7}{2} \mathbf{j}+\frac{1}{2} \mathbf{k}\right) \cdot\left(-\frac{2}{3} \mathbf{i}+\frac{2}{3} \mathbf{j}+\frac{1}{3} \mathbf{k}\right)\right]\left(-\frac{2}{3} \mathbf{i}+\frac{2}{3} \mathbf{j}+\frac{1}{3} \mathbf{k}\right) \\
+& =\left[\left(\frac{3}{2}\right)\left(-\frac{2}{3}\right)+\left(\frac{7}{2}\right)\left(\frac{2}{3}\right)+\left(\frac{1}{2}\right)\left(\frac{1}{3}\right)\right]\left(-\frac{2}{3} \mathbf{i}+\frac{2}{3} \mathbf{i}+\frac{1}{3} \mathbf{k}\right) \\
+& =\left(\frac{3}{2}\right)\left(-\frac{2}{3} \mathbf{i}+\frac{2}{3} \mathbf{j}+\frac{1}{3} \mathbf{k}\right) \\
+& =-\mathbf{i}+\mathbf{j}+\frac{1}{2} \mathbf{k}
+\end{aligned}
+$$
+\end{itemize}
+$$
+\begin{aligned}
+\overrightarrow{F D} & =\overrightarrow{O D}-\overrightarrow{O F} \\
+& =\overrightarrow{O D}-(\overrightarrow{E F}-\overrightarrow{E O}) \\
+& =(4 \mathbf{i}+5 \mathbf{j}-2 \mathbf{k})-\left[\left(\mathbf{i}-\mathbf{j}-\frac{1}{2} \mathbf{k}\right)-\left(-\frac{3}{2} \mathbf{i}-\frac{7}{2} \mathbf{j}-\frac{1}{2} \mathbf{k}\right)\right] \\
+& =\frac{3}{2} \mathbf{i}+\frac{5}{2} \mathbf{j}-2 \mathbf{k}
+\end{aligned}
+$$
+$$
+\overrightarrow{F E} \times \overrightarrow{F D}=\left|\begin{array}{ccc}
+\mathbf{i} & \mathbf{j} & \mathbf{k} \\
+-1 & 1 & \frac{1}{2} \\
+\frac{3}{2} & \frac{5}{2} & -2
+\end{array}\right|=-\frac{13}{4} \mathbf{i}-\frac{5}{4} \mathbf{j}-4 \mathbf{k}
+$$
+Area of $\triangle D E F$
+$\triangle D E F$ 的面積
+\begin{itemize}
+\item[] 1M
+\item[] 1A
+\end{itemize}
+$$
+\begin{aligned}
+& =\frac{1}{2}|\overrightarrow{F E} \times \overrightarrow{F D}| \\
+& =\frac{1}{2} \sqrt{\left(-\frac{13}{4}\right)^{2}+\left(-\frac{5}{4}\right)^{2}+(-4)^{2}}
+\end{aligned}
+$$
+
+\section*{100得分位 大檢閱}
+\begin{itemize}
+\item[（a）] 1M 給予利用正交向量（orthogonal vectors）的性質。
+1A 給予正確答案。
+\item[（b）] 1 M 給予利用分線公式（section formula）。
+1M 給予利用正交向量的性質。
+1A 給予正確答案。
+\item[（c）] （i）1M 給予展開行列式（determinant）來求 $\overrightarrow{O A} \times \overrightarrow{O B}$ 。
+1M 給予求 $\frac{\overrightarrow{O A} \times \overrightarrow{O B}}{|\overrightarrow{O A} \times \overrightarrow{O B}|}$ 。
+1A 給予正確答案。
+\item[（ii）] 1M 給予求 $\overrightarrow{F E}$ 。
+1M 給予利用向量積（vector product）求 $\triangle D E F$ 的面積。
+1A 給予正確答案。
+\end{itemize}
+
+例題2
+DSE 2022 Q12
+Consider $\triangle P Q R$ ．Define $P Q=r, Q R=p$ and $R P=q$ ．
+\begin{itemize}
+\item[（a）] Let $S$ be a point lying on $P Q$ such that $S R$ is the angle bisector of $\angle P R Q$ and $T$ be a point lying on $Q R$ such that $P T$ is the angle bisector of $\angle Q P R$ ．
+\item[（i）] Suppose that $P T$ and $S R$ intersect at a point $I$ ．Using the fact that $P S: S Q=q: p$ and $Q T: T Q=r: q$ ，prove that
+$$
+\overrightarrow{Q I}=\frac{r}{p+q+r} \overrightarrow{Q R}+\frac{p}{p+q+r} \overrightarrow{Q P}
+$$
+\item[（ii）] Suppose that $Q I$ produced intersects $P R$ at a point $U$ ．Prove that
+$$
+P U: U R=r: p
+$$
+（9 marks）
+\item[（b）] Denote the origin by $O$ ．Suppose that $\overrightarrow{O P}=\mathbf{i}+12 \mathbf{j}-2 \mathbf{k}, \overrightarrow{O Q}=\mathbf{i}+9 \mathbf{j}-2 \mathbf{k}$ and $\overrightarrow{O R}=5 \mathbf{i}+9 \mathbf{j}-2 \mathbf{k}$ ．Denote the incentre of $\triangle P Q R$ by $J$ ．Find
+\item[（i）] $\overrightarrow{O J}$ ，
+\item[（ii）] the area of the inscribed circle of $\triangle P Q R$ ．
+\end{itemize}
+（5 marks）
+\begin{itemize}
+\item[] 考慮 $\triangle P Q R$ 。定義 $P Q=r 、 Q R=p$ 及 $R P=q^{\circ}$
+\item[（a）] 設 $S$ 為 $P Q$ 上的一點使得 $S R$ 為 $\angle P R Q$ 的角平分線，而 $T$ 為 $Q R$ 上的一點使得 $P T$ 為 $\angle Q P R$的角平分線。
+\begin{itemize}
+\item[（i）] 假定 $P T$ 與 $S R$ 相交於點 $I$ 。利用 $P S: S Q=q: p$ 及 $Q T: T Q=r: q$ 這事實，證明
+$$
+\overrightarrow{Q I}=\frac{r}{p+q+r} \overrightarrow{Q R}+\frac{p}{p+q+r} \overrightarrow{Q P}
+$$
+\item[（ii）] 假定 $Q I$ 的延線與 $P R$ 相交於點 $U$ 。證明
+$$
+\begin{equation*}
+P U: U R=r: p \tag{9分}
+\end{equation*}
+$$
+\end{itemize}
+\item[（b）] 將原點記為 $O$ 。假定 $\overrightarrow{O P}=\mathbf{i}+12 \mathbf{j}-2 \mathbf{k} 、 \overrightarrow{O Q}=\mathbf{i}+9 \mathbf{j}-2 \mathbf{k}$ 及 $\overrightarrow{O R}=5 \mathbf{i}+9 \mathbf{j}-2 \mathbf{k}$ 。將 $\triangle P Q R$ 的內心記為 $J$ 。求
+\begin{itemize}
+\item[（i）] $\overrightarrow{O J}$
+\item[（ii）] $\triangle P Q R$ 的內切圓的面積。
+\end{itemize}
+\end{itemize}
+（5分）
+題解：
+\begin{itemize}
+\item[（a）] （i）Let $P I$ ：$I T=\lambda:(1-\lambda)$ ，where $0<\lambda<1$ ，and we have設 $P I: I T=\lambda:(1-\lambda)$ ，其中 $0<\lambda<1$ ，可得
+$$
+\overrightarrow{Q I}=\lambda \overrightarrow{Q T}+(1-\lambda) \overrightarrow{Q P}=\lambda\left(\frac{r}{q+r} \overrightarrow{Q R}\right)+(1-\lambda) \overrightarrow{Q P}
+$$
+1M＋1A
+Let $S I: I R=\mu:(1-\mu)$ ，where $0<\mu<1$ ，and we have
+設 $S I: I R=\mu:(1-\mu)$ ，其中 $0<\mu<1$ ，可得
+$$
+\overrightarrow{Q I}=\mu \overrightarrow{Q R}+(1-\mu) \overrightarrow{Q S}=\mu \overrightarrow{Q R}+(1-\mu)\left(\frac{p}{p+q} \overrightarrow{Q P}\right)
+$$
+1A
+Thus，we have 由此，可得
+$$
+\left\{\begin{array}{l}
+\lambda\left(\frac{r}{q+r}\right)=\mu \cdots \cdots \cdots \cdots \cdots \cdots \cdots  \tag{1}\\
+1-\lambda=(1-\mu)\left(\frac{p}{p+q}\right)
+\end{array}\right.
+$$
+Putting（1）into（2），we have
+把（1）代入（2），可得
+$$
+\begin{aligned}
+1-\lambda & =\left[1-\lambda\left(\frac{r}{q+r}\right)\right]\left(\frac{p}{p+q}\right) \\
+1-\lambda & =\frac{p}{p+q}-\left(\frac{r}{q+r}\right)\left(\frac{p}{p+q}\right) \lambda \\
+1-\frac{p}{p+q} & =\lambda-\left(\frac{r}{q+r}\right)\left(\frac{p}{p+q}\right) \lambda \\
+\frac{q}{p+q} & =\left[1-\frac{p r}{(q+r)(p+q)}\right] \lambda
+\end{aligned}
+$$
+\end{itemize}
+$$
+\begin{align*}
+\frac{q}{p+q} & =\frac{q(p+q+r)}{(q+r)(p+q)} \lambda \\
+\lambda & =\frac{q+r}{p+q+r} \tag{1A}
+\end{align*}
+$$
+Thus，we have 由此，可得
+$$
+\begin{align*}
+\overrightarrow{Q I} & =\left(\frac{q+r}{p+q+r}\right)\left(\frac{r}{q+r} \overrightarrow{Q R}\right)+\left(1-\frac{q+r}{p+q+r}\right) \overrightarrow{Q P} \\
+& =\frac{r}{p+q+r} \overrightarrow{Q R}+\frac{p}{p+q+r} \overrightarrow{Q P} \tag{1}
+\end{align*}
+$$
+\begin{itemize}
+\item[（ii）] Let $P U: U R=v:(1-v)$ ，where $0<v<1$ ，and we have
+設 $P U: U R=v:(1-v)$ ，其中 $0<v<1$ ，可得
+$$
+\begin{equation*}
+\overrightarrow{Q U}=v \overrightarrow{Q R}+(1-v) \overrightarrow{Q P} \tag{1M}
+\end{equation*}
+$$
+Since $\overrightarrow{Q U}$ and $\overrightarrow{Q I}$ are parallel to each other，we have
+由於 $\overrightarrow{Q U}$ 與 $\overrightarrow{Q I}$ 互相平行，可得
+$$
+\begin{align*}
+\frac{1}{v}\left(\frac{r}{p+q+r}\right) & =\frac{1}{1-v}\left(\frac{p}{p+q+r}\right)  \tag{1M}\\
+\frac{v}{1-v} & =\frac{r}{p}
+\end{align*}
+$$
+Thus，we have 由此，可得
+$$
+\begin{equation*}
+P U: U R=v:(1-v)=r: p \tag{1}
+\end{equation*}
+$$
+\end{itemize}
+（b）（i）Note that 留意
+$$
+\begin{gathered}
+\overrightarrow{P Q}=\overrightarrow{O Q}-\overrightarrow{O P}=-3 \mathbf{j} \\
+\overrightarrow{Q R}=\overrightarrow{O R}-\overrightarrow{O Q}=4 \mathbf{i} \\
+\overrightarrow{P R}=\overrightarrow{O R}-\overrightarrow{O P}=4 \mathbf{i}-3 \mathbf{j}
+\end{gathered}
+$$
+Thus，we have 由此，可得
+$$
+\begin{gather*}
+P Q=r=|\overrightarrow{P Q}|=3  \tag{1M}\\
+Q R=p=|\overrightarrow{Q R}|=4 \\
+P R=q=|\overrightarrow{P R}|=\sqrt{4^{2}+(-3)^{2}}=5
+\end{gather*}
+$$
+Thus，we have 由此，可得
+$$
+\begin{align*}
+\overrightarrow{Q J} & =\frac{3}{4+5+3} \overrightarrow{Q R}+\frac{4}{4+5+3} \overrightarrow{Q P}  \tag{10}\\
+\overrightarrow{O J}-\overrightarrow{O Q} & =\frac{1}{4} \overrightarrow{Q R}+\frac{1}{3} \overrightarrow{Q P} \\
+\overrightarrow{O J} & =\frac{1}{4} \overrightarrow{Q R}+\frac{1}{3} \overrightarrow{Q P}+\overrightarrow{O Q}
+\end{align*}
+$$
+\begin{itemize}
+\begin{itemize}
+\item[（ii）] Note that 留意
+$$
+\overrightarrow{P J}=\overrightarrow{O J}-\overrightarrow{O P}=(2 \mathbf{i}+10 \mathbf{j}-2 \mathbf{k})-(\mathbf{i}+12 \mathbf{j}-2 \mathbf{k})=\mathbf{i}-2 \mathbf{j}
+$$
+Thus，we have 由此，可得
+$$
+\overrightarrow{P J} \times \overrightarrow{P Q}=\left|\begin{array}{ccc}
+\mathbf{i} & \mathbf{j} & \mathbf{k} \\
+1 & -2 & 0 \\
+0 & -3 & 0
+\end{array}\right|=-3 \mathbf{k}
+$$
+The radius of the inscribed circle of $\triangle P Q R$
+$\triangle P Q R$ 的內切圓的半徑
+$$
+\begin{aligned}
+& =P J \sin \angle Q P J \\
+& =\frac{(P J)(P Q) \sin \angle Q P J}{P Q} \\
+& =\frac{|\overrightarrow{P J} \times \overrightarrow{P Q}|}{3} \\
+& =1
+\end{aligned}
+$$
+The area of the inscribed circle of $\triangle P Q R$
+$\triangle P Q R$ 的內切圓的面積
+$$
+=\pi
+$$
+照得分位 大檢閱
+\item[（a）] （i）1M 給予利用分點公式（section formula）。
+1A 給予正確的 $\overrightarrow{Q I}$（以 $\lambda 、 q 、 r 、 \overrightarrow{Q P}$ 和 $\overrightarrow{Q R}$ 表示）。
+1A 給予正確的 $\overrightarrow{Q I}$（以 $\mu \cdot p \cdot q \cdot \overrightarrow{Q P}$ 和 $\overrightarrow{Q R}$ 表示）。
+1M 給予設立正確的方程組。
+1A 給予正確的入。
+1 給予推演得題目所給的答案。
+\item[（ii）] 1M 給予利用分點公式（section formula）。
+1M 給予利用平行向量（parallel vectors）的性質。
+1 給予推演得題目所給的答案。
+\item[（b）] （i）1M 給予求 $P Q 、 Q R$ 和 $P R$（任何一項）。
+1A 給予正確答案。
+\begin{itemize}
+\item[（ii）] 1M 給予展開行列式（determinant）來求 $\overrightarrow{P J} \times \overrightarrow{P Q}$ 。
+1A 給予正確的 $\triangle P Q R$ 的內切圓（inscribed circle）的半徑。
+1A 給予正確的 $\triangle P Q R$ 的內切圓的面積。
+\end{itemize}
+\end{itemize}
+\end{itemize}
+
+例題 3
+參考
+DSE 2021 Q12
+The position vectors of the points $P, Q, R$ and $S$ are $(\lambda+3) \mathbf{i}+(\mu+6) \mathbf{j}+6 \mathbf{k}$ ， $-4 \mathbf{i}+(1-\lambda) \mathbf{j}+(\mu+2) \mathbf{k},(3-\lambda) \mathbf{i}+(\mu+2) \mathbf{j}+6 \mathbf{k}$ and $\frac{\lambda}{3} \mathbf{i}-\frac{1}{3} \mathbf{j}+4 \mathbf{k}$ respectively，where $\lambda$ and $\mu$ are real numbers．Suppose that $\overrightarrow{P Q}$ is parallel to $-5 \mathbf{i}+\mathbf{j}-8 \mathbf{k}$ ．Denote the plane which contains $P, Q$ and $R$ by $\Pi$ ．
+\begin{itemize}
+\item[（a）] Find
+\begin{itemize}
+\item[（i）] $\lambda$ and $\mu$ ，
+\item[（ii）] the area of $\triangle P Q R$ ，
+\item[（ii）] the volume of the tetrahedron $P Q R S$ ，
+\item[（iv）] the shortest distance from $S$ to $\Pi$ ．
+\end{itemize}
+\end{itemize}
+（8 marks）
+\begin{itemize}
+\item[（b）] Let $T$ be the projection of $S$ on $\Pi$ ．Is $T$ the centroid of $\triangle P Q R$ ？Explain your answer．
+（3 marks）
+\end{itemize}
+
+點 $P$ 、點 $Q$ 、點 $R$ 及點 $S$ 的位置向量分別為 $(\lambda+3) \mathbf{i}+(\mu+6) \mathbf{j}+6 \mathbf{k}$ 、
+$-4 \mathbf{i}+(1-\lambda) \mathbf{j}+(\mu+2) \mathbf{k} 、(3-\lambda) \mathbf{i}+(\mu+2) \mathbf{j}+6 \mathbf{k}$ 及 $\frac{\lambda}{3} \mathbf{i}-\frac{1}{3} \mathbf{j}+4 \mathbf{k}$ ，其中 $\lambda$ 及 $\mu$ 均為實數。假定 $\overrightarrow{P Q}$ 平行於 $-5 \mathbf{i}+\mathbf{j}-8 \mathbf{k}$ 。將包含 $P$ 、 $Q$ 及 $R$ 的平面記為 $\Pi$ 。
+\begin{itemize}
+\item[（a）] 求
+\begin{itemize}
+\item[（i）] $\lambda$ 及 $\mu$ ，
+\item[（ii）] $\triangle P Q R$ 的面積，
+\item[（iii）] 四面體 $P Q R S$ 的體積，
+\item[（iv）] 由 $S$ 至 $\Pi$ 的最短距離。
+\end{itemize}
+\item[（b）] 設 $T$ 為 $S$ 在 $\Pi$ 上的投影。 $T$ 是否 $\triangle P Q R$ 的形心？解釋你的答案。
+\end{itemize}
+
+題解：
+\begin{itemize}
+\item[（a）] （i）Note that 留意
+$$
+\overrightarrow{P Q}=(-\lambda-7) \mathbf{i}+(-\lambda-\mu-5) \mathbf{j}+(\mu-4) \mathbf{k}
+$$
+Since $\overrightarrow{P Q}$ is parallel to $-5 \mathbf{i}+\mathbf{j}-8 \mathbf{k}$ ，we have
+由於 $\overrightarrow{P Q}$ 平行於 $-5 \mathbf{i}+\mathbf{j}-8 \mathbf{k}$ ，可得
+$$
+\frac{-\lambda-7}{-5}=\frac{-\lambda-\mu-5}{1}=\frac{\mu-4}{-8}
+$$
+\end{itemize}
+\begin{itemize}
+\item[] Solving，we have $\lambda=-2$ and $\mu=-4$ ．
+求解後，可得 $\lambda=-2$ 及 $\mu=-4$ 。
+\item[（ii）] Note that 留意
+$$
+\overrightarrow{P Q} \times \overrightarrow{P R}=\left|\begin{array}{ccc}
+\mathbf{i} & \mathbf{j} & \mathbf{k} \\
+-5 & 1 & -8 \\
+4 & -4 & 0
+\end{array}\right|=-32 \mathbf{i}-32 \mathbf{j}+16 \mathbf{k}
+$$
+The area of $\triangle P Q R$
+$\triangle P Q R$ 的面積
+$$
+\begin{aligned}
+& =\frac{1}{2}|\overrightarrow{P Q} \times \overrightarrow{P R}| \\
+& =\frac{1}{2} \sqrt{32^{2}+32^{2}+16^{2}} \\
+& =24
+\end{aligned}
+$$
+\item[] ${ }^{(1)}$ ˋ 應 試 小貼士
+1M
+三角形的面積必定是一個非負實數。
+三角形的面積必定是一個非負實數。
+1A
+\item[（iii）] Note that 留意
+$$
+\overrightarrow{P S}=-\frac{5}{3} \mathbf{i}-\frac{7}{3} \mathbf{j}-2 \mathbf{k}
+$$
+The volume of the tetrahedron $P Q R S$
+四面體 $P Q R S$ 的體積
+$$
+\begin{aligned}
+& =\frac{1}{6}|(\overrightarrow{P Q} \times \overrightarrow{P R}) \cdot \overrightarrow{P S}| \\
+& =\frac{1}{6}\left|(-32 \mathbf{i}-32 \mathbf{j}+16 \mathbf{k}) \cdot\left(-\frac{5}{3} \mathbf{i}-\frac{7}{3} \mathbf{j}-2 \mathbf{k}\right)\right| \\
+& =\frac{1}{6}\left|(-32)\left(-\frac{5}{3}\right)+(-32)\left(-\frac{7}{3}\right)+(16)(-2)\right| \\
+& =16
+\end{aligned}
+$$
+\item[] 1M
+1A
+\item[（iv）] Let $d$ be the shortest distance from $S$ to $\Pi$ ．
+（iv）Let $d$ be the shortest distance from $S$ to $\Pi$ ．
+設 $d$ 為由 $S$ 至 $\Pi$ 的最短距離。
+設 $d$ 為由 $S$ 至 $\Pi$ 的最短距離。
+$$
+\begin{align*}
+\frac{1}{3}(24) d & =16  \tag{1M}\\
+d & =2
+\end{align*}
+$$
+\end{itemize}
+Thus，the shortest distance from $S$ to $\Pi$ is 2 ．
+因此，由 $S$ 至 $\Pi$ 的最短距離為2。
+\begin{itemize}
+\item[（b）] Note that $\overrightarrow{P Q} \times \overrightarrow{P R}=-32 \mathbf{i}-32 \mathbf{j}+16 \mathbf{k}$ and $(\overrightarrow{P Q} \times \overrightarrow{P R}) \cdot \overrightarrow{P S}>0$ ．
+留意 $\overrightarrow{P Q} \times \overrightarrow{P R}=-32 \mathbf{i}-32 \mathbf{j}+16 \mathbf{k}$ 及 $(\overrightarrow{P Q} \times \overrightarrow{P R}) \cdot \overrightarrow{P S}>0$ 。
+$$
+\begin{aligned}
+\overrightarrow{T S} & =\frac{2}{\sqrt{32^{2}+32^{2}+16^{2}}}(-32 \mathbf{i}-32 \mathbf{j}+16 \mathbf{k}) \\
+& =-\frac{4}{3} \mathbf{i}-\frac{4}{3} \mathbf{j}+\frac{2}{3} \mathbf{k}
+\end{aligned}
+$$
+Thus，we have 由此，可得
+$$
+\overrightarrow{O T}=\overrightarrow{S T}-\overrightarrow{S O}=\left(\frac{4}{3} \mathbf{i}+\frac{4}{3} \mathbf{j}-\frac{2}{3} \mathbf{k}\right)-\left(\frac{2}{3} \mathbf{i}+\frac{1}{3} \mathbf{j}-4 \mathbf{k}\right)=\frac{2}{3} \mathbf{i}+\mathbf{j}+\frac{10}{3} \mathbf{k}
+$$
+Note that 留意
+$$
+\frac{1}{3}(\overrightarrow{O P}+\overrightarrow{O Q}+\overrightarrow{O R})=\frac{2}{3} \mathbf{i}+\mathbf{j}+\frac{10}{3} \mathbf{k}=\overrightarrow{O T}
+$$
+Thus，$T$ is the centroid of $\triangle P Q R$ ．
+因此，$T$ 是 $\triangle P Q R$ 的形心。
+\end{itemize}
+
+\section*{單得分位 大檢閱}
+\begin{itemize}
+\item[（a）] （i）1M 給予利用平行向量（parallel vectors）的性質。
+\begin{itemize}
+\item[] 1A給予兩項正確。
+\item[（ii）] 1M 給予利用向量積（vector product）求 $\triangle P Q R$ 的面積。
+\begin{itemize}
+\item[] 1A 給予正確答案。
+\end{itemize}
+\item[（iii）] 1M 給予求 $\overrightarrow{P S}$ 。
+\begin{itemize}
+\item[] 1A 給予正確答案。
+\end{itemize}
+\item[（iv）] 1M 給予設立方程。
+\begin{itemize}
+\item[] 1A 給予正確答案。
+\end{itemize}
+\end{itemize}
+\item[（b）] 1M 給予求 $\overrightarrow{T S}$ 。
+1 M 給予求 $\frac{1}{3}(\overrightarrow{O P}+\overrightarrow{O Q}+\overrightarrow{O R})$ 。
+\begin{itemize}
+\item[] 1A 給予正確答案。
+\end{itemize}
+\end{itemize}
+
+例題4
+
+Denote the origin by $O$ ．Let $\overrightarrow{O P}=\mathbf{i}+2 \mathbf{j}+2 \mathbf{k}$ and $\overrightarrow{O Q}=5 \mathbf{i}-2 \mathbf{j}-2 \mathbf{k}$ ．Let $R$ be a point lying on $P Q$ such that $\overrightarrow{O R}$ is perpendicular to $\overrightarrow{P Q}$ ．
+\begin{itemize}
+\item[（a）] Find $\overrightarrow{O R} \times \overrightarrow{O Q}$ ． （4 marks）
+\item[（b）] Define $\overrightarrow{O S}=\overrightarrow{O P}+\overrightarrow{O Q}$ ．Find the area of the quadrilateral $O R S Q$ ． （2 marks）
+\end{itemize}
+（c）Let $A$ be a point such that $\overrightarrow{O A}=\alpha(\overrightarrow{O R} \times \overrightarrow{O Q})$ ，where $0<\alpha<1$ ．
+\begin{itemize}
+\begin{itemize}
+\item[（i）] Is $\overrightarrow{A R}$ perpendicular to $\overrightarrow{P Q}$ ？Explain your answer．
+\item[（ii）] Denote the angle between $\triangle O P Q$ and $\triangle A R Q$ by $\theta$ ．It is given that $\tan \theta=\frac{\sqrt{3}}{3}$ ． Find $\alpha$ ． （4 marks）
+\end{itemize}
+\end{itemize}
+
+將原點記為 $O$ 。設 $\overrightarrow{O P}=\mathbf{i}+2 \mathbf{j}+2 \mathbf{k}$ 及 $\overrightarrow{O Q}=5 \mathbf{i}-2 \mathbf{j}-2 \mathbf{k}$ 。設 $R$ 為 $P Q$ 上的一點使得 $\overrightarrow{O R}$ 垂直於$\overrightarrow{P Q}$ 。
+\begin{itemize}
+\item[（a）] 求 $\overrightarrow{O R} \times \overrightarrow{O Q}$ 。
+\item[（b）] 定義 $\overrightarrow{O S}=\overrightarrow{O P}+\overrightarrow{O Q}$ 。求四邊形 $O R S Q$ 的面積。
+\item[（C）] 設 $A$ 為一點使得 $\overrightarrow{O A}=\alpha(\overrightarrow{O R} \times \overrightarrow{O Q})$ ，其中 $0<\alpha<1$ 。
+\begin{itemize}
+\item[（i）] $\overrightarrow{A R}$ 是否垂直於 $\overrightarrow{P Q}$ ？解釋你的答案。
+\item[（ii）] 將 $\triangle O P Q$ 與 $\triangle A R Q$ 之間的交角記為 $\theta$ 。已知 $\tan \theta=\frac{\sqrt{3}}{3}$ 。求 $\alpha$ 。
+\end{itemize}
+\end{itemize}
+
+題解：
+\begin{itemize}
+\item[（a）] Let $P R: R Q=(1-t): t$ ，where $0<t<1$ ．
+設 $P R: R Q=(1-t): t$ ，其中 $0<t<1$ 。
+Thus，we have 由此，可得
+$$
+\begin{align*}
+\overrightarrow{O R} & =t \overrightarrow{O P}+(1-t) \overrightarrow{O Q}  \tag{1M}\\
+& =t(\mathbf{i}+2 \mathbf{j}+2 \mathbf{k})+(1-t)(5 \mathbf{i}-2 \mathbf{j}-2 \mathbf{k}) \\
+& =(5-4 t) \mathbf{i}+(4 t-2) \mathbf{j}+(4 t-2) \mathbf{k}
+\end{align*}
+$$
+\end{itemize}
+
+Since $\overrightarrow{O R}$ is perpendicular to $\overrightarrow{P Q}$ ，we have
+由於 $\overrightarrow{O R}$ 垂直於 $\overrightarrow{P Q}$ ，可得
+$$
+\begin{equation*}
+\overrightarrow{O R} \cdot \overrightarrow{P Q}=0 \tag{1M}
+\end{equation*}
+$$
+$$
+\begin{aligned}
+{[(5-4 t) \mathbf{i}+(4 t-2) \mathbf{j}+(4 t-2) \mathbf{k}] \cdot(4 \mathbf{i}-4 \mathbf{j}-4 \mathbf{k}) } & =0 \\
+(5-4 t)(4)+(4 t-2)(-4)+(4 t-2)(-4) & =0 \\
+36-48 t & =0 \\
+t & =\frac{3}{4}
+\end{aligned}
+$$
+Thus，we have 由此，可得
+$$
+\begin{gather*}
+\overrightarrow{O R}=2 \mathbf{i}+\mathbf{j}+\mathbf{k}  \tag{1A}\\
+\overrightarrow{O R} \times \overrightarrow{O Q}=\left|\begin{array}{ccc}
+\mathbf{i} & \mathbf{j} & \mathbf{k} \\
+2 & 1 & 1 \\
+5 & -2 & -2
+\end{array}\right|=9 \mathbf{j}-9 \mathbf{k} \tag{1A}
+\end{gather*}
+$$
+\begin{itemize}
+\item[（b）] Note that the quadrilateral $O R S Q$ is not a parallelogram．
+留意四邊形 ORSQ 不是平行四邊形。
+The area of the quadrilateral $O R S Q$
+四邊形 ORSQ 的面積
+$$
+\begin{aligned}
+& =|\overrightarrow{O R} \times \overrightarrow{O Q}| \\
+& =|9 \mathbf{j}-9 \mathbf{k}| \\
+& =\sqrt{9^{2}+(-9)^{2}} \\
+& =9 \sqrt{2}
+\end{aligned}
+$$
+$\pi$
+應試 小貼士
+四邊形的面積必定是一個非負實數。
+\item[] 1M
+1A
+\item[（c）] （i）Note that 留意
+（c）（i）Note that 留意
+$$
+\begin{aligned}
+\overrightarrow{A R}=\overrightarrow{O R}-\overrightarrow{O A} & =\overrightarrow{O R}-\alpha(\overrightarrow{O R} \times \overrightarrow{O Q}) \\
+& =(2 \mathbf{i}+\mathbf{j}+\mathbf{k})-\alpha(9 \mathbf{j}-9 \mathbf{k}) \\
+& =2 \mathbf{i}+(1-9 \alpha) \mathbf{j}+(1+9 \alpha) \mathbf{k}
+\end{aligned}
+$$
+\item[] 1M
+\end{itemize}
+
+摘 昌 策略
+如要判斷 $\overrightarrow{A R}$ 是否垂直於 $\overrightarrow{P Q}$ ，同學可以求 $\overrightarrow{A R} \cdot \overrightarrow{P Q}$ 。
+若 $\overrightarrow{A R} \cdot \overrightarrow{P Q}=0$ ，則 $\overrightarrow{A R}$ 垂直於 $\overrightarrow{P Q}$ 。
+
+Thus，we have 由此，可得
+$$
+\begin{aligned}
+\overrightarrow{A R} \cdot \overrightarrow{P Q} & =[2 \mathbf{i}+(1-9 \alpha) \mathbf{j}+(1+9 \alpha) \mathbf{k}] \cdot(4 \mathbf{i}-4 \mathbf{j}-4 \mathbf{k}) \\
+& =(2)(4)+(1-9 \alpha)(-4)+(1+9 \alpha)(-4) \\
+& =0
+\end{aligned}
+$$
+Thus， $\overrightarrow{A R}$ is perpendicular to $\overrightarrow{P Q}$ ．
+因此， $\overrightarrow{A R}$ 垂直於 $\overrightarrow{P Q}$ 。
+\begin{itemize}
+\item[（ii）] Note that $P Q$ is the line of intersection of $\triangle O P Q$ and $\triangle A R Q$ ．
+留意 $P Q$ 為 $\triangle O P Q$ 與 $\triangle A R Q$ 的交線。
+Since $\overrightarrow{O R}$ is perpendicular to $\overrightarrow{P Q}$ while $\overrightarrow{A R}$ perpendicular to $\overrightarrow{P Q}$ ，we have由於 $\overrightarrow{O R}$ 垂直於 $\overrightarrow{P Q}$ ，而 $\overrightarrow{A R}$ 垂直於 $\overrightarrow{P Q}$ ，可得
+$$
+\theta=\angle O R A
+$$
+Thus，we have 由此，可得
+$$
+\begin{aligned}
+\tan \theta & =\frac{\sqrt{3}}{3} \\
+\frac{|\overrightarrow{O A}|}{|\overrightarrow{O R}|} & =\frac{\sqrt{3}}{3} \\
+\frac{|\alpha(\overrightarrow{O R} \times \overrightarrow{O Q})|}{|\overrightarrow{O R}|} & =\frac{\sqrt{3}}{3} \\
+\alpha \cdot \frac{|(\overrightarrow{O R} \times \overrightarrow{O Q})|}{|\overrightarrow{O R}|} & =\frac{\sqrt{3}}{3} \\
+\alpha \cdot \frac{9 \sqrt{2}}{\sqrt{2^{2}+1^{2}+1^{2}}} & =\frac{\sqrt{3}}{3} \\
+\alpha & =\frac{1}{9}
+\end{aligned}
+$$
+\end{itemize}
+
+\section*{暻得分位 大檢閱}
+\begin{itemize}
+\item[（a）] 1M 給予利用分點公式（section formula）。
+1M 給予利用正交向量（orthogonal vectors）的性質。
+1A 給予正確的 $\overrightarrow{O R}$ 。
+1A 給予正確的 $\overrightarrow{O R} \times \overrightarrow{O Q}$ 。
+\item[（b）] 1M 給予利用向量積（vector product）求四邊形 ORSQ 的面積。
+1A 給予正確答案。
+\item[（c）] （i）1M 給予求 $\overrightarrow{A R}$ 。
+1A 給予正確答案。
+\begin{itemize}
+\item[（ii）] 1M 給予識別 $\theta$ 。
+1A 給予正確答案。
+\end{itemize}
+\end{itemize}
+
+例題5
+
+DSE 2019 Q12
+Let $\overrightarrow{O P}=\mathbf{i}-2 \mathbf{k}, \overrightarrow{O Q}=-3 \mathbf{j}+2 \mathbf{k}$ and $\overrightarrow{O R}=-5 \mathbf{i}+t \mathbf{j}-4 \mathbf{k}$ ，where $O$ is the origin and $t$ is a constant．It is given that $|\overrightarrow{P R}|=|\overrightarrow{Q R}|$ ．
+\begin{itemize}
+\item[（a）] Find $t$ ．
+\end{itemize}
+（3 marks）
+\begin{itemize}
+\item[（b）] Find $\overrightarrow{P Q} \times \overrightarrow{P R}$ ．
+\end{itemize}
+（2 marks）
+\begin{itemize}
+\item[（c）] Find the volume of the tetrahedron $O P Q R$ ．
+\end{itemize}
+（2 marks）
+\begin{itemize}
+\item[（d）] Denote the plane which contains $P, Q$ and $R$ by $\Pi$ ．It is given that $X, Y$ and $Z$ are points lying on $\Pi$ such that $\overrightarrow{O X}=x \mathbf{i}, \overrightarrow{O Y}=y \mathbf{j}$ and $\overrightarrow{O Z}=z \mathbf{k}$ ．
+\begin{itemize}
+\item[（i）] Prove that $x y z \neq 0$ ．
+\item[（ii）] Find the area of $\triangle X Y Z$ ．
+\end{itemize}
+\end{itemize}
+（5 marks）
+
+設 $\overrightarrow{O P}=\mathbf{i}-2 \mathbf{k} 、 \overrightarrow{O Q}=-3 \mathbf{j}+2 \mathbf{k}$ 及 $\overrightarrow{O R}=-5 \mathbf{i}+t \mathbf{j}-4 \mathbf{k}$ ，其中 $O$ 為原點及 $t$ 為一常數。已知 $|\overrightarrow{P R}|=|\overrightarrow{Q R}|$ 。
+\begin{itemize}
+\item[（a）] 求 $t$ 。
+\end{itemize}
+（3分）
+\begin{itemize}
+\item[（b）] 求 $\overrightarrow{P Q} \times \overrightarrow{P R}$ 。
+\end{itemize}
+（2分）
+\begin{itemize}
+\item[（c）] 求四面體 $O P Q R$ 的體積。
+\end{itemize}
+（2分）
+\begin{itemize}
+\item[（d）] 將包含 $P 、 Q$ 及 $R$ 的平面記為 $\Pi \circ$ 已知 $X 、 Y$ 及 $Z$ 均為 $\Pi$ 上的點使得 $\overrightarrow{O X}=x \mathbf{i} 、 \overrightarrow{O Y}=y \mathbf{j}$ 和 $\overrightarrow{O Z}=z \mathbf{k} 。$
+\begin{itemize}
+\item[（i）] 證明 $x y z \neq 0$ 。
+\item[（ii）] 求 $\triangle X Y Z$ 的面積。
+\end{itemize}
+\end{itemize}
+（5分）
+題解：
+\begin{itemize}
+\item[（a）]
+$$
+\begin{aligned}
+|\overrightarrow{P R}| & =|\overrightarrow{Q R}| \\
+|\overrightarrow{O R}-\overrightarrow{O P}| & =|\overrightarrow{O R}-\overrightarrow{O Q}| \\
+|-6 \mathbf{i}+t-2 \mathbf{k}| & =|-5 \mathbf{i}+(t+3) \mathbf{j}-6 \mathbf{k}| \\
+\sqrt{(-6)^{2}+t^{2}+(-2)^{2}} & =\sqrt{(-5)^{2}+(t+3)^{2}+(-6)^{2}} \\
+t^{2}+40 & =t^{2}+6 t+70 \\
+t & =-5
+\end{aligned}
+$$
+\end{itemize}
+\begin{itemize}
+\item[（b）] $\overrightarrow{P Q} \times \overrightarrow{P R}$
+$$
+\begin{aligned}
+= & (-\mathbf{i}-3 \mathbf{j}+4 \mathbf{k}) \times(-6 \mathbf{i}-5 \mathbf{j}-2 \mathbf{k}) \\
+= & \left|\begin{array}{ccc}
+\mathbf{i} & \mathbf{j} & \mathbf{k} \\
+-1 & -3 & 4 \\
+-6 & -5 & -2
+\end{array}\right| \\
+= & {[(-3)(-2)-(4)(-5)] \mathbf{i}-[(-1)(-2)-(-6)(4)] \mathbf{j} } \\
+& +[(-1)(-5)-(-6)(-3)] \mathbf{k} \\
+= & 26 \mathbf{i}-26 \mathbf{j}-13 \mathbf{k}
+\end{aligned}
+$$
+\item[（c）] The volume of the tetrahedron $O P Q R$
+四面體 $O P Q R$ 的體積
+$$
+\begin{aligned}
+& =\frac{1}{6}|\overrightarrow{O P} \cdot(\overrightarrow{P Q} \times \overrightarrow{P R})| \\
+& =\frac{1}{6}|(\mathbf{i}-2 \mathbf{k}) \cdot(26 \mathbf{i}-26 \mathbf{j}-13 \mathbf{k})| \\
+& =\frac{1}{6}|(1)(26)+(-2)(-13)| \\
+& =\frac{26}{3}
+\end{aligned}
+$$
+\end{itemize}
+\begin{itemize}
+\item[（d）] （i）By（c），the volume of the tetrahedron $O P Q R$ is not equal to zero．
+藉（c），四面體 $O P Q R$ 的體積不等於零。
+↺
+Therefore，$O$ does not lie on $\Pi$ ．
+因此，$O$ 不在 $\Pi$ 上。
+Therefore， $\overrightarrow{O X}, \overrightarrow{O Y}$ and $\overrightarrow{O Z}$ are non－zero vectors．
+因此， $\overrightarrow{O X} 、 \overrightarrow{O Y}$ 及 $\overrightarrow{O Z}$ 均為非零向量。
+Thus，we have $x \neq 0, y \neq 0$ and $z \neq 0$ ．
+由此，可得 $x \neq 0, y \neq 0$ 及 $z \neq 0$ 。
+Thus，we have $x y z \neq 0$ ．
+由此，可得 $x y z \neq 0$ 。
+\item[（ii）] Note that 留意
+$$
+\begin{aligned}
+\overrightarrow{P X} \cdot(\overrightarrow{P Q} \times \overrightarrow{P R}) & =0 \\
+{[(x-1) \mathbf{i}+2 \mathbf{k}] \cdot(26 \mathbf{i}-26 \mathbf{j}-13 \mathbf{k}) } & =0 \\
+26 x-26-26 & =0 \\
+x & =2
+\end{aligned}
+$$
+\end{itemize}
+and 以及
+$$
+\begin{aligned}
+\overrightarrow{P Y} \cdot(\overrightarrow{P Q} \times \overrightarrow{P R}) & =0 \\
+{[-\mathbf{i}+y \mathbf{j}+2 \mathbf{k}] \cdot(26 \mathbf{i}-26 \mathbf{j}-13 \mathbf{k}) } & =0 \\
+-26-26 y-26 & =0 \\
+y & =-2
+\end{aligned}
+$$
+and 以及
+$$
+\begin{aligned}
+\overrightarrow{P Z} \cdot(\overrightarrow{P Q} \times \overrightarrow{P R}) & =0 \\
+{[-\mathbf{i}+(z+2) \mathbf{k}] \cdot(26 \mathbf{i}-26 \mathbf{j}-13 \mathbf{k}) } & =0 \\
+-26-13 z-26 & =0 \\
+z & =-4
+\end{aligned}
+$$
+Thus，we have 由此，可得
+$$
+\begin{gathered}
+\overrightarrow{X Y}=\overrightarrow{O Y}-\overrightarrow{O X}=-2 \mathbf{i}-2 \mathbf{j} \\
+\overrightarrow{X Z}=\overrightarrow{O Z}-\overrightarrow{O X}=-2 \mathbf{i}-4 \mathbf{k} \\
+\overrightarrow{X Y} \times \overrightarrow{X Z}=\left|\begin{array}{ccc}
+\mathbf{i} & \mathbf{j} & \mathbf{k} \\
+-2 & -2 & 0 \\
+-2 & 0 & -4
+\end{array}\right|=8 \mathbf{i}-8 \mathbf{j}-4 \mathbf{k}
+\end{gathered}
+$$
+The area of $\triangle X Y Z$
+$\triangle X Y Z$ 的面積
+$$
+\begin{aligned}
+& =\frac{1}{2}|\overrightarrow{X Y} \times \overrightarrow{X Z}| \\
+& =\frac{1}{2} \sqrt{8^{2}+(-8)^{2}+(-4)^{2}} \\
+& =6
+\end{aligned}
+$$
+唄得分位 大檢閱
+\begin{itemize}
+\item[（a）] 1M 給予將 $\overrightarrow{P R}$ 表示成 $\overrightarrow{O R}-\overrightarrow{O P}$ ，以及將 $Q R$ 表示成 $\overrightarrow{O R}-\overrightarrow{O Q}$ 。
+1M 給予求 $|-6 \mathbf{i}+t \mathbf{j}-2 \mathbf{k}|$ 和 $|-5 \mathbf{i}+(t+3) \mathbf{j}-6 \mathbf{k}|$ 。
+1A 給予正確答案。
+\item[（b）] 1M 給予展開行列式（determinant）來求 $\overrightarrow{P Q} \times \overrightarrow{P R}$ 。
+1A 給予正確答案。
+\item[（c）] 1M 給予利用純量積（scalar product）和向量積（vector product）求四面體 $O P Q R$ 的體積。
+1A 給予正確答案。
+\item[（d）] （i）1 給予推演得題目所給的答案。
+\begin{itemize}
+\item[（ii）] 1M 給予利用正交向量（orthogonal vector）的性質。
+1A 給予正確的 $x 、 y$ 和 $z$（全部正確）。
+1 M 給予利用向量積（vector product）求 $\triangle X Y Z$ 的面積。
+1A 給予正確的 $\triangle X Y Z$ 的面積。
+\end{itemize}
+\end{itemize}
+
+例題 6
+
+The position vectors of the points $A, B, C$ and $D$ are $-6 \mathbf{i}+8 \mathbf{j}+5 \mathbf{k}, 2 \mathbf{i}+3 \mathbf{j}+4 \mathbf{k}$ ， $-2 \mathbf{i}+10 \mathbf{j}+9 \mathbf{k}$ and $-7 \mathbf{i}-3 \mathbf{j}+16 \mathbf{k}$ respectively．Denote the plane which contains $A, B$ and $C$ by $\Pi$ ．Let $E$ be the projection of $D$ on $\Pi$ ．
+\begin{itemize}
+\item[（a）] Find
+\begin{itemize}
+\item[（i）] $\overrightarrow{A B} \times \overrightarrow{A C}$ ，
+\item[（ii）] the volume of the tetrahedron $A B C D$ ，
+\item[（iii）] $\overrightarrow{D E}$ ．
+\end{itemize}
+\end{itemize}
+（5 marks）
+\begin{itemize}
+\item[（b）] Let $F$ be a point lying on $A C$ such that $\overrightarrow{D F}$ is perpendicular to $\overrightarrow{A C}$ ．
+\begin{itemize}
+\item[（i）] Find $\overrightarrow{D F}$ ．
+\item[（ii）] Is $\overrightarrow{E F}$ perpendicular to $\overrightarrow{A C}$ ？Explain your answer．
+\end{itemize}
+\end{itemize}
+（4 marks）
+\begin{itemize}
+\item[（c）] Find the angle between $\triangle A C D$ and $\Pi$ ．
+\end{itemize}
+（3 marks）
+
+點 $A$ 、點 $B$ 、點 $C$ 及點 $D$ 的位置向量分別為 $-6 \mathbf{i}+8 \mathbf{j}+5 \mathbf{k} 、 2 \mathbf{i}+3 \mathbf{j}+4 \mathbf{k} 、-2 \mathbf{i}+10 \mathbf{j}+9 \mathbf{k}$ 及 $-7 \mathbf{i}-3 \mathbf{j}+16 \mathbf{k}$ 。將包含 $A$ 、 $B$ 及 $C$ 的平面記為 $\Pi$ 。設 $E$ 為 $D$ 在 $\Pi$ 上的投影。
+\begin{itemize}
+\item[（a）] 求
+\begin{itemize}
+\item[（i）] $\overrightarrow{A B} \times \overrightarrow{A C}$ ，
+\item[（ii）] 四面體 $A B C D$ 的體積，
+\item[（iii）] $\overrightarrow{D E}$ 。
+\end{itemize}
+\end{itemize}
+（5分）
+\begin{itemize}
+\item[（b）] 設 $F$ 為 $A C$ 上的一點使得 $\overrightarrow{D F}$ 垂直於 $\overrightarrow{A C}$ 。
+\begin{itemize}
+\item[（i）] 求 $\overrightarrow{D F}$ 。
+\item[（ii）] $\overrightarrow{E F}$ 是否垂直於 $\overrightarrow{A C}$ ？解釋你的答案。
+\end{itemize}
+\end{itemize}
+（4分）
+\begin{itemize}
+\item[（c）] 求 $\triangle A C D$ 與 $\Pi$ 間的交角。
+\end{itemize}
+（3分）
+題解：
+\begin{itemize}
+\item[（a）] （i）Note that 留意
+$$
+\begin{aligned}
+& \overrightarrow{A B}=\overrightarrow{O B}-\overrightarrow{O A}=8 \mathbf{i}-5 \mathbf{j}-\mathbf{k} \\
+& \overrightarrow{A C}=\overrightarrow{O C}-\overrightarrow{O A}=4 \mathbf{i}+2 \mathbf{j}+4 \mathbf{k}
+\end{aligned}
+$$
+\end{itemize}
+
+Thus，we have 由此，可得
+$$
+\overrightarrow{A B} \times \overrightarrow{A C}=\left|\begin{array}{ccc}
+\mathbf{i} & \mathbf{j} & \mathbf{k}  \tag{1A}\\
+8 & -5 & -1 \\
+4 & 2 & 4
+\end{array}\right|=-18 \mathbf{i}-36 \mathbf{j}+36 \mathbf{k}
+$$
+\begin{itemize}
+\item[（ii）] Note that 留意
+$$
+\overrightarrow{A D}=-\mathbf{i}-11 \mathbf{j}+11 \mathbf{k}
+$$
+The volume of the tetrahedron $A B C D$
+四面體 $A B C D$ 的體積
+$$
+\begin{aligned}
+& =\frac{1}{6}|\overrightarrow{A D} \cdot(\overrightarrow{A B} \times \overrightarrow{A C})| \\
+& =\frac{1}{6}|(-\mathbf{i}-11 \mathbf{j}+11 \mathbf{k}) \cdot(-18 \mathbf{i}-36 \mathbf{j}+36 \mathbf{k})| \\
+& =\frac{1}{6}|(-1)(-18)+(-11)(-36)+(11)(36)| \\
+& =135
+\end{aligned}
+$$
+\item[I]
+應試小貼士
+四面體的體積必定是一個非負實數。
+\item[] 1A
+\item[（iii）]
+$$
+\begin{aligned}
+\overrightarrow{D E} & =\left[\overrightarrow{D A} \cdot \frac{-18 \mathbf{i}-36 \mathbf{j}+36 \mathbf{k}}{\sqrt{(-18)^{2}+(-36)^{2}+36^{2}}}\right]\left[\frac{-18 \mathbf{i}-36 \mathbf{j}+36 \mathbf{k}}{\sqrt{(-18)^{2}+(-36)^{2}+36^{2}}}\right] \\
+& =\left[(\mathbf{i}+11 \mathbf{j}-11 \mathbf{k}) \cdot \frac{-18 \mathbf{i}-36 \mathbf{j}+36 \mathbf{k}}{54}\right]\left[\frac{-18 \mathbf{i}-36 \mathbf{j}+36 \mathbf{k}}{54}\right] \\
+& =5 \mathbf{i}+10 \mathbf{j}-10 \mathbf{k}
+\end{aligned}
+$$
+\item[（b）] （i）Let $A F: F C=t:(1-t)$ ，where $0<t<1$ ．
+設 $A F: F C=t:(1-t)$ ，其中 $0<t<1$ 。
+Since $\overrightarrow{D F}$ is perpendicular to $\overrightarrow{A C}$ ，we have
+由於 $\overrightarrow{D F}$ 垂直於 $\overrightarrow{A C}$ ，可得
+$$
+\begin{aligned}
+\overrightarrow{D F} \cdot \overrightarrow{A C} & =0 \\
+(\overrightarrow{D A}+\overrightarrow{A F}) \cdot \overrightarrow{A C} & =0 \\
+(\overrightarrow{D A}+t \overrightarrow{A C}) \cdot \overrightarrow{A C} & =0 \\
+{[(\mathbf{i}+11 \mathbf{j}-11 \mathbf{k})+t(4 \mathbf{i}+2 \mathbf{j}+4 \mathbf{k})] \cdot(4 \mathbf{i}+2 \mathbf{j}+4 \mathbf{k}) } & =0 \\
+(1+4 t)(4)+(11+2 t)(2)+(4 t-11)(4) & =0 \\
+36 t-18 & =0 \\
+t & =\frac{1}{2}
+\end{aligned}
+$$
+Thus，we have 由此，可得
+$$
+\overrightarrow{D F}=3 \mathbf{i}+12 \mathbf{j}-9 \mathbf{k}
+$$
+\end{itemize}
+\begin{itemize}
+\begin{itemize}
+\item[（ii）]
+$$
+\begin{aligned}
+\overrightarrow{E F} & =\overrightarrow{D F}-\overrightarrow{D E} \\
+& =(3 \mathbf{i}+12 \mathbf{j}-9 \mathbf{k})-(5 \mathbf{i}+10 \mathbf{j}-10 \mathbf{k}) \\
+& =-2 \mathbf{i}+2 \mathbf{j}+\mathbf{k}
+\end{aligned}
+$$
+$$
+\begin{aligned}
+\overrightarrow{E F} \cdot \overrightarrow{A C} & =(-2 \mathbf{i}+2 \mathbf{j}+\mathbf{k}) \cdot(4 \mathbf{i}+2 \mathbf{j}+4 \mathbf{k}) \\
+& =(-2)(4)+(2)(2)+(1)(4) \\
+& =0
+\end{aligned}
+$$
+Thus， $\overrightarrow{E F}$ is perpendicular to $\overrightarrow{A C}$ ．
+因此， $\overrightarrow{E F}$ 垂直於 $\overrightarrow{A C}$ 。
+\end{itemize}
+\item[（c）] Note that the required angle is $\angle D F E$ ．
+留意所求的角為 $\angle D F E$ 。
+$$
+\begin{aligned}
+\cos \angle D F E & =\frac{\overrightarrow{D F} \cdot \overrightarrow{E F}}{|\overrightarrow{D F}||\overrightarrow{E F}|} \\
+& =\frac{(3 \mathbf{i}+12 \mathbf{j}-9 \mathbf{k}) \cdot(-2 \mathbf{i}+2 \mathbf{j}+\mathbf{k})}{\sqrt{3^{2}+12^{2}+(-9)^{2}} \sqrt{(-2)^{2}+2^{2}+1^{2}}} \\
+& =\frac{9}{9 \sqrt{26}} \\
+& =\frac{\sqrt{26}}{26}
+\end{aligned}
+$$
+Thus，the required angle is $\cos ^{-1}\left(\frac{\sqrt{26}}{26}\right)$ ．
+因此，所求的角為 $\cos ^{-1}\left(\frac{\sqrt{26}}{26}\right)$ 。
+\end{itemize}
+
+照得分位 大檢閱
+\begin{itemize}
+\item[（a）] （i）1A 給予正確答案。
+\begin{itemize}
+\item[（ii）] 1M 給予利用純量積（scalar product）和向量積（vector product）求四面體 $A B C D$ 的體積。
+1A 給予正確答案。
+\item[（iii）] 1M 給予求 $\overrightarrow{D E}$ 。
+1A 給予正確答案。
+\end{itemize}
+\item[（b）] （i）1M 給予利用正交向量（orthogonal vectors）的性質。
+1A 給予正確答案。
+\begin{itemize}
+\item[（ii）] 1M 給予求 $\overrightarrow{E F}$ 。
+1A 給予正確答案。
+\end{itemize}
+\item[（c）] 1 M 給予識別所求的角。
+1M 給予利用純量積的定義。
+1A 給予正確答案。
+\end{itemize}
+
+例題7
+$M$ is a point lying on $A B$ such that $A M: M B=3: 4$ ．Denote the origin by $O$ ．Let $\overrightarrow{O A}=\mathbf{a}$ and $\overrightarrow{Q B}=\mathbf{b}$ ．
+\begin{itemize}
+\item[（a）] Express $\overrightarrow{O M}$ in terms of a and $\mathbf{b}$ ．
+\item[（b）] Suppose $|\mathbf{a}|=1,|\mathbf{b}|=2$ and $\cos \angle A O B=\frac{1}{3}$ ．Find
+\begin{itemize}
+\item[（i）] $\mathbf{a} \cdot \mathbf{b}$ ，
+\item[（ii）] $|\overrightarrow{O M}|$ ．
+\end{itemize}
+\end{itemize}
+（5 marks）
+$M$ 為 $A B$ 上的一點使得 $A M: M B=3: 4$ 。將原點記為 $O$ 。設 $\overrightarrow{O A}=\mathbf{a}$ 及 $\overrightarrow{Q B}=\mathbf{b}$ 。
+\begin{itemize}
+\item[（a）] 以 $\mathbf{a}$ 及 $\mathbf{b}$ 表 $\overrightarrow{O M}$ 。
+\item[（b）] 假定 $|\mathbf{a}|=1 、|\mathbf{b}|=2$ 及 $\cos \angle A O B=\frac{1}{3}$ 。求
+\begin{itemize}
+\item[（i）] $\mathbf{a} \cdot \mathbf{b}$ ，
+\item[（ii）] $|\overrightarrow{O M}|$ 。
+\end{itemize}
+\end{itemize}
+
+題解：
+\begin{itemize}
+\item[（a）] $\overrightarrow{O M}=\frac{4}{4+3} \mathbf{a}+\frac{3}{4+3} \mathbf{b}=\frac{4}{7} \mathbf{a}+\frac{3}{7} \mathbf{b}$
+\end{itemize}
+（b）
+$$
+\text { (i) } \begin{aligned}
+\mathbf{a} \cdot \mathbf{b} & =|\mathbf{a}||\mathbf{b}| \cos \angle A O B \\
+& =(1)(2)\left(\frac{1}{3}\right) \\
+& =\frac{2}{3}
+\end{aligned}
+$$
+\begin{itemize}
+\item[（ii）]
+$$
+\begin{aligned}
+|\overrightarrow{O M}|^{2} & =\left(\frac{4}{7} \mathbf{a}+\frac{3}{7} \mathbf{b}\right) \cdot\left(\frac{4}{7} \mathbf{a}+\frac{3}{7} \mathbf{b}\right) \\
+& =\frac{16}{49}|\mathbf{a}|^{2}+2\left(\frac{4}{7}\right)\left(\frac{3}{7}\right) \mathbf{a} \cdot \mathbf{b}+\frac{9}{49}|\mathbf{b}|^{2} \\
+& =\frac{16}{49}+\frac{16}{49}+\frac{36}{49} \\
+& =\frac{68}{49}
+\end{aligned}
+$$
+\end{itemize}
+
+\section*{唄得分位 大檢閱}
+\begin{itemize}
+\item[（a）] 1A 給予正確答案。
+\item[（b）] （i）1M 給予利用純量積（scalar product）的定義。
+1A 給予正確答案。
+\begin{itemize}
+\item[（ii）] 1M 給予利用（b）（i）的結果。
+1A 給予正確答案。
+\end{itemize}
+\end{itemize}
+
+例題 8
+參考
+DSE 2017 Q10
+Consider $\triangle P Q R$ ．$T$ is a point on $P Q$ such that $P T: T Q=1: 2$ and $S$ is a point on $P R$ such that $P S: S R=(1-t): t$ ，where $0<t<1$ ．It is given that $Q, T, R$ and $S$ are concyclic．Let $\overrightarrow{O P}=\mathbf{i}+2 \mathbf{j}+2 \mathbf{k}, \overrightarrow{O Q}=25 \mathbf{i}+17 \mathbf{j}+5 \mathbf{k}$ and $\overrightarrow{O R}=-9 \mathbf{i}+37 \mathbf{j}-3 \mathbf{k}$ ，where $O$ is the origin．
+\begin{itemize}
+\item[（a）] Find
+\begin{itemize}
+\item[（i）] $\overrightarrow{O T}$ ，
+\item[（ii）] $\overrightarrow{O S}$ ．
+\end{itemize}
+\end{itemize}
+（4 marks）
+\begin{itemize}
+\item[（b）] Denote the circumcentre of $\triangle Q T R$ by $U$ ．Find $\overrightarrow{O U}$ ．
+\end{itemize}
+（1 mark）
+
+考慮 $\triangle P Q R$ 。 $T$ 為 $P Q$ 上的一點使得 $P T: T Q=1: 2, ~ S$ 為 $P R$ 上的一點使得
+$P S: S R=(1-t): t$ ，其中 $0<t<1$ 。已知 $Q$ 、 $T$ 、 $S$ 與 $R$ 共圓。設 $\overrightarrow{O P}=\mathbf{i}+2 \mathbf{j}+2 \mathbf{k}$ 、
+$\overrightarrow{O Q}=25 \mathbf{i}+17 \mathbf{j}+5 \mathbf{k}$ 及 $\overrightarrow{O R}=-9 \mathbf{i}+37 \mathbf{j}-3 \mathbf{k}$ ，其中 $O$ 為原點。
+\begin{itemize}
+\item[（a）] 求
+\begin{itemize}
+\item[（i）] $\overrightarrow{O T}$ ，
+\item[（ii）] $\overrightarrow{O S}$ 。
+\end{itemize}
+\end{itemize}
+（4分）
+\begin{itemize}
+\item[（b）] 將 $\triangle Q T R$ 的外心記為 $U$ 。求 $\overrightarrow{O U}$ 。
+\end{itemize}
+（1分）
+題解：
+\begin{itemize}
+\item[（a）] （i）
+$$
+\begin{aligned}
+\overrightarrow{O T} & =\frac{1}{1+2} \overrightarrow{O Q}+\frac{2}{1+2} \overrightarrow{O P} \\
+& =\frac{1}{3}(25 \mathbf{i}+17 \mathbf{j}+5 \mathbf{k})+\frac{2}{3}(\mathbf{i}+2 \mathbf{j}+2 \mathbf{k}) \\
+& =9 \mathbf{i}+7 \mathbf{j}+3 \mathbf{k}
+\end{aligned}
+$$
+\end{itemize}
+\begin{itemize}
+\item[（ii）]
+$$
+\begin{aligned}
+\overrightarrow{O S} & =(1-t) \overrightarrow{O R}+t \overrightarrow{O P} \\
+& =(1-t)(-9 \mathbf{i}+37 \mathbf{j}-3 \mathbf{k})+t(\mathbf{i}+2 \mathbf{j}+2 \mathbf{k}) \\
+& =(10 t-9) \mathbf{i}+(37-35 t) \mathbf{j}+(5 t-3) \mathbf{k}
+\end{aligned}
+$$
+\end{itemize}
+
+\section*{摘 寻 策略}
+
+同學可以透過求 $\overrightarrow{Q T} \cdot \overrightarrow{T R}$ 來判斷 $\overrightarrow{Q T}$ 是否垂直於 $\overrightarrow{T R}$ 。
+若 $\overrightarrow{Q T} \cdot \overrightarrow{T R}=0$ ，則 $\overrightarrow{Q T}$ 垂直於 $\overrightarrow{T R}$ 。
+
+Note that 留意
+$$
+\begin{aligned}
+\overrightarrow{Q T} \cdot \overrightarrow{T R} & =(\overrightarrow{O T}-\overrightarrow{O Q}) \cdot(\overrightarrow{O R}-\overrightarrow{O T}) \\
+& =(-16 \mathbf{i}-10 \mathbf{j}-2 \mathbf{k}) \cdot(-18 \mathbf{i}+30 \mathbf{j}-6 \mathbf{k}) \\
+& =(-16)(-18)+(-10)(30)+(-2)(-6) \\
+& =0
+\end{aligned}
+$$
+Therefore， $\overrightarrow{Q T}$ is perpendicular to $\overrightarrow{T R}$ ．
+所以， $\overrightarrow{Q T}$ 垂直於 $\overrightarrow{T R}$ 。
+
+As $Q, T, R$ and $S$ are concyclic， $\overrightarrow{Q S}$ is perpendicular to $\overrightarrow{S R}$ ．
+由於 $Q$ 、 $T 、 S$ 與 $R$ 共圓，所以 $\overrightarrow{Q S}$ 垂直於 $\overrightarrow{S R}$ 。
+Thus，we have 由此，可得
+$$
+\begin{array}{r}
+\overrightarrow{Q S} \cdot \overrightarrow{S R}=0  \tag{1M}\\
+(\overrightarrow{O S}-\overrightarrow{O Q}) \cdot(\overrightarrow{O R}-\overrightarrow{O S})=0 \\
+{[(10 t-34) \mathbf{i}+(20-35 t) \mathbf{j}+(5 t-8) \mathbf{k}] \cdot(-10 t \mathbf{i}+35 t \mathbf{j}-5 t \mathbf{k})=0} \\
+(10 t-34)(-10 t)+(20-35 t)(35 t)+(5 t-8)(-5 t)=0 \\
+-270 t(5 t-4)=0 \\
+t=\frac{4}{5} \text { or } t=0 \quad \text { (rejected) }
+\end{array}
+$$
+Thus，we have 由此，可得
+$$
+\overrightarrow{O S}=-\mathbf{i}+9 \mathbf{j}+\mathbf{k}
+$$
+1A
+\begin{itemize}
+\item[（b）] Note that the circumcentre of $\triangle Q T R$ is the mid－point of $Q R$ ．
+留意 $\triangle Q T R$ 的外心為 $Q R$ 的中點。
+Thus，we have 由此，可得
+$$
+\overrightarrow{O U}=\frac{1}{2}(\overrightarrow{O Q}+\overrightarrow{O R})=8 \mathbf{i}+27 \mathbf{j}+\mathbf{k}
+$$
+\end{itemize}
+
+\section*{塒得分位 大檢閱}
+\begin{itemize}
+\item[（a）] 1M 給予利用分點公式（section formula）。
+1A 給予正確答案。
+\begin{itemize}
+\item[（ii）] 1M 給予利用正交向量（orthogonal vectors）的性質。
+1A 給予正確答案。
+\end{itemize}
+\item[（b）] 1A 給予正確答案。
+\end{itemize}
+
+參考
+例題 9
+DSE 2016 Q12
+Denote the origin by $O$ ．Let $\overrightarrow{O P}=-2 \mathbf{i}+\mathbf{j}+10 \mathbf{k}, \overrightarrow{O Q}=-\mathbf{i}+3 \mathbf{j}+2 \mathbf{k}$ and $\overrightarrow{O R}=-3 \mathbf{i}-4 \mathbf{j}+t \mathbf{k}$ ， where $t>0$ ．It is given that $Q$ is equidistant from $P$ and $R$ ．
+（3 marks）
+\begin{itemize}
+\item[（b）] （i）Find $\overrightarrow{P Q} \times \overrightarrow{P R}$ ．
+\begin{itemize}
+\item[（ii）] Denote the plane which contains $P, Q$ and $R$ by $\Pi$ ．Let $\overrightarrow{O C}=-18 \mathbf{i}+4 \mathbf{j}+5 \mathbf{k}$ and $B$ be the projection of $C$ on $\Pi$ ．Find $\overrightarrow{O B}$ ．
+\item[（iii）] Let $\overrightarrow{O A}=14 \mathbf{i}-4 \mathbf{j}+7 \mathbf{k}$ and $D$ be a point such that $\overrightarrow{A D}=\overrightarrow{A P}+\overrightarrow{A Q}+\overrightarrow{A R}$ ．Someone claims that $A, B, C$ and $D$ are collinear．Do you agree？Explain your answer．
+\end{itemize}
+\end{itemize}
+（5 marks）
+
+將原點記為 $O$ 。設 $\overrightarrow{O P}=-2 \mathbf{i}+\mathbf{j}+10 \mathbf{k} 、 \overrightarrow{O Q}=-\mathbf{i}+3 \mathbf{j}+2 \mathbf{k}$ 及 $\overrightarrow{O R}=-3 \mathbf{i}-4 \mathbf{j}+t \mathbf{k}$ ，其中 $t>0$ 。已知 $Q$ 與 $P$ 及 $R$ 等距。
+\begin{itemize}
+\item[（a）] 求 $t$ 。
+\end{itemize}
+（3分）
+（b）（i）求 $\overrightarrow{P Q} \times \overrightarrow{P R}$ 。
+\begin{itemize}
+\begin{itemize}
+\item[（ii）] 將包含 $P$ 、 $Q$ 及 $R$ 的平面記為 $\Pi$ 。設 $\overrightarrow{O C}=-18 \mathbf{i}+4 \mathbf{j}+5 \mathbf{k}$ 及 $B$ 為 $C$ 在 $\Pi$ 上的投影。求 $\overrightarrow{O B}$ 。
+\item[（iii）] 設 $\overrightarrow{O A}=14 \mathbf{i}-4 \mathbf{j}+7 \mathbf{k}$ 及 $D$ 為一點使得 $\overrightarrow{A D}=\overrightarrow{A P}+\overrightarrow{A Q}+\overrightarrow{A R}$ 。某人宣稱 $A$ 、 $B$ 、 $C$ 及 $D$共線。你是否同意？解釋你的答案。
+\end{itemize}
+\end{itemize}
+（5分）
+題解：
+\begin{itemize}
+\item[（a）]
+$$
+\begin{align*}
+&|\overrightarrow{Q P}|=|\overrightarrow{Q R}| \\
+&|\overrightarrow{O P}-\overrightarrow{O Q}|=|\overrightarrow{O R}-\overrightarrow{O Q}|  \tag{1M}\\
+&|-\mathbf{i}-2 \mathbf{j}+8 \mathbf{k}|=|-2 \mathbf{i}-7 \mathbf{j}+(t-2) \mathbf{k}| \\
+& \sqrt{(-1)^{2}+(-2)^{2}+8^{2}}=\sqrt{(-2)^{2}+(-7)^{2}+(t-2)^{2}}  \tag{1M}\\
+& t^{2}-4 t-12=0 \\
+&(t-6)(t+2)=0 \\
+& t=6 \text { or } \quad \text { 或 } \quad t=-2 \quad \text { (rejected) }  \tag{1A}\\
+& \text { (捨去) }
+\end{align*}
+$$
+\end{itemize}
+\begin{itemize}
+\item[（b）] （i）
+$$
+\begin{aligned}
+\overrightarrow{P Q} \times \overrightarrow{P R} & =(\mathbf{i}+2 \mathbf{j}-8 \mathbf{k}) \times(-\mathbf{i}-5 \mathbf{j}-4 \mathbf{k}) \\
+& =\left|\begin{array}{ccc}
+\mathbf{i} & \mathbf{j} & \mathbf{k} \\
+1 & 2 & -8 \\
+-1 & -5 & -4
+\end{array}\right| \\
+& =-48 \mathbf{i}+12 \mathbf{j}-3 \mathbf{k}
+\end{aligned}
+$$
+\item[（ii）] Note that 留意
+$$
+\begin{aligned}
+\overrightarrow{B C} & =\left(\overrightarrow{P C} \cdot \frac{\overrightarrow{P Q} \times \overrightarrow{P R}}{|\overrightarrow{P Q} \times \overrightarrow{P R}|}\right) \frac{\overrightarrow{P Q} \times \overrightarrow{P R}}{|\overrightarrow{P Q} \times \overrightarrow{P R}|} \\
+& =\left[(-16 \mathbf{i}+3 \mathbf{j}-5 \mathbf{k}) \cdot \frac{-48 \mathbf{i}+12 \mathbf{j}-3 \mathbf{k}}{\sqrt{(-48)^{2}+12^{2}+(-3)^{2}}}\right] \frac{-48 \mathbf{i}+12 \mathbf{j}-3 \mathbf{k}}{\sqrt{(-48)^{2}+12^{2}+(-3)^{2}}} \\
+& =\left(\frac{819}{2457}\right)(-48 \mathbf{i}+12 \mathbf{j}-3 \mathbf{k}) \\
+& =-16 \mathbf{i}+4 \mathbf{j}-\mathbf{k}
+\end{aligned}
+$$
+Thus，we have 由此，可得
+$$
+\overrightarrow{O B}=\overrightarrow{C B}-\overrightarrow{C O}=-2 \mathbf{i}+6 \mathbf{k}
+$$
+\item[（iii）] Note that 留意
+$$
+\begin{aligned}
+\overrightarrow{A D} & =\overrightarrow{A P}+\overrightarrow{A Q}+\overrightarrow{A R} \\
+\overrightarrow{O D}-\overrightarrow{O A} & =(\overrightarrow{O P}-\overrightarrow{O A})+(\overrightarrow{O Q}-\overrightarrow{O A})+(\overrightarrow{O R}-\overrightarrow{O A}) \\
+\overrightarrow{O D} & =\overrightarrow{O P}+\overrightarrow{O Q}+\overrightarrow{O R}-2 \overrightarrow{O A} \\
+\overrightarrow{O D} & =-34 \mathbf{i}+8 \mathbf{j}+4 \mathbf{k}
+\end{aligned}
+$$
+Thus，we have 由此，可得
+$$
+\begin{aligned}
+& \overrightarrow{A B}=-16 \mathbf{i}+4 \mathbf{j}-\mathbf{k} \\
+& \overrightarrow{B C}=-16 \mathbf{i}+4 \mathbf{j}-\mathbf{k} \\
+& \overrightarrow{C D}=-16 \mathbf{i}+4 \mathbf{j}-\mathbf{k}
+\end{aligned}
+$$
+Thus，$A, B, C$ and $D$ are collinear．
+因此，$A$ 、 $B$ 、 $C$ 及 $D$ 共線。
+\end{itemize}
+
+㖉得分位 大檢閱
+\begin{itemize}
+\item[（a）] 1M 給予將 $\overrightarrow{Q P}$ 表示成 $|\overrightarrow{O P}-\overrightarrow{O Q}|$ ，和將 $\overrightarrow{Q R}$ 表示成 $\overrightarrow{O R}-\overrightarrow{O Q}$ 。
+1 M 給予求 $|-\mathbf{i}-2 \mathbf{j}+8 \mathbf{k}|$ 和 $|-2 \mathbf{i}-7 \mathbf{j}+(t-2) \mathbf{k}|$ 。
+1A 給予正確答案。
+\item[（b）] （i）1A 給予正確答案。
+\item[（ii）] 1M 給予求 $\overrightarrow{B C}$ 。
+1A 給予正確答案。
+\item[（iii）] 1M 給予求 $\overrightarrow{C D}$ 。
+1A 給予正確答案。
+\end{itemize}
+
+參考
+例题 10
+DSE 2015 Q10
+Denote the origin by $O$ ．Consider $\triangle O P Q . A, B$ and $C$ are points lying on $O P, P Q$ and $O Q$ respectively such that $P A: A O=O C: C Q=Q B: B P=1: 2$ ．Suppose $A C$ and $O B$ intersect at a point $R$ ．
+\begin{itemize}
+\item[（a）] （i）Express $\overrightarrow{O R}$ in terms of $\overrightarrow{O P}$ and $\overrightarrow{O Q}$ ．
+\begin{itemize}
+\item[（ii）] Find $O R: R B$ ．
+\end{itemize}
+\end{itemize}
+（6 marks）
+\begin{itemize}
+\item[（b）] Suppose that $\overrightarrow{O P}=-3 \mathbf{i}+4 \mathbf{j}+2 \mathbf{k}, \overrightarrow{O Q}=3 \mathbf{i}-4 \mathbf{j}-4 \mathbf{k}$ and $\overrightarrow{O S}=-7 \mathbf{i}+\mathbf{j}+2 \mathbf{k}$ ．
+\begin{itemize}
+\item[（i）] Find the area of $\triangle O P Q$ ．
+\item[（ii）] Denote the plane which contains $P, Q$ and $R$ by $\Pi$ ．Find the shortest distance from $S$ to $\Pi$ ．
+\end{itemize}
+\end{itemize}
+（6 marks）
+
+將原點記為 $O$ 。考慮 $\triangle O P Q \circ A 、 B$ 和 $C$ 分別為 $O P 、 P Q$ 和 $O Q$ 上的點，使得
+$P A: A O=O C: C Q=Q B: B P=1: 2$ 。假定 $A C$ 和 $O B$ 相交於點 $R$ 。
+\begin{itemize}
+\item[（a）] （i）以 $\overrightarrow{O P}$ 和 $\overrightarrow{O Q}$ 表 $\overrightarrow{O R}$ 。
+\begin{itemize}
+\item[（ii）] 求 $O R: R B$ 。
+\end{itemize}
+\end{itemize}
+（6分）
+\begin{itemize}
+\item[（b）] 假定 $\overrightarrow{O P}=-3 \mathbf{i}+4 \mathbf{j}+2 \mathbf{k} 、 \overrightarrow{O Q}=3 \mathbf{i}-4 \mathbf{j}-4 \mathbf{k}$ 及 $\overrightarrow{O S}=-7 \mathbf{i}+\mathbf{j}+2 \mathbf{k}$ 。
+\begin{itemize}
+\item[（i）] 求 $\triangle O P Q$ 的面積。
+\item[（ii）] 將包含 $P$ 、 $Q$ 及 $R$ 的平面記為 $\Pi$ 。求由 $S$ 至 $\Pi$ 的最短距離。
+\end{itemize}
+\end{itemize}
+（6分）
+題解：
+\begin{itemize}
+\item[（a）] （i）Let $A R: R C=t:(1-t)$ ，where $0<t<1$ ．
+設 $A R: R C=t:(1-t)$ ，其中 $0<t<1$ 。
+$$
+\begin{align*}
+\overrightarrow{O R} & =t \overrightarrow{O C}+(1-t) \overrightarrow{O A}  \tag{1M}\\
+& =\frac{t}{3} \overrightarrow{O Q}+\frac{2(1-t)}{3} \overrightarrow{O P} \tag{1A}
+\end{align*}
+$$
+$\overrightarrow{O B}=\frac{2}{3} \overrightarrow{O Q}+\frac{1}{3} \overrightarrow{O P}$
+Note that $R$ is lying on $O B$ ．
+留意 $R$ 在 $O B$ 上。
+\end{itemize}
+
+Thus，we have 由此，可得
+$$
+\begin{equation*}
+\frac{t}{3}: \frac{2}{3}=\frac{2(1-t)}{3}: \frac{1}{3} \tag{1M}
+\end{equation*}
+$$
+Solving，we have 求解後，可得
+$$
+t=\frac{4}{5}
+$$
+Thus，we have 由此，可得
+$$
+\begin{equation*}
+\overrightarrow{O R}=\frac{4}{15} \overrightarrow{O Q}+\frac{2}{15} \overrightarrow{O P} \tag{1A}
+\end{equation*}
+$$
+\begin{itemize}
+\item[（ii）] Note that 留意
+$$
+\begin{aligned}
+\overrightarrow{O R} & =\frac{2}{5} \overrightarrow{O B} \\
+|\overrightarrow{O R}| & =\frac{2}{5}|\overrightarrow{O B}|
+\end{aligned}
+$$
+$$
+\begin{aligned}
+& \text { (3)常犯録 } \\
+& \qquad \frac{\overrightarrow{O R}}{\overrightarrow{O B}}=\frac{2}{5} x
+\end{aligned}
+$$
+Thus，we have 由此，可得
+$$
+O R: R B=\frac{2}{5}:\left(1-\frac{2}{5}\right)=2: 3
+$$
+\item[（b）] （i）The area of $\triangle O P Q$
+$\triangle O P Q$ 的面積
+$$
+\begin{aligned}
+& =\frac{1}{2}|\overrightarrow{O P} \times \overrightarrow{O Q}| \\
+& =\frac{1}{2}\left\|\begin{array}{ccc}
+\mathbf{i} & \mathbf{j} & \mathbf{k} \\
+-3 & 4 & 2 \\
+3 & -4 & -4
+\end{array}\right\| \\
+& =\frac{1}{2}|-8 \mathbf{i}-6 \mathbf{j}| \\
+& =5
+\end{aligned}
+$$
+\end{itemize}
+
+1A
+${ }^{(1)}$－應試小貼士
+三角形的面積必定是一個非負實數。
+
+1A
+\begin{itemize}
+\item[（ii）] Note that 留意
+$$
+\begin{aligned}
+\overrightarrow{O R}=\frac{4}{15} \overrightarrow{O Q}+\frac{2}{15} \overrightarrow{O P} & =\frac{4}{15}(3 \mathbf{i}-4 \mathbf{j}-4 \mathbf{k})+\frac{2}{15}(-3 \mathbf{i}+4 \mathbf{j}+2 \mathbf{k}) \\
+& =\frac{2}{5} \mathbf{i}-\frac{8}{15} \mathbf{j}-\frac{4}{5} \mathbf{k}
+\end{aligned}
+$$
+\end{itemize}
+
+Thus，we have 由此，可得
+$$
+\begin{aligned}
+\overrightarrow{P S} & =-4 \mathbf{i}-3 \mathbf{j} \\
+\overrightarrow{P Q} & =6 \mathbf{i}-8 \mathbf{j}-6 \mathbf{k} \\
+\overrightarrow{P R} & =\frac{17}{5} \mathbf{i}-\frac{68}{15} \mathbf{j}-\frac{14}{5} \mathbf{k}
+\end{aligned}
+$$
+Thus，we have 由此，可得
+$$
+\overrightarrow{P Q} \times \overrightarrow{P R}=\left|\begin{array}{ccc}
+\mathbf{i} & \mathbf{j} & \mathbf{k} \\
+6 & -8 & -6 \\
+\frac{17}{5} & -\frac{68}{15} & -\frac{14}{5}
+\end{array}\right|=-\frac{24}{5} \mathbf{i}-\frac{18}{5} \mathbf{j}
+$$
+The area of $\triangle P Q R$
+$\triangle P Q R$ 的面積
+$$
+\begin{aligned}
+& =\frac{1}{2}|\overrightarrow{P Q} \times \overrightarrow{P R}| \\
+& =\frac{1}{2} \sqrt{\left(-\frac{24}{5}\right)^{2}+\left(-\frac{18}{5}\right)^{2}} \\
+& =3
+\end{aligned}
+$$
+
+The volume of the tetrahedron $P Q R S$
+四面體 $P Q R S$ 的體積
+$$
+\begin{aligned}
+& =\frac{1}{6}|\overrightarrow{P S} \cdot(\overrightarrow{P Q} \times \overrightarrow{P R})| \\
+& =\frac{1}{6}\left|(-4 \mathbf{i}-3 \mathbf{j}) \cdot\left(-\frac{24}{5} \mathbf{i}-\frac{18}{5} \mathbf{j}\right)\right| \\
+& =\frac{1}{6}\left|(-4)\left(-\frac{24}{5}\right)+(-3)\left(-\frac{18}{5}\right)\right| \\
+& =5
+\end{aligned}
+$$
+${ }^{(1)}$ 「應試小貼士
+三角形的面積必定是一個非負實數。
+Let $d$ be the shortest distance from $S$ to $\Pi$ ．
+設 $d$ 為由 $S$ 至 $\Pi$ 的最短距離。
+$$
+\begin{aligned}
+\frac{1}{3}(3) d & =5 \\
+d & =5
+\end{aligned}
+$$
+Thus，the shortest distance from $S$ to $\Pi$ is 5 ．
+因此，由 $S$ 至 $\Pi$ 的最短距離為5。
+
+\section*{100得分位 大檢閱}
+\begin{itemize}
+\item[（a）] （i）1M 給予利用分點公式（section formula）。
+1 A 給予正確的 $\overrightarrow{O R}$（以 $t 、 \overrightarrow{O P}$ 和 $\overrightarrow{O Q}$ 表示）。
+1M 給予利用平行向量（parallel vectors）的性質。
+1A 給予正確的 $\overrightarrow{O R}$ 。
+\item[（ii）] 1M 給予將 $\overrightarrow{O R}$ 表示成 $\frac{2}{5} \overrightarrow{O B}$ 。
+1A 給予正確答案。
+\item[（b）] （i）1M 給予利用向量積（vector product）求 $\triangle O P Q$ 的面積。
+1A 給予正確答案。
+\item[（ii）] 1M 給予利用向量積（vector product）求 $\triangle P Q R$ 的面積。
+1A 給予利用純量積（scalar product）和向量積（vector product）求四面體 $P Q R S$ 的體積。
+1M 給予設立方程式。
+1A 給予正確答案。
+\end{itemize}
+
+例題 11
+![](./images/9027aeb0-3964-4138-a178-1092ea22ec8a-32_438_671_1398_659.jpg)
+In the figure，$S$ and $R$ are points on $O P$ and $O Q$ respectively such that $P S: S O=\lambda:(1-\lambda)$ and $O R: R Q=\mu:(1-\mu)$ ，where $0<\lambda<1$ and $0<\mu<1$ ．It is given that $P R$ is perpendicular to $O Q$ and $S Q$ is perpendicular to $O P$ ．
+\begin{itemize}
+\item[（a）] Suppose $O P=O Q$ ．
+\begin{itemize}
+\item[（i）] Show that $\mu=1-\lambda$ ．
+Hence，show that $\overrightarrow{O T}=\frac{1-\lambda}{2-\lambda}(\overrightarrow{O P}+\overrightarrow{O Q})$ ．
+\item[（ii）] $O T$ produced intersects $P Q$ at the point $U$ ．Someone claims that $O U$ is perpendicular to $P Q$ ．Do you agree？Explain your answer．
+\end{itemize}
+\end{itemize}
+（7 marks）
+\begin{itemize}
+\item[（b）] Suppose $\overrightarrow{O P}=3 t \mathbf{i}+4 t \mathbf{j}$ and $\overrightarrow{O Q}=5 t \mathbf{i}$ ，where $0<t<1$ ．Let $H$ be the orthocentre of $\triangle O P Q$ ．Express $\overrightarrow{O H}$ in terms of $t$ ． （3 marks）
+\end{itemize}
+
+在圖中，$S$ 和 $R$ 分別為 $O P$ 和 $O Q$ 上的點，使得 $P S: S O=\lambda:(1-\lambda)$ 和 $O R: R Q=\mu:(1-\mu)$ ，其中 $0<\lambda<1$ 和 $0<\mu<1$ 。已知 $P R$ 與 $O Q$ 垂直，而 $S Q$ 與 $O P$ 垂直。
+\begin{itemize}
+\item[（a）] 假定 $O P=O Q$ 。
+\begin{itemize}
+\item[（i）] 證明 $\mu=1-\lambda$ 。
+由此，證明 $\overrightarrow{O T}=\frac{1-\lambda}{2-\lambda}(\overrightarrow{O P}+\overrightarrow{O Q})$ 。
+\item[（ii）] $O T$ 的延線與 $P Q$ 相交於點 $U$ 。某人宣稱 $O U$ 與 $P Q$ 垂直。你是否同意？解釋你的答案。
+（7分）
+\end{itemize}
+\end{itemize}
+（b）假定 $\overrightarrow{O P}=3 t \mathbf{i}+4 t \mathbf{j}$ 和 $\overrightarrow{O Q}=5 t \mathbf{i}$ ，其中 $0<t<1$ 。設 $H$ 為 $\triangle O P Q$ 的垂心。以 $t$ 表 $\overrightarrow{O H}$ 。（3分）
+題解：
+（a）（i）Note that 留意
+$$
+\overrightarrow{P R}=\overrightarrow{O R}-\overrightarrow{O P}=\mu \overrightarrow{O Q}-\overrightarrow{O P}
+$$
+Since $P R$ is perpendicular to $O Q$ ，we have
+由於 $P R$ 與 $O Q$ 垂直，可得
+$$
+\begin{aligned}
+\overrightarrow{P R} \cdot \overrightarrow{O R} & =0 \\
+(\mu \overrightarrow{O Q}-\overrightarrow{O P}) \cdot \overrightarrow{O Q} & =0 \\
+\mu \overrightarrow{O Q} \cdot \overrightarrow{O Q} & =\overrightarrow{O P} \cdot \overrightarrow{O Q}
+\end{aligned}
+$$
+Note that 留意
+$$
+\overrightarrow{S Q}=\overrightarrow{O Q}-\overrightarrow{O S}=\overrightarrow{O Q}-(1-\lambda) \overrightarrow{O P}
+$$
+Since $S Q$ is perpendicular to $O P$ ，we have
+由於 $S Q$ 與 $O P$ 垂直，可得
+$$
+\begin{aligned}
+\overrightarrow{S Q} \cdot \overrightarrow{O P} & =0 \\
+{[\overrightarrow{O Q}-(1-\lambda) \overrightarrow{O P}] \cdot \overrightarrow{O P} } & =0 \\
+\overrightarrow{O Q} \cdot \overrightarrow{O P} & =(1-\lambda) \overrightarrow{O P} \cdot \overrightarrow{O P}
+\end{aligned}
+$$
+Thus，we have 由此，可得
+$$
+\begin{aligned}
+\mu \overrightarrow{O Q} \cdot \overrightarrow{O Q} & =(1-\lambda) \overrightarrow{O P} \cdot \overrightarrow{O P} \\
+& \mu=1-\lambda
+\end{aligned}
+$$
+1
+摘 昌 策略
+分別考慮 $\triangle O P Q$ 和 $\triangle O S Q$ ，然後利用分點公式（section formula）解題。
+
+Let $P T: T R=m: 1-m$ ，where $0<m<1$ ．
+設 $P T: T R=m: 1-m$ ，其中 $0<m<1$ 。
+$$
+\begin{equation*}
+\overrightarrow{O T}=m \mu \overrightarrow{O Q}+(1-m) \overrightarrow{O P}=m(1-\lambda) \overrightarrow{O Q}+(1-m) \overrightarrow{O P} \tag{1M}
+\end{equation*}
+$$
+Let $S T: T Q=n: 1-n$ ，where $0<n<1$ ．
+設 $S T: T Q=n: 1-n$ ，其中 $0<n<1$ 。
+$$
+\overrightarrow{O T}=n \overrightarrow{O Q}+(1-n)(1-\lambda) \overrightarrow{O P}
+$$
+Thus，we have 由此，可得
+$$
+\left\{\begin{array}{c}
+m(1-\lambda)=n  \tag{1M}\\
+1-m=(1-n)(1-\lambda)
+\end{array}\right.
+$$
+Solving，we have $m=\frac{1}{2-\lambda}$ and $n=\frac{1-\lambda}{2-\lambda}$
+求解後，可得 $m=\frac{1}{2-\lambda}$ 和 $n=\frac{1-\lambda}{2-\lambda}$ 。
+Thus，we have 由此，可得
+$$
+\begin{equation*}
+\overrightarrow{O T}=\frac{1-\lambda}{2-\lambda}(\overrightarrow{O P}+\overrightarrow{O Q}) \tag{1}
+\end{equation*}
+$$
+（ii）Let $\overrightarrow{O U}=t \overrightarrow{O T}$ ，where $t>1$ ．
+設 $\overrightarrow{O U}=t \overrightarrow{O T}$ ，其中 $t>1$ 。
+
+\section*{摘 昌 策略}
+
+如要判斷 $\overrightarrow{O U}$ 是否垂直於 $\overrightarrow{P Q}$ ，同學可以求 $\overrightarrow{O U} \cdot \overrightarrow{P Q}$ 。
+若 $\overrightarrow{O U} \cdot \overrightarrow{P Q}=0$ ，則 $\overrightarrow{O U}$ 垂直於 $\overrightarrow{P Q}$ 。
+$$
+\begin{aligned}
+\overrightarrow{O U} \cdot \overrightarrow{P Q} & =t\left(\frac{1-\lambda}{2-\lambda}\right)(\overrightarrow{O P}+\overrightarrow{O Q}) \cdot(\overrightarrow{O Q}-\overrightarrow{O P}) \\
+& =t\left(\frac{1-\lambda}{2-\lambda}\right)(\overrightarrow{O P} \cdot \overrightarrow{O Q}-\overrightarrow{O P} \cdot \overrightarrow{O P}+\overrightarrow{O Q} \cdot \overrightarrow{O Q}-\overrightarrow{O Q} \cdot \overrightarrow{O P}) \\
+& =t\left(\frac{1-\lambda}{2-\lambda}\right)\left(|\overrightarrow{O Q}|^{2}-|\overrightarrow{O P}|^{2}\right) \\
+& =0
+\end{aligned}
+$$
+Thus，$O U$ is perpendicular to $P Q$ ．The claim is agreed．
+因此，$O U$ 與 $P Q$ 垂直。同意該宣稱。
+$T$ is the orthocentre of $\triangle O P Q$ ．
+$T$ 為 $\triangle O P Q$ 的垂心。
+\begin{itemize}
+\item[（b）] Note that 留意
+$$
+\begin{aligned}
+& O P=|\overrightarrow{O P}|=\sqrt{(3 t)^{2}+(4 t)^{2}}=5 t \\
+& O Q=|\overrightarrow{O Q}|=5 t
+\end{aligned}
+$$
+\item[] ${ }^{(1)}$ 「應試小貼士
+同學應該先核對前提條件，然後才應用（a）部分的結果。
+\end{itemize}
+
+Also note that 再者留意
+$$
+\overrightarrow{O R}=3 t \mathrm{i}
+$$
+Thus，we have 由此，可得
+$$
+\begin{equation*}
+\frac{O R}{R Q}=\frac{\mu}{1-\mu}=\frac{1-\lambda}{\lambda}=\frac{3}{2} \tag{1M}
+\end{equation*}
+$$
+Solving，we have 求解後，可得
+$$
+\lambda=\frac{2}{5}
+$$
+By（a），we have
+藉（a），可得
+$$
+\begin{align*}
+\overrightarrow{O H} & =\frac{1-\lambda}{2-\lambda}(\overrightarrow{O P}+\overrightarrow{O Q}) \\
+& =\frac{1-\frac{2}{5}}{2-\frac{2}{5}}[(3 t \mathbf{i}+4 t \mathbf{j})+(5 t \mathbf{i})] \\
+& =\frac{3}{8}(8 t \mathbf{i}+4 t \mathbf{j}) \\
+& =3 t \mathbf{i}+\frac{3 t}{2} \mathbf{j} \tag{1A}
+\end{align*}
+$$
+
+\section*{媇得分位 大檢閱}
+\begin{itemize}
+\item[（a）] （i）1M 給予利用正交向量（orthogonal vectors）的性質。
+\begin{itemize}
+\item[] 1M 給予利用正交向量的性質。
+\item[1] 給予推演得題目所給的答案。
+\item[] 1M 給予利用分點公式（section formula）。
+\item[] 1M 給予設立方程組。
+\item[1] 給予推演得題目所給的答案。
+\item[（ii）] 1A 給予正確答案。
+\end{itemize}
+\item[（b）] 1M 給予核對前提條件。
+\begin{itemize}
+\item[1] M 給予求 $\frac{O R}{R Q}$ 。
+\item[] 1A 給予正確答案。
+\end{itemize}
+\end{itemize}
+
+\section*{－文憑試富戰}
+
+專業試題分析
+
+\begin{tabular}[t]{|l|l|l|}
+\hline 試卷 & \begin{tabular}[t]{l}
+Solving problems involving vectors in a two－dimensional space \\
+解與二維空間內的向量有關的問題
+\end{tabular} & \begin{tabular}[t]{l}
+Solving problems involving vectors in a three－dimensional space \\
+解與三維空間內的向量有關的問題
+\end{tabular} \\
+\hline 2012 & Q12 & Q7 \\
+\hline 2013 & Q10 & Q14 \\
+\hline 2014 & Q11 & Q8 \\
+\hline 2015 & Q10a & Q10b \\
+\hline 2016 & & Q12 \\
+\hline 2017 & Q3 & Q10 \\
+\hline 2018 & & Q12 \\
+\hline 2019 & & Q12 \\
+\hline 2020 & & Q12 \\
+\hline 2021 & & Q12 \\
+\hline 2022 & Q12 & \\
+\hline 2023 & & Q10 \\
+\hline
+\end{tabular}
+
+\section*{『 ）應試小貼士}
+
+與向量（vectors）有關的題目，每年都有。
+\begin{itemize}
+\item[1．] 有些題目要求同學利用分點公式（section formula）解題。
+\item[2．] 有些則要求同學利用純量積（scalar product）和向量積（vector product），求三角形的面積、求四面體（tetrahedron）的體積，以及解涉及向量投影（projection of vector）的問題。
+\end{itemize}
+
+應試練習
+
+Q1）
+![](./images/9027aeb0-3964-4138-a178-1092ea22ec8a-37_573_1010_888_568.jpg)
+The figure shows a tetrahedron $O A B C$ ．Let $\overrightarrow{O A}=4 \mathbf{i}-5 \mathbf{j}-3 \mathbf{k}, \overrightarrow{O B}=-4 \mathbf{i}+\mathbf{j}-\mathbf{k}$ and $\overrightarrow{O C}=-2 \mathbf{i}-3 \mathbf{j}+5 \mathbf{k}$ ．
+\begin{itemize}
+\item[（a）] Find the area of $\triangle O A B$ ．
+\item[（b）] Find the distance between the point $C$ and the plane $O A B$ ．
+\item[（c）] Find the acute angle between the line $O C$ and the plane $O A B$ ．
+\end{itemize}
+（8 marks）
+
+圖中顯示四面體 $O A B C$ 。設 $\overrightarrow{O A}=4 \mathbf{i}-5 \mathbf{j}-3 \mathbf{k} 、 \overrightarrow{O B}=-4 \mathbf{i}+\mathbf{j}-\mathbf{k}$ 及 $\overrightarrow{O C}=-2 \mathbf{i}-3 \mathbf{j}+5 \mathbf{k}$ 。
+\begin{itemize}
+\item[（a）] 求 $\triangle O A B$ 的面積。
+\item[（b）] 求點 $C$ 與平面 $O A B$ 之間的距離。
+\item[（c）] 求直線 $O C$ 與平面 $O A B$ 之間的鋭角。
+\end{itemize}
+（8分）
+參考 DSE 2014 Q8， 2012 Q7
+\begin{itemize}
+\item[Q2）]
+![](./images/9027aeb0-3964-4138-a178-1092ea22ec8a-38_337_837_334_606.jpg)
+The figure shows $\triangle A B C$ ．Denote the centroid of $\triangle A B C$ by $P$ ．Denote the origin by $O$ ．Let $\overrightarrow{O A}=\mathbf{a}, \overrightarrow{O B}=\mathbf{b}, \overrightarrow{O C}=\mathbf{c}, \angle B A C=\alpha, \angle A B C=\beta$ and $\angle A C B=\gamma$ ．
+圖中顯示 $\triangle A B C$ 。將 $\triangle A B C$ 的形心記為 $P$ 。將原點記為 $O$ 。設 $\overrightarrow{O A}=\mathbf{a} 、 \overrightarrow{O B}=\mathbf{b}$ 、 $\overrightarrow{O C}=\mathbf{c} \cdot \angle B A C=\alpha \cdot \angle A B C=\beta$ 及 $\angle A C B=y^{\circ}$
+\begin{itemize}
+\item[（a）] Express $\overrightarrow{O P}$ in terms of a ，b and c ． （1 mark）
+以 $\mathbf{a} 、 \mathbf{b}$ 及 $\mathbf{c}$ 表 $\overrightarrow{O P}$ 。 （1分）
+\item[（b）] Let $Q$ and $R$ be two points such that
+設 $Q$ 及 $R$ 為兩點使得
+$$
+\overrightarrow{O Q}=\frac{\mathbf{a} \tan \alpha+\mathbf{b} \tan \beta+\mathbf{c} \tan \gamma}{\tan \alpha+\tan \beta+\tan \gamma}
+$$
+and 及
+$$
+\overrightarrow{O R}=\frac{\mathbf{a} \sin 2 \alpha+\mathbf{b} \sin 2 \beta+\mathbf{c} \sin 2 \gamma}{\sin 2 \alpha+\sin 2 \beta+\sin 2 \gamma}
+$$
+Using the fact that 利用這事實
+$$
+\frac{(\sin 2 \alpha-\sin 2 \beta)+(\sin 2 \alpha-\sin 2 \gamma)}{(\tan \alpha-\tan \beta)+(\tan \alpha-\tan \gamma)}=-2 \cos \alpha \cos \beta \cos \gamma
+$$
+prove that $P, Q$ and $R$ are collinear． （4 marks）
+證明 $P$ 、 $Q$ 與 $R$ 共線。 （4分）
+\end{itemize}
+\end{itemize}
+\begin{itemize}
+\item[Q3）]
+![](./images/9027aeb0-3964-4138-a178-1092ea22ec8a-39_527_784_342_678.jpg)
+Let $\overrightarrow{O A}=2 \mathbf{i}-2 \mathbf{j}-\mathbf{k}$ and $\overrightarrow{O B}=-2 \mathbf{i}-4 \mathbf{j}+\mathbf{k} . C$ and $D$ are points lying on $A B$ and $O A$ respectively such that $A C: C B=1: 3$ and $O D: D A=1: 2$ ．
+\begin{itemize}
+\item[（a）] Find $\overrightarrow{O C}$ ．
+\item[（b）] $B D$ and $O C$ intersects at the point $E$ ．Someone claims that $E$ is the orthocentre of $\triangle O A B$ ．Do you agree？Explain your answer．
+（5 marks）
+\end{itemize}
+\item[設] $\overrightarrow{O A}=2 \mathbf{i}-2 \mathbf{j}-\mathbf{k}$ 及 $\overrightarrow{O B}=-2 \mathbf{i}-4 \mathbf{j}+\mathbf{k} \circ C$ 及 $D$ 分別為 $A B$ 及 $O A$ 上的點使得 $A C: C B=1: 3$ 及 $O D: D A=1: 2$ 。
+\begin{itemize}
+\item[（a）] 求 $\overrightarrow{O C}$ 。
+\item[（b）] $B D$ 與 $O C$ 相交於點 $E$ 。某人宣稱 $E$ 為 $\triangle O A B$ 的垂心。你是否同意？解釋你的答案。
+\end{itemize}
+\end{itemize}
+（5分）
+參考 DSE 2013 Q10
+\begin{itemize}
+\item[Q4）] $R$ is a point lying on $P Q$ such that $P R: R Q=2: 5$ Denote the origin by $O$ ．Let $\overrightarrow{O P}=\mathbf{p}$ ， $\overrightarrow{O Q}=\mathbf{q}$ and $\overrightarrow{O R}=\mathbf{r}$ ．
+\begin{itemize}
+\item[（a）] Express r in terms of $\mathbf{p}$ and $\mathbf{q}$ ．
+\item[（b）] It is given that $|\mathbf{p}|=4,|\mathbf{q}|=7$ and $\angle P O Q=\frac{\pi}{3}$ ．Find
+\begin{itemize}
+\item[（i）] $\mathbf{p} \cdot \mathbf{q}$ ，
+\item[（ii）] $|\mathbf{r}|^{2}$ ．
+\end{itemize}
+\end{itemize}
+\end{itemize}
+（5 marks）
+$R$ 為 $P Q$ 上的一點使得 $P R: R Q=2: 5$ 。將原點記為 $O$ 。設 $\overrightarrow{O P}=\mathbf{p} 、 \overrightarrow{O Q}=\mathbf{q}$ 及 $\overrightarrow{O R}=\mathbf{r}$ 。
+\begin{itemize}
+\begin{itemize}
+\item[（a）] 以 $\mathbf{p}$ 及 $\mathbf{q}$ 表 $\mathbf{r}$ 。
+\end{itemize}
+\end{itemize}
+\begin{itemize}
+\item[（b）] 已知 $|\mathrm{p}|=4 \cdot|\mathrm{q}|=7$ 及 $\angle P O Q=\frac{\pi}{3}$ 。求
+\begin{itemize}
+\item[（i）] $\mathbf{p} \cdot \mathbf{q}$,
+\item[（ii）] $|\mathbf{r}|^{2}$ 。
+\end{itemize}
+\end{itemize}
+（5分）
+參考 DSE 2017 Q3
+\begin{itemize}
+\item[Q5）] The position vectors of the points $P, Q, R$ and $S$ are $(2 \alpha+1) \mathbf{i}+\mathbf{j}+(\beta+2) \mathbf{k}$ ， $\mathbf{i}+(\alpha-1) \mathbf{j}+4 \mathbf{k},(\alpha+3) \mathbf{i}+(\beta-2) \mathbf{j}$ and $(\beta+1) \mathbf{i}+(\gamma-1) \mathbf{j}+4 \mathbf{k}$ respectively， where $\alpha, \beta$ and $y$ are real numbers．
+Suppose that $\overrightarrow{P Q}$ is parallel to $4 \mathbf{i}+\mathbf{k}$ ．Denote the plane which contains $P, Q$ and $R$ by $\Pi$ ．It is given that the volume of the tetrahedron $P Q R S$ is $\frac{40}{3}$ and $\gamma>2$ ．
+\item[（a）] Find
+\begin{itemize}
+\item[（i）] $\alpha$ and $\beta$ ，
+\item[（ii）] the area of $\triangle P Q R$ ，
+\item[（iii）] $y$ ，
+\item[（iv）] the shortest distance from $S$ to $\Pi$ ．
+\end{itemize}
+\end{itemize}
+（9 marks）
+\begin{itemize}
+\begin{itemize}
+\item[（b）] Let $T$ be the projection of $S$ on $\Pi$ ．Is $T$ the orthocentre of $\triangle P Q R$ ？Explain your answer．
+（4 marks）
+\end{itemize}
+\end{itemize}
+
+點 $P$ 、點 $Q$ 、點 $R$ 及點 $S$ 的位置向量分別為 $(2 \alpha+1) \mathbf{i}+\mathbf{j}+(\beta+2) \mathbf{k} 、 \mathbf{i}+(\alpha-1) \mathbf{j}+4 \mathbf{k}$ 、 $(\alpha+3) \mathbf{i}+(\beta-2) \mathbf{j}$ 及 $(\beta+1) \mathbf{i}+(\gamma-1) \mathbf{j}+4 \mathbf{k}$ ，其中 $\alpha \cdot \beta$ 及 $\gamma$ 均為實數。
+假定 $\overrightarrow{P Q}$ 平行於 $4 \mathbf{i}+\mathbf{k}$ 。將包含 $P 、 Q$ 及 $R$ 的平面記為 $\Pi 。$ 已知四面體 $P Q R S$ 的體積為 $\frac{40}{3}$及 $y>2$ 。
+\begin{itemize}
+\item[（a）] 求
+\begin{itemize}
+\item[（i）] $\alpha$ 及 $\beta$ ，
+\item[（ii）] $\triangle P Q R$ 的面積，
+\item[（iii）] $\gamma$ ，
+\item[（iv）] 由 $S$ 至 $\Pi$ 的最短距離。
+\end{itemize}
+\end{itemize}
+（9分）
+\begin{itemize}
+\begin{itemize}
+\item[（b）] 設 $T$ 為 $S$ 在 $\Pi$ 上的投影。 $T$ 是否 $\triangle P Q R$ 的垂心？解釋你的答案。
+（4分）
+參考 DSE 2021 Q12
+\end{itemize}
+\end{itemize}
+\begin{itemize}
+\item[Q6）] Consider $\triangle A B C$ ．
+\begin{itemize}
+\item[（a）] Let $O$ be the circumcentre of $\triangle A B C$ ．Let $H$ be a point such that $\overrightarrow{O H}=\overrightarrow{O A}+\overrightarrow{O B}+\overrightarrow{O C}$ ．
+\begin{itemize}
+\item[（i）] Show that $\overrightarrow{A H}=\overrightarrow{O B}+\overrightarrow{O C}$ and $\overrightarrow{B H}=\overrightarrow{O A}+\overrightarrow{O C}$ ．
+\item[（ii）] Show that $\overrightarrow{A H}$ is perpendicular to $\overrightarrow{B C}$ and $\overrightarrow{B H}$ is perpendicular to $\overrightarrow{A C}$ ．
+\end{itemize}
+\end{itemize}
+\end{itemize}
+（5 marks）
+\begin{itemize}
+\begin{itemize}
+\item[（b）] Denote the origin by $O$ ．Let $\overrightarrow{O A}=2 \mathbf{i}-\mathbf{j}+2 \mathbf{k}, \overrightarrow{O B}=\mathbf{i}-2 \mathbf{j}-2 \mathbf{k}$ and $\overrightarrow{O C}=-2 \mathbf{i}+\mathbf{j}-2 \mathbf{k}$ ．Let $G$ be the orthocentre of $\triangle A B C$ ．
+\begin{itemize}
+\item[（i）] Show that $\overrightarrow{A B}$ is perpendicular to $\overrightarrow{B C}$ ．
+\item[（ii）] Show that $\overrightarrow{O G}=\overrightarrow{O B}$ ．
+\end{itemize}
+\end{itemize}
+\end{itemize}
+（4 marks）
+
+考慮 $\triangle A B C$ 。
+\begin{itemize}
+\item[（a）] 設 $O$ 為 $\triangle A B C$ 的外心。設 $H$ 為一點使得 $\overrightarrow{O H}=\overrightarrow{O A}+\overrightarrow{O B}+\overrightarrow{O C}$ 。
+\begin{itemize}
+\begin{itemize}
+\item[（i）] 證明 $\overrightarrow{A H}=\overrightarrow{O B}+\overrightarrow{O C}$ ，以及 $\overrightarrow{B H}=\overrightarrow{O A}+\overrightarrow{O C}$ 。
+\item[（ii）] 證明 $\overrightarrow{A H}$ 垂直於 $B C$ ，以及 $\overrightarrow{B H}$ 垂直於 $\overrightarrow{A C}$ 。
+\end{itemize}
+\end{itemize}
+\end{itemize}
+（5分）
+\begin{itemize}
+\begin{itemize}
+\item[（b）] 將原點記為 $O$ 。設 $\overrightarrow{O A}=2 \mathbf{i}-\mathbf{j}+2 \mathbf{k} 、 \overrightarrow{O B}=\mathbf{i}-2 \mathbf{j}-2 \mathbf{k}$ 及 $\overrightarrow{O C}=-2 \mathbf{i}+\mathbf{j}-2 \mathbf{k}$ 。設 $G$ 為 $\triangle A B C$ 的垂心。
+\begin{itemize}
+\item[（i）] 證明 $\overrightarrow{A B}$ 垂直於 $\overrightarrow{B C}$ 。
+\item[（ii）] 證明 $\overrightarrow{O G}=\overrightarrow{O B}$ 。
+\end{itemize}
+\end{itemize}
+\end{itemize}
+（4分）
+參考 DSE 2022 Q12
