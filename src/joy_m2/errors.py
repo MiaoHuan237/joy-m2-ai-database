@@ -47,3 +47,7 @@ class OutputConflictError(PipelineError):
 
 class PromotionError(PipelineError):
     """Raised when a candidate cannot be promoted safely."""
+
+
+class ImportApprovalError(PipelineError):
+    """Raised when Task 9 import approval authority is invalid."""
