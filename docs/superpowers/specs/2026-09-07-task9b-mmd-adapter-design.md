@@ -1109,14 +1109,16 @@ failed input cannot establish the context needed for that check. Downstream
 consequences are not emitted as secondary noise.
 
 Every evidence value is canonical JSON with the exact key set in this matrix.
-`reason` is one of the listed machine tokens, never free text. `expected` and
-`actual` are JSON scalar, array, or `null` values appropriate to the reason;
-they never contain an absolute path, cwd, temp root, exception string, or
-runtime identity. A path-valued invalid `actual` is represented by the
-lowercase SHA-256 of its exact UTF-8 field bytes rather than copied into
-evidence. A `member` value is a safe canonical archive-relative path or
-`null`, never a host or unsafe raw path. All rows have severity `blocking` and
-stop after completing their own stage.
+`reason` is one of the listed machine tokens, never free text. D0
+`source_contract_mismatch` evidence follows the complete construction rules in
+section 11.1. Unless that subsection or a matrix row fixes a more specific
+projection, `expected` and `actual` are JSON scalar, array, or `null` values
+appropriate to the reason; they never contain an absolute path, cwd, temp root,
+exception string, or runtime identity. A path-valued invalid `actual` is
+represented by the lowercase SHA-256 of its exact UTF-8 field bytes rather than
+copied into evidence. A `member` value is a safe canonical archive-relative
+path or `null`, never a host or unsafe raw path. All rows have severity
+`blocking` and stop after completing their own stage.
 
 | Code | Stage / exact trigger | Binding and locator | Exact `field` | Exact evidence object |
 | --- | --- | --- | --- | --- |
@@ -1129,6 +1131,154 @@ stop after completing their own stage.
 | `candidate_count_mismatch` | D5: after every selection binds uniquely, the number of complete top-level question occurrences parsed from the selected primary member differs from `expected_candidate_count` | package, `None`, empty locator | exactly `expected_candidate_count` | exactly `{"actual":...,"expected":...,"reason":"candidate_count"}` |
 | `language_mapping_ambiguous` | D6: after D3 atomic parsing succeeds, the exact section 7.1 state machine cannot satisfy the declared layout | candidate, exact proposed ID and smallest offending question byte locator | exactly `language_layout` | exactly `{"end_byte":...,"layout":...,"reason":...,"start_byte":...}`; reason exactly `missing_en | missing_zh | invalid_transition | und_prose` |
 | `image_binding_invalid` | D7: a path-safe reference has ambiguous semantic mapping, conflicts with explicit selection, has multiple matches, cannot yield exactly one canonical expected path, or has invalid role/binding metadata; a valid absent member and every unsafe raw target are not triggers | candidate, exact proposed ID and image-token locator | exactly `expected_image_members` | exactly `{"matches":...,"raw_target":...,"reason":...}` where `matches` is the canonically sorted safe member array; reason exactly `ambiguous_reference | selection_conflict | multiple_matches | canonical_path_unavailable | invalid_role` |
+
+### 11.1 Exact D0 `source_contract_mismatch` evidence
+
+D0 evidence is always the canonical encoding of exactly:
+
+```json
+{"actual":...,"expected":...,"reason":"..."}
+```
+
+No raw undecodable byte, parser/decoder exception text, traceback, host path,
+cwd, temporary root, memory identity, platform name, locale, or runtime version
+may enter `actual` or `expected`. The following JSON type tokens are exact:
+`array`, `boolean`, `integer`, `null`, `number`, `object`, and `string`. The
+token decision uses this exact ordered ladder:
+
+1. `value is None` -> `null`;
+2. `type(value) is bool` -> `boolean`;
+3. `type(value) is int` -> `integer`;
+4. `type(value) is float` -> `number`;
+5. exact `str`, `list`, or `dict` -> `string`, `array`, or `object`.
+
+No `isinstance` widening is allowed. Consequently JSON `1` is `integer`, while
+`1.0`, `1e0`, and `-0.0` are all `number`, and `true` is `boolean`. `NaN`,
+`Infinity`, and `-Infinity` are rejected by strict decoding as `invalid_json`;
+they never reach type/value validation.
+
+Logical fields are deterministic JSON paths. The root is `$`, and an array
+element appends a zero-based decimal `[n]`. Each decoded object key is projected
+before it is appended. A path-like key is one for which the existing evidence
+path detector is true: `PurePosixPath(key).is_absolute()`, `key` starts with two
+backslashes (`key.startswith("\\\\")`), or ASCII regex `[A-Za-z]:[\\/]`
+matches at the start. Such a key
+appends the opaque segment `[~key-sha256:<digest>]`, where `<digest>` is the
+lowercase SHA-256 of the exact key UTF-8 bytes. Otherwise a key matching ASCII
+`[A-Za-z_][A-Za-z0-9_]*` appends `.key`, and every other key appends `[` plus its
+canonical JSON string encoding plus `]`. The same rule applies recursively to
+unknown nested objects and identically to `extra_key` and `duplicate_key`.
+Valid-schema paths consequently use `$.field`, `$.selections[n]`,
+`$.selections[n].field`, and the latter followed by `[m]` for a tuple item. No
+logical path includes raw path-like key text, `selection_manifest_path`,
+`source_path`, or a derived filesystem path.
+
+Raw decode and schema reasons use these exact values:
+
+| `reason` | Exact `field` | Exact `actual` | Exact `expected` |
+| --- | --- | --- | --- |
+| `wrong_type` for an existing non-regular selection-manifest path | `$` | `"non_regular_file"` | `"regular_file"` |
+| `invalid_value` for an existing unreadable regular selection-manifest file | `$` | `"unreadable_file"` | `"readable"` |
+| `invalid_utf8` | `$` | `"undecodable_utf8"` | `"strict_utf8"` |
+| `utf8_bom` | `$` | `"utf8_bom"` | `"no_bom"` |
+| `invalid_json` | `$` | `"invalid_json_syntax"` | `"json_object"` |
+| `duplicate_key` | logical path of the repeated key | `"duplicate"` | `"unique"` |
+| `non_object` | `$` | exact decoded JSON type token | `"object"` |
+| `missing_key` | logical path of the absent key | `"missing"` | `"present"` |
+| `extra_key` | logical path of the present extra key | `"present"` | `"absent"` |
+| `wrong_type` | logical path of the value | exact decoded JSON type token | exact expected type token or union below |
+
+The two pre-read file rows above override decoded-value projections and expose
+no path. For decoded JSON, the `wrong_type` expected projection is exact. The
+top-level manifest is `object`; each `selections[n]` is `object`; `selections`,
+`expected_image_members`, and `tags` are `array`; `expected_candidate_count` is
+`integer`; and every remaining non-null scalar field is `string`.
+`answer_member` and `answer_number` override that scalar rule with
+`["string","null"]`, and
+`difficulty_level` uses `["integer","null"]`, precisely in the shown order.
+Array item paths under `expected_image_members` and `tags` expect `string`.
+
+For `invalid_value`, a correctly typed enum or exact-constant field places its
+actual decoded JSON scalar in `actual`; its exact approved constant or ordered
+allowed-value array is `expected`. The sole safe-scalar substitution is exact:
+if that invalid string is an absolute POSIX path, starts with two backslashes,
+or begins with a drive letter plus slash or backslash, `actual` is instead the
+lowercase SHA-256 of its exact UTF-8 bytes. This applies before evidence
+serialization and prevents a manifest-supplied host path from entering the
+public envelope.
+
+| Field family | Exact `expected` |
+| --- | --- |
+| `$.schema_version` | `"task9b-mmd-adapter-v1"` |
+| `$.source_kind` | `["mmd","mmd_zip"]` |
+| `$.selections[n].kind` | `["example","exercise"]` |
+| `$.selections[n].language_layout` | `["english_then_chinese","interleaved_bilingual"]` |
+| `$.selections[n].answer_mapping` | `["source_answer","missing_from_source"]` |
+| `$.selections[n].tag_status` or `$.selections[n].difficulty_status` | `["source_provided","proposed","missing"]` |
+
+Every other `invalid_value` projection is exact:
+
+- empty `batch_id`, `source_id`, `chapter`, `proposed_question_id`, `number`,
+  `source_section`, `answer_number`, `primary_type`, or tag item uses
+  `actual=""`, `expected="non_empty_string"`;
+- an invalid `source_sha256` string uses as `actual` the lowercase SHA-256 of
+  its exact UTF-8 string bytes and `expected="lowercase_hex_64"`;
+- an invalid `primary_member` or non-null `answer_member` string uses as
+  `actual` the lowercase SHA-256 of its exact UTF-8 string bytes and
+  `expected="canonical_nfc_posix_mmd_member"`;
+- an invalid `expected_image_members[m]` string uses as `actual` the lowercase
+  SHA-256 of its exact UTF-8 string bytes and
+  `expected="canonical_nfc_posix_images_member"`;
+- only an `expected_image_members[m]` value that first passes its exact runtime
+  type and all individual canonical path/root/suffix validation participates in
+  duplicate uniqueness. Each later occurrence of such a valid member emits one
+  issue bound to `$.selections[n].expected_image_members`; `actual` is the
+  lowercase SHA-256 of the duplicate value's exact UTF-8 bytes and
+  `expected="unique_items"`;
+- a negative `expected_candidate_count` preserves the exact decoded integer in
+  `actual` and uses `expected="non_negative_integer"`;
+- a correctly typed `difficulty_level` outside 1 through 5 preserves the exact
+  decoded integer in `actual` and uses `expected="integer_1_to_5"`.
+
+Each correctly typed invalid scalar or tuple item emits at most one
+`invalid_value` issue even if it violates more than one spelling constraint.
+Canonical path/root/suffix checks are one field-value fact; they do not create
+duplicate issues with the same reason. Invalid member occurrences never enter
+the duplicate seen-set. Thus `["bad.gif","bad.gif"]` emits exactly two
+element-bound `invalid_value` issues and no container-bound duplicate issue.
+
+For `cross_field_violation`, only the following exact projections exist:
+
+| Violated invariant and exact `field` | Exact `actual` | Exact `expected` |
+| --- | --- | --- |
+| declared plain MMD has non-null `$.answer_member` | `"present"` | `"null_when_source_kind_mmd"` |
+| declared plain MMD `$.primary_member` differs from lexical `source_path.name` | lowercase SHA-256 of declared member UTF-8 bytes | lowercase SHA-256 of lexical filename UTF-8 bytes |
+| `$.answer_member` equals `$.primary_member` | `"same_as_primary_member"` | `"different_from_primary_member"` |
+| `$.expected_candidate_count` differs from `len(selections)` | exact declared integer | exact array length integer |
+| later duplicate `$.selections[n].proposed_question_id` | lowercase SHA-256 of the exact ID UTF-8 bytes | `"unique_proposed_question_id"` |
+| `missing_from_source` has non-null `$.selections[n].answer_number` | `"present"` | `"null_when_missing_from_source"` |
+| any non-null `$.selections[n].answer_number` while manifest `answer_member` is null | `"present"` | `"null_without_answer_member"` |
+| `tag_status="missing"` has non-empty `$.selections[n].tags` | exact array length integer | `0` |
+| non-missing `tag_status` has empty `$.selections[n].tags` | `0` | `"positive_length"` |
+| `difficulty_status="missing"` has non-null `$.selections[n].difficulty_level` | exact level integer | `null` |
+| non-missing `difficulty_status` has null `$.selections[n].difficulty_level` | `null` | `"integer_1_to_5"` |
+
+D0 collection is also exact. An undecodable UTF-8 input, BOM, invalid JSON
+syntax, or non-object root emits its single context-establishing issue and
+stops. A syntactically valid document with duplicate keys emits one
+`duplicate_key` issue for every repeated occurrence after the first, in lexical
+detection order, and does not construct the ambiguous object or add derived
+schema issues. Otherwise D0 emits every independently determinable missing,
+extra, wrong-type, invalid-value, and cross-field issue. It never performs a
+value check after a wrong type, and performs a cross-field check only when all
+of that invariant's inputs have the required types and valid individual values.
+All collected issues then use the unchanged five-field stable sort below;
+identical duplicate-key issues retain lexical detection order. These rules add
+no diagnostic code or reason, and do not change D0's stop before D1.
+Consequently, `missing_from_source` with a non-null `answer_number` and a null
+manifest `answer_member` emits both independently applicable cross-field rows;
+their distinct canonical evidence strings determine their order through the
+unchanged sort key.
 
 Representable missing/orphan/image-byte-collision facts are emitted into the
 canonical package for Task 9A classification rather than converted to a Task

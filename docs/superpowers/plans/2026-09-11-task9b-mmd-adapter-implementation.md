@@ -383,7 +383,17 @@ issues, counts/status, duplicate classifications, adaptations, report, and
 package. It must also lock byte-identical candidate/source-map/manifest/raw/
 image/package trees across different absolute roots, output/temp roots, ZIP
 physical member orders, timestamps, and irrelevant container metadata, while
-proving that semantic selection-array reorder changes output.
+proving that semantic selection-array reorder changes output. D0 REDs must
+assert every reason's exact logical `field` and exact canonical
+`actual`/`expected`/`reason` evidence bytes from Design section 11.1, including
+independently determinable same-stage multiplicity and the unchanged five-field
+stable ordering; checking only the three-key schema or reason token is not a
+valid D0 RED. The literal D0 oracle must independently cover JSON `1`, `1.0`,
+`1e0`, `-0.0`, and `true` type tokens; strict `NaN`, `Infinity`, and `-Infinity`
+rejection; top-level and nested absolute POSIX/UNC/drive-key opaque path
+segments for both extra and duplicate keys; and the distinction between a
+repeated valid image member and repeated individually invalid `bad.gif`
+members.
 
 - [ ] **Step 4: Validate all three RED groups before production**
 
@@ -414,7 +424,9 @@ In `adapter.py`, validate API `Path`/`PipelineConfig` types and output boundary,
 then read the selection manifest as strict UTF-8 without BOM. Decode with a
 duplicate-key-aware pairs hook, validate exact key sets and JSON runtime types,
 convert in dataclass order, and collect exact D0 `source_contract_mismatch`
-issues/evidence without touching `source_path`. Preserve the missing/nonregular/
+issues/evidence using only the exhaustive construction and collection rules in
+Design section 11.1, without copying raw invalid bytes, decoder text, or host
+facts and without touching `source_path`. Preserve the missing/nonregular/
 unreadable selection-manifest exception boundary.
 
 - [ ] **Step 2: Implement the exact source-kind decision**
@@ -681,7 +693,10 @@ ignore-after-validation OS metadata/unselected images.
 Assert exactly nine Task 9B codes, exact field/evidence/reason schemas, five-key
 stable ordering, equal-key stability, D0–D7 stop behavior, same-stage
 multiplicity, no downstream consequence noise, no host path leaks, and exact
-exception boundaries.
+exception boundaries. For D0 specifically, reassert the literal logical fields,
+canonical evidence bytes, value projections, multiplicity, and collection
+prerequisites from Design section 11.1; no implementation-selected D0
+`actual`/`expected` convention is permitted.
 
 If any already-established B8 assertion is RED, record that existing focused
 RED and make only the minimum production correction inside the approved four
