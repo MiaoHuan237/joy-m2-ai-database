@@ -373,7 +373,7 @@ Expected: group 1 GREEN; groups 2-4 remain behavior RED.
 
 - [ ] **Step 1: Implement strict duplicate-aware JSON primitives**
 
-Reuse the base adapter's canonical type/path/evidence conventions. Define exact field tuples for every draft and mapping object. Reject BOM/non-finite constants/duplicates/subclasses/bool-as-int and collect all independently determinable M0 schema issues.
+Reuse the base adapter's canonical type/path/evidence conventions. Define exact field tuples for every draft and mapping object. Reject BOM/non-finite constants/duplicates/subclasses/bool-as-int and collect all independently determinable M0 schema issues. Implement the Design section 21.3 exact cross-field envelopes for semantic orders, duplicate solution/explanation spans, canonical ignored-array ordering, and the answer-member/digest pair; do not invent alternate fields, tokens, or hashes.
 
 - [ ] **Step 2: Implement safe input and destination preflight**
 

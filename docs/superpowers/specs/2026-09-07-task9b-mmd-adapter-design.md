@@ -2024,6 +2024,25 @@ path, suffix, NFC, control-character, and archive-root safety rules are exactly
 the existing sections 4 and 8 rules; no normalization or fallback spelling is
 accepted.
 
+The M0 evidence for these canonical-only cross-field facts is exact. A question
+or image-binding `semantic_order` mismatch uses the offending scalar path,
+`actual` equal to the observed integer, `expected` equal to its zero-based array
+index, and `reason="cross_field_violation"`. A later identical solution or
+explanation span uses the containing array path, `actual` equal to the observed
+array length, `expected="unique_items"`, and the same reason. A non-canonically
+ordered `ignored_spans` or `ignored_image_members` array uses its containing
+array path; `actual` is the lowercase SHA-256 of the exact canonical JSON bytes
+of the observed array and `expected` is the lowercase SHA-256 of the exact
+canonical JSON bytes of the required sorted array, with the same reason. For
+the `answer_member` / `answer_member_sha256` pair, a present member with a null
+digest uses field `$.answer_member_sha256`, `actual="null"`, and
+`expected="lowercase_hex_64_when_answer_member_present"`; a null member with a
+present digest uses the same field, `actual="present"`, and
+`expected="null_when_answer_member_null"`. Both pair cases use
+`reason="cross_field_violation"`. These projections are package-bound with
+`proposed_question_id=None` and an empty locator, and their evidence is emitted
+with the section 11 canonical JSON serializer.
+
 For each question, `question_span.member` and every image `token_span.member`
 are exactly `primary_member`. The question span is disjoint from every other
 question span. Its ordered text regions plus its ordered image-token spans form
@@ -2251,10 +2270,13 @@ For M0 decoded schema facts, section 11.1 applies verbatim with the exact type
 and value expectations in sections 21.2-21.3. Missing/extra/wrong-type facts
 are emitted for every independently valid object context; no value or
 cross-field check follows a wrong type. Exact sequence requirements use
-`cross_field_violation` with `actual` equal to the observed exact integer/array
-length or SHA-256 of a duplicate string, and `expected` equal to the required
-contiguous integer, count, or `unique_items`. Later duplicate proposed IDs use
-the duplicate ID SHA-256 and `expected="unique_proposed_question_id"`.
+`cross_field_violation` with the projections frozen in section 21.3: scalar
+semantic orders use the observed integer and required zero-based index;
+duplicate solution/explanation spans use the observed array length and
+`unique_items`; and non-canonical ignored arrays use the SHA-256 pair over
+observed and required canonical JSON arrays. Later duplicate proposed IDs use
+the duplicate ID SHA-256 and `expected="unique_proposed_question_id"`. The
+answer-member/digest pair uses the exact section 21.3 scalar tokens and field.
 Draft/canonical CR/LF-bearing `source_id` uses `invalid_value`, the SHA-256 of
 the invalid UTF-8 string as `actual`, and `expected="single_line_non_empty"`.
 
