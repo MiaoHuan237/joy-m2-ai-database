@@ -5,7 +5,8 @@ Task: Task 9B — Mathpix MMD / MMD.ZIP Source Adapter
 Status: EXECUTABLE DESIGN AUTHORITY
 Architecture: APPROVED
 Executable authority: APPROVED
-Implementation: NOT STARTED
+Base implementation: CLOSED / PASS
+Explicit source-mapping extension: EXECUTABLE DESIGN AUTHORITY
 Task 9A: CLOSED / PASS
 Task 9C writer: OUT OF SCOPE
 PDF: DEFERRED
@@ -75,8 +76,10 @@ class MmdSelection:
 ```
 
 All non-optional strings are exact, non-empty `str` values. `kind` is exactly
-`example | exercise`. `language_layout` is exactly
-`english_then_chinese | interleaved_bilingual`. `answer_mapping` is exactly
+`example | exercise`. For the base parsed API, `language_layout` is exactly
+`english_then_chinese | interleaved_bilingual`; section 21 extends the public
+carrier with two Mode B-only values without widening that parsed API.
+`answer_mapping` is exactly
 `source_answer | missing_from_source`. `expected_image_members` and `tags`
 accept only list/tuple input and are defensively canonicalized to tuples while
 preserving declared semantic order. Image members are canonical package-root-
@@ -1679,9 +1682,736 @@ read-only baseline work.
 
 Answer semantics are final: answer selection never implies explanation
 provenance; raw answer evidence is not replaced by derived mapping metadata.
-All eight executable authority decisions are approved. There is no unresolved
-V1 contract decision.
+All eight base executable authority decisions are approved. There is no
+unresolved base-V1 contract decision.
 
 Deferred work is limited to independent answer archives, broader Mathpix or
 Markdown grammar, PDF/OCR, and runtime AI enrichment. Database writing,
 V1.19 creation, formal import, and promotion are outside Task 9B.
+
+## 21. Explicit source-mapping extension
+
+This section is the complete executable authority for the Task 9B explicit
+source-mapping extension. It does not reopen the base parser grammar. When that
+grammar can establish complete-question boundaries without ambiguity, the
+existing parsed path remains authoritative and unchanged. When it cannot,
+Task 9B may use an independently reviewed and explicitly approved source
+mapping whose byte spans, rather than a heuristic parser, are the selection
+authority.
+
+The two modes are:
+
+```text
+MODE A — PARSED
+  frozen parser grammar -> existing Source IR
+
+MODE B — EXPLICIT MAPPING
+  deterministic proposal -> human mapping approval -> validated byte spans
+  -> the same Source IR
+```
+
+Both modes converge before canonical candidate, source-map, manifest, and file
+publication logic. Task 9A cannot observe which mode produced the Source IR.
+The explicit mapping is staging authority only: it is not import approval,
+does not authorize Task 9C, and never writes a database.
+
+### 21.1 Compatibility and module boundary
+
+The existing `adapt_mmd_package(...)` signature, the five existing Task 9B
+root-package carriers, and the exact 22-name `joy_m2.ingest.__all__` remain
+unchanged. The extension surface is intentionally module-scoped at
+`joy_m2.ingest.source_mapping`; none of its names are re-exported from
+`joy_m2.ingest`.
+
+That module has the exact public surface:
+
+```python
+__all__ = (
+    "SourceMappingProposal",
+    "SourceMappingApproval",
+    "propose_mmd_source_mapping",
+    "adapt_mmd_package_from_mapping",
+)
+```
+
+The exact functions are:
+
+```python
+def propose_mmd_source_mapping(
+    selection_manifest_path: Path,
+    source_path: Path,
+    draft_path: Path,
+    proposal_dir: Path,
+    config: PipelineConfig,
+) -> SourceMappingProposal:
+    ...
+
+def adapt_mmd_package_from_mapping(
+    selection_manifest_path: Path,
+    source_mapping_path: Path,
+    approval: SourceMappingApproval,
+    source_path: Path,
+    output_dir: Path,
+    config: PipelineConfig,
+) -> AdaptedImportPackage:
+    ...
+```
+
+Parameter order and annotations are exact. All path parameters require exact
+`Path` instances and `config` requires exact `PipelineConfig`. Proposal and
+package destinations must be new strict descendants of the configured staging
+root, use one final atomic destination transition, and leave no partial output
+on every failure.
+
+The exact public frozen carriers, with no defaults, are:
+
+```python
+@dataclass(frozen=True)
+class SourceMappingProposal:
+    proposal_root: Path
+    mapping_path: Path
+    review_path: Path
+    source_id: str
+    source_sha256: str
+    mapping_sha256: str
+    candidate_count: int
+
+@dataclass(frozen=True)
+class SourceMappingApproval:
+    source_id: str
+    mapping_sha256: str
+    approval_text: str
+```
+
+`SourceMappingProposal.mapping_path` is exactly
+`proposal_root / "source_mapping.json"`; `review_path` is exactly
+`proposal_root / "SOURCE_MAPPING_REVIEW.md"`. Digests are lowercase
+64-character SHA-256 values and `candidate_count` is an exact non-boolean
+non-negative integer. Mode B requires `source_id` to be a non-empty exact
+string containing no CR or LF scalar; this is checked while decoding the
+selection manifest for both proposal and approved-mapping consumption. The
+base manifest carrier remains otherwise unchanged. `SourceMappingApproval`
+applies the same single-line constraint to its `source_id`, and
+`approval_text` must equal, with no leading/trailing whitespace or trailing
+newline:
+
+```text
+USER APPROVED SOURCE MAPPING <source_id> <mapping_sha256>
+```
+
+Constructing the typed approval does not itself canonicalize or write data.
+The explicit adapter rechecks that its `source_id` and `mapping_sha256` bind the
+mapping it consumes.
+
+### 21.2 Advisory draft and proposal generation
+
+Users are never required to count bytes. Codex or another advisory process may
+author one strict line-oriented draft at `draft_path`. Its top-level exact
+keys, in semantic order, are:
+
+```text
+schema_version, source_id, chapter, mapping_mode, questions,
+ignored_line_spans, ignored_image_members
+```
+
+The exact constants are
+`schema_version="task9b-source-mapping-draft-v1"` and
+`mapping_mode="explicit"`. `source_id` and `chapter` must equal the selection
+manifest. `questions` order is semantic. Each question object has exactly:
+
+```text
+semantic_order, proposed_question_id, source_question_number, source_section,
+question_line_span, solution_line_spans, explanation_line_spans,
+image_bindings, ambiguity_note
+```
+
+Each advisory line span has exactly `member, line_start, line_end`, where line
+numbers are exact non-boolean positive integers and the interval is inclusive.
+The generator converts it to the full UTF-8 raw-byte interval from the start of
+`line_start` through the physical line terminator of `line_end`, or EOF for the
+last line. Line numbers never enter `source_mapping.json`, its digest, Source
+IR, canonical package, Task 9A manifest, or preflight digest.
+
+Each draft image binding has exactly:
+
+```text
+semantic_order, source_line, raw_target, selected_member, role
+```
+
+`source_line` is 1-based. `raw_target` must identify exactly one complete image
+token on that line. `selected_member` is a canonical source member or `null`
+for the existing representable-missing-image case. `role` is exactly
+`question`. Binding order is contiguous from zero.
+
+Each ignored line span has exactly `member, line_start, line_end, reason`.
+Each ignored image entry has exactly `member, reason`. Reasons are exact
+non-empty review statements; they enter mapping identity so human approval
+binds the decision to ignore that content. `ambiguity_note` is an exact string
+used only in the review Markdown; it is not copied into the canonical mapping
+or any downstream identity.
+
+Draft JSON is strict UTF-8 without BOM, duplicate-key-aware, and exact-schema.
+Invalid syntax, types, paths, keys, ranges, or source-free cross-field facts
+produce the existing `source_contract_mismatch` envelope. Proposal generation
+uses the existing D0 then D1/D2 source/archive safety sequence and reads no
+unselected content before those gates permit it.
+
+The draft runtime schema is exact:
+
+| Object / field | Exact JSON type and value |
+| --- | --- |
+| top-level | object with only the seven keys above |
+| `schema_version`, `mapping_mode` | string equal to the constants above |
+| `source_id`, `chapter` | non-empty string; `source_id` additionally contains no CR/LF |
+| `questions`, `ignored_line_spans`, `ignored_image_members` | array |
+| question `semantic_order` | integer, never boolean, contiguous from zero in array order |
+| question `proposed_question_id`, `source_question_number`, `source_section` | non-empty string |
+| question `question_line_span` | exact advisory line-span object |
+| question `solution_line_spans`, `explanation_line_spans`, `image_bindings` | array in declared semantic/render order |
+| question `ambiguity_note` | string, empty permitted |
+| line span `member` | non-empty canonical NFC relative POSIX selected MMD member |
+| line span `line_start`, `line_end` | integer, never boolean, positive, with `line_start <= line_end` |
+| image binding `semantic_order` | integer, never boolean, contiguous from zero within its question |
+| image binding `source_line` | integer, never boolean, positive |
+| image binding `raw_target` | non-empty string |
+| image binding `selected_member` | canonical safe inventory-image string or JSON null |
+| image binding `role` | string exactly `question` |
+| ignored line `reason`, ignored image `reason` | non-empty string |
+| ignored image `member` | canonical safe inventory-image string |
+
+Every nested object has exactly its listed keys; JSON subclasses do not exist,
+and booleans never satisfy an integer field. Questions and their image bindings
+must already use the contiguous order above. Solution and explanation arrays
+preserve declared render order and contain no duplicate line span. Ignored line
+spans are canonicalized into `(member, line_start, line_end, reason)` order and
+ignored images into `(member, reason)` order before sidecar serialization;
+duplicate entries are invalid. A question line span names only the selected
+primary member. Solution and explanation line spans name only the selected
+primary or optional selected answer member. Image bindings name tokens in the
+primary member and safe image members from the D1 inventory, except that
+`selected_member=null` is the existing representable-missing-image case.
+
+Source-free draft closure is also exact: question count and semantic-order IDs,
+numbers, and sections equal the selection tuple position-for-position;
+`missing_from_source` has zero solution spans and `answer_number=None`;
+`source_answer` has one or more solution spans; a non-null `answer_number`
+requires the selected answer member and all solution spans there, while a null
+`answer_number` requires all solution spans in the primary member. Proposed
+IDs are unique. An inventory image cannot be both explicitly ignored and used
+as a selected binding. Source-dependent range, token, and byte facts are
+deferred until D1/D2 have made the corresponding reads safe.
+
+The proposal generator is advisory only. It may receive line ranges suggested
+through structural or AI-assisted inspection, but production code performs no
+LLM/network call and invents no source boundary. It deterministically converts
+the supplied draft into byte authority, validates it, and emits a reviewable
+proposal. A proposal can never be consumed by the explicit adapter without the
+separate exact approval above.
+
+### 21.3 Canonical source-mapping sidecar
+
+`source_mapping.json` is UTF-8 canonical JSON with sorted keys, compact
+separators, `ensure_ascii=False`, `allow_nan=False`, and no trailing LF. Its
+SHA-256 is `mapping_sha256`. Its top-level exact key set is:
+
+```text
+schema_version, mapping_mode, source_kind, source_sha256, primary_member,
+primary_member_sha256, answer_member, answer_member_sha256, source_id, chapter,
+questions, ignored_spans, ignored_image_members
+```
+
+Constants are `schema_version="task9b-source-mapping-v1"` and
+`mapping_mode="explicit"`. `source_kind`, outer `source_sha256`, selected
+members, source ID, and chapter must exactly bind the selection manifest and
+the safely read source. `primary_member_sha256` binds the exact selected MMD
+bytes. `answer_member` and `answer_member_sha256` are either both `null`, or
+both bind the one already-approved same-archive answer member.
+
+Each question has exactly:
+
+```text
+semantic_order, proposed_question_id, source_question_number, source_section,
+question_span, solution_spans, explanation_spans, image_bindings
+```
+
+Each generic span has exactly:
+
+```text
+member, start_byte, end_byte
+```
+
+Offsets index exact UTF-8 raw member bytes and are half-open
+`[start_byte, end_byte)`. Zero-length, negative, reversed, out-of-range, or
+undeclared-member spans are invalid. `semantic_order` is contiguous from zero
+and must match selection-manifest tuple order. Proposed IDs are unique and
+must match the selection at that order. Source question number and section are
+explicit mapping authority and must equal that selection. Repeated display
+labels are valid because `(question_span, semantic_order)`, not label text, is
+the occurrence identity.
+
+Question spans are pairwise disjoint. Every question span contains the whole
+question, including its subparts, and may not be split into separate `(a)`,
+`(b)`, `(i)`, or `(ii)` candidates. Question, solution, explanation, and
+ignored spans are mutually non-overlapping across the entire mapping; no byte
+range may carry two semantic owners. Multiple solution or explanation spans
+are ordered exactly as declared and render by concatenating their raw bytes in
+that order after only CRLF/CR-to-LF normalization. No trimming, LaTeX rewrite,
+or content correction is allowed.
+
+Each canonical image binding has exactly:
+
+```text
+semantic_order, token_span, raw_target, selected_member, canonical_path, role
+```
+
+The token span must identify the exact unique source token named by
+`raw_target`; `selected_member` is exact or `null` only for the existing safe
+absent-image case. `canonical_path` follows the existing `images/<tail>` rule,
+and `role` is exactly `question`. The ordered canonical paths must equal that
+question's selection `expected_image_members`.
+
+Each ignored span has exactly `member, start_byte, end_byte, reason`; each
+ignored image entry has exactly `member, reason`. Proposal generation may leave
+non-whitespace ranges or safe inventory images unaccounted so the review report
+can expose them. Approved mapping consumption is stricter: before Source IR or
+package output, every non-whitespace source byte outside selected
+question/solution/explanation spans must be covered by an approved ignored
+span, and every safe inventory image must be referenced by at least one valid
+source-token binding or listed exactly once as ignored. Every source image token
+has exactly one binding. The same safe inventory member may be referenced by
+one or more tokens, including tokens belonging to different questions, and is
+staged exactly once in first-reference order as required by section 8. A member
+cannot be both referenced and ignored. Thus omitted worksheet headings,
+duplicate scans, worked material, and branding/footer content are visible human
+decisions, not silent parser deletion. Whitespace-only gaps require no entry.
+
+The canonical sidecar runtime schema is exact:
+
+| Object / field | Exact JSON type and value |
+| --- | --- |
+| top-level | object with only the thirteen keys above |
+| `schema_version`, `mapping_mode` | string equal to the constants above |
+| `source_kind` | string exactly `mmd` or `mmd_zip` |
+| `source_sha256`, `primary_member_sha256` | lowercase 64-character SHA-256 string |
+| `answer_member_sha256` | lowercase 64-character SHA-256 string or JSON null |
+| `primary_member` | canonical NFC relative POSIX selected primary MMD member |
+| `answer_member` | canonical NFC relative POSIX selected answer MMD member or JSON null |
+| `source_id`, `chapter` | non-empty string; `source_id` contains no CR/LF |
+| `questions`, `ignored_spans`, `ignored_image_members` | array |
+| question `semantic_order` | integer, never boolean, contiguous from zero in array order |
+| question `proposed_question_id`, `source_question_number`, `source_section` | non-empty string |
+| question `question_span` | exact generic-span object |
+| question `solution_spans`, `explanation_spans`, `image_bindings` | array in declared semantic/render order |
+| generic span `member` | canonical selected primary/answer MMD member string |
+| generic span `start_byte`, `end_byte` | integer, never boolean, satisfying `0 <= start_byte < end_byte` |
+| image binding `semantic_order` | integer, never boolean, contiguous from zero within its question |
+| image binding `token_span` | exact generic-span object in the primary member and inside `question_span` |
+| image binding `raw_target`, `canonical_path` | non-empty string |
+| image binding `selected_member` | canonical safe inventory-image string or JSON null |
+| image binding `role` | string exactly `question` |
+| ignored span `reason`, ignored image `reason` | non-empty string |
+| ignored image `member` | canonical safe inventory-image string |
+
+Every object has exactly its listed keys. `answer_member` and
+`answer_member_sha256` are both null or both non-null and, when non-null, bind
+the distinct selected answer member. Arrays reject wrong element types.
+Questions and image bindings preserve the contiguous semantic orders above;
+solution and explanation arrays preserve declared render order and reject an
+identical repeated span. `ignored_spans` is sorted by
+`(member, start_byte, end_byte, reason)` and `ignored_image_members` by
+`(member, reason)`; both reject duplicates. Proposed IDs are unique. Member,
+path, suffix, NFC, control-character, and archive-root safety rules are exactly
+the existing sections 4 and 8 rules; no normalization or fallback spelling is
+accepted.
+
+For each question, `question_span.member` and every image `token_span.member`
+are exactly `primary_member`. The question span is disjoint from every other
+question span. Its ordered text regions plus its ordered image-token spans form
+a byte-complete, non-overlapping partition of that question span. All solution
+spans and explanation spans name only `primary_member` or the selected
+`answer_member`; their render order is their JSON array order, independent of
+member or byte sorting. Apart from the intentional nested partition of a
+question span into text and image tokens, question, solution, explanation, and
+ignored semantic owners never overlap. An image token belongs to exactly one
+question, and a safe inventory image is either referenced one-or-more times or
+ignored exactly once, never both.
+
+Sidecar-to-selection closure is position-for-position: source kind, source ID,
+chapter, primary/answer member, candidate count, semantic order, proposed ID,
+source question number, source section, answer mapping, answer number, and
+expected image-member order all agree with the selection manifest. A
+`missing_from_source` selection has no solution span. A `source_answer`
+selection has at least one. With `answer_number=None`, all solution spans name
+the primary member; with a non-null `answer_number`, all name the non-null
+answer member. The primary, answer, and outer-source digests bind the bytes
+read through the existing safe archive boundary. No implicit member or answer
+association is permitted.
+
+The outer archive digest is present only to reject applying the mapping to a
+different input container. The mapping file, its digest, approval text, ignored
+span reasons, outer archive digest, physical ZIP order, ZIP timestamps,
+absolute paths, temp roots, and review metadata never enter the canonical Task
+9A package, `source/source-map.json`, or preflight identity. The already-
+approved selected-member bytes and their content hashes remain the sole raw
+source evidence staged downstream.
+
+### 21.4 Source IR, language, answer, explanation, and images
+
+Mode B constructs the same five private frozen Source IR carriers from the
+validated mapping. It never calls the boundary-discovery parser and never
+falls back to a guessed occurrence when a mapping fact fails.
+
+The canonical mapping constructs those carriers exactly as follows:
+
+| Source IR field | Mode B authority |
+| --- | --- |
+| `_SourceMember` for primary | selected `primary_member`, its canonical sidecar digest, and exact safely read bytes |
+| optional `_SourceMember` for answer | selected non-null `answer_member`, its canonical sidecar digest, and exact safely read bytes |
+| image `_SourceMember` values | each distinct present bound image, once, with exact safely read bytes and digest; ignored or absent images are omitted |
+| `_SourceDocument.primary_member` | canonical `primary_member` |
+| `_SourceDocument.members` | primary, optional answer, and distinct present bound images; the carrier canonicalizes by member path |
+| `_SourceDocument.questions` | questions in primary-source occurrence order, derived by sorting the disjoint `question_span` values by `(start_byte, end_byte)` |
+| `_SourceQuestion.source_order` | zero-based contiguous rank in that primary-source occurrence order, independent of mapping/selection semantic order |
+| `_SourceQuestion.source_question_number`, `source_section` | exact approved mapping values, already checked against the selection at the same semantic order |
+| `_SourceQuestion.fragment_span` | `question_span` with role `question` and language `und` |
+| `_SourceQuestion.text_spans` | byte-complete ordered non-image partition of `question_span`, role `question`, with language assigned below |
+| `_SourceQuestion.solution_spans` | exact declared array order, role `solution`, language `und` |
+| `_SourceQuestion.explanation_spans` | exact declared array order, role `explanation`, language `und` |
+| `_SourceQuestion.image_refs` | exact image-binding array order |
+| `_SourceImageRef.source_order` | binding `semantic_order` |
+| `_SourceImageRef.token_span` | exact mapped token span with role `image_token`, language `shared` |
+| `_SourceImageRef.raw_target` | exact mapped source target |
+| `_SourceImageRef.resolved_member` | exact mapped `selected_member`, including `None` for representable missing bytes |
+
+Mode B's private construction may validate and instantiate these existing
+carriers but may not add a sixth IR carrier or change any carrier field. The
+reusable lexer recognizes complete atomic and image-token envelopes inside an
+already-authoritative question span; it never chooses or expands that span.
+For source-only layouts, each maximal non-image interval receives the one
+declared source language, including structural bytes and line endings. For the
+two bilingual layouts, the existing section 7.1 lexer partitions non-image
+bytes. In both cases, text spans plus image token spans form the exact complete
+partition required above.
+
+The explicit adapter separately constructs its binding tuple in canonical
+mapping `semantic_order`, so candidate and manifest arrays retain the approved
+human order even when question spans intentionally reorder source occurrences.
+The IR and `source/source-map.json` retain the independently derived
+`source_order` rank. Thus semantic order never overwrites physical source
+occurrence identity, and repeated display labels remain distinguishable by
+their disjoint spans plus the two explicit orders.
+
+The existing selection `language_layout` enum is extended by exactly
+`source_chinese | source_english`. Parsed-mode behavior for
+`english_then_chinese | interleaved_bilingual` is unchanged. In Mode B,
+`source_chinese` labels all non-image question bytes `zh`, while
+`source_english` labels them `en`; complete image-token spans retain `shared`.
+For the two existing bilingual layouts, Mode B applies only the existing
+deterministic language projection inside the already-authoritative question
+span. No translation is generated.
+
+The two new values are Mode B-only. The public frozen `MmdSelection` carrier
+accepts all four values so the same typed selection can reach the explicit
+adapter. The existing `adapt_mmd_package()` decoder continues to accept only
+`english_then_chinese | interleaved_bilingual`; if its manifest supplies a
+source-only value, D0 emits the existing `source_contract_mismatch` at
+`$.selections[n].language_layout`. Its evidence has exactly keys
+`actual, expected, reason`; `actual` is the exact decoded source-only scalar,
+`expected` is the ordered array
+`["english_then_chinese","interleaved_bilingual"]`, and `reason` is
+`"invalid_value"`. It then stops before source access. The
+Mode B decoder accepts exactly all four values. Updating the strict decoder to
+take this explicit mode-specific allow-list is within the authorized
+`adapter.py` shared-decoder change; no Task 9A model changes.
+
+An explicit question with no `solution_spans` requires selection
+`answer_mapping="missing_from_source"` and emits empty answer fields. One or
+more solution spans require `answer_mapping="source_answer"` and render in
+declared order. This does not grant explanation authority. Explanation spans
+are independently optional: zero emits empty text/status `missing`; one or
+more emit exact rendered source text, status `source_present`, and source-byte
+evidence. Task 9A's existing `complete/incomplete` formula remains unchanged.
+
+Mode B maps to the existing source map and raw candidate without an alternate
+projection:
+
+- `fragment` and `source_fragment_hash` use the exact `question_span` bytes;
+- source-map `source_order`, number, section, fragment, text spans, solution
+  spans, explanation spans, and image references are direct projections of
+  the IR table above, using the exact section 9 field shapes;
+- `question_text_original` is the question-span bytes after only newline
+  normalization;
+- `source_chinese` makes `question_text_zh` equal that same rendered fragment,
+  `translation_status="source_present"`, and translation evidence exactly
+  `source:source/original.mmd.txt#<primary_member>#bytes=<start>:<end>` for the
+  question span; `source_english` emits empty Chinese text, status `missing`,
+  and null evidence;
+- the two bilingual layouts retain the exact section 7.1 Chinese projection
+  and evidence rule;
+- `solution_original` is the declared solution spans concatenated in array
+  order after only newline normalization, with `solution_verified=""` and
+  `answer_status="source_provided"`; the zero-span case emits both solution
+  fields empty and `missing_from_source`;
+- one or more explanation spans render by the same array-order/newline rule,
+  set `explanation_status="source_present"`, and use the one exact stable
+  evidence pointer
+  `source:source/source-map.json#questions[<semantic_order>].explanation_spans`;
+  the zero-span case emits empty text, `missing`, and null evidence;
+- images, metadata, and enrichment use the unchanged sections 8, 10.2, 10.3,
+  and 7.4 rules.
+
+The source-map pointer is the single Task 9A evidence string for one or many
+possibly discontiguous explanation spans; the pointed source-map array retains
+every member and byte interval. It does not replace raw primary/answer evidence
+or authorize explanation inference.
+
+Image bytes are never regenerated. Bindings validate source tokens, safe
+members, existing selection order, and exact bytes; present images are staged
+byte-identically. A valid missing binding retains the existing Task 9A missing-
+image representation. An approved ignored resource is neither staged nor
+turned into a candidate image.
+
+### 21.5 Diagnostic and approval gates
+
+The extension adds no tenth Task 9B diagnostic code. It reuses the frozen nine
+codes and five-field stable ordering:
+
+- `source_contract_mismatch`: draft/mapping schema, runtime type, digest,
+  approval, range, overlap, coverage, or identity mismatch;
+- `selection_not_unique`: declared member/selection occurrence or proposed-ID
+  association cannot be made exactly once;
+- `candidate_count_mismatch`: mapping, selection, and expected counts differ;
+- `image_binding_invalid`: image token/member/order/role/ignored-resource
+  closure fails;
+- existing archive/parser codes retain their established D0-D3 meanings.
+
+Mode B uses the following exact dependent stages. The proposal and approved
+adapter share M0-M6 validation; proposal M5/M6 reports an otherwise valid
+unbound inventory image and coverage gap as review warnings, while approved
+consumption makes the same gaps blocking. Only the approved adapter enters M7
+package publication.
+
+```text
+M0 exact API/path/output preconditions; selection plus draft or canonical
+   mapping strict decode; approval binding for approved consumption
+M1 existing D1 source-kind/raw-digest/archive metadata/member/limit safety
+M2 existing D2 bounded CRC/decompression streaming
+M3 selected-member byte identity; line-to-byte conversion for a draft;
+   canonical member, span geometry, uniqueness, and ownership validation
+M4 selection-position, question/count, answer-member, and source-only-language
+   semantic closure
+M5 image token/member/order/role and inventory closure
+M6 non-whitespace byte coverage and ignored-content closure
+M7 Source IR construction, canonical-package serialization, and one atomic
+   destination transition
+```
+
+M0 reads no `source_path`. M1 and M2 retain every base stop and same-stage
+emit-all rule. At M3-M6, the implementation completes all independently
+determinable checks in the current stage, stable-sorts the resulting issues,
+and stops all later stages if any blocking issue exists. It never emits a
+downstream consequence of an earlier failed fact. Proposal-only M5/M6 warnings
+are not `MmdAdapterIssue` objects and do not make proposal publication fail;
+approved consumption converts each still-present M6 gap to the exact blocking
+row below. M7 never begins after a blocker.
+
+All extension issues have `severity="blocking"` and use the unchanged stable
+five-field sort. The exact Mode B matrix is:
+
+| Code / stage and exact trigger | Binding and locator | Exact `field` | Exact evidence object |
+| --- | --- | --- | --- |
+| `source_contract_mismatch`, M0: draft or canonical mapping bytes fail strict UTF-8/no-BOM, JSON syntax, duplicate-key, exact object/key/type/value/order, or source-free cross-field validation | package, `proposed_question_id=None`, empty locator | exact logical JSON path rooted at `$` | exactly the section 11.1 `actual,expected,reason` construction; reasons remain `invalid_utf8 | utf8_bom | invalid_json | duplicate_key | non_object | missing_key | extra_key | wrong_type | invalid_value | cross_field_violation` |
+| `source_contract_mismatch`, M0: approval source ID, mapping digest, or approval text does not bind the decoded canonical mapping | package, `None`, empty locator | exactly `approval.source_id`, `approval.mapping_sha256`, or `approval.approval_text` | source ID: `{"actual":<approval-id>,"expected":<mapping-id>,"reason":"approval_source_id_mismatch"}`; digest: `{"actual":<approval-digest>,"expected":<computed-digest>,"reason":"approval_mapping_digest_mismatch"}`; text: `{"actual":<sha256-of-actual-text>,"expected":<sha256-of-exact-required-text>,"reason":"approval_text_mismatch"}` |
+| `source_contract_mismatch`, M3: canonical mapping source/member identity or digest differs from the validated selection/bytes | package, `None`, empty locator | exactly `$.source_kind`, `$.source_sha256`, `$.primary_member`, `$.primary_member_sha256`, `$.answer_member`, `$.answer_member_sha256`, `$.source_id`, or `$.chapter` | exactly `{"actual":...,"expected":...,"reason":...}`; reason respectively `mapping_source_kind_mismatch | mapping_source_digest_mismatch | mapping_primary_member_mismatch | mapping_primary_digest_mismatch | mapping_answer_member_mismatch | mapping_answer_digest_mismatch | mapping_source_id_mismatch | mapping_chapter_mismatch` |
+| `source_contract_mismatch`, M3: a line span cannot convert to one non-empty in-range full-line byte span, or a canonical span is zero/reversed/out-of-range/undeclared-member | candidate when nested under a question, otherwise package; locator is the valid converted/canonical interval when one exists, otherwise empty | exact offending JSON span path | exactly `{"actual":{"end_byte":...,"member":...,"start_byte":...},"expected":"non_empty_in_bounds_half_open_span","reason":"invalid_span"}`; unconvertible line intervals project their attempted full-line values into the same three keys, using JSON null for an unavailable offset |
+| `source_contract_mismatch`, M3: a span has the wrong semantic member or lies outside its required containing question span | exact candidate and valid offending span locator | exact offending JSON span path | exactly `{"actual":<actual-member-or-span>,"expected":<required-member-or-containing-span>,"reason":"wrong_span_owner"}` |
+| `source_contract_mismatch`, M3: two semantic owners overlap, excluding the authorized question/text-or-image containment partition | candidate if either owner is candidate-bound, otherwise package; locator is the later offending valid interval | exact later-owner JSON span path | exactly `{"actual":<later-span-object>,"expected":<earlier-span-object>,"reason":"span_ownership_overlap"}` |
+| `source_contract_mismatch`, M4: mapping question identity or selection-dependent answer/language fact disagrees at a semantic position | exact candidate and question-span locator | exact offending `$.questions[n].<field>` path | exactly `{"actual":...,"expected":...,"reason":"mapping_selection_mismatch"}` |
+| `candidate_count_mismatch`, M4: mapping question count differs from selection `expected_candidate_count` | package, `None`, empty locator | exactly `expected_candidate_count` | exactly `{"actual":<mapping-count>,"expected":<selection-count>,"reason":"candidate_count"}` |
+| `language_mapping_ambiguous`, M5: an existing bilingual projection cannot partition the mapped question | exact candidate and the smallest offending text locator | exactly `language_layout` | retains the exact section 11 `end_byte,layout,reason,start_byte` object and reason set |
+| `image_binding_invalid`, M5: mapped token/raw target/canonical path/selected member/order/role conflicts with the exact source token or selection; one source token is bound zero or more than once | exact candidate and token locator when valid, otherwise question locator | exactly `expected_image_members` | exactly `{"matches":<canonically-sorted-safe-member-array>,"raw_target":<exact-target-or-null>,"reason":...}`; reason exactly `ambiguous_reference | selection_conflict | multiple_matches | canonical_path_unavailable | invalid_role | duplicate_token_binding` |
+| `image_binding_invalid`, M5: a safe inventory image is both referenced and ignored, is ignored more than once, or an ignored name is absent; in approved consumption only, also when it is neither referenced nor ignored | package, `None`, empty locator | exactly `ignored_image_members` | exactly `{"member":<safe-canonical-member>,"reason":...}`; reason exactly `unaccounted_inventory_image | bound_and_ignored | duplicate_ignored_image | ignored_member_missing` |
+| `source_contract_mismatch`, M6 approved consumption: one maximal non-whitespace byte interval has no question/solution/explanation/ignored owner | package, `None`, exact uncovered interval locator | exactly `coverage` | exactly `{"end_byte":<end>,"member":<canonical-member>,"reason":"unaccounted_non_whitespace","start_byte":<start>}` |
+
+Angle-bracket values in the matrix denote the exact JSON scalar, array, null,
+or exact generic-span object already validated by sections 21.2-21.3; they are
+not literal strings. All evidence is emitted using the section 11 canonical
+JSON serializer. An unsafe or host path is replaced by the lowercase SHA-256
+of its exact UTF-8 field bytes under the existing section 11.1 rule. No
+exception text, absolute path, proposal directory, or runtime identity enters
+evidence.
+
+For M0 decoded schema facts, section 11.1 applies verbatim with the exact type
+and value expectations in sections 21.2-21.3. Missing/extra/wrong-type facts
+are emitted for every independently valid object context; no value or
+cross-field check follows a wrong type. Exact sequence requirements use
+`cross_field_violation` with `actual` equal to the observed exact integer/array
+length or SHA-256 of a duplicate string, and `expected` equal to the required
+contiguous integer, count, or `unique_items`. Later duplicate proposed IDs use
+the duplicate ID SHA-256 and `expected="unique_proposed_question_id"`.
+Draft/canonical CR/LF-bearing `source_id` uses `invalid_value`, the SHA-256 of
+the invalid UTF-8 string as `actual`, and `expected="single_line_non_empty"`.
+
+Within M3, each invalid span emits once. Valid spans alone participate in
+ownership checks; each later owner emits at most one overlap issue against the
+earliest overlapping owner in canonical owner order: questions by semantic
+order, then their question, solution, explanation, image-token spans in array
+order, followed by globally sorted ignored spans. M4 emits all independent
+position mismatches, then the single count issue if applicable. M5 emits one
+issue per invalid token fact and one per independently invalid inventory
+member state. M6 emits one issue per maximal uncovered non-whitespace interval,
+ordered by canonical member then byte offset through the common stable sort.
+
+Early exception boundaries are exact:
+
+- wrong API argument runtime types raise `TypeError`; invalid construction of a
+  public frozen carrier raises `PipelineError`;
+- a missing selection manifest, draft, canonical mapping, or source raises
+  `InputMissingError` and performs no destination write;
+- an existing non-regular or unreadable selection manifest retains the base D0
+  `source_contract_mismatch` rows and raises `MmdAdapterBlockedError` before
+  source access; this extension does not widen that frozen boundary;
+- an existing non-regular or unreadable draft, canonical mapping, or source
+  raises `InputFormatError` and performs no destination write;
+- an output outside the configured staging root raises `ConfigurationError`,
+  and a pre-existing output raises `OutputConflictError`;
+- decoded draft/mapping, approval-binding, source, span, semantic, image, or
+  approved-coverage diagnostics raise
+  `MmdAdapterBlockedError(InputFormatError)` with the matrix issues;
+- proposal-only coverage warnings are emitted in the review report exactly as
+  `UNMAPPED_NON_WHITESPACE <canonical-member>#bytes=<start>:<end>` and
+  `UNBOUND_IMAGE <canonical-member>`, sorted by member and offset/name, and do
+  not bypass the later approved-consumption blockers.
+
+Wrong selection source SHA, invalid draft member, zero/out-of-range converted
+span, overlapping ownership, duplicate proposed ID, and answer outside a
+declared member block proposal creation. A wrong source/member SHA in a later
+supplied canonical mapping blocks approved consumption. Unaccounted
+non-whitespace content and unaccounted images remain deterministic proposal
+warnings but block approved mapping consumption before Source IR or package
+output. Invalid or missing approval likewise blocks before package output.
+Fully equal repeated labels with distinct spans and semantic order remain
+valid.
+
+The two human gates are independent and cannot be merged:
+
+```text
+USER APPROVED SOURCE MAPPING <source_id> <mapping_sha256>
+
+USER APPROVED IMPORT BATCH <batch_id> <preflight_sha256> V1.19
+```
+
+The first authorizes only Mode B source selection and canonical staging. The
+second is the later Human Gate C for a fully reported Task 9A preflight. A
+mapping approval can never substitute for import approval, and a synthetic or
+prior import approval can never substitute for mapping approval.
+
+### 21.6 Review report and determinism
+
+`SOURCE_MAPPING_REVIEW.md` is deterministic review UX, not source authority.
+It includes source ID, source and member digests, mapping digest, candidate
+count, then for each question: ordinal, proposed ID, display number, section,
+question line range and preview, solution ranges and previews or `MISSING`,
+explanation ranges and previews or `MISSING`, images, and advisory ambiguity
+note. It also lists ignored spans, unmapped non-whitespace ranges, ignored
+images, unbound images, and warnings. Previews are bounded and preserve source
+characters; users need not inspect byte offsets.
+
+Given identical source bytes, selection manifest, and advisory draft, proposal
+mapping bytes and review bytes are identical across absolute roots. Given
+identical source bytes, an approved canonical mapping, and selection metadata,
+Mode B produces identical Source IR, canonical package bytes, and Task 9A
+preflight. Advisory notes, absolute paths, clocks, process identity, and AI
+wording cannot affect canonical output.
+
+### 21.7 Extension implementation scope
+
+The extension is closed to the following files:
+
+**Production:**
+
+```text
+src/joy_m2/ingest/source_mapping.py                 # NEW
+src/joy_m2/ingest/adapter_models.py                 # language enum only
+src/joy_m2/ingest/adapter.py                        # mode-specific manifest allow-list plus shared render/package helpers only
+src/joy_m2/ingest/mmd_parser.py                     # reusable private span lexer only
+```
+
+`src/joy_m2/ingest/__init__.py`, Task 9A, Task 9C, database, release, and other
+production files are not modified.
+
+**Tests and minimal fixtures:**
+
+```text
+tests/unit/test_mmd_adapter_models.py
+tests/unit/test_mmd_source_mapping.py               # NEW
+tests/integration/test_mmd_explicit_mapping.py      # NEW
+tests/fixtures/task9b/explicit/**                   # NEW, minimal only
+```
+
+**Authority and closure docs:**
+
+```text
+docs/superpowers/specs/2026-09-07-task9b-mmd-adapter-design.md
+docs/superpowers/plans/2026-09-12-task9b-explicit-source-mapping-extension.md
+PROJECT_STATE.md
+docs/reports/TASK9B_VERIFICATION.md
+```
+
+The external `0918` source archive is evidence only. It is not copied into the
+repository or test fixtures. Any fixture is a minimal synthetic structural
+case containing no unreviewed source corpus.
+
+### 21.8 Strict RED-first execution
+
+After this Design passes independent review and is committed, a detailed Plan
+must be independently checked and committed before production work. Then:
+
+1. establish public carrier/API and source-only language-layout REDs;
+2. establish proposal/draft/strict-decoding REDs;
+3. establish span/source/member/coverage/image/approval validation REDs;
+4. establish Source IR/canonical-package/equivalence/determinism REDs;
+5. verify every RED is a missing-behavior failure, not import/setup/fixture or
+   test-construction error;
+6. only then implement the smallest production changes group by group;
+7. keep the complete existing 214-test Task 9B suite GREEN and add focused
+   extension coverage for wrong source SHA, wrong member SHA, invalid member,
+   zero/out-of-range span, overlap, duplicate ID, answer outside source,
+   repeated labels, no solution, image binding, unapproved proposal, approved
+   mapping, deterministic repeat, and cross-root equivalence;
+8. run Task 9A 41/41, Task 9C 71/71, the V1.18 validator, exact database SHA,
+   497 count, and zero-formal-import gates;
+9. obtain independent review with zero Critical and zero Important findings,
+   remediate test-first, commit the approved implementation scope, synchronize
+   closure docs, and ordinary-push the existing branch.
+
+No production behavior file may change before all four extension RED groups
+are independently validated. Tests are never weakened to match implementation.
+
+### 21.9 First real explicit-mapping evidence and stop gate
+
+After the extension is reviewed, committed, and pushed, the first real proposal
+may be generated for the external source whose fixed input evidence is:
+
+```text
+archive filename: 0918 区间再现_课上补充 笔记 2.mmd.zip
+archive SHA-256: d85a7d220e41375cc29b34b20173ae34d8dd2d83667a98f5fab2de5d4ccab271
+primary member: eb1509f2-5767-4c11-97a6-9179a4261200.mmd
+primary member SHA-256: 3216287f3be8ce80fafef8489cb27d20a8d81dbaa2d234b43f95ceb05b1a4d38
+primary bytes / lines: 19,462 / 533
+source image inventory: one JPEG
+```
+
+The proposal must report the full concise mapping table, candidate count,
+ignored ranges, unmapped non-whitespace ranges, unbound images, warnings, and
+exact mapping digest. It then stops at:
+
+```text
+USER DECISION REQUIRED — SOURCE MAPPING REVIEW
+```
+
+No canonical package or Task 9A preflight is allowed until the user supplies
+the exact source-mapping approval. After that approval, Task 9B may create the
+canonical staging package and run Task 9A, but must stop again at Human Gate C
+before any real Task 9C write. V1.18 remains byte-identical with 497 questions,
+formal V1.19 artifacts remain absent, and real imported questions remain zero.
