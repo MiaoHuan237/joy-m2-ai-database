@@ -353,12 +353,21 @@ def _literal_digest_payload() -> dict[str, object]:
     }
 
 
-def _tree_fingerprint(path: Path) -> tuple[tuple[str, str], ...]:
-    return tuple(
-        (item.relative_to(path).as_posix(), _sha(item.read_bytes()))
-        for item in sorted(path.rglob("*"))
-        if item.is_file()
-    )
+def _tree_fingerprint(path: Path) -> tuple[tuple[str, str, int, str], ...]:
+    entries: list[tuple[str, str, int, str]] = []
+    for item in sorted(path.rglob("*"), key=lambda value: value.relative_to(path).as_posix()):
+        relative_path = item.relative_to(path).as_posix()
+        if item.is_symlink():
+            target = item.readlink().as_posix().encode("utf-8")
+            entries.append((relative_path, "symlink", len(target), _sha(target)))
+        elif item.is_dir():
+            entries.append((relative_path, "directory", 0, ""))
+        elif item.is_file():
+            data = item.read_bytes()
+            entries.append((relative_path, "file", len(data), _sha(data)))
+        else:
+            entries.append((relative_path, "other", 0, ""))
+    return tuple(entries)
 
 
 class PreflightBehaviorCase(unittest.TestCase):
@@ -1163,9 +1172,14 @@ class ClosureDigestAndZeroWriteRedTests(PreflightBehaviorCase):
                 self.assertIn(f"source/{suffix}", result.report.unsupported_files)
                 self.assertEqual(result.report.status, "BLOCKED — IMPORT PREFLIGHT FAILED")
 
-    def test_zero_write_preserves_formal_trees_database_and_v119_absence(self):
+    def test_preflight_preserves_existing_v119_state_and_creates_no_formal_release(self):
         protected = (ROOT / "data", ROOT / "releases", ROOT / "legacy")
         before = tuple(_tree_fingerprint(path) for path in protected)
+        candidate_root = ROOT / "data/staging/task9c-v119-candidate"
+        candidate_existed = candidate_root.exists()
+        candidate_before = _tree_fingerprint(candidate_root)
+        formal_v119 = ROOT / "releases/V1.19"
+        self.assertFalse(formal_v119.exists() or formal_v119.is_symlink())
         baseline_before = _sha(BASELINE_PATH.read_bytes())
         try:
             with tempfile.TemporaryDirectory() as directory:
@@ -1177,9 +1191,11 @@ class ClosureDigestAndZeroWriteRedTests(PreflightBehaviorCase):
         else:
             missing = None
         self.assertEqual(tuple(_tree_fingerprint(path) for path in protected), before)
+        self.assertEqual(candidate_root.exists(), candidate_existed)
+        self.assertEqual(_tree_fingerprint(candidate_root), candidate_before)
+        self.assertFalse(formal_v119.exists() or formal_v119.is_symlink())
         self.assertEqual(_sha(BASELINE_PATH.read_bytes()), baseline_before)
         self.assertEqual(sqlite3.connect(BASELINE_PATH).execute("select count(*) from complete_questions_v2").fetchone()[0], 497)
-        self.assertEqual(tuple(ROOT.glob("**/*V1.19*")), ())
         if missing is not None:
             self.fail(f"approved zero-write preflight behavior is not implemented: {missing!r}")
         self.assertIs(type(result), ImportPreflightResult)

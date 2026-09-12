@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-09-11 (Asia/Shanghai)
+Updated: 2026-09-12 (Asia/Shanghai)
 
 ## Formal data
 
@@ -13,10 +13,13 @@ Updated: 2026-09-11 (Asia/Shanghai)
 - Answer identity: 392 `source_provided`, 71 `ai_solved_verified`, 34 `missing_from_source`
 - P0/P1 audit blockers: 0/0
 - V1.18 is frozen and must not be edited in place.
-- V1.19 artifacts: `0`; imported questions: `0`; Task 9C writer public
-  contracts and temporary-root writer/verifier behavior:
-  `COMPLETED / COMMITTED`; first real repository write:
-  `NOT AUTHORIZED — HUMAN GATE B`; promotion: `NOT STARTED`.
+- V1.19 formal artifacts: `0`; imported questions: `0`. Human Gate B is
+  `SATISFIED`; the approved synthetic staging candidate exists at
+  `data/staging/task9c-v119-candidate/`, is classified `TEST / SYNTHETIC — NOT
+  FOR PROMOTION`, and has candidate SQLite SHA-256
+  `efee78f97574a543d0de7830ca26a3adacb4768129ec4db6840435ab4dcd9e21`.
+  Human Gate C has not been triggered for this fixture; promotion remains
+  `NOT STARTED` and Human Gate D remains active.
 
 ## Current task
 
@@ -31,9 +34,10 @@ authority at `bfac168ac128a3d243055402df0c887a89136df8`. Phase A recorded a vali
 9-test RED followed by 9/9 GREEN. Phase B established all four approved
 behavior RED groups before production, then reached 71/71 focused GREEN and
 535/535 complete maintained GREEN. Final independent review is 0 Critical / 0
-Important / 0 Minor after all focused remediation RED-to-GREEN cycles. No real
-repository V1.19 candidate tree, import, or promotion exists. The next action
-is HUMAN GATE B; the first real V1.19 repository write remains unauthorized.
+Important / 0 Minor after all focused remediation RED-to-GREEN cycles. Human
+Gate B authorized the first synthetic repository staging write, and its 16/16
+candidate-verifier checks pass. No real user-batch import, formal V1.19 release,
+or promotion exists. The next Human Gate is C before the first real user batch.
 
 Task 9B remains `CLOSED / PASS` at implementation commit
 `35778b80f931ecf4903ca553ab0fb1b1bb5e8110` and docs closure commit
@@ -46,7 +50,10 @@ preflight`), parent `a742f56bb49e644ed062d78ec2de9505d47b593d`.
 Task 8B remains `CLOSED / PASS`; Task 9A Task 1–2, the adaptation-model
 checkpoint, and Restarted Task 3 are completed and committed. The final Task 9A
 integration suite is 41/41 PASS with 0 failures, errors, or skips. No real
-import, writer, V1.19 artifact, or promotion has started.
+user-batch import or promotion has started. Its post-Gate-B lifecycle test now
+preserves pre-existing V1.19 state by immutable before/after fingerprint while
+continuing to require formal `releases/V1.19/` absence and exact V1.18
+immutability.
 
 Current Task 3 execution state:
 
@@ -73,12 +80,16 @@ Scope:
 - Maintained typed implementations now exist under `src/joy_m2/audit/`, `db/`, `export/`, and `release/`; no CLI or consumer migration was added.
 - Task 8 completion authority is the maintained replay against approved protected/frozen references and compatibility contracts. Fresh legacy generation remains attribution evidence only.
 - Completion evidence commit: `6969f3d88b00537386212bc91203c837cac58915`.
-- Current branch is `task8b/pipeline-migration`. The latest implementation
-  checkpoint is Task 9C Phase B commit
-  `1881a3aff5e064646395516102e5f3d39a2b619c`. Local history is ahead of
-  `origin/task8b/pipeline-migration` pending the required ordinary closure
-  checkpoint push; no force push or history rewrite is authorized.
-- V1.18 remains the current formal release. No formal database, frozen hash, compatibility object, question data, `data/`, `releases/`, or `legacy/` file changed.
+- Current branch is `task8b/pipeline-migration`. The Task 9C Phase B
+  implementation checkpoint is `1881a3aff5e064646395516102e5f3d39a2b619c`;
+  its closure documentation is committed at
+  `018e6184a26be5df7c1502e4e6a92d34fd0ee688`. The branch tracks
+  `origin/task8b/pipeline-migration`; no force push or history rewrite is
+  authorized.
+- V1.18 remains the current formal release. No formal database, frozen hash,
+  compatibility object, question data, `releases/`, or `legacy/` file changed.
+  The only V1.19 repository state is the approved ignored synthetic staging
+  candidate described above.
 - Task 8B unresolved blockers: `NONE`. Task 9A unresolved implementation
   blockers: `NONE`. Its exact sixteen-code issue pipeline includes
   `file_integrity_mismatch` as the sole package/file-level integrity issue; its
@@ -145,9 +156,10 @@ Scope:
   `COMPLETED / COMMITTED`. The writer creates the approved additive candidate
   database, content-addressed images, canonical manifest, `SHA256SUMS`, and
   declarative rollback receipt atomically beneath approved temporary/staging
-  roots; the independent verifier closes all 16 ordered checks. No real
-  repository V1.19 database, manifest, sums, rollback, or image tree exists.
-  The next checkpoint is HUMAN GATE B, not autonomous production work.
+  roots; the independent verifier closes all 16 ordered checks. Human Gate B
+  authorized the synthetic `TASK9B-FIXTURE-VECTOR-17` candidate at
+  `data/staging/task9c-v119-candidate/`; it is immutable verification evidence,
+  not a real import and not eligible for promotion. The next Human Gate is C.
 - Task 9D: `NOT STARTED`; no real batch acceptance has begun.
 - `teacher_notes` and `common_errors` are Task 9A hashed import evidence/enrichment metadata, not current V2 formal fields; future formal representation requires separate schema authority.
 - Task 9A images are read-only deterministic evidence only; no copy, move, rename, destination, or formal image identity change is authorized.
@@ -160,9 +172,9 @@ Scope:
   code.
 - The literal happy-path oracle remains unchanged: `manifest_sha256` is `b5a0ae6597028c48c6f7cdc81bd7e67d61dd369cbf96d7c6a4e96efd73984c5d` and final `preflight_sha256` is `087574a8af6fe28ac65a5b5810794952044cb5f0778ed3492d1e7819a4be33c2`.
 - Formal database remains V1.18 with 497 questions; no new questions have been
-  imported and no V1.19 artifact exists. The reviewed writer is authorized
-  only for in-memory/OS-temporary evidence; the first real repository write
-  and every promotion remain unauthorized.
+  imported and no formal V1.19 artifact exists. Human Gate B authorized only
+  the current synthetic staging candidate. The first real user-batch import
+  remains Human Gate C, and every promotion remains Human Gate D.
 - Task 9A capability closure includes canonical JSON import preflight,
   deterministic and path-independent processing, read-only baseline access,
   exact sixteen-code structured issues, duplicate/collision/adaptation and
@@ -212,22 +224,19 @@ Scope:
 - Task 9B golden-equivalence preflight is `READY FOR USER IMPORT APPROVAL` with
   17 candidates, 0 issues, and path-independent preflight SHA-256
   `49ab71e26cf2256581ecb5ada14b0eefc601317169ee897599aeb9a39976187b`.
-  This is verification evidence only: no approval was issued and no import was
-  performed.
+  Its exact approval was used only to build the approved synthetic Task 9C
+  staging candidate. It must not be reused as approval for a real Task 9D user
+  batch; no formal import was performed.
 - Task 9B verification record: `docs/reports/TASK9B_VERIFICATION.md`.
 
 ## Next task
 
-No further autonomous implementation is authorized. Stop at HUMAN GATE B and
-wait for an explicit user decision before the first real repository V1.19
-candidate database, manifest, sums, rollback receipt, or image tree is written.
-Any such decision must bind the exact target paths, frozen V1.18 baseline and
-SHA/count, approved schema and `user_version`, projected counts, deterministic
-SHA expectations, rollback/cleanup plan, zero-impact proof, and current
-writer/verifier gates. Preserve Task 9A as the deterministic read-only
-preflight, Task 9B as the staging-only adapter, and V1.18 at 497 questions. Do
-not start Task 8C, Phase 2A, CLI/consumer migration, a real Task 9D import, or
-promotion. The first real digest-bound import and promotion remain HUMAN GATES
-C and D.
+Human Gate B is satisfied for the current synthetic staging candidate. No
+further autonomous implementation is authorized. Preserve Task 9A as the
+deterministic read-only preflight, Task 9B as the staging-only adapter, the
+approved synthetic candidate byte-for-byte, and V1.18 at 497 questions. Do not
+start Task 8C, Phase 2A, CLI/consumer migration, a real Task 9D import, or
+promotion. The first real digest-bound user-batch import and every promotion
+remain HUMAN GATES C and D.
 
-`USER DECISION REQUIRED — FIRST V1.19 WRITE AUTHORIZATION`
+`USER DECISION REQUIRED — FIRST REAL USER BATCH IMPORT`
