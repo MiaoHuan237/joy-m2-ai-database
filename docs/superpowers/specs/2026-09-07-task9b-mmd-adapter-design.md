@@ -2178,8 +2178,9 @@ codes and five-field stable ordering:
 
 - `source_contract_mismatch`: draft/mapping schema, runtime type, digest,
   approval, range, overlap, coverage, or identity mismatch;
-- `selection_not_unique`: declared member/selection occurrence or proposed-ID
-  association cannot be made exactly once;
+- `selection_not_unique`: an existing D1 declared primary/answer member cannot
+  be selected exactly once; explicit proposed-ID duplication or disagreement
+  is instead one M0 `source_contract_mismatch` fact;
 - `candidate_count_mismatch`: mapping, selection, and expected counts differ;
 - `image_binding_invalid`: image token/member/order/role/ignored-resource
   closure fails;
@@ -2193,14 +2194,16 @@ package publication.
 
 ```text
 M0 exact API/path/output preconditions; selection plus draft or canonical
-   mapping strict decode; approval binding for approved consumption
+   mapping strict decode; source-free position/count/identity closure; approval
+   binding for approved consumption
 M1 existing D1 source-kind/raw-digest/archive metadata/member/limit safety
 M2 existing D2 bounded CRC/decompression streaming
 M3 selected-member byte identity; line-to-byte conversion for a draft;
    canonical member, span geometry, uniqueness, and ownership validation
-M4 selection-position, question/count, answer-member, and source-only-language
-   semantic closure
-M5 image token/member/order/role and inventory closure
+M4 selected-MMD strict UTF-8 decode; mapped-question atomic/image lexing;
+   source-only text-span construction
+M5 bilingual language projection plus image token/member/order/role and
+   inventory closure
 M6 non-whitespace byte coverage and ignored-content closure
 M7 Source IR construction, canonical-package serialization, and one atomic
    destination transition
@@ -2222,12 +2225,15 @@ five-field sort. The exact Mode B matrix is:
 | --- | --- | --- | --- |
 | `source_contract_mismatch`, M0: draft or canonical mapping bytes fail strict UTF-8/no-BOM, JSON syntax, duplicate-key, exact object/key/type/value/order, or source-free cross-field validation | package, `proposed_question_id=None`, empty locator | exact logical JSON path rooted at `$` | exactly the section 11.1 `actual,expected,reason` construction; reasons remain `invalid_utf8 | utf8_bom | invalid_json | duplicate_key | non_object | missing_key | extra_key | wrong_type | invalid_value | cross_field_violation` |
 | `source_contract_mismatch`, M0: approval source ID, mapping digest, or approval text does not bind the decoded canonical mapping | package, `None`, empty locator | exactly `approval.source_id`, `approval.mapping_sha256`, or `approval.approval_text` | source ID: `{"actual":<approval-id>,"expected":<mapping-id>,"reason":"approval_source_id_mismatch"}`; digest: `{"actual":<approval-digest>,"expected":<computed-digest>,"reason":"approval_mapping_digest_mismatch"}`; text: `{"actual":<sha256-of-actual-text>,"expected":<sha256-of-exact-required-text>,"reason":"approval_text_mismatch"}` |
+| `source_contract_mismatch`, M0: a decoded mapping/draft question ID, number, or section disagrees with the selection at the same semantic position | exact candidate and empty locator because source bytes are not read | exact offending `$.questions[n].<field>` path | exactly `{"actual":...,"expected":...,"reason":"mapping_selection_mismatch"}` |
+| `candidate_count_mismatch`, M0: mapping/draft question count differs from selection `expected_candidate_count` | package, `None`, empty locator | exactly `expected_candidate_count` | exactly `{"actual":<mapping-count>,"expected":<selection-count>,"reason":"candidate_count"}` |
+| `source_contract_mismatch`, M0: solution-array availability or declared member disagrees with selection `answer_mapping` / `answer_number` | exact candidate and empty locator because span bytes are not read | draft: exactly `$.questions[n].solution_line_spans` or `$.questions[n].solution_line_spans[m].member`; canonical mapping: exactly `$.questions[n].solution_spans` or `$.questions[n].solution_spans[m].member` | exactly one of `{"actual":<array-length>,"expected":0,"reason":"cross_field_violation"}`, `{"actual":0,"expected":"positive_length","reason":"cross_field_violation"}`, or `{"actual":<actual-member>,"expected":<required-primary-or-answer-member>,"reason":"cross_field_violation"}` |
 | `source_contract_mismatch`, M3: canonical mapping source/member identity or digest differs from the validated selection/bytes | package, `None`, empty locator | exactly `$.source_kind`, `$.source_sha256`, `$.primary_member`, `$.primary_member_sha256`, `$.answer_member`, `$.answer_member_sha256`, `$.source_id`, or `$.chapter` | exactly `{"actual":...,"expected":...,"reason":...}`; reason respectively `mapping_source_kind_mismatch | mapping_source_digest_mismatch | mapping_primary_member_mismatch | mapping_primary_digest_mismatch | mapping_answer_member_mismatch | mapping_answer_digest_mismatch | mapping_source_id_mismatch | mapping_chapter_mismatch` |
 | `source_contract_mismatch`, M3: a line span cannot convert to one non-empty in-range full-line byte span, or a canonical span is zero/reversed/out-of-range/undeclared-member | candidate when nested under a question, otherwise package; locator is the valid converted/canonical interval when one exists, otherwise empty | exact offending JSON span path | exactly `{"actual":{"end_byte":...,"member":...,"start_byte":...},"expected":"non_empty_in_bounds_half_open_span","reason":"invalid_span"}`; unconvertible line intervals project their attempted full-line values into the same three keys, using JSON null for an unavailable offset |
 | `source_contract_mismatch`, M3: a span has the wrong semantic member or lies outside its required containing question span | exact candidate and valid offending span locator | exact offending JSON span path | exactly `{"actual":<actual-member-or-span>,"expected":<required-member-or-containing-span>,"reason":"wrong_span_owner"}` |
 | `source_contract_mismatch`, M3: two semantic owners overlap, excluding the authorized question/text-or-image containment partition | candidate if either owner is candidate-bound, otherwise package; locator is the later offending valid interval | exact later-owner JSON span path | exactly `{"actual":<later-span-object>,"expected":<earlier-span-object>,"reason":"span_ownership_overlap"}` |
-| `source_contract_mismatch`, M4: mapping question identity or selection-dependent answer/language fact disagrees at a semantic position | exact candidate and question-span locator | exact offending `$.questions[n].<field>` path | exactly `{"actual":...,"expected":...,"reason":"mapping_selection_mismatch"}` |
-| `candidate_count_mismatch`, M4: mapping question count differs from selection `expected_candidate_count` | package, `None`, empty locator | exactly `expected_candidate_count` | exactly `{"actual":<mapping-count>,"expected":<selection-count>,"reason":"candidate_count"}` |
+| `mmd_parse_failed`, M4: a selected primary/answer MMD is not strict UTF-8, or a mapped primary question contains an unclosed inline/display token, malformed atomic construct, incomplete image token, or safe but unsupported image envelope | package, `None`; canonical member/byte locator when a safe interval exists, otherwise empty | exactly `primary_member` or `answer_member` | exactly `{"end_byte":...,"member":...,"reason":...,"start_byte":...}`; offsets are exact integers or null; reason exactly `invalid_utf8 | unclosed_token | unsupported_grammar` |
+| `archive_member_unsafe`, M4: a lexically complete mapped image envelope has an unsafe raw target under the ordered section 8 list | package, `None`, exact primary-member token locator | exactly `raw_target` | exactly `{"raw_target_sha256":<digest-of-exact-target-UTF8>,"reason":...}` with the unchanged ordered `image_target_*` reason set from section 8 |
 | `language_mapping_ambiguous`, M5: an existing bilingual projection cannot partition the mapped question | exact candidate and the smallest offending text locator | exactly `language_layout` | retains the exact section 11 `end_byte,layout,reason,start_byte` object and reason set |
 | `image_binding_invalid`, M5: mapped token/raw target/canonical path/selected member/order/role conflicts with the exact source token or selection; one source token is bound zero or more than once | exact candidate and token locator when valid, otherwise question locator | exactly `expected_image_members` | exactly `{"matches":<canonically-sorted-safe-member-array>,"raw_target":<exact-target-or-null>,"reason":...}`; reason exactly `ambiguous_reference | selection_conflict | multiple_matches | canonical_path_unavailable | invalid_role | duplicate_token_binding` |
 | `image_binding_invalid`, M5: a safe inventory image is both referenced and ignored, is ignored more than once, or an ignored name is absent; in approved consumption only, also when it is neither referenced nor ignored | package, `None`, empty locator | exactly `ignored_image_members` | exactly `{"member":<safe-canonical-member>,"reason":...}`; reason exactly `unaccounted_inventory_image | bound_and_ignored | duplicate_ignored_image | ignored_member_missing` |
@@ -2256,11 +2262,18 @@ Within M3, each invalid span emits once. Valid spans alone participate in
 ownership checks; each later owner emits at most one overlap issue against the
 earliest overlapping owner in canonical owner order: questions by semantic
 order, then their question, solution, explanation, image-token spans in array
-order, followed by globally sorted ignored spans. M4 emits all independent
-position mismatches, then the single count issue if applicable. M5 emits one
-issue per invalid token fact and one per independently invalid inventory
-member state. M6 emits one issue per maximal uncovered non-whitespace interval,
-ordered by canonical member then byte offset through the common stable sort.
+order, followed by globally sorted ignored spans. M4 completes all independent
+selected-member decode and mapped-question lexical facts; a complete unsafe
+image target emits only `archive_member_unsafe`, while an incomplete or safe
+but unsupported envelope emits only `mmd_parse_failed`. M5 emits all independent
+bilingual language issues, then one issue per invalid safe token-binding fact
+and one per independently invalid inventory member state. M6 emits one issue per maximal
+uncovered non-whitespace interval, ordered by canonical member then byte offset
+through the common stable sort. For M6 only, whitespace is exactly the ASCII
+byte set `0x09, 0x0a, 0x0b, 0x0c, 0x0d, 0x20`; every other byte, including
+every byte of a non-ASCII UTF-8 scalar, is non-whitespace. A maximal gap is a
+maximal contiguous run of uncovered bytes after removing those ASCII
+whitespace bytes; this definition does not depend on Python/Unicode versions.
 
 Early exception boundaries are exact:
 
