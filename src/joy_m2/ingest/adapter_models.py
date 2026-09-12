@@ -16,7 +16,12 @@ _SHA256 = re.compile(r"[0-9a-f]{64}")
 _DRIVE_PATH = re.compile(r"[A-Za-z]:")
 _SOURCE_LOCATOR = re.compile(r"(.+)#bytes=(0|[1-9][0-9]*):(0|[1-9][0-9]*)")
 _KINDS = {"example", "exercise"}
-_LANGUAGE_LAYOUTS = {"english_then_chinese", "interleaved_bilingual"}
+_LANGUAGE_LAYOUTS = {
+    "english_then_chinese",
+    "interleaved_bilingual",
+    "source_chinese",
+    "source_english",
+}
 _ANSWER_MAPPINGS = {"source_answer", "missing_from_source"}
 _METADATA_STATUSES = {"source_provided", "proposed", "missing"}
 _IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png"}

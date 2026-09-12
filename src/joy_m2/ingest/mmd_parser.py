@@ -150,18 +150,9 @@ class _SourceQuestion:
         text_spans = tuple(
             sorted(text_spans, key=lambda span: (span.member_path, span.start_byte, span.end_byte))
         )
-        solution_spans = tuple(
-            sorted(
-                solution_spans,
-                key=lambda span: (span.member_path, span.start_byte, span.end_byte),
-            )
-        )
-        explanation_spans = tuple(
-            sorted(
-                explanation_spans,
-                key=lambda span: (span.member_path, span.start_byte, span.end_byte),
-            )
-        )
+        # Solution and explanation arrays carry an explicit render order.  The
+        # parsed path already supplies source order; explicit mappings may
+        # intentionally choose a different, human-approved order.
         image_refs = tuple(sorted(image_refs, key=lambda ref: ref.source_order))
         if tuple(ref.source_order for ref in image_refs) != tuple(range(len(image_refs))):
             raise PipelineError("image_refs source_order values must be contiguous")
@@ -476,6 +467,100 @@ def _target_needs_canonicalization(raw_target: str) -> bool:
         or PurePosixPath(canonical).suffix not in _IMAGE_SUFFIXES
         or PurePosixPath(canonical).as_posix() != canonical
     )
+
+
+def _image_target_safety_issues(
+    target_records: tuple[tuple[str, str, int, int], ...],
+    source_inventory: tuple[str, ...],
+    member_by_path: dict[str, _SourceMember],
+) -> tuple[MmdAdapterIssue, ...]:
+    """Apply aggregate collision and canonicalization checks to image targets."""
+
+    ordered_records = target_records
+    normalized_groups: dict[
+        str,
+        tuple[list[tuple[str, str, int, int]], set[str]],
+    ] = {}
+    casefold_groups: dict[
+        str,
+        tuple[list[tuple[str, str, int, int]], set[str]],
+    ] = {}
+    for record in ordered_records:
+        raw_target = record[1]
+        if (
+            _raw_target_reason(raw_target) is not None
+            or not raw_target.startswith("./images/")
+        ):
+            continue
+        source_path = raw_target[2:]
+        normalized = unicodedata.normalize("NFC", source_path)
+        normalized_targets, normalized_spellings = normalized_groups.setdefault(
+            normalized,
+            ([], set()),
+        )
+        normalized_targets.append(record)
+        normalized_spellings.add(source_path)
+        casefold_targets, casefold_spellings = casefold_groups.setdefault(
+            normalized.casefold(),
+            ([], set()),
+        )
+        casefold_targets.append(record)
+        casefold_spellings.add(normalized)
+    for source_path in sorted(source_inventory):
+        normalized = unicodedata.normalize("NFC", source_path)
+        normalized_groups.setdefault(normalized, ([], set()))[1].add(source_path)
+        casefold_groups.setdefault(normalized.casefold(), ([], set()))[1].add(normalized)
+
+    issues: list[MmdAdapterIssue] = []
+    collision_records: set[tuple[str, str, int, int]] = set()
+    for records, spellings in normalized_groups.values():
+        if records and len(spellings) > 1:
+            record = records[0]
+            issues.append(
+                _target_issue(
+                    member_by_path[record[0]],
+                    record[1],
+                    "image_target_nfc_collision",
+                    record[2],
+                    record[3],
+                )
+            )
+            collision_records.update(records)
+    for records, spellings in casefold_groups.values():
+        if (
+            records
+            and len(spellings) > 1
+            and not any(record in collision_records for record in records)
+        ):
+            record = records[0]
+            issues.append(
+                _target_issue(
+                    member_by_path[record[0]],
+                    record[1],
+                    "image_target_casefold_collision",
+                    record[2],
+                    record[3],
+                )
+            )
+            collision_records.update(records)
+    for member_path, raw_target, start, end in ordered_records:
+        record = (member_path, raw_target, start, end)
+        if (
+            record not in collision_records
+            and _raw_target_reason(raw_target) is None
+            and raw_target.startswith("./images/")
+            and _target_needs_canonicalization(raw_target)
+        ):
+            issues.append(
+                _target_issue(
+                    member_by_path[member_path],
+                    raw_target,
+                    "image_target_canonicalization",
+                    start,
+                    end,
+                )
+            )
+    return tuple(issues)
 
 
 def _scan_inline_atomics(
@@ -805,6 +890,121 @@ def _line_lex(
     return text_spans, image_records
 
 
+def _lex_mapped_question(
+    primary_member: _SourceMember,
+    start_byte: int,
+    end_byte: int,
+    language_layout: str,
+) -> tuple[
+    tuple[_SourceSpan, ...],
+    tuple[tuple[str, int, int], ...],
+    tuple[tuple[str, str, int, int], ...],
+    tuple[MmdAdapterIssue, ...],
+]:
+    """Lex one already-authoritative question interval without finding bounds."""
+
+    if type(primary_member) is not _SourceMember:
+        raise PipelineError("primary_member must be an exact _SourceMember")
+    if type(start_byte) is not int or type(end_byte) is not int:
+        raise PipelineError("mapped question bounds must be exact integers")
+    if not 0 <= start_byte < end_byte <= len(primary_member.content):
+        raise PipelineError("mapped question bounds must be non-empty and in range")
+    if language_layout not in {
+        "english_then_chinese",
+        "interleaved_bilingual",
+        "source_chinese",
+        "source_english",
+    }:
+        raise PipelineError("language_layout must be approved for explicit mapping")
+
+    try:
+        primary_member.content.decode("utf-8")
+    except UnicodeDecodeError:
+        return (), (), (), (_parse_issue(primary_member, "primary_member", "invalid_utf8"),)
+
+    try:
+        lines = tuple(_physical_lines(primary_member.content, start_byte, end_byte))
+    except UnicodeDecodeError:
+        return (
+            (),
+            (),
+            (),
+            (
+                _parse_issue(
+                    primary_member,
+                    "primary_member",
+                    "invalid_utf8",
+                    start_byte,
+                    end_byte,
+                ),
+            ),
+        )
+    issues: list[MmdAdapterIssue] = []
+    target_records: list[tuple[str, str, int, int]] = []
+    itemize_depth = 0
+    for line in lines:
+        if line[3] == "\\begin{itemize}":
+            itemize_depth += 1
+        elif line[3] == "\\end{itemize}":
+            itemize_depth = max(itemize_depth - 1, 0)
+        elif (
+            _ITEM_PREFIX.match(line[3]) is not None
+            and _exercise_marker(line[3]) is None
+            and itemize_depth == 0
+        ):
+            issues.append(
+                _parse_issue(
+                    primary_member,
+                    "primary_member",
+                    "unsupported_grammar",
+                    line[0],
+                    line[1],
+                )
+            )
+    text_spans, image_records = _line_lex(
+        primary_member,
+        lines,
+        0,
+        end_byte,
+        issues,
+        target_records,
+    )
+    if language_layout in {"source_chinese", "source_english"}:
+        language = "zh" if language_layout == "source_chinese" else "en"
+        image_intervals = sorted((start, end) for _target, start, end in image_records)
+        rebuilt: list[_SourceSpan] = []
+        cursor = start_byte
+        for image_start, image_end in image_intervals:
+            if cursor < image_start:
+                rebuilt.append(
+                    _SourceSpan(
+                        primary_member.relative_path,
+                        cursor,
+                        image_start,
+                        "question",
+                        language,
+                    )
+                )
+            cursor = max(cursor, image_end)
+        if cursor < end_byte:
+            rebuilt.append(
+                _SourceSpan(
+                    primary_member.relative_path,
+                    cursor,
+                    end_byte,
+                    "question",
+                    language,
+                )
+            )
+        text_spans = rebuilt
+    return (
+        tuple(text_spans),
+        tuple(image_records),
+        tuple(target_records),
+        tuple(issues),
+    )
+
+
 def _parse_answers(member: _SourceMember, issues: list[MmdAdapterIssue]):
     try:
         member.content.decode("utf-8")
@@ -1085,89 +1285,16 @@ def _parse_source_document_with_inventory(
                 target_records,
             )
 
-    # Collision diagnostics are bound to the first occurrence in each complete
-    # colliding group, independent of physical discovery order elsewhere.
-    normalized_groups: dict[
-        str,
-        tuple[list[tuple[str, str, int, int]], set[str]],
-    ] = {}
-    casefold_groups: dict[
-        str,
-        tuple[list[tuple[str, str, int, int]], set[str]],
-    ] = {}
-    for record in target_records:
-        raw_target = record[1]
-        if _raw_target_reason(raw_target) is not None or not raw_target.startswith("./images/"):
-            continue
-        source_path = raw_target[2:]
-        normalized = unicodedata.normalize("NFC", source_path)
-        normalized_targets, normalized_spellings = normalized_groups.setdefault(
-            normalized,
-            ([], set()),
-        )
-        normalized_targets.append(record)
-        normalized_spellings.add(source_path)
-        casefold_targets, casefold_spellings = casefold_groups.setdefault(
-            normalized.casefold(),
-            ([], set()),
-        )
-        casefold_targets.append(record)
-        casefold_spellings.add(normalized)
-    for source_path in source_inventory:
-        normalized = unicodedata.normalize("NFC", source_path)
-        normalized_groups.setdefault(normalized, ([], set()))[1].add(source_path)
-        casefold_groups.setdefault(normalized.casefold(), ([], set()))[1].add(normalized)
-    collision_records: set[tuple[str, str, int, int]] = set()
     member_by_path = {primary_member.relative_path: primary_member}
     if answer_member is not None:
         member_by_path[answer_member.relative_path] = answer_member
-    for records, spellings in normalized_groups.values():
-        if records and len(spellings) > 1:
-            record = records[0]
-            issues.append(
-                _target_issue(
-                    member_by_path[record[0]],
-                    record[1],
-                    "image_target_nfc_collision",
-                    record[2],
-                    record[3],
-                )
-            )
-            collision_records.update(records)
-    for records, spellings in casefold_groups.values():
-        if (
-            records
-            and len(spellings) > 1
-            and not any(record in collision_records for record in records)
-        ):
-            record = records[0]
-            issues.append(
-                _target_issue(
-                    member_by_path[record[0]],
-                    record[1],
-                    "image_target_casefold_collision",
-                    record[2],
-                    record[3],
-                )
-            )
-            collision_records.update(records)
-    for member_path, raw_target, start, end in target_records:
-        record = (member_path, raw_target, start, end)
-        if (
-            record not in collision_records
-            and _raw_target_reason(raw_target) is None
-            and raw_target.startswith("./images/")
-            and _target_needs_canonicalization(raw_target)
-        ):
-            issues.append(
-                _target_issue(
-                    member_by_path[member_path],
-                    raw_target,
-                    "image_target_canonicalization",
-                    start,
-                    end,
-                )
-            )
+    issues.extend(
+        _image_target_safety_issues(
+            tuple(target_records),
+            source_inventory,
+            member_by_path,
+        )
+    )
 
     if issues:
         raise MmdAdapterBlockedError(tuple(issues))

@@ -39,10 +39,13 @@ Gate B authorized the first synthetic repository staging write, and its 16/16
 candidate-verifier checks pass. No real user-batch import, formal V1.19 release,
 or promotion exists. The next Human Gate is C before the first real user batch.
 
-Task 9B remains `CLOSED / PASS` at implementation commit
-`35778b80f931ecf4903ca553ab0fb1b1bb5e8110` and docs closure commit
-`e3cb1ea75cb049e4bf0fffdbf3726ae79bcf4b06`. It remains a staging-only adapter;
-it imported no question and created no V1.19 database or formal artifact.
+Task 9B remains `CLOSED / PASS`. Its original parser-mode implementation is
+committed at `35778b80f931ecf4903ca553ab0fb1b1bb5e8110` and its explicit
+source-mapping extension authority is committed at `c11f463`, `4a5b6a3`,
+`ea6bf7f`, and `78a5262`. The extension implementation and this closure update
+are recorded by the commit containing this state (`feat: add explicit MMD
+source mapping`). It remains a staging-only adapter; it imported no question
+and created no V1.19 database or formal artifact.
 
 Task 9A remains `CLOSED / PASS` at implementation commit
 `6fec37c45346b1680fb0bf0676c38e515c18cacd` (`feat: implement Task 9A import
@@ -146,12 +149,14 @@ Scope:
   `e46bd5b856591b36f69fbaa5fc80738335ba3c66`; representative fixtures at
   `c1125252efea59805f616d6347960b81f5d4f08c`; independently authored golden
   reconciliation at `141d2c8daf431a7512d689395c5b31f84c8a8251`; and implementation at
-  `35778b80f931ecf4903ca553ab0fb1b1bb5e8110`. Its exact API, five carriers,
-  D0-D7 ordering, bounded archive safety, private parser/IR, explicit mapping,
-  provenance, canonical Task 9A package, atomic publication, deterministic
-  golden equivalence, diagnostics, and frozen boundaries are implemented.
-  Direct PDF remains deferred. Task 9B unresolved implementation blockers:
-  `NONE`.
+  `35778b80f931ecf4903ca553ab0fb1b1bb5e8110`. The explicit source-mapping
+  extension Design/Plan closure is committed through `78a5262`; its four-name
+  module API, typed proposal/approval carriers, strict line-draft-to-byte-map
+  conversion, exact approval binding, shared private Source IR, deterministic
+  review report, and parser/explicit canonical equivalence are implemented in
+  the current checkpoint. Its final dual independent review is Critical 0 /
+  Important 0 / Minor 0 after all remediation RED-to-GREEN cycles. Direct PDF
+  remains deferred. Task 9B unresolved implementation blockers: `NONE`.
 - Task 9C: Phase A public contracts and Phase B temporary-root behavior are
   `COMPLETED / COMMITTED`. The writer creates the approved additive candidate
   database, content-addressed images, canonical manifest, `SHA256SUMS`, and
@@ -200,8 +205,8 @@ Scope:
   review: Critical 0 / Important 0 / Minor 0.
 - Task 9C Phase A public contracts: 9/9 passed; independent review:
   Critical 0 / Important 0.
-- Task 9B focused adapter suite: 214/214 passed; final independent review:
-  `CLEAN` (Critical 0, Important 0, Minor 0).
+- Task 9B focused adapter plus explicit source-mapping suite: 342/342 passed;
+  final dual independent review: `CLEAN` (Critical 0, Important 0, Minor 0).
 - Task 8 equivalence: 3/3 passed.
 - Task 7 structure and frozen-baseline tests: 7/7 passed.
 - V1.18 independent verifier: `PASS` with 497/452/45 counts, integrity `ok`, and 0 foreign-key errors.
@@ -221,7 +226,7 @@ Scope:
 - Task 8A final acceptance record remains `docs/reports/TASK8A_FINAL_ACCEPTANCE.md`.
 - Verification record: `docs/reports/TASK7_VERIFICATION.md`.
 - Remote backup branch remains retained; no cleanup has been performed.
-- Task 9B golden-equivalence preflight is `READY FOR USER IMPORT APPROVAL` with
+- Task 9B parser-mode golden-equivalence preflight is `READY FOR USER IMPORT APPROVAL` with
   17 candidates, 0 issues, and path-independent preflight SHA-256
   `49ab71e26cf2256581ecb5ada14b0eefc601317169ee897599aeb9a39976187b`.
   Its exact approval was used only to build the approved synthetic Task 9C
@@ -231,12 +236,15 @@ Scope:
 
 ## Next task
 
-Human Gate B is satisfied for the current synthetic staging candidate. No
-further autonomous implementation is authorized. Preserve Task 9A as the
-deterministic read-only preflight, Task 9B as the staging-only adapter, the
-approved synthetic candidate byte-for-byte, and V1.18 at 497 questions. Do not
-start Task 8C, Phase 2A, CLI/consumer migration, a real Task 9D import, or
-promotion. The first real digest-bound user-batch import and every promotion
-remain HUMAN GATES C and D.
+Human Gate B is satisfied for the existing synthetic staging candidate. The
+next authorized action is proposal-only use of Task 9B explicit source mapping
+for the external `0918 区间再现_课上补充 笔记 2.mmd.zip` source. The proposal is
+advisory and must stop before canonicalization and Task 9A preflight until the
+exact `USER APPROVED SOURCE MAPPING <source_id> <mapping_sha256>` approval is
+received. Preserve Task 9A as the deterministic read-only preflight, Task 9B as
+the staging-only adapter, the approved synthetic candidate byte-for-byte, and
+V1.18 at 497 questions. Do not start Task 8C, Phase 2A, CLI/consumer migration,
+a real Task 9C write, Task 9D import, or promotion. The later import and
+promotion approvals remain distinct HUMAN GATES C and D.
 
-`USER DECISION REQUIRED — FIRST REAL USER BATCH IMPORT`
+`USER DECISION REQUIRED — SOURCE MAPPING REVIEW`

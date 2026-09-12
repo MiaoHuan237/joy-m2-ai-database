@@ -215,6 +215,8 @@ def _validate_selection(
     payload: dict[str, object],
     index: int,
     issues: list[MmdAdapterIssue],
+    *,
+    allowed_language_layouts: tuple[str, ...],
 ) -> dict[str, bool]:
     base = f"$.selections[{index}]"
     required = set(_SELECTION_FIELDS)
@@ -286,15 +288,16 @@ def _validate_selection(
             _issue(f"{base}.answer_number", "", "non_empty_string", "invalid_value")
         )
         valid["answer_number"] = False
+    enums = {**_ENUMS, "language_layout": allowed_language_layouts}
     for name in ("kind", "language_layout", "answer_mapping", "tag_status", "difficulty_status"):
-        if valid.get(name) and payload[name] not in _ENUMS[name]:
+        if valid.get(name) and payload[name] not in enums[name]:
             value = payload[name]
             assert type(value) is str
             issues.append(
                 _issue(
                     f"{base}.{name}",
                     _safe_scalar(value),
-                    list(_ENUMS[name]),
+                    list(enums[name]),
                     "invalid_value",
                 )
             )
@@ -364,7 +367,12 @@ def _validate_selection(
     return valid
 
 
-def _decode_manifest(selection_manifest_path: Path, source_path: Path) -> MmdAdapterManifest:
+def _decode_manifest(
+    selection_manifest_path: Path,
+    source_path: Path,
+    *,
+    allowed_language_layouts: tuple[str, ...],
+) -> MmdAdapterManifest:
     if not selection_manifest_path.exists():
         raise InputMissingError("selection manifest does not exist")
     if not selection_manifest_path.is_file():
@@ -474,6 +482,28 @@ def _decode_manifest(selection_manifest_path: Path, source_path: Path) -> MmdAda
         if valid.get(name) and payload[name] == "":
             issues.append(_issue(f"$.{name}", "", "non_empty_string", "invalid_value"))
             valid[name] = False
+    if (
+        allowed_language_layouts
+        == (
+            "english_then_chinese",
+            "interleaved_bilingual",
+            "source_chinese",
+            "source_english",
+        )
+        and valid.get("source_id")
+        and ("\r" in payload["source_id"] or "\n" in payload["source_id"])
+    ):
+        value = payload["source_id"]
+        assert type(value) is str
+        issues.append(
+            _issue(
+                "$.source_id",
+                hashlib.sha256(value.encode("utf-8")).hexdigest(),
+                "single_line_non_empty",
+                "invalid_value",
+            )
+        )
+        valid["source_id"] = False
     if valid.get("source_kind") and payload["source_kind"] not in _ENUMS["source_kind"]:
         value = payload["source_kind"]
         assert type(value) is str
@@ -543,7 +573,14 @@ def _decode_manifest(selection_manifest_path: Path, source_path: Path) -> MmdAda
                 )
                 selection_validity.append(None)
             else:
-                selection_validity.append(_validate_selection(selection, index, issues))
+                selection_validity.append(
+                    _validate_selection(
+                        selection,
+                        index,
+                        issues,
+                        allowed_language_layouts=allowed_language_layouts,
+                    )
+                )
 
     if valid.get("source_kind") and valid.get("answer_member"):
         if payload["source_kind"] == "mmd" and payload["answer_member"] is not None:
@@ -921,6 +958,8 @@ def _language_issues(
     question: _SourceQuestion,
     primary: _SourceMember,
 ) -> tuple[MmdAdapterIssue, ...]:
+    if selection.language_layout in {"source_chinese", "source_english"}:
+        return ()
     lines: list[tuple[int, int, set[str]]] = []
     for start, end in _physical_ranges(
         primary.content,
@@ -1091,19 +1130,29 @@ def _map_candidates(
             question.fragment_span.start_byte:question.fragment_span.end_byte
         ]
         has_zh = any(span.language == "zh" for span in question.text_spans)
+        if selection.language_layout == "source_chinese":
+            has_zh = True
         zh_spans = tuple(span for span in question.text_spans if span.language == "zh")
         source_answer = selection.answer_mapping == "source_answer"
         solution = _render_spans(document, question.solution_spans) if source_answer else ""
+        explanation = _render_spans(document, question.explanation_spans)
         translation_evidence = None
         if has_zh:
-            translation_evidence = (
-                "source:source/original.mmd.txt#"
-                f"{question.fragment_span.member_path}#bytes="
-                f"{zh_spans[0].start_byte}:{zh_spans[-1].end_byte}"
-            )
+            if selection.language_layout == "source_chinese":
+                translation_evidence = (
+                    "source:source/original.mmd.txt#"
+                    f"{question.fragment_span.member_path}#bytes="
+                    f"{question.fragment_span.start_byte}:{question.fragment_span.end_byte}"
+                )
+            else:
+                translation_evidence = (
+                    "source:source/original.mmd.txt#"
+                    f"{question.fragment_span.member_path}#bytes="
+                    f"{zh_spans[0].start_byte}:{zh_spans[-1].end_byte}"
+                )
         enrichment = (
             has_zh
-            and False
+            and bool(question.explanation_spans)
             and selection.tag_status != "missing"
             and selection.difficulty_status != "missing"
         )
@@ -1115,15 +1164,24 @@ def _map_candidates(
                 "source_section": question.source_section,
                 "source_fragment_hash": hashlib.sha256(fragment).hexdigest(),
                 "question_text_original": _normalize_newlines(fragment),
-                "question_text_zh": _render_zh(document, question),
+                "question_text_zh": (
+                    _normalize_newlines(fragment)
+                    if selection.language_layout == "source_chinese"
+                    else _render_zh(document, question)
+                ),
                 "translation_status": "source_present" if has_zh else "missing",
                 "translation_evidence": translation_evidence,
                 "solution_original": solution,
                 "solution_verified": "",
                 "answer_status": "source_provided" if source_answer else "missing_from_source",
-                "explanation_text": "",
-                "explanation_status": "missing",
-                "explanation_evidence": None,
+                "explanation_text": explanation,
+                "explanation_status": "source_present" if question.explanation_spans else "missing",
+                "explanation_evidence": (
+                    "source:source/source-map.json#questions["
+                    f"{len(candidates)}].explanation_spans"
+                    if question.explanation_spans
+                    else None
+                ),
                 "image_paths": list(selection.expected_image_members),
                 "image_roles": ["question"] * len(selection.expected_image_members),
                 "primary_type": selection.primary_type,
@@ -1393,7 +1451,14 @@ def adapt_mmd_package(
     if output_dir.exists() or output_dir.is_symlink():
         raise OutputConflictError("output path already exists")
 
-    manifest = _decode_manifest(selection_manifest_path, source_path)
+    manifest = _decode_manifest(
+        selection_manifest_path,
+        source_path,
+        allowed_language_layouts=(
+            "english_then_chinese",
+            "interleaved_bilingual",
+        ),
+    )
     primary_bytes, answer_bytes, image_bytes, source_inventory = read_selected_source(
         manifest,
         source_path,

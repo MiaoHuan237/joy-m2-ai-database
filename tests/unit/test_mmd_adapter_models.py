@@ -119,6 +119,22 @@ def issue(module, **overrides):
 
 
 class MmdAdapterPublicContractTests(unittest.TestCase):
+    def test_source_chinese_is_an_approved_typed_selection_value(self):
+        module = adapter_models(self)
+        try:
+            value = selection(module, language_layout="source_chinese")
+        except PipelineError as exc:
+            self.fail(f"source-only carrier value is not implemented: {exc}")
+        self.assertEqual(value.language_layout, "source_chinese")
+
+    def test_source_english_is_an_approved_typed_selection_value(self):
+        module = adapter_models(self)
+        try:
+            value = selection(module, language_layout="source_english")
+        except PipelineError as exc:
+            self.fail(f"source-only carrier value is not implemented: {exc}")
+        self.assertEqual(value.language_layout, "source_english")
+
     def test_exact_dataclass_fields_type_hints_no_defaults_and_frozen(self):
         module = adapter_models(self)
         expected = {
@@ -363,6 +379,15 @@ class MmdAdapterPublicContractTests(unittest.TestCase):
         )
         declared.reverse()
         self.assertEqual(value.selections, (first, second))
+
+    def test_base_manifest_preserves_existing_multiline_source_id_contract(self):
+        module = adapter_models(self)
+        for source_id in ("MODE-A\rSOURCE", "MODE-A\nSOURCE"):
+            try:
+                value = adapter_manifest(module, source_id=source_id)
+            except PipelineError:
+                self.fail("the base Mode A manifest carrier must remain unchanged")
+            self.assertEqual(value.source_id, source_id)
 
     def test_manifest_rejects_invalid_scalars_enums_sha_and_count(self):
         module = adapter_models(self)

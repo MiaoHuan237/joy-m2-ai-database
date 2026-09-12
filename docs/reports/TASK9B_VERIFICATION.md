@@ -10,10 +10,11 @@ Formal baseline: V1.18, 497 complete-question records
 
 ## 1. Result and authority
 
-Task 9B is `CLOSED / PASS` locally. It implements the single approved Mathpix
-MMD/MMD.ZIP adapter and emits only a canonical Task 9A staging package. It does
-not approve an import, write a database, create a V1.19 formal artifact, or
-promote a release.
+Task 9B is `CLOSED / PASS` locally. It implements the approved Mathpix
+MMD/MMD.ZIP parser mode plus the explicit source-mapping fallback and emits
+only a canonical Task 9A staging package after the mode-specific authority
+gate. It does not approve an import, write a database, create a V1.19 formal
+artifact, or promote a release.
 
 Authority and implementation checkpoints:
 
@@ -110,7 +111,7 @@ question was imported.
 
 | Gate | Result | Exit |
 |---|---:|---:|
-| Task 9B focused | 214/214 PASS | 0 |
+| Task 9B focused, including explicit source mapping | 342/342 PASS | 0 |
 | Maintained suite excluding separately attributed legacy module | 464/464 PASS | 0 |
 | Task 9A integration | 41/41 PASS | 0 |
 | Task 7 | 7/7 PASS | 0 |
@@ -143,16 +144,46 @@ appeared.
   connectivity was unavailable. Remote synchronization remains a delivery-only
   retry; no force push or history rewrite occurred.
 
-## 7. Next boundary
+## 7. Explicit source-mapping extension checkpoint
 
-Task 9B closure grants no writer, import, or promotion authority. The next
-autonomous work may only establish Task 9C Design/Plan authority and exercise
-in-memory, temporary, or dry-run writer behavior. Execution must stop at HUMAN
-GATE B before the first real V1.19 candidate database or formal write artifact.
-The first real digest-bound batch import and formal promotion remain HUMAN GATES
-C and D.
+The approved extension keeps parser mode unchanged and adds a separate
+`joy_m2.ingest.source_mapping` module with exactly:
 
-## 8. Conclusion
+```text
+SourceMappingProposal
+SourceMappingApproval
+propose_mmd_source_mapping
+adapt_mmd_package_from_mapping
+```
+
+Authority checkpoints are `c11f463` (mode Design), `4a5b6a3` (diagnostic
+closure), `ea6bf7f` (implementation Plan), and `78a5262` (final diagnostic
+envelopes). The implementation and this closure evidence are committed
+together as `feat: add explicit MMD source mapping`.
+
+All four extension RED groups were established before production. Subsequent
+independent-review findings were remediated test-first, including source-free
+M0 closure, span and complete-question validation, UTF-8 boundaries, image
+inventory and NFC/casefold precedence, Mode A compatibility, exact enrichment,
+and review-preview preservation. Final dual independent review is Critical 0,
+Important 0, Minor 0.
+
+The proposal API emits deterministic `source_mapping.json` and
+`SOURCE_MAPPING_REVIEW.md` only. A proposal is not authority and cannot be
+consumed without the exact, separately typed source-mapping approval. Mapping
+approval remains distinct from Task 9A import approval.
+
+## 8. Next boundary
+
+Task 9B closure grants no writer, import, or promotion authority. For the first
+real ambiguous source, execution may generate a deterministic proposed source
+mapping but must stop at `USER DECISION REQUIRED — SOURCE MAPPING REVIEW`.
+Without exact `USER APPROVED SOURCE MAPPING <source_id> <mapping_sha256>` text,
+the mapping may not be consumed, no canonical package may be created, and Task
+9A preflight may not run. The later real digest-bound batch import and formal
+promotion remain separate HUMAN GATES C and D.
+
+## 9. Conclusion
 
 `TASK 9B MMD ADAPTER — CLOSED / PASS`
 
