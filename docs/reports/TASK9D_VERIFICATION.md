@@ -1,4 +1,4 @@
-# Task 9D V1.19 Promotion Readiness Evidence
+# Task 9D V1.19 Promotion Completion Evidence
 
 Evidence date: 2026-09-13 (Asia/Shanghai)
 
@@ -6,15 +6,13 @@ Branch: `task8b/pipeline-migration`
 
 Implementation commit: `b5a47f4a231b2374ae6db0931a6754a52d11296e`
 
-Current formal authority: V1.18, 497 complete-question records
+Current formal authority: V1.19, 502 complete-question records
 
 ## 1. Result and authority
 
-Task 9D technical preparation is `READY FOR PROMOTION AUTHORIZATION`. It
-implements the approved deterministic V1.19 promotion builder, independent
-read-only verifier, declarative rollback receipt, and exact Human Gate D
-publication boundary. It has not published V1.19 and has never created
-`releases/V1.19/`, including temporarily.
+Task 9D is `CLOSED / PASS`. The exact Human Gate D statement was received, the
+approved public API atomically published the verified dry-run to
+`releases/V1.19/`, and the formal tree independently verifies all 18 checks.
 
 Authority and implementation checkpoints:
 
@@ -26,10 +24,14 @@ Authority and implementation checkpoints:
   `7af421fdce7a722da6f43aec7d3cd6656d7675b9`.
 - Implementation: `b5a47f4a231b2374ae6db0931a6754a52d11296e`
   (`feat: add verified V1.19 promotion pipeline`).
+- Post-Gate-D lifecycle and symlink-root safety:
+  `d1954a96e5783a9bfb4d28b4b86b77bbac8c50fd`
+  (`fix: preserve V1.19 release root identity`).
+- Formal four-file release: `e8b55147d6e0fcaa6e1e842393534adcfda96680`
+  (`release: publish formal V1.19`).
 
-The final two independent implementation reviews both reported Critical 0,
-Important 0, and Minor 0. There is no unresolved Task 9D implementation
-blocker.
+The final post-publication independent implementation reviews reported Critical
+0, Important 0, and Minor 0. There is no unresolved Task 9D blocker.
 
 ## 2. Exact input authority
 
@@ -112,9 +114,10 @@ and produced 23 expected failing subtests with zero setup/import errors.
 
 Independent review findings were converted to focused REDs before each minimum
 correction. The principal remediation checkpoint produced 14 expected failures
-and 1 expected error across seven targeted tests. Later resource-lifetime and
-manifest-rebind race regressions each independently demonstrated their failure
-before correction. The final Task 9D focused suite is 43/43 PASS, including:
+and 1 expected error across seven targeted tests. Later resource-lifetime,
+manifest-rebind race, and root-symlink regressions each independently
+demonstrated their failure before correction. The final Task 9D focused suite
+is 48/48 PASS, including:
 
 - Gate D source-swap/TOCTOU rejection and post-copy approval rebinding;
 - complete baseline and candidate relation preservation;
@@ -123,6 +126,7 @@ before correction. The final Task 9D focused suite is 43/43 PASS, including:
 - malformed and parsed-invalid JSON boundaries, including rebind races;
 - successful and partial-open SQLite connection closure;
 - atomic no-replace build/publication and owned-state-only cleanup;
+- leaf, ancestor, and loop symlink rejection before verification/publication;
 - clean-clone reproducibility without ignored staging fixtures.
 
 ## 5. Real dual-root dry-run
@@ -148,7 +152,7 @@ Their complete file trees are byte-identical. Each verifier report is 18/18
 | baseline / promoted / total | 497 / 5 / 502 |
 | formal images | 0 |
 
-The expected formal tree currently contains four core files and no images:
+The published formal tree contains exactly four core files and no images:
 
 ```text
 releases/V1.19/
@@ -158,7 +162,8 @@ releases/V1.19/
   rollback.json
 ```
 
-This is expected output only; the formal root remains absent.
+The formal tree is byte-identical to both approved dry-run roots and independently
+closes all 18 verifier checks to `PASS`.
 
 ## 6. Determinism and preservation
 
@@ -182,15 +187,15 @@ searched, read, or rehashed.
 | Task 9A integration | 41/41 PASS | 0 |
 | Task 9B focused | 342/342 PASS | 0 |
 | Task 9C focused | 71/71 PASS | 0 |
-| Task 9D focused | 43/43 PASS | 0 |
-| Complete maintained suite excluding the attributed legacy behavior module | 706/706 PASS | 0 |
+| Task 9D focused | 48/48 PASS | 0 |
+| Complete maintained suite excluding the attributed legacy behavior module | 711/711 PASS | 0 |
 | V1.18 independent validator | PASS; 497/452/45, integrity ok, 0 FK errors | 0 |
 | `git diff --check` | PASS | 0 |
 
 All maintained suites have zero skips and zero expected failures. The separately
 attributed legacy baseline is unchanged and is not a Task 9D completion gate.
 
-## 8. Rollback and publication action
+## 8. Rollback and completed publication
 
 Because V1.18 is never modified, rollback before publication removes only the
 Task 9D-owned failed private tree. The canonical rollback receipt is declarative
@@ -198,7 +203,7 @@ and grants no deletion authority by itself. After approved publication, removal
 of the complete V1.19 tree is allowed only when both its release digest and
 complete artifact closure still match; rollback never rewrites V1.18.
 
-After an exact Gate D approval, publication will:
+After the exact Gate D approval, publication performed these steps:
 
 1. independently verify the approved dry-run root;
 2. bind its release digest to the exact approval carrier;
@@ -217,17 +222,19 @@ pointer/index update is required or authorized.
 
 ## 9. Human Gate D
 
-Formal V1.19 publication is `NOT STARTED`. The only valid next authorization is:
+Human Gate D was satisfied by the exact statement:
 
 ```text
 USER APPROVED RELEASE PROMOTION V1.19 7246d099028e350ea5074524a808c9eb87e83e3df218349040eaf20f0109a69d
 ```
 
-Until that exact statement is received, `publish_v119_release()` must not be
-called and `releases/V1.19/` must remain absent.
+The statement bound the approved release digest and was consumed only by
+`publish_v119_release()`. No approval was inferred or reused. The formal tree
+exists, no current-release pointer/index was created, and no next implementation
+task is authorized.
 
 ## 10. Conclusion
 
-`TASK 9D TECHNICAL PREPARATION — PASS`
+`TASK 9D FORMAL V1.19 PROMOTION — CLOSED / PASS`
 
-`USER DECISION REQUIRED — FINAL V1.19 PROMOTION AUTHORIZATION`
+`WAIT FOR EXPLICIT NEXT-TASK AUTHORIZATION`
