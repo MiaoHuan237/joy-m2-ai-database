@@ -19,6 +19,16 @@ from .models import (
     ImportPreflightResult,
 )
 from .preflight import preflight_import
+from .promotion import build_v119_promotion, publish_v119_release
+from .promotion_models import (
+    ReleasePromotionApproval,
+    V119PromotionArtifacts,
+    V119PromotionBuildRequest,
+    V119PromotionContract,
+    V119PromotionVerificationRequest,
+    V119PublicationRequest,
+)
+from .promotion_verification import verify_v119_promotion
 from .writer import build_v119_candidate
 from .writer_models import (
     ImportApproval,
@@ -53,4 +63,13 @@ __all__ = (
     "V119CandidateArtifacts",
     "build_v119_candidate",
     "verify_v119_candidate",
+    "V119PromotionContract",
+    "V119PromotionBuildRequest",
+    "V119PromotionVerificationRequest",
+    "ReleasePromotionApproval",
+    "V119PublicationRequest",
+    "V119PromotionArtifacts",
+    "build_v119_promotion",
+    "verify_v119_promotion",
+    "publish_v119_release",
 )

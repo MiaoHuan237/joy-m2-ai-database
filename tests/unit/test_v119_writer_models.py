@@ -68,6 +68,15 @@ PUBLIC_NAMES = (
     "V119CandidateArtifacts",
     "build_v119_candidate",
     "verify_v119_candidate",
+    "V119PromotionContract",
+    "V119PromotionBuildRequest",
+    "V119PromotionVerificationRequest",
+    "ReleasePromotionApproval",
+    "V119PublicationRequest",
+    "V119PromotionArtifacts",
+    "build_v119_promotion",
+    "verify_v119_promotion",
+    "publish_v119_release",
 )
 
 
