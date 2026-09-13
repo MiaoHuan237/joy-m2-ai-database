@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-09-12 (Asia/Shanghai)
+Updated: 2026-09-13 (Asia/Shanghai)
 
 ## Formal data
 
@@ -13,31 +13,33 @@ Updated: 2026-09-12 (Asia/Shanghai)
 - Answer identity: 392 `source_provided`, 71 `ai_solved_verified`, 34 `missing_from_source`
 - P0/P1 audit blockers: 0/0
 - V1.18 is frozen and must not be edited in place.
-- V1.19 formal artifacts: `0`; imported questions: `0`. Human Gate B is
-  `SATISFIED`; the approved synthetic staging candidate exists at
-  `data/staging/task9c-v119-candidate/`, is classified `TEST / SYNTHETIC — NOT
-  FOR PROMOTION`, and has candidate SQLite SHA-256
-  `efee78f97574a543d0de7830ca26a3adacb4768129ec4db6840435ab4dcd9e21`.
-  Human Gate C has not been triggered for this fixture; promotion remains
-  `NOT STARTED` and Human Gate D remains active.
+- V1.19 formal artifacts: `0`; formal imported questions: `0`. The first real
+  user batch passed Gate C and exists only as the verified, unpromoted Task 9C
+  candidate at `data/staging/task9c-v119-real-0918-interval-candidate/`.
+  It binds 5 approved additions, batch
+  `TASK9B-REAL-0918-INTERVAL-REPRODUCTION-001`, preflight SHA-256
+  `4aa3ff8b419a0fcca57c805d5f10f252658cb30c00f6cf1b74c95ab3009333c9`,
+  candidate SQLite SHA-256
+  `9d30cf444e9d6686128f884d5a3cf57f4e58ce544b7933d7a0a47ec0e8212d20`,
+  and projected formal count 502. Task 9D technical preparation is complete,
+  but Human Gate D is unsatisfied and `releases/V1.19/` remains absent.
 
 ## Current task
 
-Task 9C temporary-root candidate writer/verifier is `COMPLETED / COMMITTED` at
-`1881a3aff5e064646395516102e5f3d39a2b619c` (`feat: add verified V1.19
-candidate writer`). The independently reviewed Design is committed at
-`9dbe183f6506ac350cb52f6ae8c3daba12b06874`; the Plan at
-`94d35c106946aa80e41d058ce4927ed8dfcb0cd7`; its reproducible src-layout test
-environment correction at `5e034dc96a91c00357725f97053e1176ec180d2b`;
-Phase A at `fbbcea03c9d5775e6553ccbe2460ee098ecd3fc4`; and lifecycle-test migration
-authority at `bfac168ac128a3d243055402df0c887a89136df8`. Phase A recorded a valid
-9-test RED followed by 9/9 GREEN. Phase B established all four approved
-behavior RED groups before production, then reached 71/71 focused GREEN and
-535/535 complete maintained GREEN. Final independent review is 0 Critical / 0
-Important / 0 Minor after all focused remediation RED-to-GREEN cycles. Human
-Gate B authorized the first synthetic repository staging write, and its 16/16
-candidate-verifier checks pass. No real user-batch import, formal V1.19 release,
-or promotion exists. The next Human Gate is C before the first real user batch.
+Task 9D formal V1.19 promotion preparation is `READY FOR PROMOTION
+AUTHORIZATION`. Its independently reviewed Design is committed at
+`4f9924a712d02feb889cbd24e5c3867a9daba31c`; the implementation Plan at
+`d1057affd79e7fd81119cd62bdc08d0982958cd3`; public-surface scope alignment at
+`7af421fdce7a722da6f43aec7d3cd6656d7675b9`; and the verified implementation at
+`b5a47f4a231b2374ae6db0931a6754a52d11296e` (`feat: add verified V1.19
+promotion pipeline`). Final dual independent review is Critical 0 / Important
+0 / Minor 0. Task 9D focused tests are 43/43 PASS and the complete maintained
+suite is 706/706 PASS with zero skips or expected failures. Two independent
+non-formal real-candidate dry-runs are byte-identical, independently verify
+18/18 checks, and bind release digest
+`7246d099028e350ea5074524a808c9eb87e83e3df218349040eaf20f0109a69d`.
+No current-release pointer/index exists or changes. The only next action is an
+explicit Human Gate D decision; formal publication has not occurred.
 
 Task 9B remains `CLOSED / PASS`. Its original parser-mode implementation is
 committed at `35778b80f931ecf4903ca553ab0fb1b1bb5e8110` and its explicit
@@ -129,10 +131,9 @@ Scope:
   the committed integration test is
   `tests/integration/test_ingest_preflight.py`, SHA-256
   `5e5f01271dbbe67ad8b0119781af223d9c1d29a68254eecf0689520c8c83975b`.
-- `src/joy_m2/ingest/__init__.py`: `CREATED` by approved Task 9C Phase A; its
-  exact 22-name public surface combines the frozen Task 9A, Task 9B, and Task
-  9C public contracts without exporting private helpers or
-  `ImportApprovalError`.
+- `src/joy_m2/ingest/__init__.py`: its exact append-only public surface combines
+  the frozen Task 9A, Task 9B, Task 9C, and approved Task 9D contracts without
+  exporting private helpers or `ImportApprovalError`.
 - Task 3 authority preserves all approved manifest/normalization/digest, adaptation/issue, image-identity, duplicate/rejected, and missing-image rules. The completed remediation left the existing seven duplicate/collision and eight non-duplicate codes unchanged and added exactly one package/file-level code, yielding a closed sixteen-code authority. A safely read file with a size/SHA mismatch emits `file_integrity_mismatch`; missing, unreadable, non-regular, and containment failures remain early `PipelineError`. Corrupted bytes are excluded from downstream parsing/evidence/matching, affected candidates are not constructed, and no second integrity channel or thirteenth digest key is allowed.
 - The independent 37-method / 29-RED blocker scan found no other structured-BLOCKED condition lacking an approved `ImportIssue` code. That result preserves the closed sixteen-code inventory and does not authorize a seventeenth code.
 - Historical audit sequence only, with no current execution effect: the earlier
@@ -164,8 +165,14 @@ Scope:
   roots; the independent verifier closes all 16 ordered checks. Human Gate B
   authorized the synthetic `TASK9B-FIXTURE-VECTOR-17` candidate at
   `data/staging/task9c-v119-candidate/`; it is immutable verification evidence,
-  not a real import and not eligible for promotion. The next Human Gate is C.
-- Task 9D: `NOT STARTED`; no real batch acceptance has begun.
+  not a real import and not eligible for promotion. Human Gate C separately
+  authorized the current 5-question real candidate; that candidate remains
+  verified and unpromoted.
+- Task 9D: `READY FOR PROMOTION AUTHORIZATION`; deterministic builder,
+  independent verifier, rollback receipt, atomic publication gate, real dual
+  dry-run, maintained regressions, and independent implementation review are
+  complete. Human Gate D remains `REQUIRED`; formal publication is `NOT
+  STARTED`.
 - `teacher_notes` and `common_errors` are Task 9A hashed import evidence/enrichment metadata, not current V2 formal fields; future formal representation requires separate schema authority.
 - Task 9A images are read-only deterministic evidence only; no copy, move, rename, destination, or formal image identity change is authorized.
 - Import approval binds `(batch_id, preflight_sha256, V1.19)` and is strictly separate from formal release/promotion authorization.
@@ -176,10 +183,10 @@ Scope:
   literal oracle fully reproducible without inspecting production projection
   code.
 - The literal happy-path oracle remains unchanged: `manifest_sha256` is `b5a0ae6597028c48c6f7cdc81bd7e67d61dd369cbf96d7c6a4e96efd73984c5d` and final `preflight_sha256` is `087574a8af6fe28ac65a5b5810794952044cb5f0778ed3492d1e7819a4be33c2`.
-- Formal database remains V1.18 with 497 questions; no new questions have been
-  imported and no formal V1.19 artifact exists. Human Gate B authorized only
-  the current synthetic staging candidate. The first real user-batch import
-  remains Human Gate C, and every promotion remains Human Gate D.
+- Formal database remains V1.18 with 497 questions; no new question has entered
+  formal authority and no formal V1.19 artifact exists. Human Gate C authorized
+  exactly the current five-question real candidate. Formal promotion remains a
+  separate Human Gate D decision.
 - Task 9A capability closure includes canonical JSON import preflight,
   deterministic and path-independent processing, read-only baseline access,
   exact sixteen-code structured issues, duplicate/collision/adaptation and
@@ -192,15 +199,17 @@ Scope:
   `93566e4fb4f95d1258f83ae2da3bcaad9573a737`; `AGENTS.md` and
   `docs/AUTONOMY_POLICY.md` define the default checkpoint sequence, independent
   review requirements, session recovery, ordinary Git authority, and HUMAN
-  GATES A–F. Task 9B remains staging-only; Task 9C stops before its first real
-  candidate or formal V1.19 write; Task 9D stops before the first real
-  digest-bound import approval.
+  GATES A–F. Task 9B remains staging-only; Task 9C constructed the verified real
+  candidate only after Gate C; Task 9D stops immediately before the first
+  digest-bound formal V1.19 publication at Gate D.
 - Safety branch `backup/task-7.1-ceb179e-20260808` remains retained.
 
 ## Completion gate
 
 - Current explicit maintained suite, excluding the separately attributed legacy
-  behavior module: 535/535 passed; skip=0 and expectedFailure=0.
+  behavior module: 706/706 passed; skip=0 and expectedFailure=0.
+- Task 9D focused promotion suite: 43/43 passed; final dual independent review:
+  Critical 0 / Important 0 / Minor 0.
 - Task 9C Phase B focused writer/verifier suite: 71/71 passed; final independent
   review: Critical 0 / Important 0 / Minor 0.
 - Task 9C Phase A public contracts: 9/9 passed; independent review:
@@ -236,15 +245,18 @@ Scope:
 
 ## Next task
 
-Human Gate B is satisfied for the existing synthetic staging candidate. The
-next authorized action is proposal-only use of Task 9B explicit source mapping
-for the external `0918 区间再现_课上补充 笔记 2.mmd.zip` source. The proposal is
-advisory and must stop before canonicalization and Task 9A preflight until the
-exact `USER APPROVED SOURCE MAPPING <source_id> <mapping_sha256>` approval is
-received. Preserve Task 9A as the deterministic read-only preflight, Task 9B as
-the staging-only adapter, the approved synthetic candidate byte-for-byte, and
-V1.18 at 497 questions. Do not start Task 8C, Phase 2A, CLI/consumer migration,
-a real Task 9C write, Task 9D import, or promotion. The later import and
-promotion approvals remain distinct HUMAN GATES C and D.
+Task 9A and Task 9B are closed; Task 9C candidate construction and Task 9D
+technical promotion preparation are complete. The verified real candidate
+remains unpromoted, V1.18 remains the current 497-question formal authority,
+and `releases/V1.19/` is absent. The only next action is Human Gate D. The exact
+required statement is:
 
-`USER DECISION REQUIRED — SOURCE MAPPING REVIEW`
+```text
+USER APPROVED RELEASE PROMOTION V1.19 7246d099028e350ea5074524a808c9eb87e83e3df218349040eaf20f0109a69d
+```
+
+Until that exact approval is received, do not call `publish_v119_release`,
+create `releases/V1.19/`, update any release pointer/index, begin Task 8C or
+Phase 2A, or perform any other formal-data mutation.
+
+`USER DECISION REQUIRED — FINAL V1.19 PROMOTION AUTHORIZATION`
