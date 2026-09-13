@@ -93,8 +93,9 @@ Scope:
   authorized.
 - V1.18 remains the current formal release. No formal database, frozen hash,
   compatibility object, question data, `releases/`, or `legacy/` file changed.
-  The only V1.19 repository state is the approved ignored synthetic staging
-  candidate described above.
+  V1.19 state remains non-formal and ignored: the approved synthetic staging
+  candidate, the verified real Task 9C candidate, and the verified Task 9D
+  dry-run roots described below. None is formal release authority.
 - Task 8B unresolved blockers: `NONE`. Task 9A unresolved implementation
   blockers: `NONE`. Its exact sixteen-code issue pipeline includes
   `file_integrity_mismatch` as the sole package/file-level integrity issue; its

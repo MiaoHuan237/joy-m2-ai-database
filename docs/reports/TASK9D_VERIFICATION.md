@@ -192,10 +192,11 @@ attributed legacy baseline is unchanged and is not a Task 9D completion gate.
 
 ## 8. Rollback and publication action
 
-Because V1.18 is never modified, rollback before or during publication removes
-only the newly owned incomplete/private V1.19 tree. The canonical rollback
-receipt authorizes removal only when the exact release digest matches; it never
-rewrites V1.18.
+Because V1.18 is never modified, rollback before publication removes only the
+Task 9D-owned failed private tree. The canonical rollback receipt is declarative
+and grants no deletion authority by itself. After approved publication, removal
+of the complete V1.19 tree is allowed only when both its release digest and
+complete artifact closure still match; rollback never rewrites V1.18.
 
 After an exact Gate D approval, publication will:
 
@@ -207,9 +208,12 @@ After an exact Gate D approval, publication will:
 6. atomically rename without replacement to `releases/V1.19/`;
 7. independently verify and rebind the final formal root.
 
-Any failure cleans only Task 9D-owned new state. There is no current-release
-pointer or index in this repository, so no pointer/index update is required or
-authorized.
+Before rename, a failure cleans only the Task 9D-owned private tree. After
+rename, a failed verification removes the just-created V1.19 tree only when its
+release digest and complete tree fingerprint still match the preverified source;
+if that state changed, promotion raises `PromotionError` and leaves it untouched.
+There is no current-release pointer or index in this repository, so no
+pointer/index update is required or authorized.
 
 ## 9. Human Gate D
 
