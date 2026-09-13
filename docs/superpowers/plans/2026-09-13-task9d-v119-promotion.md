@@ -45,6 +45,9 @@ real candidate verifier 16/16 PASS; `releases/V1.19/` absent.
 - Create `tests/unit/test_v119_promotion_models.py`
 - Create `tests/unit/test_v119_promotion_primitives.py`
 - Create `tests/integration/test_v119_promotion.py`
+- Modify `tests/unit/test_v119_writer_models.py` only to migrate its exact
+  `joy_m2.ingest.__all__` expectation from the closed 22-name Task 9C surface
+  to that unchanged prefix plus the nine approved Task 9D names.
 
 ### Completion evidence
 
@@ -53,7 +56,7 @@ real candidate verifier 16/16 PASS; `releases/V1.19/` absent.
 
 ### Explicitly excluded
 
-No other `src/`, `tests/`, config, script, CLI, Task 9A/9B/9C, database,
+No other `src/`, `tests/`, config, script, CLI, Task 9A/9B/9C behavior, database,
 export, release, data, legacy, frozen, or formal release file may change.
 Generated real dry-runs are ignored staging evidence only. Formal
 `releases/V1.19/` creation, pointer/index changes, promotion execution, and
@@ -90,6 +93,8 @@ Any mismatch stops as `BLOCKED — TASK 9D BASELINE DRIFT` before changes.
 - Later create signature-only `src/joy_m2/ingest/promotion.py`
 - Later create signature-only `src/joy_m2/ingest/promotion_verification.py`
 - Later modify `src/joy_m2/ingest/__init__.py`
+- Later modify `tests/unit/test_v119_writer_models.py` only to append the nine
+  approved Task 9D names to its exact `joy_m2.ingest.__all__` expectation.
 
 ### Step 1.1 — Write tests before production
 
@@ -106,6 +111,12 @@ for absent approved contracts, not an accidental import/setup error. Lock:
 - exact three function signatures and annotations;
 - exact nine-name append-only `joy_m2.ingest.__all__` extension with the
   existing 22 names unchanged.
+
+Because the existing Task 9C public-surface regression freezes those 22 names
+as the complete tuple, update only that test's expected tuple to append the
+nine Task 9D names. This is an additive expectation migration, not a Task 9C
+API or behavior change, and it is required before claiming the Task 9C model/API
+regression remains GREEN.
 
 Run:
 
@@ -304,7 +315,7 @@ $PY -m unittest -v \
 git diff --check
 ```
 
-Require all PASS, skip 0, expectedFailure 0. Inspect the exact seven-file
+Require all PASS, skip 0, expectedFailure 0. Inspect the exact eight-file
 implementation scope and confirm no formal root/data/frozen changes.
 
 Request a strict independent implementation review for:
@@ -326,7 +337,7 @@ Suggested implementation commit after PASS:
 feat: add verified V1.19 promotion pipeline
 ```
 
-Commit only the seven implementation files, verify parent/scope/diff/clean tree,
+Commit only the eight implementation/test files, verify parent/scope/diff/clean tree,
 and ordinary-push the current branch. Do not publish V1.19.
 
 ---

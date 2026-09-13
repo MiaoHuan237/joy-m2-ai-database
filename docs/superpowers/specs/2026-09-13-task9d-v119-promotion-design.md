@@ -967,6 +967,9 @@ Implementation:
 - `tests/unit/test_v119_promotion_models.py` (new)
 - `tests/unit/test_v119_promotion_primitives.py` (new)
 - `tests/integration/test_v119_promotion.py` (new)
+- `tests/unit/test_v119_writer_models.py` (modify only its exact package-export
+  expectation so the unchanged ordered Task 9A/9B/9C prefix is followed by the
+  nine approved Task 9D exports)
 
 Completion documentation:
 
