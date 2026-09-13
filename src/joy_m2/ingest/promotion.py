@@ -715,6 +715,13 @@ def _gate_d_binds_root(
     )
 
 
+def _has_symlink_component(path: Path) -> bool:
+    try:
+        return any(component.is_symlink() for component in (path, *path.parents))
+    except (OSError, RuntimeError):
+        return True
+
+
 def build_v119_promotion(
     request: V119PromotionBuildRequest,
     config: PipelineConfig,
@@ -766,7 +773,16 @@ def publish_v119_release(
         raise PipelineError("config must be an exact valid PipelineConfig")
     if not _reconstructs_exactly(request.approval, ReleasePromotionApproval):
         raise PromotionError("Gate D approval carrier is invalid")
-    source = config.require_staging_output(request.dry_run_dir)
+    declared_source = request.dry_run_dir
+    try:
+        if _has_symlink_component(declared_source):
+            raise PromotionError("dry-run promotion root is invalid")
+        resolved_source = declared_source.resolve(strict=False)
+    except (OSError, RuntimeError) as error:
+        raise PromotionError("dry-run promotion root is invalid") from error
+    if declared_source != resolved_source:
+        raise PromotionError("dry-run promotion root is invalid")
+    source = config.require_staging_output(declared_source)
     if source == config.staging_root or not source.is_dir() or source.is_symlink():
         raise PromotionError("dry-run promotion root is invalid")
     from .promotion_verification import verify_v119_promotion

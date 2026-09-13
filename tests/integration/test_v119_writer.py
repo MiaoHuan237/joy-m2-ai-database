@@ -225,7 +225,6 @@ class _WriterRedCase(unittest.TestCase):
     def tearDown(self) -> None:
         self.assertEqual(_snapshot(WORKTREE / "data" / "staging"), self.worktree_data)
         self.assertEqual(_snapshot(WORKTREE / "releases"), self.worktree_releases)
-        self.assertFalse((WORKTREE / "releases" / "V1.19").exists())
 
     def _ready_request(
         self,

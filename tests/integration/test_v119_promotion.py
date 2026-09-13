@@ -291,12 +291,12 @@ class PromotionBehaviorContractTests(unittest.TestCase):
     def setUp(self) -> None:
         self.before_v118 = _sha256(BASELINE_SOURCE)
         self.before_staging = _tree(WORKTREE / "data/staging")
-        self.assertFalse((WORKTREE / "releases/V1.19").exists())
+        self.before_releases = _tree(WORKTREE / "releases")
 
     def tearDown(self) -> None:
         self.assertEqual(_sha256(BASELINE_SOURCE), self.before_v118)
         self.assertEqual(_tree(WORKTREE / "data/staging"), self.before_staging)
-        self.assertFalse((WORKTREE / "releases/V1.19").exists())
+        self.assertEqual(_tree(WORKTREE / "releases"), self.before_releases)
 
     @contextmanager
     def authority(self):
@@ -342,6 +342,69 @@ class PromotionBehaviorContractTests(unittest.TestCase):
             self.assertEqual(tuple(check.name for check in result.verification_report.checks), CHECK_NAMES)
             self.assertTrue(all(check.passed for check in result.verification_report.checks))
             self.assertEqual(result.release_digest, json.loads((root / "manifest.json").read_text())["promotion"]["release_digest"])
+
+    def test_verifier_rejects_symlinked_release_root(self):
+        with self.authority() as authority:
+            result = self._build(authority.build_request(), authority.config)
+            source = result.database.path.parent
+            source_before = _tree(source)
+            formal = authority.config.releases_root / "V1.19"
+            formal.symlink_to(source, target_is_directory=True)
+
+            report = self._verify(
+                V119PromotionVerificationRequest(
+                    formal, authority.candidate, authority.contract
+                ),
+                authority.config,
+            )
+
+            self.assertEqual(report.status, "FAIL")
+            checks = {check.name: check.passed for check in report.checks}
+            self.assertFalse(checks["release_directory"])
+            self.assertFalse(checks["publication_boundary"])
+            self.assertEqual(_tree(source), source_before)
+
+    def test_verifier_rejects_release_root_beneath_symlinked_ancestor(self):
+        with self.authority() as authority:
+            result = self._build(
+                authority.build_request("actual/promotion"), authority.config
+            )
+            source = result.database.path.parent
+            source_before = _tree(source)
+            linked_parent = authority.config.staging_root / "linked-parent"
+            linked_parent.symlink_to(source.parent, target_is_directory=True)
+
+            report = self._verify(
+                V119PromotionVerificationRequest(
+                    linked_parent / source.name,
+                    authority.candidate,
+                    authority.contract,
+                ),
+                authority.config,
+            )
+
+            self.assertEqual(report.status, "FAIL")
+            checks = {check.name: check.passed for check in report.checks}
+            self.assertFalse(checks["release_directory"])
+            self.assertFalse(checks["publication_boundary"])
+            self.assertEqual(_tree(source), source_before)
+
+    def test_verifier_rejects_symlink_loop_as_structured_fail(self):
+        with self.authority() as authority:
+            loop = authority.config.staging_root / "loop"
+            loop.symlink_to(loop, target_is_directory=True)
+
+            report = self._verify(
+                V119PromotionVerificationRequest(
+                    loop / "promotion", authority.candidate, authority.contract
+                ),
+                authority.config,
+            )
+
+            self.assertEqual(report.status, "FAIL")
+            checks = {check.name: check.passed for check in report.checks}
+            self.assertFalse(checks["release_directory"])
+            self.assertFalse(checks["publication_boundary"])
 
     def test_task9d_sqlite_connections_close_on_success_and_partial_open_failure(self):
         class TrackingConnection:
@@ -908,6 +971,56 @@ class PromotionBehaviorContractTests(unittest.TestCase):
             self.assertEqual(published.release_digest, artifacts.release_digest)
             self.assertEqual(published.verification_report.status, "PASS")
             self.assertEqual(_sha256(authority.config.releases_root / "V1.18" / BASELINE_SOURCE.name), BASELINE_SHA)
+
+    def test_publication_rejects_symlinked_dry_run_root(self):
+        with self.authority() as authority:
+            artifacts = self._build(authority.build_request("approved"), authority.config)
+            approved_root = artifacts.database.path.parent
+            approved_before = _tree(approved_root)
+            linked_root = authority.config.staging_root / "linked-promotion"
+            linked_root.symlink_to(approved_root, target_is_directory=True)
+            approval = ReleasePromotionApproval(
+                "V1.19",
+                artifacts.release_digest,
+                f"USER APPROVED RELEASE PROMOTION V1.19 {artifacts.release_digest}",
+            )
+
+            with self.assertRaises(PromotionError):
+                self._publish(
+                    V119PublicationRequest(
+                        linked_root,
+                        authority.candidate,
+                        approval,
+                        authority.contract,
+                    ),
+                    authority.config,
+                )
+
+            self.assertFalse((authority.config.releases_root / "V1.19").exists())
+            self.assertEqual(_tree(approved_root), approved_before)
+
+    def test_publication_rejects_symlink_loop_with_promotion_error(self):
+        with self.authority() as authority:
+            loop = authority.config.staging_root / "loop"
+            loop.symlink_to(loop, target_is_directory=True)
+            approval = ReleasePromotionApproval(
+                "V1.19",
+                "0" * 64,
+                "USER APPROVED RELEASE PROMOTION V1.19 " + "0" * 64,
+            )
+
+            with self.assertRaises(PromotionError):
+                self._publish(
+                    V119PublicationRequest(
+                        loop / "promotion",
+                        authority.candidate,
+                        approval,
+                        authority.contract,
+                    ),
+                    authority.config,
+                )
+
+            self.assertFalse((authority.config.releases_root / "V1.19").exists())
 
     def test_publication_conflict_and_copy_failure_do_not_replace_or_leave_private_tree(self):
         with self.authority() as authority:

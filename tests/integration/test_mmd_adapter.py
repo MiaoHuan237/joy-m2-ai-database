@@ -3351,13 +3351,14 @@ class CanonicalPackageIntegrationRedTests(AdapterIntegrationRedCase):
 
     def test_representative_complete_tree_is_byte_identical_to_independent_golden(self):
         baseline_before = _sha256(BASELINE_PATH.read_bytes())
+        releases_before = _tree_state(ROOT / "releases")
         with tempfile.TemporaryDirectory() as directory:
             with self.assert_historical_v116_zip_untouched():
                 package = self.run_representative(Path(directory))
             actual = _tree_bytes(package.package_root)
         self.assertEqual(actual, _tree_bytes(GOLDEN_ROOT))
         self.assertEqual(_sha256(BASELINE_PATH.read_bytes()), baseline_before)
-        self.assertFalse((ROOT / "releases/V1.19").exists())
+        self.assertEqual(_tree_state(ROOT / "releases"), releases_before)
         self.assertFalse((ROOT / "data/baselines/V1.19").exists())
 
 

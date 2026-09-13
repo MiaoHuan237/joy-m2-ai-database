@@ -1179,7 +1179,7 @@ class ClosureDigestAndZeroWriteRedTests(PreflightBehaviorCase):
         candidate_existed = candidate_root.exists()
         candidate_before = _tree_fingerprint(candidate_root)
         formal_v119 = ROOT / "releases/V1.19"
-        self.assertFalse(formal_v119.exists() or formal_v119.is_symlink())
+        formal_v119_before = _tree_fingerprint(formal_v119)
         baseline_before = _sha(BASELINE_PATH.read_bytes())
         try:
             with tempfile.TemporaryDirectory() as directory:
@@ -1193,7 +1193,7 @@ class ClosureDigestAndZeroWriteRedTests(PreflightBehaviorCase):
         self.assertEqual(tuple(_tree_fingerprint(path) for path in protected), before)
         self.assertEqual(candidate_root.exists(), candidate_existed)
         self.assertEqual(_tree_fingerprint(candidate_root), candidate_before)
-        self.assertFalse(formal_v119.exists() or formal_v119.is_symlink())
+        self.assertEqual(_tree_fingerprint(formal_v119), formal_v119_before)
         self.assertEqual(_sha(BASELINE_PATH.read_bytes()), baseline_before)
         self.assertEqual(sqlite3.connect(BASELINE_PATH).execute("select count(*) from complete_questions_v2").fetchone()[0], 497)
         if missing is not None:

@@ -340,7 +340,6 @@ class _RealWorktreeGuard:
         self.assertEqual(
             _entry_snapshot(WORKTREE / "releases"), self._worktree_releases
         )
-        self.assertFalse((WORKTREE / "releases" / "V1.19").exists())
 
 
 def _canonical_json_file(value: object) -> bytes:

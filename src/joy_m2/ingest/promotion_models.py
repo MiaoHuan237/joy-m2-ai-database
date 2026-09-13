@@ -41,6 +41,12 @@ def _path(value: object, name: str) -> Path:
     return value.resolve(strict=False)
 
 
+def _identity_path(value: object, name: str) -> Path:
+    if not isinstance(value, Path):
+        raise PipelineError(f"{name} must be a Path")
+    return value.absolute()
+
+
 def _digest(value: object, name: str) -> None:
     if type(value) is not str or _SHA256.fullmatch(value) is None:
         raise PipelineError(f"{name} must be a lowercase SHA-256 digest")
@@ -91,7 +97,11 @@ class V119PromotionVerificationRequest:
     def __post_init__(self) -> None:
         _exact(self.candidate, V119VerificationRequest, "candidate")
         _exact(self.contract, V119PromotionContract, "contract")
-        object.__setattr__(self, "release_dir", _path(self.release_dir, "release_dir"))
+        object.__setattr__(
+            self,
+            "release_dir",
+            _identity_path(self.release_dir, "release_dir"),
+        )
 
 
 @dataclass(frozen=True)
@@ -121,7 +131,11 @@ class V119PublicationRequest:
         _exact(self.candidate, V119VerificationRequest, "candidate")
         _exact(self.approval, ReleasePromotionApproval, "approval")
         _exact(self.contract, V119PromotionContract, "contract")
-        object.__setattr__(self, "dry_run_dir", _path(self.dry_run_dir, "dry_run_dir"))
+        object.__setattr__(
+            self,
+            "dry_run_dir",
+            _identity_path(self.dry_run_dir, "dry_run_dir"),
+        )
 
 
 @dataclass(frozen=True)

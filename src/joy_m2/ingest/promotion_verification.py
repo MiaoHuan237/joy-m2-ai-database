@@ -316,6 +316,24 @@ def _is_digest(value: object) -> bool:
     return type(value) is str and _SHA256.fullmatch(value) is not None
 
 
+def _report(states: dict[str, bool]) -> VerificationReport:
+    checks = tuple(
+        VerificationCheck(name, states[name], "PASS" if states[name] else "FAIL")
+        for name in CHECK_NAMES
+    )
+    return VerificationReport(
+        "PASS" if all(check.passed for check in checks) else "FAIL",
+        checks,
+    )
+
+
+def _has_symlink_component(path: Path) -> bool:
+    try:
+        return any(component.is_symlink() for component in (path, *path.parents))
+    except (OSError, RuntimeError):
+        return True
+
+
 def _artifact_valid(value: object, kind: str) -> bool:
     return (
         _exact_keys(value, ("relative_path", "sha256", "size_bytes", "kind"))
@@ -625,15 +643,31 @@ def verify_v119_promotion(
         raise PipelineError("request must be an exact valid V119PromotionVerificationRequest")
     if not _reconstructs_exactly(config, PipelineConfig):
         raise PipelineError("config must be an exact valid PipelineConfig")
-    root = request.release_dir.resolve(strict=False)
+    states = {name: False for name in CHECK_NAMES}
+    states["promotion_contract"] = _reconstructs_exactly(
+        request.contract, V119PromotionContract
+    )
+    root = request.release_dir
+    try:
+        if _has_symlink_component(root):
+            return _report(states)
+        resolved_root = root.resolve(strict=False)
+    except (OSError, RuntimeError):
+        return _report(states)
     if not root.exists():
         raise InputMissingError("promotion root does not exist")
-    states = {name: False for name in CHECK_NAMES}
-    staging = root.is_relative_to(config.staging_root) and root != config.staging_root
-    formal = root == (config.releases_root / "V1.19").resolve(strict=False)
-    states["release_directory"] = root.is_dir() and not root.is_symlink() and (staging or formal)
+    direct_root = root == resolved_root
+    staging = (
+        resolved_root.is_relative_to(config.staging_root)
+        and resolved_root != config.staging_root
+    )
+    formal = resolved_root == (config.releases_root / "V1.19").resolve(
+        strict=False
+    )
+    states["release_directory"] = (
+        direct_root and root.is_dir() and (staging or formal)
+    )
     states["publication_boundary"] = states["release_directory"]
-    states["promotion_contract"] = _reconstructs_exactly(request.contract, V119PromotionContract)
     try:
         candidate_report = verify_v119_candidate(request.candidate, config)
         states["candidate_verification"] = candidate_report.status == "PASS" and all(check.passed for check in candidate_report.checks)
@@ -766,5 +800,4 @@ def verify_v119_promotion(
                 states["artifact_references"] = states["artifact_references"] and manifest["database"]["sha256"] == _sha256_file(database_path) and manifest["database"]["size_bytes"] == database_path.stat().st_size and manifest["database"]["semantic_sha256"] == _sqlite_semantic_sha256(database_path, request.contract.formal_view)
             except (OSError, InputFormatError, sqlite3.Error):
                 states["artifact_references"] = False
-    checks = tuple(VerificationCheck(name, states[name], "PASS" if states[name] else "FAIL") for name in CHECK_NAMES)
-    return VerificationReport("PASS" if all(check.passed for check in checks) else "FAIL", checks)
+    return _report(states)
