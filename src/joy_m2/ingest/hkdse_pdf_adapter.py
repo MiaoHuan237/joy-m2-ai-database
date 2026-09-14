@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 import hashlib
 import json
 import os
@@ -21,8 +21,10 @@ from joy_m2.ingest.hkdse_pdf_models import (
     HkdsePdfExtractionRecord,
     HkdsePdfPageSpan,
     HkdsePdfTranscriptionBatch,
+    HkdsePdfTranscriptionApproval,
     HkdsePdfTranscriptionIssue,
     HkdsePdfTranscriptionRecord,
+    VerifiedHkdsePdfTranscriptionBatch,
 )
 from joy_m2.ingest.writer_profiles import atomic_rename_no_replace
 
@@ -715,6 +717,20 @@ def _transcription_payload(
     }
 
 
+def _proposal_semantic_payload(
+    proposal: HkdsePdfTranscriptionBatch,
+) -> dict[str, object]:
+    return {
+        "schema_version": "task10b-hkdse-pdf-transcription-v1",
+        "batch_id": proposal.batch_id,
+        "staging_sha256": proposal.staging_sha256,
+        "pp_sha256": proposal.pp_sha256,
+        "ms_sha256": proposal.ms_sha256,
+        "records": [_record_payload(record) for record in proposal.records],
+        "issues": [_issue_payload(issue) for issue in proposal.issues],
+    }
+
+
 _MATH_SIGNAL = re.compile(r"[0-9=+\-\u2212\u00d7\u00f7/^_∫√<>≤≥()\[\]{}']")
 
 
@@ -956,7 +972,40 @@ def propose_hkdse_pdf_transcription(
     )
 
 
+def approve_hkdse_pdf_transcription(
+    proposal: HkdsePdfTranscriptionBatch,
+    approval: HkdsePdfTranscriptionApproval,
+) -> VerifiedHkdsePdfTranscriptionBatch:
+    if type(proposal) is not HkdsePdfTranscriptionBatch:
+        raise TypeError("proposal must be an exact HkdsePdfTranscriptionBatch")
+    if type(approval) is not HkdsePdfTranscriptionApproval:
+        raise TypeError("approval must be an exact HkdsePdfTranscriptionApproval")
+    actual_digest = _sha_bytes(
+        _canonical_json(_proposal_semantic_payload(proposal)).encode("utf-8")
+    )
+    if actual_digest != proposal.transcription_digest:
+        raise PipelineError("proposal semantic payload does not match its digest")
+    if proposal.issues or any(
+        record.status != "PROPOSED" for record in proposal.records
+    ):
+        raise PipelineError("proposal still requires transcription review")
+    if (
+        approval.batch_id != proposal.batch_id
+        or approval.transcription_digest != proposal.transcription_digest
+    ):
+        raise PipelineError("approval does not bind the proposal")
+    verified_records = tuple(
+        replace(record, status="VERIFIED") for record in proposal.records
+    )
+    return VerifiedHkdsePdfTranscriptionBatch(
+        proposal=proposal,
+        approval=approval,
+        records=verified_records,
+    )
+
+
 __all__ = (
+    "approve_hkdse_pdf_transcription",
     "extract_hkdse_pdf_embedded_pass",
     "load_hkdse_pdf_extraction_pass",
     "propose_hkdse_pdf_transcription",

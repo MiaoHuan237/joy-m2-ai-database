@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from dataclasses import replace
 import hashlib
 import importlib
 import importlib.util
@@ -22,7 +23,11 @@ if str(SRC) not in sys.path:
 
 from joy_m2.config import PipelineConfig
 from joy_m2.errors import OutputConflictError, PipelineError
-from joy_m2.ingest.hkdse_pdf_models import HkdsePdfAdapterBlockedError
+from joy_m2.ingest.hkdse_pdf_models import (
+    HkdsePdfAdapterBlockedError,
+    HkdsePdfTranscriptionApproval,
+    HkdsePdfTranscriptionIssue,
+)
 
 
 FIXTURE = ROOT / "tests" / "fixtures" / "task10b"
@@ -45,6 +50,15 @@ def embedded_api(test_case: unittest.TestCase):
         "Task 10B embedded extraction API must exist before behavior can pass",
     )
     return module.extract_hkdse_pdf_embedded_pass
+
+
+def approval_api(test_case: unittest.TestCase):
+    module = adapter(test_case)
+    test_case.assertTrue(
+        hasattr(module, "approve_hkdse_pdf_transcription"),
+        "Task 10B approval API must exist before gate behavior can pass",
+    )
+    return module.approve_hkdse_pdf_transcription
 
 
 def sha(path: Path) -> str:
@@ -444,6 +458,79 @@ class HkdsePdfComparisonTests(AdapterCase):
         self.assertEqual(
             tuple(self.output.parent.glob(f".{self.output.name}-*")), ()
         )
+
+
+class HkdsePdfApprovalTests(AdapterCase):
+    def approval_for(self, proposal, *, batch_id=None, digest=None):
+        chosen_batch = batch_id or proposal.batch_id
+        chosen_digest = digest or proposal.transcription_digest
+        return HkdsePdfTranscriptionApproval(
+            chosen_batch,
+            chosen_digest,
+            f"USER APPROVED PDF TRANSCRIPTION BATCH {chosen_batch} {chosen_digest}",
+        )
+
+    def test_exact_approval_produces_verified_copy_without_file_mutation(self):
+        proposal = self.propose()
+        before = proposal.transcription_path.read_bytes()
+        verified = approval_api(self)(proposal, self.approval_for(proposal))
+        self.assertIs(verified.proposal, proposal)
+        self.assertEqual(tuple(record.status for record in verified.records), ("VERIFIED",))
+        self.assertEqual(
+            tuple(replace(record, status="PROPOSED") for record in verified.records),
+            proposal.records,
+        )
+        self.assertEqual(proposal.transcription_path.read_bytes(), before)
+
+    def test_wrong_batch_or_digest_approval_is_rejected(self):
+        proposal = self.propose()
+        for approval in (
+            self.approval_for(proposal, batch_id="OTHER-BATCH"),
+            self.approval_for(proposal, digest="f" * 64),
+        ):
+            with self.subTest(approval=approval):
+                with self.assertRaises(PipelineError):
+                    approval_api(self)(proposal, approval)
+
+    def test_parallel_carriers_are_rejected(self):
+        proposal = self.propose()
+        approval = self.approval_for(proposal)
+        for candidate_proposal, candidate_approval in (
+            (object(), approval),
+            (proposal, object()),
+        ):
+            with self.subTest(proposal=type(candidate_proposal), approval=type(candidate_approval)):
+                with self.assertRaises(TypeError):
+                    approval_api(self)(candidate_proposal, candidate_approval)
+
+    def test_review_required_proposal_cannot_be_approved(self):
+        self.mutate_pass_record(self.pass_b, question_text_original="different")
+        proposal = self.propose()
+        self.assertEqual(proposal.records[0].status, "REVIEW_REQUIRED")
+        with self.assertRaises(PipelineError):
+            approval_api(self)(proposal, self.approval_for(proposal))
+
+    def test_any_issue_blocks_even_when_record_envelope_claims_proposed(self):
+        proposal = self.propose()
+        issue = HkdsePdfTranscriptionIssue(
+            "mark_mismatch",
+            "review_required",
+            proposal.records[0].staging_id,
+            "marks",
+            '{"reason":"test"}',
+        )
+        forged = replace(proposal, issues=(issue,))
+        with self.assertRaises(PipelineError):
+            approval_api(self)(forged, self.approval_for(forged))
+
+    def test_altered_record_invalidates_stored_transcription_digest(self):
+        proposal = self.propose()
+        altered_record = replace(
+            proposal.records[0], question_text_original="altered after proposal"
+        )
+        forged = replace(proposal, records=(altered_record,))
+        with self.assertRaises(PipelineError):
+            approval_api(self)(forged, self.approval_for(forged))
 
 
 if __name__ == "__main__":
