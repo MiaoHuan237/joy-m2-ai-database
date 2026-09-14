@@ -327,7 +327,27 @@ or promotion authority.
 
 ## 13. Public API
 
-The append-only root package surface adds exactly:
+The append-only `joy_m2.ingest.__all__` suffix is exactly the eight public
+carriers, the blocked error, and the five APIs, in this order:
+
+```text
+HkdsePdfPageSpan
+HkdsePdfExtractionRecord
+HkdsePdfExtractionPass
+HkdsePdfTranscriptionIssue
+HkdsePdfTranscriptionRecord
+HkdsePdfTranscriptionBatch
+HkdsePdfTranscriptionApproval
+VerifiedHkdsePdfTranscriptionBatch
+HkdsePdfAdapterBlockedError
+extract_hkdse_pdf_embedded_pass
+load_hkdse_pdf_extraction_pass
+propose_hkdse_pdf_transcription
+approve_hkdse_pdf_transcription
+adapt_verified_hkdse_pdf_transcription_v120
+```
+
+The five appended API signatures are exactly:
 
 ```python
 def extract_hkdse_pdf_embedded_pass(
@@ -455,6 +475,7 @@ src/joy_m2/ingest/hkdse_pdf_adapter.py
 tests/unit/test_hkdse_pdf_models.py
 tests/unit/test_hkdse_pdf_adapter.py
 tests/integration/test_hkdse_pdf_adapter.py
+tests/regression/test_v119_historical_replay.py
 tests/fixtures/task10b/**
 ```
 

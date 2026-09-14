@@ -31,6 +31,7 @@
 - Create: `src/joy_m2/ingest/hkdse_pdf_models.py`
 - Modify: `src/joy_m2/ingest/__init__.py`
 - Create: `tests/unit/test_hkdse_pdf_models.py`
+- Modify: `tests/regression/test_v119_historical_replay.py`
 
 **Interfaces:**
 - Consumes: `PipelineError`, `V120AdaptedImportPackage`.
@@ -87,20 +88,24 @@ class HkdsePdfAdapterBlockedError(PipelineError):
 
 - [ ] **Step 4: Export the approved append-only surface**
 
-Append the carriers and five APIs to `joy_m2.ingest.__all__` without changing
-the existing prefix order or exporting private helpers.
+Append the exact fourteen-name Task 10B suffix (eight carriers, blocked error,
+and five APIs) to `joy_m2.ingest.__all__` without changing the existing
+V1.19/V1.20 prefix order or exporting private helpers. Migrate only the
+append-only root-surface assertion in the historical replay test; all V1.19
+and V1.20 names/order remain byte-for-byte identical.
 
 - [ ] **Step 5: Run model GREEN and existing public-surface regressions**
 
 ```bash
 python -m unittest -v tests.unit.test_hkdse_pdf_models
 python -m unittest -v tests.unit.test_ingest_models tests.unit.test_mmd_adapter_models tests.unit.test_v120_models
+python -m unittest -v tests.regression.test_v119_historical_replay
 ```
 
 - [ ] **Step 6: Commit the model checkpoint**
 
 ```bash
-git add pyproject.toml src/joy_m2/ingest/hkdse_pdf_models.py src/joy_m2/ingest/__init__.py tests/unit/test_hkdse_pdf_models.py
+git add pyproject.toml src/joy_m2/ingest/hkdse_pdf_models.py src/joy_m2/ingest/__init__.py tests/unit/test_hkdse_pdf_models.py tests/regression/test_v119_historical_replay.py
 git commit -m "feat: add HKDSE PDF adapter contracts"
 ```
 
