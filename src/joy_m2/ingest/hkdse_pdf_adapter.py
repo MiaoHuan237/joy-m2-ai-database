@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shutil
 import tempfile
 
 from pypdf import PdfReader
@@ -19,8 +20,11 @@ from joy_m2.ingest.hkdse_pdf_models import (
     HkdsePdfExtractionPass,
     HkdsePdfExtractionRecord,
     HkdsePdfPageSpan,
+    HkdsePdfTranscriptionBatch,
     HkdsePdfTranscriptionIssue,
+    HkdsePdfTranscriptionRecord,
 )
+from joy_m2.ingest.writer_profiles import atomic_rename_no_replace
 
 
 _SHA256 = re.compile(r"[0-9a-f]{64}")
@@ -481,16 +485,20 @@ def _validate_pass(pass_value: HkdsePdfExtractionPass, staging: _StagingBatch, p
         or pass_value.ms_sha256 != staging.ms.sha256
     ):
         _block("extraction_pass_invalid", f"pass_{pass_id.lower()}", "source_identity_mismatch")
-    expected = tuple(
-        (record.staging_id, record.question_pages, record.ms_pages, record.marks)
-        for record in staging.records
-    )
-    actual = tuple(
-        (record.staging_id, record.question_pages, record.ms_pages, record.marks)
-        for record in pass_value.records
-    )
+    expected = tuple(record.staging_id for record in staging.records)
+    actual = tuple(record.staging_id for record in pass_value.records)
     if actual != expected:
         _block("extraction_pass_invalid", f"pass_{pass_id.lower()}.records", "staging_mapping_mismatch")
+    if any(
+        record.question_pages.end_page > staging.pp.page_count
+        or record.ms_pages.end_page > staging.ms.page_count
+        for record in pass_value.records
+    ):
+        _block(
+            "extraction_pass_invalid",
+            f"pass_{pass_id.lower()}.records",
+            "page_span_out_of_bounds",
+        )
 
 
 def _validate_output(output_dir: object, config: object) -> Path:
@@ -629,6 +637,243 @@ def extract_hkdse_pdf_embedded_pass(
     return result
 
 
+def _review_issue(
+    code: str,
+    staging_id: str,
+    field: str,
+    evidence: dict[str, object],
+) -> HkdsePdfTranscriptionIssue:
+    return HkdsePdfTranscriptionIssue(
+        code=code,
+        severity="review_required",
+        staging_id=staging_id,
+        field=field,
+        evidence=_canonical_json(evidence),
+    )
+
+
+def _text_evidence(first: str, second: str) -> dict[str, object]:
+    return {
+        "pass_a_length": len(first),
+        "pass_a_sha256": _sha_bytes(first.encode("utf-8")),
+        "pass_b_length": len(second),
+        "pass_b_sha256": _sha_bytes(second.encode("utf-8")),
+    }
+
+
+def _span_payload(span: HkdsePdfPageSpan) -> dict[str, int]:
+    return {"start_page": span.start_page, "end_page": span.end_page}
+
+
+def _record_payload(record: HkdsePdfTranscriptionRecord) -> dict[str, object]:
+    return {
+        "staging_id": record.staging_id,
+        "year": record.year,
+        "section": record.section,
+        "question_number": record.question_number,
+        "question_pages": _span_payload(record.question_pages),
+        "ms_pages": _span_payload(record.ms_pages),
+        "question_text_original": record.question_text_original,
+        "official_ms_original": record.official_ms_original,
+        "subparts": list(record.subparts),
+        "marks": record.marks,
+        "figure_references": list(record.figure_references),
+        "question_methods": list(record.question_methods),
+        "ms_methods": list(record.ms_methods),
+        "status": record.status,
+        "review_reasons": list(record.review_reasons),
+        "module_proposal": record.module_proposal,
+        "topic_proposal": record.topic_proposal,
+        "difficulty_proposal": record.difficulty_proposal,
+        "tag_proposals": list(record.tag_proposals),
+    }
+
+
+def _issue_payload(issue: HkdsePdfTranscriptionIssue) -> dict[str, object]:
+    return {
+        "code": issue.code,
+        "severity": issue.severity,
+        "staging_id": issue.staging_id,
+        "field": issue.field,
+        "evidence": json.loads(issue.evidence),
+    }
+
+
+def _transcription_payload(
+    staging: _StagingBatch,
+    records: tuple[HkdsePdfTranscriptionRecord, ...],
+    issues: tuple[HkdsePdfTranscriptionIssue, ...],
+) -> dict[str, object]:
+    return {
+        "schema_version": "task10b-hkdse-pdf-transcription-v1",
+        "batch_id": staging.batch_id,
+        "staging_sha256": staging.staging_sha256,
+        "pp_sha256": staging.pp.sha256,
+        "ms_sha256": staging.ms.sha256,
+        "records": [_record_payload(record) for record in records],
+        "issues": [_issue_payload(issue) for issue in issues],
+    }
+
+
+_MATH_SIGNAL = re.compile(r"[0-9=+\-\u2212\u00d7\u00f7/^_∫√<>≤≥()\[\]{}']")
+
+
+def _compare_record(
+    staging: _StagingRecord,
+    first: HkdsePdfExtractionRecord,
+    second: HkdsePdfExtractionRecord,
+) -> tuple[HkdsePdfTranscriptionRecord, tuple[HkdsePdfTranscriptionIssue, ...]]:
+    issues: list[HkdsePdfTranscriptionIssue] = []
+
+    def add(code: str, field: str, evidence: dict[str, object]) -> None:
+        issues.append(_review_issue(code, staging.staging_id, field, evidence))
+
+    for field, missing_code, mismatch_code in (
+        ("question_text_original", "question_text_missing", "question_text_mismatch"),
+        ("official_ms_original", "official_ms_missing", "official_ms_mismatch"),
+    ):
+        first_text = getattr(first, field)
+        second_text = getattr(second, field)
+        if not first_text or not second_text:
+            add(
+                missing_code,
+                field,
+                {"pass_a_empty": not bool(first_text), "pass_b_empty": not bool(second_text)},
+            )
+        elif first_text != second_text:
+            evidence = _text_evidence(first_text, second_text)
+            add(mismatch_code, field, evidence)
+            if _MATH_SIGNAL.search(first_text) or _MATH_SIGNAL.search(second_text):
+                add("formula_mismatch", field, evidence)
+
+    for field, code in (
+        ("subparts", "subpart_mismatch"),
+        ("marks", "mark_mismatch"),
+        ("figure_references", "figure_mismatch"),
+    ):
+        first_value = getattr(first, field)
+        second_value = getattr(second, field)
+        staging_value = getattr(staging, field, None)
+        if first_value != second_value or (
+            field == "marks" and first_value != staging_value
+        ):
+            add(
+                code,
+                field,
+                {
+                    "pass_a": list(first_value) if type(first_value) is tuple else first_value,
+                    "pass_b": list(second_value) if type(second_value) is tuple else second_value,
+                    **({"staging": staging_value} if field == "marks" else {}),
+                },
+            )
+
+    page_values = (
+        ("question_pages", first.question_pages, second.question_pages, staging.question_pages),
+        ("ms_pages", first.ms_pages, second.ms_pages, staging.ms_pages),
+    )
+    for field, first_span, second_span, staging_span in page_values:
+        if first_span != second_span or first_span != staging_span:
+            add(
+                "page_boundary_ambiguity",
+                field,
+                {
+                    "pass_a": _span_payload(first_span),
+                    "pass_b": _span_payload(second_span),
+                    "staging": _span_payload(staging_span),
+                },
+            )
+
+    ordered_issues = tuple(
+        sorted(
+            issues,
+            key=lambda issue: (
+                issue.staging_id or "",
+                issue.code,
+                issue.field,
+                issue.evidence,
+            ),
+        )
+    )
+    reasons = tuple(sorted({issue.code for issue in ordered_issues}))
+    record = HkdsePdfTranscriptionRecord(
+        staging_id=staging.staging_id,
+        year=staging.year,
+        section=staging.section,
+        question_number=staging.question_number,
+        question_pages=first.question_pages,
+        ms_pages=first.ms_pages,
+        question_text_original=first.question_text_original,
+        official_ms_original=first.official_ms_original,
+        subparts=first.subparts,
+        marks=first.marks,
+        figure_references=first.figure_references,
+        question_methods=(first.question_method, second.question_method),
+        ms_methods=(first.ms_method, second.ms_method),
+        status="REVIEW_REQUIRED" if ordered_issues else "PROPOSED",
+        review_reasons=reasons,
+        module_proposal=staging.module_proposal,
+        topic_proposal=staging.topic_proposal,
+        difficulty_proposal=staging.difficulty_proposal,
+        tag_proposals=staging.tag_proposals,
+    )
+    return record, ordered_issues
+
+
+def _preview(value: str) -> str:
+    return value.replace("\r", "\\r").replace("\n", "\\n")[:160]
+
+
+def _review_report(
+    batch_id: str,
+    records: tuple[HkdsePdfTranscriptionRecord, ...],
+    issues: tuple[HkdsePdfTranscriptionIssue, ...],
+    pass_b: HkdsePdfExtractionPass,
+) -> str:
+    lines = [
+        "# PDF Transcription Review",
+        "",
+        f"Batch ID: {batch_id}",
+        f"Total questions: {len(records)}",
+        f"Auto agree: {sum(record.status == 'PROPOSED' for record in records)}",
+        f"Review required: {sum(record.status == 'REVIEW_REQUIRED' for record in records)}",
+        f"Issues: {len(issues)}",
+        "",
+    ]
+    second_by_id = {record.staging_id: record for record in pass_b.records}
+    for record in records:
+        second = second_by_id[record.staging_id]
+        lines.extend(
+            (
+                f"## {record.staging_id}",
+                "",
+                f"Year/question: {record.year} Q{record.question_number}",
+                f"PP pages: {record.question_pages.start_page}-{record.question_pages.end_page}",
+                f"MS pages: {record.ms_pages.start_page}-{record.ms_pages.end_page}",
+                f"Question preview (pass A): {_preview(record.question_text_original)}",
+                f"Question preview (pass B): {_preview(second.question_text_original)}",
+                f"Subparts: {', '.join(record.subparts) or 'none'}",
+                f"Marks: {record.marks}",
+                f"MS preview (pass A): {_preview(record.official_ms_original)}",
+                f"MS preview (pass B): {_preview(second.official_ms_original)}",
+                f"Question methods: {', '.join(record.question_methods)}",
+                f"MS methods: {', '.join(record.ms_methods)}",
+                f"Status: {record.status}",
+                f"Figures: {', '.join(record.figure_references) or 'none'}",
+                f"Taxonomy proposal: {record.module_proposal} / {record.topic_proposal} / D{record.difficulty_proposal}",
+                f"Review reasons: {', '.join(record.review_reasons) or 'none'}",
+                "",
+            )
+        )
+    return "\n".join(lines)
+
+
+def _write_private_file(path: Path, content: bytes) -> None:
+    with path.open("xb") as stream:
+        stream.write(content)
+        stream.flush()
+        os.fsync(stream.fileno())
+
+
 def propose_hkdse_pdf_transcription(
     staging_manifest_path: Path,
     pp_pdf_path: Path,
@@ -638,7 +883,7 @@ def propose_hkdse_pdf_transcription(
     output_dir: Path,
     config: PipelineConfig,
 ):
-    _validate_output(output_dir, config)
+    resolved_output = _validate_output(output_dir, config)
     staging = _load_staging(staging_manifest_path)
     _validate_pdf(pp_pdf_path, staging.pp, "pp")
     _validate_pdf(ms_pdf_path, staging.ms, "ms")
@@ -650,7 +895,65 @@ def propose_hkdse_pdf_transcription(
     pass_b = load_hkdse_pdf_extraction_pass(pass_b_path)
     _validate_pass(pass_a, staging, "A")
     _validate_pass(pass_b, staging, "B")
-    raise NotImplementedError("Task 10B transcription comparison is not implemented")
+    compared = tuple(
+        _compare_record(staging_record, first, second)
+        for staging_record, first, second in zip(
+            staging.records, pass_a.records, pass_b.records, strict=True
+        )
+    )
+    records = tuple(record for record, _ in compared)
+    issues = tuple(
+        sorted(
+            (issue for _, record_issues in compared for issue in record_issues),
+            key=lambda issue: (
+                issue.staging_id or "",
+                issue.code,
+                issue.field,
+                issue.evidence,
+            ),
+        )
+    )
+    semantic = _transcription_payload(staging, records, issues)
+    digest = _sha_bytes(_canonical_json(semantic).encode("utf-8"))
+    transcription = {**semantic, "transcription_digest": digest}
+    pass_a_content = (_canonical_json(_pass_payload(pass_a)) + "\n").encode("utf-8")
+    pass_b_content = (_canonical_json(_pass_payload(pass_b)) + "\n").encode("utf-8")
+    transcription_content = (_canonical_json(transcription) + "\n").encode("utf-8")
+    report_content = _review_report(
+        staging.batch_id, records, issues, pass_b
+    ).encode("utf-8")
+
+    resolved_output.parent.mkdir(parents=True, exist_ok=True)
+    temporary = Path(
+        tempfile.mkdtemp(
+            prefix=f".{resolved_output.name}-",
+            dir=resolved_output.parent,
+        )
+    )
+    try:
+        _write_private_file(temporary / "transcription.json", transcription_content)
+        _write_private_file(temporary / "extraction-pass-a.json", pass_a_content)
+        _write_private_file(temporary / "extraction-pass-b.json", pass_b_content)
+        _write_private_file(
+            temporary / "PDF_TRANSCRIPTION_REVIEW.md", report_content
+        )
+        atomic_rename_no_replace(temporary, resolved_output)
+    except Exception:
+        shutil.rmtree(temporary, ignore_errors=True)
+        raise
+
+    return HkdsePdfTranscriptionBatch(
+        batch_id=staging.batch_id,
+        staging_sha256=staging.staging_sha256,
+        pp_sha256=staging.pp.sha256,
+        ms_sha256=staging.ms.sha256,
+        records=records,
+        issues=issues,
+        transcription_digest=digest,
+        artifact_root=resolved_output,
+        transcription_path=resolved_output / "transcription.json",
+        review_path=resolved_output / "PDF_TRANSCRIPTION_REVIEW.md",
+    )
 
 
 __all__ = (

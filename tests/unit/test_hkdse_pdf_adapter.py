@@ -9,6 +9,7 @@ import shutil
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 from pypdf import PdfWriter
 from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject
@@ -128,21 +129,28 @@ class AdapterCase(unittest.TestCase):
 
     def propose(self):
         module = adapter(self)
-        return module.propose_hkdse_pdf_transcription(
-            self.staging,
-            self.pp,
-            self.ms,
-            self.pass_a,
-            self.pass_b,
-            self.output,
-            self.config,
-        )
+        try:
+            return module.propose_hkdse_pdf_transcription(
+                self.staging,
+                self.pp,
+                self.ms,
+                self.pass_a,
+                self.pass_b,
+                self.output,
+                self.config,
+            )
+        except NotImplementedError as exc:
+            self.fail(f"Task 10B comparison/publication is not implemented: {exc}")
+
+    def mutate_pass_record(self, path: Path, **changes: object) -> None:
+        value = json.loads(path.read_text(encoding="utf-8"))
+        value["records"][0].update(changes)
+        write_json(path, value)
 
 
 class HkdsePdfSourceValidationTests(AdapterCase):
     def test_valid_source_reaches_transcription_proposal(self):
-        with self.assertRaisesRegex(NotImplementedError, "comparison"):
-            self.propose()
+        self.assertEqual(self.propose().batch_id, "JOY-M2-HKDSE-2012-PP-MS")
 
     def test_pdf_sha_mismatch_blocks_before_output(self):
         staging = json.loads(self.staging.read_text(encoding="utf-8"))
@@ -185,8 +193,8 @@ class HkdsePdfSourceValidationTests(AdapterCase):
         with self.assertRaises(HkdsePdfAdapterBlockedError):
             self.propose()
 
-    def test_pass_source_identity_order_and_marks_must_match_staging(self):
-        for mutation in ("digest", "order", "marks"):
+    def test_pass_source_identity_and_order_must_match_staging(self):
+        for mutation in ("digest", "order"):
             with self.subTest(mutation=mutation):
                 self._write_valid_inputs()
                 value = json.loads(self.pass_b.read_text(encoding="utf-8"))
@@ -194,8 +202,6 @@ class HkdsePdfSourceValidationTests(AdapterCase):
                     value["pp_sha256"] = "f" * 64
                 elif mutation == "order":
                     value["records"][0]["staging_id"] = "HKDSE-2012-M2-Q99"
-                else:
-                    value["records"][0]["marks"] = 4
                 write_json(self.pass_b, value)
                 with self.assertRaises(HkdsePdfAdapterBlockedError) as captured:
                     self.propose()
@@ -323,6 +329,121 @@ class HkdsePdfEmbeddedExtractionTests(AdapterCase):
             self.staging, self.pp, self.ms, "A", second, second_config
         )
         self.assertEqual(first.read_bytes(), second.read_bytes())
+
+
+class HkdsePdfComparisonTests(AdapterCase):
+    def propose(self):
+        try:
+            return super().propose()
+        except HkdsePdfAdapterBlockedError as exc:
+            self.fail(
+                "reviewable pass disagreement was rejected before comparison: "
+                f"{tuple(issue.code for issue in exc.issues)}"
+            )
+
+    def test_exact_agreement_produces_proposed_record_and_exact_artifacts(self):
+        batch = self.propose()
+        self.assertEqual(batch.records[0].status, "PROPOSED")
+        self.assertEqual(batch.issues, ())
+        self.assertEqual(batch.total_questions, 1)
+        self.assertEqual(batch.auto_agree_count, 1)
+        self.assertEqual(batch.review_required_count, 0)
+        self.assertEqual(
+            {path.name for path in batch.artifact_root.iterdir()},
+            {
+                "transcription.json",
+                "extraction-pass-a.json",
+                "extraction-pass-b.json",
+                "PDF_TRANSCRIPTION_REVIEW.md",
+            },
+        )
+
+    def test_missing_question_and_ms_are_independent_review_issues(self):
+        for field, code in (
+            ("question_text_original", "question_text_missing"),
+            ("official_ms_original", "official_ms_missing"),
+        ):
+            with self.subTest(field=field):
+                self._write_valid_inputs()
+                self.mutate_pass_record(self.pass_a, **{field: ""})
+                self.mutate_pass_record(self.pass_b, **{field: ""})
+                batch = self.propose()
+                self.assertEqual(batch.records[0].status, "REVIEW_REQUIRED")
+                self.assertIn(code, tuple(issue.code for issue in batch.issues))
+                shutil.rmtree(self.output)
+
+    def test_exact_text_tuple_mark_figure_and_page_disagreements_are_reviewable(self):
+        cases = (
+            ("question_text_original", "A plain sentence.", "question_text_mismatch"),
+            ("official_ms_original", "Different official steps", "official_ms_mismatch"),
+            ("subparts", ["(a)"], "subpart_mismatch"),
+            ("marks", 4, "mark_mismatch"),
+            ("figure_references", ["pp:fixture#page=2#region=figure-1"], "figure_mismatch"),
+            ("question_pages", {"start_page": 1, "end_page": 1}, "page_boundary_ambiguity"),
+        )
+        for field, replacement, code in cases:
+            with self.subTest(field=field):
+                self._write_valid_inputs()
+                self.mutate_pass_record(self.pass_b, **{field: replacement})
+                batch = self.propose()
+                self.assertEqual(batch.records[0].status, "REVIEW_REQUIRED")
+                self.assertIn(code, tuple(issue.code for issue in batch.issues))
+                shutil.rmtree(self.output)
+
+    def test_minus_sign_disagreement_requires_formula_review_without_repair(self):
+        self.mutate_pass_record(
+            self.pass_a, question_text_original="Find x - 1."
+        )
+        self.mutate_pass_record(
+            self.pass_b, question_text_original="Find x − 1."
+        )
+        batch = self.propose()
+        self.assertEqual(batch.records[0].question_text_original, "Find x - 1.")
+        self.assertEqual(batch.records[0].status, "REVIEW_REQUIRED")
+        self.assertIn("question_text_mismatch", tuple(issue.code for issue in batch.issues))
+        self.assertIn("formula_mismatch", tuple(issue.code for issue in batch.issues))
+
+    def test_staging_mark_and_page_proposals_do_not_preempt_review_issues(self):
+        for field, replacement, code in (
+            ("marks", 4, "mark_mismatch"),
+            ("question_pages", {"start_page": 1, "end_page": 1}, "page_boundary_ambiguity"),
+        ):
+            with self.subTest(field=field):
+                self._write_valid_inputs()
+                self.mutate_pass_record(self.pass_a, **{field: replacement})
+                self.mutate_pass_record(self.pass_b, **{field: replacement})
+                batch = self.propose()
+                self.assertIn(code, tuple(issue.code for issue in batch.issues))
+                shutil.rmtree(self.output)
+
+    def test_issue_order_is_stable_and_deterministic(self):
+        self.mutate_pass_record(
+            self.pass_b,
+            question_text_original="Find x − 1.",
+            official_ms_original="different",
+            marks=4,
+        )
+        batch = self.propose()
+        keys = tuple(
+            (issue.staging_id or "", issue.code, issue.field, issue.evidence)
+            for issue in batch.issues
+        )
+        self.assertEqual(keys, tuple(sorted(keys)))
+
+    def test_atomic_publication_failure_cleans_owned_temporary_tree(self):
+        module = adapter(self)
+        with mock.patch.object(
+            module,
+            "atomic_rename_no_replace",
+            side_effect=OSError("publish failed"),
+            create=True,
+        ):
+            with self.assertRaises(OSError):
+                self.propose()
+        self.assertFalse(self.output.exists())
+        self.assertEqual(
+            tuple(self.output.parent.glob(f".{self.output.name}-*")), ()
+        )
 
 
 if __name__ == "__main__":
