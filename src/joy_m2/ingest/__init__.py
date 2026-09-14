@@ -21,6 +21,8 @@ from .hkdse_pdf_models import (
     VerifiedHkdsePdfTranscriptionBatch,
 )
 from .hkdse_pdf_adapter import (
+    adapt_verified_hkdse_pdf_transcription_v120,
+    approve_hkdse_pdf_transcription,
     extract_hkdse_pdf_embedded_pass,
     load_hkdse_pdf_extraction_pass,
     propose_hkdse_pdf_transcription,
@@ -137,4 +139,6 @@ __all__ = (
     "extract_hkdse_pdf_embedded_pass",
     "load_hkdse_pdf_extraction_pass",
     "propose_hkdse_pdf_transcription",
+    "approve_hkdse_pdf_transcription",
+    "adapt_verified_hkdse_pdf_transcription_v120",
 )

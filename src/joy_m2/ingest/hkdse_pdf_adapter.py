@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, replace
+import errno
 import hashlib
 import json
 import os
@@ -27,6 +28,9 @@ from joy_m2.ingest.hkdse_pdf_models import (
     VerifiedHkdsePdfTranscriptionBatch,
 )
 from joy_m2.ingest.writer_profiles import atomic_rename_no_replace
+from joy_m2.ingest.models import ImportFileEvidence
+from joy_m2.ingest.v120_manifest import load_v120_import_manifest
+from joy_m2.ingest.v120_models import V120AdaptedImportPackage, V120BatchImportManifest
 
 
 _SHA256 = re.compile(r"[0-9a-f]{64}")
@@ -508,6 +512,22 @@ def _validate_output(output_dir: object, config: object) -> Path:
         raise TypeError("output_dir must be a pathlib.Path")
     if type(config) is not PipelineConfig:
         raise TypeError("config must be an exact PipelineConfig")
+    lexical = output_dir.absolute()
+    lexical_staging = next(
+        (
+            ancestor
+            for ancestor in lexical.parents
+            if ancestor.resolve(strict=False) == config.staging_root
+        ),
+        None,
+    )
+    if lexical_staging is not None:
+        relative = lexical.relative_to(lexical_staging)
+        current = lexical_staging
+        for part in relative.parts[:-1]:
+            current = current / part
+            if current.is_symlink():
+                raise ConfigurationError("output ancestors must not be symlinks")
     resolved = config.require_staging_output(output_dir)
     if resolved == config.staging_root:
         raise ConfigurationError("output must be a strict staging descendant")
@@ -852,6 +872,12 @@ def _review_report(
         f"Total questions: {len(records)}",
         f"Auto agree: {sum(record.status == 'PROPOSED' for record in records)}",
         f"Review required: {sum(record.status == 'REVIEW_REQUIRED' for record in records)}",
+        f"Question text complete: {sum(bool(record.question_text_original) for record in records)}",
+        f"MS text complete: {sum(bool(record.official_ms_original) for record in records)}",
+        f"Figure questions: {sum(bool(record.figure_references) for record in records)}",
+        f"Formula mismatches: {sum(issue.code == 'formula_mismatch' for issue in issues)}",
+        f"Page-boundary ambiguities: {sum(issue.code == 'page_boundary_ambiguity' for issue in issues)}",
+        f"Missing content: {sum(issue.code in {'question_text_missing', 'official_ms_missing'} for issue in issues)}",
         f"Issues: {len(issues)}",
         "",
     ]
@@ -953,7 +979,12 @@ def propose_hkdse_pdf_transcription(
         _write_private_file(
             temporary / "PDF_TRANSCRIPTION_REVIEW.md", report_content
         )
-        atomic_rename_no_replace(temporary, resolved_output)
+        try:
+            atomic_rename_no_replace(temporary, resolved_output)
+        except OSError as exc:
+            if exc.errno in {errno.EEXIST, errno.ENOTEMPTY}:
+                raise OutputConflictError("output path already exists") from exc
+            raise
     except Exception:
         shutil.rmtree(temporary, ignore_errors=True)
         raise
@@ -1004,7 +1035,273 @@ def approve_hkdse_pdf_transcription(
     )
 
 
+def _file_evidence(
+    relative_path: str, content: bytes, kind: str
+) -> ImportFileEvidence:
+    return ImportFileEvidence(
+        relative_path=relative_path,
+        sha256=_sha_bytes(content),
+        size_bytes=len(content),
+        kind=kind,
+    )
+
+
+def _v120_manifest_payload(
+    manifest: V120BatchImportManifest,
+) -> dict[str, object]:
+    def evidence(values: tuple[ImportFileEvidence, ...]) -> list[dict[str, object]]:
+        return [
+            {
+                "relative_path": item.relative_path,
+                "sha256": item.sha256,
+                "size_bytes": item.size_bytes,
+                "kind": item.kind,
+            }
+            for item in values
+        ]
+
+    return {
+        "schema_version": manifest.schema_version,
+        "batch_id": manifest.batch_id,
+        "project": manifest.project,
+        "module": manifest.module,
+        "chapter": manifest.chapter,
+        "target_release_version": manifest.target_release_version,
+        "candidate_records": evidence(manifest.candidate_records),
+        "source_files": evidence(manifest.source_files),
+        "answer_files": evidence(manifest.answer_files),
+        "image_files": evidence(manifest.image_files),
+        "teacher_notes_files": evidence(manifest.teacher_notes_files),
+        "common_errors_files": evidence(manifest.common_errors_files),
+        "language_policy": manifest.language_policy,
+        "split_policy": manifest.split_policy,
+        "difficulty_policy": manifest.difficulty_policy,
+        "tag_policy": manifest.tag_policy,
+        "answer_policy": manifest.answer_policy,
+        "explanation_policy": manifest.explanation_policy,
+    }
+
+
+def _candidate_payload(
+    batch_id: str,
+    record: HkdsePdfTranscriptionRecord,
+    index: int,
+) -> dict[str, object]:
+    transcription_locator = (
+        f"source:source/transcription.json#records[{index}].question_text_original"
+    )
+    return {
+        "proposed_question_id": record.staging_id,
+        "source_id": batch_id,
+        "source_question_number": str(record.question_number),
+        "source_section": record.section,
+        "source_fragment_hash": _sha_bytes(
+            record.question_text_original.encode("utf-8")
+        ),
+        "question_text_original": record.question_text_original,
+        "question_text_zh": record.question_text_original,
+        "translation_status": "source_present",
+        "translation_evidence": transcription_locator,
+        "solution_original": record.official_ms_original,
+        "solution_verified": "",
+        "answer_status": "source_provided",
+        "explanation_text": "",
+        "explanation_status": "missing",
+        "explanation_evidence": None,
+        "image_paths": [],
+        "image_roles": [],
+        "primary_type": record.module_proposal,
+        "tags": list(record.tag_proposals),
+        "tag_status": "proposed",
+        "difficulty_level": record.difficulty_proposal,
+        "difficulty_status": "proposed",
+        "enrichment_status": "incomplete",
+    }
+
+
+def _source_map_payload_v120(
+    verified: VerifiedHkdsePdfTranscriptionBatch,
+) -> dict[str, object]:
+    proposal = verified.proposal
+    return {
+        "schema_version": "task10b-hkdse-pdf-source-map-v1",
+        "batch_id": proposal.batch_id,
+        "staging_sha256": proposal.staging_sha256,
+        "pp_sha256": proposal.pp_sha256,
+        "ms_sha256": proposal.ms_sha256,
+        "transcription_digest": proposal.transcription_digest,
+        "records": [
+            {
+                "staging_id": record.staging_id,
+                "year": record.year,
+                "section": record.section,
+                "question_number": record.question_number,
+                "question_pages": _span_payload(record.question_pages),
+                "ms_pages": _span_payload(record.ms_pages),
+                "marks": record.marks,
+                "subparts": list(record.subparts),
+                "figure_references": list(record.figure_references),
+                "question_methods": list(record.question_methods),
+                "ms_methods": list(record.ms_methods),
+            }
+            for record in verified.records
+        ],
+    }
+
+
+def _answer_payload_v120(
+    verified: VerifiedHkdsePdfTranscriptionBatch,
+) -> dict[str, object]:
+    return {
+        "schema_version": "task10b-hkdse-pdf-official-ms-v1",
+        "batch_id": verified.proposal.batch_id,
+        "ms_sha256": verified.proposal.ms_sha256,
+        "transcription_digest": verified.proposal.transcription_digest,
+        "records": [
+            {
+                "staging_id": record.staging_id,
+                "ms_pages": _span_payload(record.ms_pages),
+                "marks": record.marks,
+                "official_ms_original": record.official_ms_original,
+            }
+            for record in verified.records
+        ],
+    }
+
+
+def adapt_verified_hkdse_pdf_transcription_v120(
+    verified: VerifiedHkdsePdfTranscriptionBatch,
+    output_dir: Path,
+    config: PipelineConfig,
+) -> V120AdaptedImportPackage:
+    if type(verified) is not VerifiedHkdsePdfTranscriptionBatch:
+        raise TypeError(
+            "verified must be an exact VerifiedHkdsePdfTranscriptionBatch"
+        )
+    resolved_output = _validate_output(output_dir, config)
+    proposal = verified.proposal
+    proposal_root = proposal.artifact_root.resolve(strict=False)
+    if (
+        resolved_output.is_relative_to(proposal_root)
+        or proposal_root.is_relative_to(resolved_output)
+    ):
+        raise ConfigurationError(
+            "canonical output must not overlap transcription artifacts"
+        )
+    actual_digest = _sha_bytes(
+        _canonical_json(_proposal_semantic_payload(proposal)).encode("utf-8")
+    )
+    if actual_digest != proposal.transcription_digest:
+        raise PipelineError("verified proposal semantic payload digest is invalid")
+    if proposal.issues or any(
+        record.status != "PROPOSED" for record in proposal.records
+    ):
+        raise PipelineError("verified proposal is not approval-eligible")
+    expected_records = tuple(
+        replace(record, status="VERIFIED") for record in proposal.records
+    )
+    if verified.records != expected_records:
+        raise PipelineError("verified records do not preserve the proposal")
+
+    candidates = tuple(
+        _candidate_payload(proposal.batch_id, record, index)
+        for index, record in enumerate(verified.records)
+    )
+    candidates_bytes = (_canonical_json(list(candidates)) + "\n").encode("utf-8")
+    transcription_payload = {
+        **_proposal_semantic_payload(proposal),
+        "transcription_digest": proposal.transcription_digest,
+    }
+    transcription_bytes = (
+        _canonical_json(transcription_payload) + "\n"
+    ).encode("utf-8")
+    source_map_bytes = (
+        _canonical_json(_source_map_payload_v120(verified)) + "\n"
+    ).encode("utf-8")
+    answer_bytes = (
+        _canonical_json(_answer_payload_v120(verified)) + "\n"
+    ).encode("utf-8")
+    manifest = V120BatchImportManifest(
+        schema_version="task10-v120-import-manifest-v1",
+        batch_id=proposal.batch_id,
+        project="Joy M2 AI Database",
+        module="M2",
+        chapter="HKDSE M2",
+        target_release_version="V1.20",
+        candidate_records=(
+            _file_evidence(
+                "records/candidates.json", candidates_bytes, "candidate_json"
+            ),
+        ),
+        source_files=(
+            _file_evidence(
+                "source/transcription.json", transcription_bytes, "source"
+            ),
+            _file_evidence("source/source-map.json", source_map_bytes, "source"),
+        ),
+        answer_files=(
+            _file_evidence("answers/official-ms.json", answer_bytes, "answer"),
+        ),
+        image_files=(),
+        teacher_notes_files=(),
+        common_errors_files=(),
+        language_policy="preserve_source_and_store_reviewed_chinese_separately",
+        split_policy="one_complete_question_per_record",
+        difficulty_policy="joy_level_1_5",
+        tag_policy="controlled_primary_type_and_tags",
+        answer_policy="preserve_source_answer_identity",
+        explanation_policy="source_or_independently_verified_with_identity",
+    )
+    manifest_bytes = (
+        json.dumps(
+            _v120_manifest_payload(manifest),
+            ensure_ascii=False,
+            separators=(",", ":"),
+            allow_nan=False,
+        )
+        + "\n"
+    ).encode("utf-8")
+    files = (
+        ("records/candidates.json", candidates_bytes),
+        ("source/transcription.json", transcription_bytes),
+        ("source/source-map.json", source_map_bytes),
+        ("answers/official-ms.json", answer_bytes),
+        ("import_manifest.json", manifest_bytes),
+    )
+
+    resolved_output.parent.mkdir(parents=True, exist_ok=True)
+    temporary = Path(
+        tempfile.mkdtemp(
+            prefix=f".{resolved_output.name}-", dir=resolved_output.parent
+        )
+    )
+    try:
+        for relative_path, content in files:
+            target = temporary / relative_path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            _write_private_file(target, content)
+        try:
+            atomic_rename_no_replace(temporary, resolved_output)
+        except OSError as exc:
+            if exc.errno in {errno.EEXIST, errno.ENOTEMPTY}:
+                raise OutputConflictError("output path already exists") from exc
+            raise
+    finally:
+        if temporary.exists():
+            shutil.rmtree(temporary)
+
+    loaded = load_v120_import_manifest(resolved_output / "import_manifest.json")
+    if loaded != manifest:
+        raise PipelineError("V1.20 package did not round-trip exactly")
+    return V120AdaptedImportPackage(
+        package_root=resolved_output,
+        manifest_path=resolved_output / "import_manifest.json",
+        manifest=loaded,
+    )
+
+
 __all__ = (
+    "adapt_verified_hkdse_pdf_transcription_v120",
     "approve_hkdse_pdf_transcription",
     "extract_hkdse_pdf_embedded_pass",
     "load_hkdse_pdf_extraction_pass",
