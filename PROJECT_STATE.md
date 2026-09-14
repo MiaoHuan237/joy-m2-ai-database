@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-09-13 (Asia/Shanghai)
+Updated: 2026-09-14 (Asia/Shanghai)
 
 ## Formal data
 
@@ -28,19 +28,24 @@ Updated: 2026-09-13 (Asia/Shanghai)
 
 ## Current task
 
-Task 10A V1.20 multi-batch candidate authority is at its docs-only Gate-A
-checkpoint: `DESIGN / PLAN COMPLETE`, with independent authority review
-`Critical 0 / Important 0 / Minor 0`. The approved Design is
+Task 10A V1.20 multi-batch candidate authority is `CLOSED / PASS`. The approved
+Design is
 `docs/superpowers/specs/2026-09-13-task10a-v120-multi-batch-candidate-design.md`
 and the RED-first Plan is
 `docs/superpowers/plans/2026-09-13-task10a-v120-multi-batch-candidate.md`.
-Frozen Authority Gate A is `DESIGN AUTHORIZED`; implementation is
-`NOT STARTED — PENDING EXPLICIT V1.20 AUTHORITY IMPLEMENTATION AUTHORIZATION`.
-The authority is append-only over immutable formal V1.19/502, binds every batch
-to an independently verified parent candidate digest and exact approval, and
-keeps formal V1.20 promotion out of scope. V1.20 candidate/formal artifacts:
-`0`; no database, production, test, fixture, or release file was changed by
-this checkpoint.
+Gate A authority is committed at `76b61016928dc865ee895a0963a399aaa959789e`;
+the maintained public-surface migration at
+`7eabedfa0096272e4c9ec60a470a9231c848a4f0`; and the independently reviewed
+implementation at `c2668332e4c912d19e149361ca143637899422c7`
+(`feat: add V1.20 multi-batch candidate authority`). Final implementation
+review is Critical 0 / Important 0 / Minor 0. The versioned implementation is
+append-only over immutable formal V1.19/502, binds every batch to an
+independently verified parent candidate digest and exact approval, and keeps
+formal V1.20 promotion out of scope. No real V1.20 source has been read, no
+real batch has been adapted or preflighted, no persistent repository candidate
+generation has been created, and `releases/V1.20/` does not exist. The next
+action is `WAIT FOR REAL SOURCE`; the first operational action remains a
+read-only adaptation/preflight followed by the exact parent-bound Human Gate.
 
 Task 9D formal V1.19 promotion is `CLOSED / PASS`. Its independently reviewed
 Design is committed at
@@ -61,8 +66,8 @@ non-formal real-candidate dry-runs are byte-identical, independently verify
 The exact Human Gate D statement was received and consumed once by the public
 publication API. Formal `releases/V1.19/` independently verifies 18/18 and is
 byte-identical to the approved dry-run. No current-release pointer/index exists
-or changed. No V1.20 implementation is authorized by the Task 10A docs-only
-checkpoint.
+or changed. Task 10A adds only a non-formal V1.20 candidate lifecycle; it does
+not alter or supersede this formal V1.19 authority.
 
 Task 9B remains `CLOSED / PASS`. Its original parser-mode implementation is
 committed at `35778b80f931ecf4903ca553ab0fb1b1bb5e8110` and its explicit
@@ -198,10 +203,14 @@ Scope:
   rollback receipt, atomic publication gate, real dual dry-run, Gate D
   authorization, formal publication, maintained regressions, and independent
   implementation review are complete.
-- Task 10A authority: `DESIGN / PLAN COMPLETE`; independent docs review is
-  `Critical 0 / Important 0 / Minor 0`; Gate A authorizes only the append-only
-  V1.20 authority contract and its RED-first Plan. Implementation, V1.20
-  candidate creation, real imports, and promotion remain unauthorized.
+- Task 10A: `CLOSED / PASS`. Its approved append-only V1.20 public models,
+  target projection, effective-state preflight, parent-bound approval,
+  deterministic full-prefix candidate writer, and independent 24-check
+  verifier are implemented at
+  `c2668332e4c912d19e149361ca143637899422c7`. The historical V1.19 API remains
+  the exact ordered public prefix; only the approved V1.20 suffix was added.
+  Real-source adaptation/preflight has not started, no V1.20 candidate or
+  formal release exists, and promotion remains unauthorized.
 - `teacher_notes` and `common_errors` are Task 9A hashed import evidence/enrichment metadata, not current V2 formal fields; future formal representation requires separate schema authority.
 - Task 9A images are read-only deterministic evidence only; no copy, move, rename, destination, or formal image identity change is authorized.
 - Import approval binds `(batch_id, preflight_sha256, V1.19)` and is strictly separate from formal release/promotion authorization.
@@ -236,10 +245,11 @@ Scope:
 ## Completion gate
 
 - Current explicit maintained suite, excluding the separately attributed legacy
-  behavior module: 711/711 passed; skip=0 and expectedFailure=0.
-- Task 10A docs-only authority review: Critical 0 / Important 0 / Minor 0;
-  V1.20 artifacts remain 0 and formal V1.19 remains the exact 502-question
-  authority.
+  behavior module: 854/854 passed; skip=0 and expectedFailure=0.
+- Task 10A focused implementation suite: 143/143 passed; final independent
+  implementation review: Critical 0 / Important 0 / Minor 0.
+- Formal V1.19 independent verifier: 18/18 PASS. V1.20 candidate/formal
+  artifacts remain 0 and formal V1.19 remains the exact 502-question authority.
 - Task 9D focused promotion suite: 48/48 passed; final independent review:
   Critical 0 / Important 0 / Minor 0.
 - Task 9C Phase B focused writer/verifier suite: 71/71 passed; final independent
@@ -275,14 +285,16 @@ Scope:
   staging candidate. It must not be reused as approval for a real Task 9D user
   batch; that synthetic approval produced no formal import.
 - Task 9B verification record: `docs/reports/TASK9B_VERIFICATION.md`.
+- Task 10A verification record: `docs/reports/TASK10A_VERIFICATION.md`.
 
 ## Next task
 
-Task 9A, Task 9B, Task 9C, and Task 9D are closed. Formal V1.19 is published and
-independently verified at 502 questions; frozen V1.18 remains unchanged at 497.
-Task 10A Design and Plan are complete under Human Gate A, but they are not
-self-authorizing. No current-release pointer/index exists or was added; no
-Task 8C, Phase 2A, V1.20 production/test/fixture work, candidate write, real
-import, or promotion is authorized.
+Task 9A, Task 9B, Task 9C, Task 9D, and Task 10A implementation are closed.
+Formal V1.19 is published and independently verified at 502 questions; frozen
+V1.18 remains unchanged at 497. Task 10A has implemented and verified the
+non-formal multi-batch V1.20 candidate lifecycle, but no real source has been
+read and no V1.20 candidate or formal artifact exists. No current-release
+pointer/index exists or was added; Task 8C, Phase 2A, formal V1.20 promotion,
+and any unrelated implementation remain unauthorized.
 
-`USER DECISION REQUIRED — V1.20 AUTHORITY IMPLEMENTATION AUTHORIZATION`
+`WAIT FOR REAL SOURCE`
