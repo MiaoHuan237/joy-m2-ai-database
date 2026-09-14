@@ -40,6 +40,7 @@ from .adapter_models import (
     MmdAdapterManifest,
     MmdSelection,
 )
+from .v120_models import V120AdaptedImportPackage
 from .archive import _is_allowed_metadata, read_selected_source
 from .mmd_parser import (
     _SourceDocument,
@@ -1470,9 +1471,77 @@ def adapt_mmd_package_from_mapping(
     return _publish_package(output_dir, manifest, document, bindings, candidates, primary, answer, image_bytes)
 
 
+def adapt_mmd_package_from_mapping_v120(
+    selection_manifest_path: Path,
+    source_mapping_path: Path,
+    approval: SourceMappingApproval,
+    source_path: Path,
+    output_dir: Path,
+    config: PipelineConfig,
+) -> V120AdaptedImportPackage:
+    for value, name in (
+        (selection_manifest_path, "selection_manifest_path"),
+        (source_mapping_path, "source_mapping_path"),
+        (source_path, "source_path"),
+        (output_dir, "output_dir"),
+    ):
+        if not isinstance(value, Path):
+            raise TypeError(f"{name} must be a pathlib.Path")
+    if type(approval) is not SourceMappingApproval:
+        raise TypeError("approval must be an exact SourceMappingApproval")
+    if type(config) is not PipelineConfig:
+        raise TypeError("config must be an exact PipelineConfig")
+    try:
+        reconstructed_config = PipelineConfig(config.repo_root)
+    except (TypeError, PipelineError) as exc:
+        raise ConfigurationError("config does not satisfy PipelineConfig authority") from exc
+    if reconstructed_config != config:
+        raise ConfigurationError("config does not satisfy PipelineConfig authority")
+    _preflight_destination(output_dir, config)
+    manifest = _decode_manifest(
+        selection_manifest_path,
+        source_path,
+        allowed_language_layouts=_MODE_B_LAYOUTS,
+    )
+    raw = _read_input(source_mapping_path, "source mapping")
+    mapping = _decode_object(raw)
+    _validate_mapping_schema(mapping, raw)
+    _source_free_mapping(mapping, manifest)
+    digest = hashlib.sha256(raw).hexdigest()
+    approval_issues: list[MmdAdapterIssue] = []
+    if approval.source_id != mapping["source_id"]:
+        approval_issues.append(_issue("approval.source_id", approval.source_id, mapping["source_id"], "approval_source_id_mismatch"))
+    if approval.mapping_sha256 != digest:
+        approval_issues.append(_issue("approval.mapping_sha256", approval.mapping_sha256, digest, "approval_mapping_digest_mismatch"))
+    expected_text = f"USER APPROVED SOURCE MAPPING {mapping['source_id']} {digest}"
+    if not approval_issues and approval.approval_text != expected_text:
+        approval_issues.append(_issue("approval.approval_text", hashlib.sha256(approval.approval_text.encode()).hexdigest(), hashlib.sha256(expected_text.encode()).hexdigest(), "approval_text_mismatch"))
+    if approval_issues:
+        raise MmdAdapterBlockedError(tuple(approval_issues))
+    primary_bytes, answer_bytes, image_bytes, source_inventory = read_selected_source(manifest, source_path)
+    _validate_identity_and_spans(mapping, manifest, source_path, primary_bytes, answer_bytes)
+    document, bindings, _gaps, _unbound = _build_ir(mapping, manifest, primary_bytes, answer_bytes, image_bytes, source_inventory, approved=True)
+    members = {member.relative_path: member for member in document.members}
+    primary = members[manifest.primary_member]
+    answer = members.get(manifest.answer_member) if manifest.answer_member is not None else None
+    from .v120_projection import _project_v120_package
+
+    return _project_v120_package(
+        output_dir,
+        manifest,
+        document,
+        bindings,
+        _map_candidates(manifest, document, bindings),
+        primary,
+        answer,
+        image_bytes,
+    )
+
+
 __all__ = (
     "SourceMappingProposal",
     "SourceMappingApproval",
     "propose_mmd_source_mapping",
     "adapt_mmd_package_from_mapping",
+    "adapt_mmd_package_from_mapping_v120",
 )

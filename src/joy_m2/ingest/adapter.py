@@ -14,6 +14,7 @@ from joy_m2.errors import (
     ConfigurationError,
     InputMissingError,
     OutputConflictError,
+    PipelineError,
 )
 from joy_m2.ingest.models import BatchImportManifest, ImportFileEvidence
 
@@ -24,6 +25,7 @@ from .adapter_models import (
     MmdAdapterManifest,
     MmdSelection,
 )
+from .v120_models import V120AdaptedImportPackage
 from .archive import read_selected_source
 from .mmd_parser import (
     _SourceDocument,
@@ -1517,6 +1519,97 @@ def adapt_mmd_package(
         document,
         bindings,
         candidates,
+        primary,
+        answer,
+        image_bytes,
+    )
+
+
+def adapt_mmd_package_v120(
+    selection_manifest_path: Path,
+    source_path: Path,
+    output_dir: Path,
+    config: PipelineConfig,
+) -> V120AdaptedImportPackage:
+    if not isinstance(selection_manifest_path, Path):
+        raise TypeError("selection_manifest_path must be a pathlib.Path")
+    if not isinstance(source_path, Path):
+        raise TypeError("source_path must be a pathlib.Path")
+    if not isinstance(output_dir, Path):
+        raise TypeError("output_dir must be a pathlib.Path")
+    if type(config) is not PipelineConfig:
+        raise TypeError("config must be an exact PipelineConfig")
+    try:
+        reconstructed_config = PipelineConfig(config.repo_root)
+    except (TypeError, PipelineError) as exc:
+        raise ConfigurationError("config does not satisfy PipelineConfig authority") from exc
+    if reconstructed_config != config:
+        raise ConfigurationError("config does not satisfy PipelineConfig authority")
+    resolved_output = config.require_staging_output(output_dir)
+    if resolved_output == config.staging_root:
+        raise ConfigurationError("output path must be a strict staging descendant")
+    if output_dir.exists() or output_dir.is_symlink():
+        raise OutputConflictError("output path already exists")
+    manifest = _decode_manifest(
+        selection_manifest_path,
+        source_path,
+        allowed_language_layouts=("english_then_chinese", "interleaved_bilingual"),
+    )
+    primary_bytes, answer_bytes, image_bytes, source_inventory = read_selected_source(
+        manifest,
+        source_path,
+    )
+    primary = _SourceMember(
+        manifest.primary_member,
+        hashlib.sha256(primary_bytes).hexdigest(),
+        primary_bytes,
+    )
+    answer = (
+        _SourceMember(
+            manifest.answer_member,
+            hashlib.sha256(answer_bytes).hexdigest(),
+            answer_bytes,
+        )
+        if manifest.answer_member is not None and answer_bytes is not None
+        else None
+    )
+    image_members = tuple(
+        _SourceMember(relative_path, hashlib.sha256(content).hexdigest(), content)
+        for relative_path, content in sorted(image_bytes.items())
+    )
+    document, target_records = _parse_source_document_with_inventory(
+        primary,
+        answer,
+        source_inventory,
+        image_members,
+    )
+    if manifest.source_kind == "mmd":
+        _check_plain_d3_resource_targets(target_records, source_path)
+    bindings = _bind_selections(manifest, document, answer)
+    if len(document.questions) != manifest.expected_candidate_count:
+        raise MmdAdapterBlockedError(
+            (
+                _mapping_issue(
+                    "candidate_count_mismatch",
+                    None,
+                    "",
+                    "expected_candidate_count",
+                    {
+                        "actual": len(document.questions),
+                        "expected": manifest.expected_candidate_count,
+                        "reason": "candidate_count",
+                    },
+                ),
+            )
+        )
+    from .v120_projection import _project_v120_package
+
+    return _project_v120_package(
+        output_dir,
+        manifest,
+        document,
+        bindings,
+        _map_candidates(manifest, document, bindings),
         primary,
         answer,
         image_bytes,

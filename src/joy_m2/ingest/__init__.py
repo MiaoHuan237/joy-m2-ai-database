@@ -1,6 +1,6 @@
 """Public Task 9 ingest contracts and entry points."""
 
-from .adapter import adapt_mmd_package
+from .adapter import adapt_mmd_package, adapt_mmd_package_v120
 from .adapter_models import (
     AdaptedImportPackage,
     MmdAdapterBlockedError,
@@ -38,6 +38,25 @@ from .writer_models import (
     V119WriterContract,
 )
 from .writer_verification import verify_v119_candidate
+from .v120_manifest import load_v120_import_manifest
+from .v120_models import (
+    V120AdaptedImportPackage,
+    V120ApprovedBatch,
+    V120BatchImportManifest,
+    V120BatchLedgerEntry,
+    V120CandidateArtifacts,
+    V120CandidateBuildRequest,
+    V120CandidateContract,
+    V120CandidateVerificationRequest,
+    V120EffectiveState,
+    V120ImportApproval,
+    V120ImportPreflightReport,
+    V120ImportPreflightResult,
+    V120PreflightRequest,
+)
+from .v120_preflight import preflight_v120_import
+from .v120_verification import verify_v120_candidate
+from .v120_writer import build_v120_candidate
 
 
 __all__ = (
@@ -72,4 +91,22 @@ __all__ = (
     "build_v119_promotion",
     "verify_v119_promotion",
     "publish_v119_release",
+    "V120BatchImportManifest",
+    "V120AdaptedImportPackage",
+    "V120BatchLedgerEntry",
+    "V120EffectiveState",
+    "V120PreflightRequest",
+    "V120ImportPreflightReport",
+    "V120ImportPreflightResult",
+    "V120ImportApproval",
+    "V120ApprovedBatch",
+    "V120CandidateContract",
+    "V120CandidateBuildRequest",
+    "V120CandidateVerificationRequest",
+    "V120CandidateArtifacts",
+    "load_v120_import_manifest",
+    "adapt_mmd_package_v120",
+    "preflight_v120_import",
+    "build_v120_candidate",
+    "verify_v120_candidate",
 )
