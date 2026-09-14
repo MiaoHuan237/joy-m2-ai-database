@@ -1,0 +1,91 @@
+{
+  "schema": "joy_m2_staging_batch_v1",
+  "batch_id": "JOY-M2-HKDSE-2012-PP-MS",
+  "created_utc": "2026-09-07T00:00:00Z",
+  "status": "staging_only",
+  "database_release_target": "post-V1.18 (formal import not performed)",
+  "source_pair": {
+    "pp": {
+      "role": "question_paper",
+      "file_name": "M2_2012-pp.pdf",
+      "library_file_id": "fixture-pp",
+      "sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "page_count": 2,
+      "original_file_retained": true,
+      "content_layer": "fixture",
+      "ocr_used_for_indexing_only": true
+    },
+    "ms": {
+      "role": "marking_scheme",
+      "file_name": "M2_2012-ms.pdf",
+      "library_file_id": "fixture-ms",
+      "sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "page_count": 1,
+      "original_file_retained": true,
+      "content_layer": "fixture",
+      "ocr_used_for_indexing_only": true
+    }
+  },
+  "capture_policy": {
+    "complete_questions_not_subparts": true,
+    "originals_preserved_via_library_file_ids": true,
+    "OCR_is_non_authoritative": true,
+    "official_marking_scheme_linked": true,
+    "bilingual_duplicates_count_once": true
+  },
+  "dedup_policy": {
+    "exam_identity_is_canonical": true,
+    "do_not_create_a_second_mother_question_when_seen_in_topic_collections": true,
+    "retain_all_source_relationships": true,
+    "formal_import_requires_authoritative_fingerprint_check": true
+  },
+  "summary": {
+    "complete_questions": 1,
+    "total_marks": 3,
+    "module_distribution": {"T05": 1},
+    "difficulty_distribution": {"D2": 1}
+  },
+  "records": [
+    {
+      "staging_id": "HKDSE-2012-M2-Q01",
+      "dedup_key_proposal": "HKDSE:2012:M2:Q01",
+      "source_question_no": 1,
+      "section": "A",
+      "marks": 3,
+      "question_kind": "public_exam_question",
+      "module": "T05",
+      "module_name": "Differentiation by First Principles",
+      "topic_proposal": "first-principles derivative",
+      "subtopic_proposal": null,
+      "difficulty_proposal": 2,
+      "proposed_tags": ["dse_pp", "official_marking_scheme"],
+      "question_capture": {
+        "pp_pages": {"start": 2, "end": 2},
+        "exact_original_retained": true,
+        "text_transcription_status": "not_generated",
+        "completeness_unit": "whole question including all subparts"
+      },
+      "answer_capture": {
+        "ms_pages": {"start": 1, "end": 1},
+        "answer_status": "official_marking_scheme",
+        "exact_original_retained": true,
+        "scoring_steps_retained": true,
+        "mapping_method": "question order plus visual page review"
+      },
+      "provenance": {
+        "source_type": "HKDSE_public_exam",
+        "source_name": "2012 HKDSE Mathematics Extended Part Module 2",
+        "language": "zh-Hant",
+        "canonical_exam_identity": "HKDSE-2012-MATH-M2-Q1"
+      },
+      "dedup_status": "pending_authoritative_database_fingerprint_check",
+      "potential_duplicate_sources": [
+        "existing_V1.18_database",
+        "topic_PP_review_materials",
+        "textbook_public_exam_sections"
+      ],
+      "review_required": false
+    }
+  ],
+  "formal_import_performed": false
+}
