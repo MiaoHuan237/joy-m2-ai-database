@@ -20,6 +20,11 @@ from .hkdse_pdf_models import (
     HkdsePdfTranscriptionRecord,
     VerifiedHkdsePdfTranscriptionBatch,
 )
+from .hkdse_pdf_adapter import (
+    extract_hkdse_pdf_embedded_pass,
+    load_hkdse_pdf_extraction_pass,
+    propose_hkdse_pdf_transcription,
+)
 from .models import (
     BatchImportManifest,
     ImportAdaptation,
@@ -129,4 +134,7 @@ __all__ = (
     "HkdsePdfTranscriptionApproval",
     "VerifiedHkdsePdfTranscriptionBatch",
     "HkdsePdfAdapterBlockedError",
+    "extract_hkdse_pdf_embedded_pass",
+    "load_hkdse_pdf_extraction_pass",
+    "propose_hkdse_pdf_transcription",
 )

@@ -5,8 +5,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 import hashlib
 import json
+import os
 from pathlib import Path
 import re
+import tempfile
 
 from pypdf import PdfReader
 
@@ -504,6 +506,129 @@ def _validate_output(output_dir: object, config: object) -> Path:
     return resolved
 
 
+def _pass_record_payload(record: HkdsePdfExtractionRecord) -> dict[str, object]:
+    return {
+        "staging_id": record.staging_id,
+        "question_pages": {
+            "start_page": record.question_pages.start_page,
+            "end_page": record.question_pages.end_page,
+        },
+        "ms_pages": {
+            "start_page": record.ms_pages.start_page,
+            "end_page": record.ms_pages.end_page,
+        },
+        "question_text_original": record.question_text_original,
+        "official_ms_original": record.official_ms_original,
+        "subparts": list(record.subparts),
+        "marks": record.marks,
+        "figure_references": list(record.figure_references),
+        "question_method": record.question_method,
+        "ms_method": record.ms_method,
+    }
+
+
+def _pass_payload(value: HkdsePdfExtractionPass) -> dict[str, object]:
+    return {
+        "schema_version": "task10b-hkdse-pdf-extraction-pass-v1",
+        "pass_id": value.pass_id,
+        "staging_sha256": value.staging_sha256,
+        "pp_sha256": value.pp_sha256,
+        "ms_sha256": value.ms_sha256,
+        "records": [_pass_record_payload(record) for record in value.records],
+    }
+
+
+def _atomic_write_file(output_path: Path, content: bytes) -> None:
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    descriptor, temporary_name = tempfile.mkstemp(
+        prefix=f".{output_path.name}-",
+        dir=output_path.parent,
+    )
+    temporary = Path(temporary_name)
+    try:
+        with os.fdopen(descriptor, "wb") as stream:
+            stream.write(content)
+            stream.flush()
+            os.fsync(stream.fileno())
+        try:
+            os.link(temporary, output_path)
+        except FileExistsError as exc:
+            raise OutputConflictError("output path already exists") from exc
+    finally:
+        temporary.unlink(missing_ok=True)
+
+
+def _owned_pages(records: tuple[_StagingRecord, ...], name: str) -> dict[int, int]:
+    counts: dict[int, int] = {}
+    for record in records:
+        span = getattr(record, name)
+        for page_number in range(span.start_page, span.end_page + 1):
+            counts[page_number] = counts.get(page_number, 0) + 1
+    return counts
+
+
+def _embedded_text(reader: PdfReader, span: HkdsePdfPageSpan, owners: dict[int, int]) -> str:
+    page_numbers = tuple(range(span.start_page, span.end_page + 1))
+    if any(owners[number] != 1 for number in page_numbers):
+        return ""
+    values: list[str] = []
+    for number in page_numbers:
+        value = reader.pages[number - 1].extract_text()
+        values.append(value if type(value) is str else "")
+    return "\f".join(values)
+
+
+def extract_hkdse_pdf_embedded_pass(
+    staging_manifest_path: Path,
+    pp_pdf_path: Path,
+    ms_pdf_path: Path,
+    pass_id: str,
+    output_path: Path,
+    config: PipelineConfig,
+) -> HkdsePdfExtractionPass:
+    resolved_output = _validate_output(output_path, config)
+    staging = _load_staging(staging_manifest_path)
+    _validate_pdf(pp_pdf_path, staging.pp, "pp")
+    _validate_pdf(ms_pdf_path, staging.ms, "ms")
+    if pass_id not in {"A", "B"}:
+        raise PipelineError("pass_id must be exactly A or B")
+    pp_reader = PdfReader(pp_pdf_path, strict=True)
+    ms_reader = PdfReader(ms_pdf_path, strict=True)
+    pp_owners = _owned_pages(staging.records, "question_pages")
+    ms_owners = _owned_pages(staging.records, "ms_pages")
+    records = tuple(
+        HkdsePdfExtractionRecord(
+            staging_id=record.staging_id,
+            question_pages=record.question_pages,
+            ms_pages=record.ms_pages,
+            question_text_original=_embedded_text(
+                pp_reader, record.question_pages, pp_owners
+            ),
+            official_ms_original=_embedded_text(ms_reader, record.ms_pages, ms_owners),
+            subparts=(),
+            marks=record.marks,
+            figure_references=(),
+            question_method="embedded_text",
+            ms_method="embedded_text",
+        )
+        for record in staging.records
+    )
+    result = HkdsePdfExtractionPass(
+        pass_id,
+        staging.staging_sha256,
+        staging.pp.sha256,
+        staging.ms.sha256,
+        records,
+    )
+    content = (_canonical_json(_pass_payload(result)) + "\n").encode("utf-8")
+    _atomic_write_file(resolved_output, content)
+    reconstructed = load_hkdse_pdf_extraction_pass(resolved_output)
+    if reconstructed != result:
+        resolved_output.unlink(missing_ok=True)
+        raise PipelineError("embedded pass did not round-trip exactly")
+    return result
+
+
 def propose_hkdse_pdf_transcription(
     staging_manifest_path: Path,
     pp_pdf_path: Path,
@@ -529,6 +654,7 @@ def propose_hkdse_pdf_transcription(
 
 
 __all__ = (
+    "extract_hkdse_pdf_embedded_pass",
     "load_hkdse_pdf_extraction_pass",
     "propose_hkdse_pdf_transcription",
 )

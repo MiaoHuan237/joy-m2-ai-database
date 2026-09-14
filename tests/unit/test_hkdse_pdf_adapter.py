@@ -11,6 +11,7 @@ import tempfile
 import unittest
 
 from pypdf import PdfWriter
+from pypdf.generic import DecodedStreamObject, DictionaryObject, NameObject
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -34,6 +35,15 @@ def adapter(test_case: unittest.TestCase):
         "Task 10B hkdse_pdf_adapter must exist before adapter behavior can pass",
     )
     return importlib.import_module(MODULE_NAME)
+
+
+def embedded_api(test_case: unittest.TestCase):
+    module = adapter(test_case)
+    test_case.assertTrue(
+        hasattr(module, "extract_hkdse_pdf_embedded_pass"),
+        "Task 10B embedded extraction API must exist before behavior can pass",
+    )
+    return module.extract_hkdse_pdf_embedded_pass
 
 
 def sha(path: Path) -> str:
@@ -67,10 +77,33 @@ class AdapterCase(unittest.TestCase):
     def tearDown(self):
         self.temporary.cleanup()
 
-    def _pdf(self, path: Path, pages: int) -> None:
+    def _pdf(self, path: Path, pages: int, texts: tuple[str, ...] | None = None) -> None:
         writer = PdfWriter()
-        for _ in range(pages):
-            writer.add_blank_page(width=612, height=792)
+        for index in range(pages):
+            page = writer.add_blank_page(width=612, height=792)
+            text = texts[index] if texts is not None else ""
+            if text:
+                font = DictionaryObject(
+                    {
+                        NameObject("/Type"): NameObject("/Font"),
+                        NameObject("/Subtype"): NameObject("/Type1"),
+                        NameObject("/BaseFont"): NameObject("/Helvetica"),
+                    }
+                )
+                font_ref = writer._add_object(font)
+                page[NameObject("/Resources")] = DictionaryObject(
+                    {
+                        NameObject("/Font"): DictionaryObject(
+                            {NameObject("/F1"): font_ref}
+                        )
+                    }
+                )
+                stream = DecodedStreamObject()
+                escaped = text.replace("\\", "\\\\").replace("(", "\\(").replace(")", "\\)")
+                stream.set_data(
+                    f"BT /F1 12 Tf 72 720 Td ({escaped}) Tj ET".encode("ascii")
+                )
+                page[NameObject("/Contents")] = writer._add_object(stream)
         with path.open("wb") as stream:
             writer.write(stream)
 
@@ -199,6 +232,97 @@ class HkdsePdfSourceValidationTests(AdapterCase):
         self.output.mkdir()
         with self.assertRaises(OutputConflictError):
             self.propose()
+
+
+class HkdsePdfEmbeddedExtractionTests(AdapterCase):
+    def _refresh_text_pdfs(self):
+        self._pdf(self.pp, 2, ("Cover", "Question One exact source"))
+        self._pdf(self.ms, 1, ("Official marking steps M1 A1",))
+        self._write_valid_inputs()
+
+    def test_unique_page_owner_produces_bound_embedded_pass_and_canonical_file(self):
+        self._refresh_text_pdfs()
+        module = adapter(self)
+        extract = embedded_api(self)
+        output = self.root / "data" / "staging" / "embedded-a.json"
+        result = extract(
+            self.staging, self.pp, self.ms, "A", output, self.config
+        )
+        self.assertEqual(result.pass_id, "A")
+        self.assertEqual(result.staging_sha256, sha(self.staging))
+        self.assertIn("Question One exact source", result.records[0].question_text_original)
+        self.assertIn("Official marking steps", result.records[0].official_ms_original)
+        self.assertEqual(result.records[0].question_method, "embedded_text")
+        self.assertEqual(module.load_hkdse_pdf_extraction_pass(output), result)
+        self.assertTrue(output.read_bytes().endswith(b"\n"))
+
+    def test_shared_page_text_is_not_assigned_to_multiple_questions(self):
+        self._refresh_text_pdfs()
+        staging = json.loads(self.staging.read_text(encoding="utf-8"))
+        second = json.loads(json.dumps(staging["records"][0]))
+        second["staging_id"] = "HKDSE-2012-M2-Q02"
+        second["dedup_key_proposal"] = "HKDSE:2012:M2:Q02"
+        second["source_question_no"] = 2
+        second["provenance"]["canonical_exam_identity"] = "HKDSE-2012-MATH-M2-Q2"
+        staging["records"].append(second)
+        staging["summary"]["complete_questions"] = 2
+        staging["summary"]["total_marks"] = 6
+        staging["summary"]["module_distribution"]["T05"] = 2
+        staging["summary"]["difficulty_distribution"]["D2"] = 2
+        write_json(self.staging, staging)
+        extract = embedded_api(self)
+        output = self.root / "data" / "staging" / "shared.json"
+        result = extract(
+            self.staging, self.pp, self.ms, "A", output, self.config
+        )
+        self.assertEqual(
+            tuple(record.question_text_original for record in result.records),
+            ("", ""),
+        )
+        self.assertEqual(
+            tuple(record.official_ms_original for record in result.records),
+            ("", ""),
+        )
+
+    def test_embedded_output_is_no_replace_and_strictly_staging_scoped(self):
+        self._refresh_text_pdfs()
+        extract = embedded_api(self)
+        output = self.root / "data" / "staging" / "embedded.json"
+        extract(
+            self.staging, self.pp, self.ms, "B", output, self.config
+        )
+        before = output.read_bytes()
+        with self.assertRaises(OutputConflictError):
+            extract(
+                self.staging, self.pp, self.ms, "B", output, self.config
+            )
+        self.assertEqual(output.read_bytes(), before)
+        with self.assertRaises(PipelineError):
+            extract(
+                self.staging,
+                self.pp,
+                self.ms,
+                "A",
+                self.root / "outside.json",
+                self.config,
+            )
+
+    def test_equivalent_roots_produce_identical_pass_bytes(self):
+        self._refresh_text_pdfs()
+        extract = embedded_api(self)
+        first = self.root / "data" / "staging" / "first.json"
+        extract(
+            self.staging, self.pp, self.ms, "A", first, self.config
+        )
+        second_root = self.root / "second-repo"
+        for name in ("data/staging", "data/baselines", "releases"):
+            (second_root / name).mkdir(parents=True, exist_ok=True)
+        second_config = PipelineConfig(second_root)
+        second = second_root / "data" / "staging" / "second.json"
+        extract(
+            self.staging, self.pp, self.ms, "A", second, second_config
+        )
+        self.assertEqual(first.read_bytes(), second.read_bytes())
 
 
 if __name__ == "__main__":
