@@ -474,6 +474,8 @@ src/joy_m2/ingest/hkdse_pdf_models.py
 src/joy_m2/ingest/hkdse_pdf_adapter.py
 tests/unit/test_hkdse_pdf_models.py
 tests/unit/test_hkdse_pdf_adapter.py
+tests/unit/test_v119_writer_models.py
+tests/unit/test_v119_promotion_models.py
 tests/integration/test_hkdse_pdf_adapter.py
 tests/regression/test_v119_historical_replay.py
 tests/fixtures/task10b/**
