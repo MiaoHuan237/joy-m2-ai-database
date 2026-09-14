@@ -5,11 +5,13 @@ from __future__ import annotations
 from dataclasses import dataclass, replace
 import errno
 import hashlib
+import io
 import json
 import os
 from pathlib import Path
 import re
 import shutil
+import stat
 import tempfile
 
 from pypdf import PdfReader
@@ -206,10 +208,15 @@ def _block(code: str, field: str, reason: str, **values: object):
 def _read_bytes(path: object, label: str) -> bytes:
     if not isinstance(path, Path):
         raise TypeError(f"{label} must be a pathlib.Path")
-    if not path.exists() or not path.is_file() or path.is_symlink():
+    if path.is_symlink():
         _block("staging_contract_mismatch", label, "not_regular_file")
+    flags = os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0)
     try:
-        return path.read_bytes()
+        descriptor = os.open(path, flags)
+        with os.fdopen(descriptor, "rb") as stream:
+            if not stat.S_ISREG(os.fstat(stream.fileno()).st_mode):
+                _block("staging_contract_mismatch", label, "not_regular_file")
+            return stream.read()
     except OSError:
         _block("staging_contract_mismatch", label, "unreadable_file")
 
@@ -426,7 +433,7 @@ def _load_staging(path: Path) -> _StagingBatch:
     )
 
 
-def _validate_pdf(path: Path, identity: _PdfIdentity, label: str) -> None:
+def _validate_pdf(path: Path, identity: _PdfIdentity, label: str) -> PdfReader:
     raw = _read_bytes(path, f"{label}_pdf_path")
     if not raw.startswith(b"%PDF-"):
         _block("pdf_identity_mismatch", label, "invalid_pdf_signature")
@@ -434,11 +441,13 @@ def _validate_pdf(path: Path, identity: _PdfIdentity, label: str) -> None:
     if actual != identity.sha256:
         _block("pdf_identity_mismatch", label, "sha256_mismatch", expected=identity.sha256, actual=actual)
     try:
-        count = len(PdfReader(path, strict=True).pages)
+        reader = PdfReader(io.BytesIO(raw), strict=True)
+        count = len(reader.pages)
     except Exception:
         _block("pdf_identity_mismatch", label, "unreadable_pdf")
     if count != identity.page_count:
         _block("pdf_page_mismatch", label, "page_count_mismatch", expected=identity.page_count, actual=count)
+    return reader
 
 
 def load_hkdse_pdf_extraction_pass(path: Path) -> HkdsePdfExtractionPass:
@@ -618,12 +627,10 @@ def extract_hkdse_pdf_embedded_pass(
 ) -> HkdsePdfExtractionPass:
     resolved_output = _validate_output(output_path, config)
     staging = _load_staging(staging_manifest_path)
-    _validate_pdf(pp_pdf_path, staging.pp, "pp")
-    _validate_pdf(ms_pdf_path, staging.ms, "ms")
+    pp_reader = _validate_pdf(pp_pdf_path, staging.pp, "pp")
+    ms_reader = _validate_pdf(ms_pdf_path, staging.ms, "ms")
     if pass_id not in {"A", "B"}:
         raise PipelineError("pass_id must be exactly A or B")
-    pp_reader = PdfReader(pp_pdf_path, strict=True)
-    ms_reader = PdfReader(ms_pdf_path, strict=True)
     pp_owners = _owned_pages(staging.records, "question_pages")
     ms_owners = _owned_pages(staging.records, "ms_pages")
     records = tuple(
@@ -1178,8 +1185,25 @@ def adapt_verified_hkdse_pdf_transcription_v120(
         raise TypeError(
             "verified must be an exact VerifiedHkdsePdfTranscriptionBatch"
         )
-    resolved_output = _validate_output(output_dir, config)
     proposal = verified.proposal
+    approval = getattr(verified, "approval", None)
+    if type(approval) is not HkdsePdfTranscriptionApproval:
+        raise PipelineError("verified transcription requires an exact approval")
+    try:
+        reconstructed_approval = HkdsePdfTranscriptionApproval(
+            approval.batch_id,
+            approval.transcription_digest,
+            approval.approval_text,
+        )
+    except (AttributeError, PipelineError) as exc:
+        raise PipelineError("verified transcription approval is invalid") from exc
+    if (
+        approval != reconstructed_approval
+        or approval.batch_id != proposal.batch_id
+        or approval.transcription_digest != proposal.transcription_digest
+    ):
+        raise PipelineError("verified transcription approval does not bind proposal")
+    resolved_output = _validate_output(output_dir, config)
     proposal_root = proposal.artifact_root.resolve(strict=False)
     if (
         resolved_output.is_relative_to(proposal_root)

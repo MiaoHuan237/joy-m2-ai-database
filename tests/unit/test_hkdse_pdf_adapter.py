@@ -345,6 +345,43 @@ class HkdsePdfEmbeddedExtractionTests(AdapterCase):
         )
         self.assertEqual(first.read_bytes(), second.read_bytes())
 
+    def test_pdf_hash_page_count_and_text_share_one_byte_snapshot(self):
+        self._pdf(self.pp, 2, ("Cover", "Original approved question text"))
+        self._pdf(self.ms, 1, ("Original approved marking steps",))
+        self._write_valid_inputs()
+        original_sha = sha(self.pp)
+        replacement = self.root / "replacement.pdf"
+        self._pdf(replacement, 2, ("Cover", "Replacement question text"))
+
+        module = adapter(self)
+        real_read = module._read_bytes
+        swapped = False
+
+        def read_then_swap(path, label):
+            nonlocal swapped
+            raw = real_read(path, label)
+            if label == "pp_pdf_path" and not swapped:
+                shutil.copyfile(replacement, self.pp)
+                swapped = True
+            return raw
+
+        output = self.root / "data" / "staging" / "snapshot.json"
+        with mock.patch.object(module, "_read_bytes", side_effect=read_then_swap):
+            result = embedded_api(self)(
+                self.staging, self.pp, self.ms, "A", output, self.config
+            )
+
+        self.assertTrue(swapped)
+        self.assertEqual(result.pp_sha256, original_sha)
+        self.assertIn(
+            "Original approved question text",
+            result.records[0].question_text_original,
+        )
+        self.assertNotIn(
+            "Replacement question text",
+            result.records[0].question_text_original,
+        )
+
 
 class HkdsePdfComparisonTests(AdapterCase):
     def propose(self):

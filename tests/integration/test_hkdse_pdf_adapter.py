@@ -246,6 +246,35 @@ class HkdsePdfCanonicalBridgeTests(AdapterCase):
                         value, self.package_output, self.config
                     )
 
+    def test_forged_verified_carrier_without_exact_approval_cannot_reach_v120_package(self):
+        module = adapter(self)
+        missing = object.__new__(type(self.verified))
+        object.__setattr__(missing, "proposal", self.proposal)
+        object.__setattr__(missing, "records", self.verified.records)
+
+        forged_approval = object.__new__(HkdsePdfTranscriptionApproval)
+        object.__setattr__(forged_approval, "batch_id", self.proposal.batch_id)
+        object.__setattr__(forged_approval, "transcription_digest", "f" * 64)
+        object.__setattr__(
+            forged_approval,
+            "approval_text",
+            "USER APPROVED PDF TRANSCRIPTION BATCH "
+            f"{self.proposal.batch_id} {'f' * 64}",
+        )
+        forged = object.__new__(type(self.verified))
+        object.__setattr__(forged, "proposal", self.proposal)
+        object.__setattr__(forged, "approval", forged_approval)
+        object.__setattr__(forged, "records", self.verified.records)
+
+        for index, value in enumerate((missing, forged)):
+            with self.subTest(case=index):
+                with self.assertRaises(PipelineError):
+                    module.adapt_verified_hkdse_pdf_transcription_v120(
+                        value,
+                        self.root / "data" / "staging" / f"forged-{index}",
+                        self.config,
+                    )
+
     def test_equivalent_staging_roots_produce_identical_package_bytes(self):
         first = self.bridge()
         second_root = self.root / "bridge-root"
