@@ -76,11 +76,34 @@ _V120_PUBLIC = (
     "build_v120_candidate",
     "verify_v120_candidate",
 )
+_TASK10B_PUBLIC = (
+    "HkdsePdfPageSpan",
+    "HkdsePdfExtractionRecord",
+    "HkdsePdfExtractionPass",
+    "HkdsePdfTranscriptionIssue",
+    "HkdsePdfTranscriptionRecord",
+    "HkdsePdfTranscriptionBatch",
+    "HkdsePdfTranscriptionApproval",
+    "VerifiedHkdsePdfTranscriptionBatch",
+    "HkdsePdfAdapterBlockedError",
+    "extract_hkdse_pdf_embedded_pass",
+    "load_hkdse_pdf_extraction_pass",
+    "propose_hkdse_pdf_transcription",
+    "approve_hkdse_pdf_transcription",
+    "adapt_verified_hkdse_pdf_transcription_v120",
+)
 
 
 class V119HistoricalReplayTests(unittest.TestCase):
     def test_root_public_surface_is_exact_append_only_v119_then_v120(self) -> None:
-        self.assertEqual(ingest.__all__, _V119_PUBLIC + _V120_PUBLIC)
+        self.assertEqual(
+            ingest.__all__, _V119_PUBLIC + _V120_PUBLIC + _TASK10B_PUBLIC
+        )
+        self.assertEqual(ingest.__all__[: len(_V119_PUBLIC)], _V119_PUBLIC)
+        self.assertEqual(
+            ingest.__all__[len(_V119_PUBLIC) : len(_V119_PUBLIC) + len(_V120_PUBLIC)],
+            _V120_PUBLIC,
+        )
         self.assertEqual(
             tuple(name for name in ingest.__all__ if name.startswith("V119")),
             tuple(name for name in _V119_PUBLIC if name.startswith("V119")),
