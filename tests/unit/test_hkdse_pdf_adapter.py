@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from dataclasses import replace
+import errno
 import hashlib
 import importlib
 import importlib.util
@@ -458,6 +459,23 @@ class HkdsePdfComparisonTests(AdapterCase):
         self.assertEqual(
             tuple(self.output.parent.glob(f".{self.output.name}-*")), ()
         )
+
+    def test_atomic_publish_race_is_reported_as_output_conflict(self):
+        module = adapter(self)
+        with mock.patch.object(
+            module,
+            "atomic_rename_no_replace",
+            side_effect=OSError(errno.EEXIST, "already exists"),
+        ):
+            try:
+                self.propose()
+            except OutputConflictError:
+                pass
+            except OSError as exc:
+                self.fail(f"publish race leaked raw OSError: {exc}")
+            else:
+                self.fail("publish race was not rejected")
+        self.assertFalse(self.output.exists())
 
 
 class HkdsePdfApprovalTests(AdapterCase):

@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import sys
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -297,6 +298,25 @@ class HkdsePdfCanonicalBridgeTests(AdapterCase):
         alias.symlink_to(physical, target_is_directory=True)
         with self.assertRaises(PipelineError):
             self.bridge(alias / "canonical")
+
+    def test_bridge_publish_failure_cleans_owned_temporary_tree(self):
+        module = adapter(self)
+        with mock.patch.object(
+            module,
+            "atomic_rename_no_replace",
+            side_effect=OSError("publish failed"),
+        ):
+            with self.assertRaises(OSError):
+                self.bridge()
+        self.assertFalse(self.package_output.exists())
+        self.assertEqual(
+            tuple(
+                self.package_output.parent.glob(
+                    f".{self.package_output.name}-*"
+                )
+            ),
+            (),
+        )
 
 
 if __name__ == "__main__":
