@@ -78,6 +78,26 @@ PUBLIC_NAMES = (
     "verify_v119_promotion",
     "publish_v119_release",
 )
+TASK10A_PUBLIC_NAMES = (
+    "V120BatchImportManifest",
+    "V120AdaptedImportPackage",
+    "V120BatchLedgerEntry",
+    "V120EffectiveState",
+    "V120PreflightRequest",
+    "V120ImportPreflightReport",
+    "V120ImportPreflightResult",
+    "V120ImportApproval",
+    "V120ApprovedBatch",
+    "V120CandidateContract",
+    "V120CandidateBuildRequest",
+    "V120CandidateVerificationRequest",
+    "V120CandidateArtifacts",
+    "load_v120_import_manifest",
+    "adapt_mmd_package_v120",
+    "preflight_v120_import",
+    "build_v120_candidate",
+    "verify_v120_candidate",
+)
 
 
 def _load_task9c(testcase: unittest.TestCase):
@@ -482,7 +502,9 @@ class V119WriterPublicContractTests(unittest.TestCase):
         self.assertIs(self.ImportApprovalError.__base__, PipelineError)
         self.assertEqual(self.ImportApprovalError.__module__, "joy_m2.errors")
         self.assertFalse(hasattr(writer_models, "ImportApprovalError"))
-        self.assertEqual(self.ingest_package.__all__, PUBLIC_NAMES)
+        self.assertEqual(
+            self.ingest_package.__all__, PUBLIC_NAMES + TASK10A_PUBLIC_NAMES
+        )
         self.assertFalse(hasattr(self.ingest_package, "ImportApprovalError"))
         for name in PUBLIC_NAMES:
             self.assertTrue(hasattr(self.ingest_package, name), name)

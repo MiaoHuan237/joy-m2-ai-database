@@ -37,6 +37,16 @@ TASK9D_EXPORTS = (
     "V119PublicationRequest", "V119PromotionArtifacts",
     "build_v119_promotion", "verify_v119_promotion", "publish_v119_release",
 )
+TASK10A_EXPORTS = (
+    "V120BatchImportManifest", "V120AdaptedImportPackage",
+    "V120BatchLedgerEntry", "V120EffectiveState", "V120PreflightRequest",
+    "V120ImportPreflightReport", "V120ImportPreflightResult",
+    "V120ImportApproval", "V120ApprovedBatch", "V120CandidateContract",
+    "V120CandidateBuildRequest", "V120CandidateVerificationRequest",
+    "V120CandidateArtifacts", "load_v120_import_manifest",
+    "adapt_mmd_package_v120", "preflight_v120_import",
+    "build_v120_candidate", "verify_v120_candidate",
+)
 SHA = "1" * 64
 
 
@@ -75,7 +85,9 @@ class PromotionPublicContractTests(unittest.TestCase):
     def test_exact_append_only_public_surface(self):
         for name in TASK9D_EXPORTS:
             _require_public(name)
-        self.assertEqual(ingest.__all__, BASE_EXPORTS + TASK9D_EXPORTS)
+        self.assertEqual(
+            ingest.__all__, BASE_EXPORTS + TASK9D_EXPORTS + TASK10A_EXPORTS
+        )
 
     def test_contract_exact_fields_types_defaults_and_frozen(self):
         cls = _require_public("V119PromotionContract")

@@ -589,6 +589,7 @@ class PublicContractTests(unittest.TestCase):
                 "SourceMappingApproval",
                 "propose_mmd_source_mapping",
                 "adapt_mmd_package_from_mapping",
+                "adapt_mmd_package_from_mapping_v120",
             ),
         )
 
