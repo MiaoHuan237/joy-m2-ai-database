@@ -211,7 +211,13 @@ Before any output directory is created, the adapter verifies:
 - PP/MS page counts against the staging declarations;
 - every declared PP/MS page span is inside its PDF;
 - the two extraction passes bind the same staging/PP/MS digests;
-- pass record identity, order, page spans, and marks equal staging.
+- pass record identity and order equal staging;
+- every pass page span stays inside the bound PDF.
+
+Staging page spans and marks are proposal anchors, not fatal identity. A pass
+page-span or mark disagreement with staging or the other pass remains
+representable as `page_boundary_ambiguity` or `mark_mismatch` in the review
+batch. It must not be rejected before comparison.
 
 Fatal source/contract errors raise `HkdsePdfAdapterBlockedError` and produce no
 output. Reviewable transcription discrepancies remain structured issues in a
@@ -488,4 +494,3 @@ frozen-data preservation, and scope containment.
 - Canonical bridge: APPROVED - verified carrier only, existing V1.20 manifest.
 - Pilot: APPROVED - 2012 first, stop before canonicalization.
 - Database/release mutation: FORBIDDEN.
-

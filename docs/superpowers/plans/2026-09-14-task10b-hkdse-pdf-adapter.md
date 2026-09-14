@@ -120,9 +120,11 @@ git commit -m "feat: add HKDSE PDF adapter contracts"
 - [ ] **Step 1: Write loader RED tests**
 
 Lock strict UTF-8, no BOM, finite JSON, duplicate-key rejection, exact keys,
-exact runtime types, fixed staging policy values, unique record IDs, count and
-mark closure, page bounds, source roles, PDF signature, exact SHA, exact page
-count, regular files, and no output on failure.
+exact runtime types, fixed staging policy values, unique record IDs, staging
+count/mark closure, pass page bounds, source roles, PDF signature, exact SHA,
+exact page count, regular files, and no output on failure. Pass page/mark
+differences from staging are reviewable comparison evidence, not fatal source
+identity failures.
 
 ```python
 def test_pdf_sha_mismatch_blocks_before_output(self):
@@ -163,7 +165,8 @@ def _sha256_file(path: Path) -> str:
 
 Decode `task10b-hkdse-pdf-extraction-pass-v1`, validate exact top/record keys,
 construct typed records, enforce A/B pass IDs at the proposal boundary, and
-reject extra/missing/duplicate IDs before comparison.
+reject extra/missing/duplicate IDs before comparison. Preserve page-span and
+mark proposal differences for Task 4 review issues.
 
 - [ ] **Step 5: Run loader GREEN and diff checks**
 
@@ -507,4 +510,3 @@ Required status:
 ```text
 USER DECISION REQUIRED — PDF TRANSCRIPTION REVIEW
 ```
-
