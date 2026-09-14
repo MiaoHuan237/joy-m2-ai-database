@@ -98,6 +98,22 @@ TASK10A_PUBLIC_NAMES = (
     "build_v120_candidate",
     "verify_v120_candidate",
 )
+TASK10B_PUBLIC_NAMES = (
+    "HkdsePdfPageSpan",
+    "HkdsePdfExtractionRecord",
+    "HkdsePdfExtractionPass",
+    "HkdsePdfTranscriptionIssue",
+    "HkdsePdfTranscriptionRecord",
+    "HkdsePdfTranscriptionBatch",
+    "HkdsePdfTranscriptionApproval",
+    "VerifiedHkdsePdfTranscriptionBatch",
+    "HkdsePdfAdapterBlockedError",
+    "extract_hkdse_pdf_embedded_pass",
+    "load_hkdse_pdf_extraction_pass",
+    "propose_hkdse_pdf_transcription",
+    "approve_hkdse_pdf_transcription",
+    "adapt_verified_hkdse_pdf_transcription_v120",
+)
 
 
 def _load_task9c(testcase: unittest.TestCase):
@@ -503,7 +519,8 @@ class V119WriterPublicContractTests(unittest.TestCase):
         self.assertEqual(self.ImportApprovalError.__module__, "joy_m2.errors")
         self.assertFalse(hasattr(writer_models, "ImportApprovalError"))
         self.assertEqual(
-            self.ingest_package.__all__, PUBLIC_NAMES + TASK10A_PUBLIC_NAMES
+            self.ingest_package.__all__,
+            PUBLIC_NAMES + TASK10A_PUBLIC_NAMES + TASK10B_PUBLIC_NAMES,
         )
         self.assertFalse(hasattr(self.ingest_package, "ImportApprovalError"))
         for name in PUBLIC_NAMES:

@@ -47,6 +47,16 @@ TASK10A_EXPORTS = (
     "adapt_mmd_package_v120", "preflight_v120_import",
     "build_v120_candidate", "verify_v120_candidate",
 )
+TASK10B_EXPORTS = (
+    "HkdsePdfPageSpan", "HkdsePdfExtractionRecord",
+    "HkdsePdfExtractionPass", "HkdsePdfTranscriptionIssue",
+    "HkdsePdfTranscriptionRecord", "HkdsePdfTranscriptionBatch",
+    "HkdsePdfTranscriptionApproval", "VerifiedHkdsePdfTranscriptionBatch",
+    "HkdsePdfAdapterBlockedError", "extract_hkdse_pdf_embedded_pass",
+    "load_hkdse_pdf_extraction_pass", "propose_hkdse_pdf_transcription",
+    "approve_hkdse_pdf_transcription",
+    "adapt_verified_hkdse_pdf_transcription_v120",
+)
 SHA = "1" * 64
 
 
@@ -86,7 +96,8 @@ class PromotionPublicContractTests(unittest.TestCase):
         for name in TASK9D_EXPORTS:
             _require_public(name)
         self.assertEqual(
-            ingest.__all__, BASE_EXPORTS + TASK9D_EXPORTS + TASK10A_EXPORTS
+            ingest.__all__,
+            BASE_EXPORTS + TASK9D_EXPORTS + TASK10A_EXPORTS + TASK10B_EXPORTS,
         )
 
     def test_contract_exact_fields_types_defaults_and_frozen(self):
