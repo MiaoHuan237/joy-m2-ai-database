@@ -8,7 +8,9 @@ version = "0.0.0"
 description = "Engineering project for Joy's DSE M2 complete-question database"
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
-dependencies = []
+dependencies = [
+    "pypdf>=6.10,<7",
+]
 
 [tool.setuptools]
 package-dir = {"" = "src"}

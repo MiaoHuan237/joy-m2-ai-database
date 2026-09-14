@@ -9,6 +9,17 @@ from .adapter_models import (
     MmdSelection,
 )
 from .manifest import load_import_manifest
+from .hkdse_pdf_models import (
+    HkdsePdfAdapterBlockedError,
+    HkdsePdfExtractionPass,
+    HkdsePdfExtractionRecord,
+    HkdsePdfPageSpan,
+    HkdsePdfTranscriptionApproval,
+    HkdsePdfTranscriptionBatch,
+    HkdsePdfTranscriptionIssue,
+    HkdsePdfTranscriptionRecord,
+    VerifiedHkdsePdfTranscriptionBatch,
+)
 from .models import (
     BatchImportManifest,
     ImportAdaptation,
@@ -109,4 +120,13 @@ __all__ = (
     "preflight_v120_import",
     "build_v120_candidate",
     "verify_v120_candidate",
+    "HkdsePdfPageSpan",
+    "HkdsePdfExtractionRecord",
+    "HkdsePdfExtractionPass",
+    "HkdsePdfTranscriptionIssue",
+    "HkdsePdfTranscriptionRecord",
+    "HkdsePdfTranscriptionBatch",
+    "HkdsePdfTranscriptionApproval",
+    "VerifiedHkdsePdfTranscriptionBatch",
+    "HkdsePdfAdapterBlockedError",
 )
