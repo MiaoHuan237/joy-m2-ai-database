@@ -28,6 +28,20 @@ Updated: 2026-09-14 (Asia/Shanghai)
 
 ## Current task
 
+Task 10B HKDSE PDF / PP-MS source adapter engineering implementation is
+`COMPLETED / PASS`. Its approved source-specific Design and RED-first Plan are
+`docs/superpowers/specs/2026-09-14-task10b-hkdse-pdf-adapter-design.md` and
+`docs/superpowers/plans/2026-09-14-task10b-hkdse-pdf-adapter.md`. The final
+implementation commit is `fb473648a4abfc4e0f6071e2d4a34d44c243d6f9` and
+independent re-review is Critical 0 / Important 0. The adapter binds exact
+staging, PP, and MS identities; retains two extraction passes and deterministic
+review evidence; requires exact human transcription approval; and only then
+may construct the existing Task 10A canonical package. Task 10B focused tests
+are 50/50 PASS and the current maintained suite is 904/904 PASS. The 2012
+pilot remains `NOT APPROVED FOR IMPORT`: its next action is two-pass
+transcription proposal generation followed by the mandatory human review
+gate. No V1.20 candidate, preflight, database write, or promotion has occurred.
+
 Task 10A V1.20 multi-batch candidate authority is `CLOSED / PASS`. The approved
 Design is
 `docs/superpowers/specs/2026-09-13-task10a-v120-multi-batch-candidate-design.md`
@@ -245,7 +259,9 @@ Scope:
 ## Completion gate
 
 - Current explicit maintained suite, excluding the separately attributed legacy
-  behavior module: 854/854 passed; skip=0 and expectedFailure=0.
+  behavior module: 904/904 passed; skip=0 and expectedFailure=0.
+- Task 10B focused implementation suite: 50/50 passed; final independent
+  implementation review: Critical 0 / Important 0.
 - Task 10A focused implementation suite: 143/143 passed; final independent
   implementation review: Critical 0 / Important 0 / Minor 0.
 - Formal V1.19 independent verifier: 18/18 PASS. V1.20 candidate/formal
@@ -286,15 +302,18 @@ Scope:
   batch; that synthetic approval produced no formal import.
 - Task 9B verification record: `docs/reports/TASK9B_VERIFICATION.md`.
 - Task 10A verification record: `docs/reports/TASK10A_VERIFICATION.md`.
+- Task 10B verification record: `docs/reports/TASK10B_VERIFICATION.md`.
 
 ## Next task
 
 Task 9A, Task 9B, Task 9C, Task 9D, and Task 10A implementation are closed.
+Task 10B engineering implementation is complete and independently reviewed.
 Formal V1.19 is published and independently verified at 502 questions; frozen
 V1.18 remains unchanged at 497. Task 10A has implemented and verified the
-non-formal multi-batch V1.20 candidate lifecycle, but no real source has been
-read and no V1.20 candidate or formal artifact exists. No current-release
+non-formal multi-batch V1.20 candidate lifecycle. Task 10B has not yet consumed
+the 2012 real source into any approved canonical package, and no V1.20
+candidate or formal artifact exists. No current-release
 pointer/index exists or was added; Task 8C, Phase 2A, formal V1.20 promotion,
 and any unrelated implementation remain unauthorized.
 
-`WAIT FOR REAL SOURCE`
+`NEXT: RUN THE 2012 TRANSCRIPTION PILOT AND STOP AT HUMAN REVIEW`
