@@ -887,11 +887,17 @@ def _sqlite_expected(
                 canonical_json_bytes(projection["candidate_image_paths"]).decode("utf-8"),
                 "candidate", 0,
             ))
-            for kind, values in (
-                ("primary_type", (candidate.primary_type,)), ("tag", candidate.tags),
-            ):
-                for sort_order, value in enumerate(values, start=1):
-                    taxonomy.append((ordinal, approval.batch_id, kind, value, sort_order, "candidate"))
+        primary_types = tuple(sorted({
+            candidate.primary_type for candidate in result.candidates
+        }))
+        tags = tuple(sorted({
+            tag for candidate in result.candidates for tag in candidate.tags
+        }))
+        for kind, values in (("primary_type", primary_types), ("tag", tags)):
+            for sort_order, value in enumerate(values, start=1):
+                taxonomy.append(
+                    (ordinal, approval.batch_id, kind, value, sort_order, "candidate")
+                )
     images.extend(tuple(
         item[name] for name in (
             "batch_ordinal", "batch_id", "proposed_question_id", "image_order",

@@ -1019,6 +1019,101 @@ class V120FirstBatchWriterTests(unittest.TestCase):
             ((approved or _approved_prefix()[0]),), output, _contract(),
         )
 
+    def test_one_batch_with_multiple_candidates_writes_distinct_taxonomy_catalogue(self) -> None:
+        """Catches taxonomy order restarting for every candidate in one batch."""
+        with _output_root() as directory:
+            root = Path(directory)
+            package = root / "package-multi"
+            shutil.copytree(FIXTURES / "v120-batch-a", package)
+            records = json.loads(
+                (package / "records/candidates.json").read_text(encoding="utf-8")
+            )
+            second = dict(records[0])
+            second.update({
+                "proposed_question_id": "TASK10-A-002",
+                "source_id": "TASK10-SOURCE-A-2",
+                "source_question_number": "A2",
+                "source_section": "Synthetic batch A second question",
+                "source_fragment_hash": "d" * 64,
+                "question_text_original": "Factor x^2 - 5x + 6.",
+                "question_text_zh": "因式分解 x^2 - 5x + 6。",
+                "translation_evidence": "source:source/source.txt#translation-A2",
+                "solution_original": "(x - 2)(x - 3)",
+                "solution_verified": "(x - 2)(x - 3)",
+                "explanation_text": "Find two numbers with sum 5 and product 6.",
+                "explanation_evidence": "source:source/source.txt#explanation-A2",
+                "image_paths": [],
+                "image_roles": [],
+                "tags": ["一元一次方程", "因式分解"],
+            })
+            record_bytes = json.dumps(
+                [records[0], second],
+                ensure_ascii=False,
+                separators=(",", ":"),
+                allow_nan=False,
+            ).encode("utf-8") + b"\n"
+            (package / "records/candidates.json").write_bytes(record_bytes)
+            manifest_payload = json.loads(
+                (package / "import_manifest.json").read_text(encoding="utf-8")
+            )
+            manifest_payload["candidate_records"][0]["sha256"] = hashlib.sha256(
+                record_bytes
+            ).hexdigest()
+            manifest_payload["candidate_records"][0]["size_bytes"] = len(record_bytes)
+            (package / "import_manifest.json").write_bytes(
+                json.dumps(
+                    manifest_payload,
+                    ensure_ascii=False,
+                    separators=(",", ":"),
+                    allow_nan=False,
+                ).encode("utf-8") + b"\n"
+            )
+            manifest = load_v120_import_manifest(package / "import_manifest.json")
+            preflight = preflight_v120_import(
+                V120PreflightRequest(
+                    manifest, package, _baseline_ref(), None, _contract(),
+                ),
+                PipelineConfig(ROOT),
+            )
+            self.assertEqual(
+                preflight.report.status,
+                "READY FOR USER IMPORT APPROVAL",
+                preflight.issues,
+            )
+            self.assertEqual(len(preflight.candidates), 2)
+            approval = V120ImportApproval(
+                manifest.batch_id,
+                preflight.report.preflight_sha256,
+                "V1.20",
+                GENESIS,
+                f"USER APPROVED IMPORT BATCH {manifest.batch_id} "
+                f"{preflight.report.preflight_sha256} V1.20 PARENT {GENESIS}",
+            )
+            approved = V120ApprovedBatch(preflight, package, approval)
+            output = root / "candidate-multi"
+
+            try:
+                artifacts = build_v120_candidate(
+                    self._request(output, approved), PipelineConfig(ROOT),
+                )
+            except sqlite3.IntegrityError as error:
+                self.fail(f"multi-candidate taxonomy must not collide: {error}")
+
+            self.assertEqual(artifacts.verification_report.status, "PASS")
+            with closing(sqlite3.connect(artifacts.database.path)) as database:
+                self.assertEqual(
+                    tuple(database.execute(
+                        "SELECT taxonomy_kind,value,sort_order "
+                        "FROM task10_v120_taxonomy_v1 "
+                        "ORDER BY taxonomy_kind,sort_order"
+                    )),
+                    (
+                        ("primary_type", "代数", 1),
+                        ("tag", "一元一次方程", 1),
+                        ("tag", "因式分解", 2),
+                    ),
+                )
+
     def test_first_prefix_matches_the_independent_tree_schema_and_artifact_oracle(self) -> None:
         approved = _approved_prefix()[0]
         with _output_root() as directory:

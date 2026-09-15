@@ -627,12 +627,14 @@ def _populate_database(
                             role,
                         ),
                     )
-                counters = {"primary_type": 0, "tag": 0}
-                taxonomy = (("primary_type", candidate.primary_type),) + tuple(
-                    ("tag", tag) for tag in candidate.tags
-                )
-                for kind, value in taxonomy:
-                    counters[kind] += 1
+            primary_types = tuple(sorted({
+                candidate.primary_type for candidate in result.candidates
+            }))
+            tags = tuple(sorted({
+                tag for candidate in result.candidates for tag in candidate.tags
+            }))
+            for kind, values in (("primary_type", primary_types), ("tag", tags)):
+                for sort_order, value in enumerate(values, start=1):
                     connection.execute(
                         "INSERT INTO task10_v120_taxonomy_v1 VALUES (?,?,?,?,?,?)",
                         (
@@ -640,7 +642,7 @@ def _populate_database(
                             approval.batch_id,
                             kind,
                             value,
-                            counters[kind],
+                            sort_order,
                             "candidate",
                         ),
                     )
