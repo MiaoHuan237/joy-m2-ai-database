@@ -144,4 +144,3 @@ USER APPROVED RELEASE PROMOTION V1.20 1eb046cd247c362ab6b6052ca7fecddea914340dd7
 ```
 
 Until that exact statement is received, publication is forbidden.
-
