@@ -85,9 +85,10 @@ Validate the rollback receipt in an isolated copy: it may remove only the exact
 digest-matching V1.20 tree and never rewrite V1.19. Re-fingerprint V1.18,
 V1.19, the three candidate generations, and their approvals. Confirm unchanged.
 
-Search the operational output field typo. Add a RED and smallest fix only if a
-persistent repository access is found. Do not rebuild generation `000003` for a
-non-authoritative reporting typo.
+Search the operational output field typo read-only. If no persistent repository
+access exists, record it as a one-off non-authoritative script defect. If one is
+found, stop for a Design scope amendment naming the exact production and test
+files before any RED or fix. Never rebuild generation `000003` for reporting.
 
 ## Task 6 — Maintained gates and independent review
 
