@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-09-14 (Asia/Shanghai)
+Updated: 2026-09-17 (Asia/Shanghai)
 
 ## Formal data
 
@@ -28,6 +28,22 @@ Updated: 2026-09-14 (Asia/Shanghai)
 
 ## Current task
 
+Task 10C V1.20 formal promotion readiness is
+`READY FOR FINAL PROMOTION AUTHORIZATION`. The approved Design/Plan authority
+is committed at `59f9f52443405b7e467da8c69855bc45d3dd8223`; the independently
+reviewed implementation is committed at
+`06bd83768a6619d69a9394ed1b9bf16564c15759`. Final independent review is
+Critical 0 / Important 0 / Minor 0. Two non-formal dry-runs independently pass
+21/21 checks and are byte-identical. They bind release digest
+`1eb046cd247c362ab6b6052ca7fecddea914340dd7421bf136012a9a086c9fcf`,
+formal SQLite SHA-256
+`b3e4911259fbc4063e788f418f6e52a53017ff079895bce679837914a5539292`,
+and semantic SHA-256
+`e3f3d2b09fa7869ee266d3afb01e6160406764c96127adfaf236a8deee8700ba`.
+Formal current remains immutable V1.19 at 502 questions; `releases/V1.20/`
+remains absent. No 2015 or other source may be ingested until the exact final
+V1.20 promotion decision is made.
+
 Task 10B HKDSE PDF / PP-MS source adapter engineering implementation is
 `COMPLETED / PASS`. Its approved source-specific Design and RED-first Plan are
 `docs/superpowers/specs/2026-09-14-task10b-hkdse-pdf-adapter-design.md` and
@@ -37,10 +53,10 @@ independent re-review is Critical 0 / Important 0. The adapter binds exact
 staging, PP, and MS identities; retains two extraction passes and deterministic
 review evidence; requires exact human transcription approval; and only then
 may construct the existing Task 10A canonical package. Task 10B focused tests
-are 50/50 PASS and the current maintained suite is 904/904 PASS. The 2012
-pilot remains `NOT APPROVED FOR IMPORT`: its next action is two-pass
-transcription proposal generation followed by the mandatory human review
-gate. No V1.20 candidate, preflight, database write, or promotion has occurred.
+are 50/50 PASS. The 2012, 2013, and 2014 PP/MS batches have since completed
+their exact transcription/taxonomy approval gates and are bound into the
+current non-formal V1.20 generation-000003 candidate. Task 10B granted no
+formal publication authority and modified neither V1.18 nor V1.19.
 
 Task 10A V1.20 multi-batch candidate authority is `CLOSED / PASS`. The approved
 Design is
@@ -55,11 +71,15 @@ implementation at `c2668332e4c912d19e149361ca143637899422c7`
 review is Critical 0 / Important 0 / Minor 0. The versioned implementation is
 append-only over immutable formal V1.19/502, binds every batch to an
 independently verified parent candidate digest and exact approval, and keeps
-formal V1.20 promotion out of scope. No real V1.20 source has been read, no
-real batch has been adapted or preflighted, no persistent repository candidate
-generation has been created, and `releases/V1.20/` does not exist. The next
-action is `WAIT FOR REAL SOURCE`; the first operational action remains a
-read-only adaptation/preflight followed by the exact parent-bound Human Gate.
+formal V1.20 promotion out of scope. The current generation `000003` contains
+the exact approved 2012/2013/2014 batches with additions 14/14/13, candidate
+digest `88cc945b6296652c88041e8e51a5c586300c2201a9f48e21abde80d97da3a7b3`,
+SQLite SHA-256
+`d8ff5bf9e38f27e23e72c39ae41cb297b4223fde5d2bc149178a7033fe9769d1`,
+manifest SHA-256
+`673a598b7d5b59394ebaf1307943f90a293c165ecc7aa349c23c2947397f5052`,
+and projected count 543. Its independent verifier is 24/24 PASS.
+`releases/V1.20/` does not exist.
 
 Task 9D formal V1.19 promotion is `CLOSED / PASS`. Its independently reviewed
 Design is committed at
@@ -259,13 +279,18 @@ Scope:
 ## Completion gate
 
 - Current explicit maintained suite, excluding the separately attributed legacy
-  behavior module: 904/904 passed; skip=0 and expectedFailure=0.
+  behavior module: 935/935 passed; skip=0 and expectedFailure=0.
+- Task 10C focused promotion-readiness suite: 30/30 passed; two real dry-runs
+  each independently verify 21/21, are byte-identical, and leave formal
+  `releases/V1.20/` absent. Final independent review: Critical 0 / Important 0 /
+  Minor 0.
 - Task 10B focused implementation suite: 50/50 passed; final independent
   implementation review: Critical 0 / Important 0.
-- Task 10A focused implementation suite: 143/143 passed; final independent
+- Task 10A focused implementation suite: 144/144 passed; final independent
   implementation review: Critical 0 / Important 0 / Minor 0.
-- Formal V1.19 independent verifier: 18/18 PASS. V1.20 candidate/formal
-  artifacts remain 0 and formal V1.19 remains the exact 502-question authority.
+- Formal V1.19 independent verifier: 18/18 PASS. Current V1.20 candidate
+  generation `000003` independently verifies 24/24; no formal V1.20 artifact
+  exists and formal V1.19 remains the exact 502-question authority.
 - Task 9D focused promotion suite: 48/48 passed; final independent review:
   Critical 0 / Important 0 / Minor 0.
 - Task 9C Phase B focused writer/verifier suite: 71/71 passed; final independent
@@ -303,17 +328,15 @@ Scope:
 - Task 9B verification record: `docs/reports/TASK9B_VERIFICATION.md`.
 - Task 10A verification record: `docs/reports/TASK10A_VERIFICATION.md`.
 - Task 10B verification record: `docs/reports/TASK10B_VERIFICATION.md`.
+- Task 10C verification record: `docs/reports/TASK10C_VERIFICATION.md`.
 
 ## Next task
 
-Task 9A, Task 9B, Task 9C, Task 9D, and Task 10A implementation are closed.
-Task 10B engineering implementation is complete and independently reviewed.
-Formal V1.19 is published and independently verified at 502 questions; frozen
-V1.18 remains unchanged at 497. Task 10A has implemented and verified the
-non-formal multi-batch V1.20 candidate lifecycle. Task 10B has not yet consumed
-the 2012 real source into any approved canonical package, and no V1.20
-candidate or formal artifact exists. No current-release
-pointer/index exists or was added; Task 8C, Phase 2A, formal V1.20 promotion,
-and any unrelated implementation remain unauthorized.
+Task 9A, Task 9B, Task 9C, Task 9D, Task 10A, and Task 10B implementation are
+closed. Task 10C readiness implementation is complete and independently
+reviewed. Formal V1.19 remains published at 502 questions; frozen V1.18 remains
+unchanged at 497. The exact current V1.20 candidate projects 543 questions from
+three approved batches, but formal V1.20 remains unpublished. No
+current-release pointer/index exists or was added.
 
-`NEXT: RUN THE 2012 TRANSCRIPTION PILOT AND STOP AT HUMAN REVIEW`
+`NEXT: WAIT FOR EXACT FINAL V1.20 PROMOTION AUTHORIZATION`
