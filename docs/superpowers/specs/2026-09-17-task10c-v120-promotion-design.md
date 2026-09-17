@@ -306,4 +306,3 @@ dry-run roots remain ignored staging evidence and are never committed.
 7. Run all maintained gates and independent review to Critical 0 / Important 0.
 8. Commit and ordinarily push readiness code/evidence.
 9. Stop at the exact final human gate. Formal publication remains unexecuted.
-
