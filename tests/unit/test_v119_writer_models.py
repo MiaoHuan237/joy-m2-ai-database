@@ -114,6 +114,12 @@ TASK10B_PUBLIC_NAMES = (
     "approve_hkdse_pdf_transcription",
     "adapt_verified_hkdse_pdf_transcription_v120",
 )
+TASK10C_PUBLIC_NAMES = (
+    "V120PromotionContract", "V120PromotionBuildRequest",
+    "V120PromotionVerificationRequest", "V120ReleasePromotionApproval",
+    "V120PublicationRequest", "V120PromotionArtifacts",
+    "build_v120_promotion", "verify_v120_promotion", "publish_v120_release",
+)
 
 
 def _load_task9c(testcase: unittest.TestCase):
@@ -520,7 +526,8 @@ class V119WriterPublicContractTests(unittest.TestCase):
         self.assertFalse(hasattr(writer_models, "ImportApprovalError"))
         self.assertEqual(
             self.ingest_package.__all__,
-            PUBLIC_NAMES + TASK10A_PUBLIC_NAMES + TASK10B_PUBLIC_NAMES,
+            PUBLIC_NAMES + TASK10A_PUBLIC_NAMES + TASK10B_PUBLIC_NAMES
+            + TASK10C_PUBLIC_NAMES,
         )
         self.assertFalse(hasattr(self.ingest_package, "ImportApprovalError"))
         for name in PUBLIC_NAMES:

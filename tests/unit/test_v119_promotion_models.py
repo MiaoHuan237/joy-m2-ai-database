@@ -57,6 +57,12 @@ TASK10B_EXPORTS = (
     "approve_hkdse_pdf_transcription",
     "adapt_verified_hkdse_pdf_transcription_v120",
 )
+TASK10C_EXPORTS = (
+    "V120PromotionContract", "V120PromotionBuildRequest",
+    "V120PromotionVerificationRequest", "V120ReleasePromotionApproval",
+    "V120PublicationRequest", "V120PromotionArtifacts",
+    "build_v120_promotion", "verify_v120_promotion", "publish_v120_release",
+)
 SHA = "1" * 64
 
 
@@ -97,7 +103,8 @@ class PromotionPublicContractTests(unittest.TestCase):
             _require_public(name)
         self.assertEqual(
             ingest.__all__,
-            BASE_EXPORTS + TASK9D_EXPORTS + TASK10A_EXPORTS + TASK10B_EXPORTS,
+            BASE_EXPORTS + TASK9D_EXPORTS + TASK10A_EXPORTS + TASK10B_EXPORTS
+            + TASK10C_EXPORTS,
         )
 
     def test_contract_exact_fields_types_defaults_and_frozen(self):

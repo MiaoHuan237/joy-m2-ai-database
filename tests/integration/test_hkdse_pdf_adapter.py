@@ -162,7 +162,7 @@ class HkdsePdfCanonicalBridgeTests(AdapterCase):
             "approve_hkdse_pdf_transcription",
             "adapt_verified_hkdse_pdf_transcription_v120",
         )
-        self.assertEqual(ingest.__all__[-5:], expected)
+        self.assertEqual(ingest.__all__[-14:-9], expected)
         for name in expected:
             self.assertTrue(callable(getattr(ingest, name, None)))
 

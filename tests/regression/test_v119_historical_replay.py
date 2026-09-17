@@ -92,12 +92,19 @@ _TASK10B_PUBLIC = (
     "approve_hkdse_pdf_transcription",
     "adapt_verified_hkdse_pdf_transcription_v120",
 )
+_TASK10C_PUBLIC = (
+    "V120PromotionContract", "V120PromotionBuildRequest",
+    "V120PromotionVerificationRequest", "V120ReleasePromotionApproval",
+    "V120PublicationRequest", "V120PromotionArtifacts",
+    "build_v120_promotion", "verify_v120_promotion", "publish_v120_release",
+)
 
 
 class V119HistoricalReplayTests(unittest.TestCase):
     def test_root_public_surface_is_exact_append_only_v119_then_v120(self) -> None:
         self.assertEqual(
-            ingest.__all__, _V119_PUBLIC + _V120_PUBLIC + _TASK10B_PUBLIC
+            ingest.__all__,
+            _V119_PUBLIC + _V120_PUBLIC + _TASK10B_PUBLIC + _TASK10C_PUBLIC,
         )
         self.assertEqual(ingest.__all__[: len(_V119_PUBLIC)], _V119_PUBLIC)
         self.assertEqual(

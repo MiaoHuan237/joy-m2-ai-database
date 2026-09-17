@@ -75,6 +75,16 @@ from .v120_models import (
 from .v120_preflight import preflight_v120_import
 from .v120_verification import verify_v120_candidate
 from .v120_writer import build_v120_candidate
+from .v120_promotion import build_v120_promotion, publish_v120_release
+from .v120_promotion_models import (
+    V120PromotionArtifacts,
+    V120PromotionBuildRequest,
+    V120PromotionContract,
+    V120PromotionVerificationRequest,
+    V120PublicationRequest,
+    V120ReleasePromotionApproval,
+)
+from .v120_promotion_verification import verify_v120_promotion
 
 
 __all__ = (
@@ -141,4 +151,13 @@ __all__ = (
     "propose_hkdse_pdf_transcription",
     "approve_hkdse_pdf_transcription",
     "adapt_verified_hkdse_pdf_transcription_v120",
+    "V120PromotionContract",
+    "V120PromotionBuildRequest",
+    "V120PromotionVerificationRequest",
+    "V120ReleasePromotionApproval",
+    "V120PublicationRequest",
+    "V120PromotionArtifacts",
+    "build_v120_promotion",
+    "verify_v120_promotion",
+    "publish_v120_release",
 )
