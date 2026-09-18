@@ -1,17 +1,17 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-09-17 (Asia/Shanghai)
+Updated: 2026-09-18 (Asia/Shanghai)
 
 ## Formal data
 
-- Current formal release: V1.19
-- Formal SQLite: `releases/V1.19/Joy_M2_Complete_Question_DB_V1_19.sqlite3`
-- Formal SQLite SHA-256: `5a7f1ca01c29dc638fb592c668ea9f597551f94d73001898587b187bdbe490ff`
-- Complete-question records: 502 (497 frozen V1.18 baseline + 5 approved
-  Task 9 additions)
+- Current formal release: V1.20
+- Formal SQLite: `releases/V1.20/Joy_M2_Complete_Question_DB_V1_20.sqlite3`
+- Formal SQLite SHA-256: `b3e4911259fbc4063e788f418f6e52a53017ff079895bce679837914a5539292`
+- Complete-question records: 543 (502 immutable V1.19 records + 41 approved
+  Task 10 additions)
 - V1.17 retained records: 45
 - Task 6 migrated records: 452
-- Answer identity: 397 `source_provided`, 71 `ai_solved_verified`, 34 `missing_from_source`
+- Answer identity: 438 `source_provided`, 71 `ai_solved_verified`, 34 `missing_from_source`
 - P0/P1 audit blockers: 0/0
 - V1.18 remains the frozen, byte-identical 497-question baseline and must not be
   edited in place. Its SQLite SHA-256 remains
@@ -25,13 +25,19 @@ Updated: 2026-09-17 (Asia/Shanghai)
   release digest
   `7246d099028e350ea5074524a808c9eb87e83e3df218349040eaf20f0109a69d`,
   and exact formal count 502.
+- V1.20 is formally published as four release artifacts with 41 appended
+  questions from the approved 2012/2013/2014 HKDSE PP/MS batches. It binds
+  candidate digest
+  `88cc945b6296652c88041e8e51a5c586300c2201a9f48e21abde80d97da3a7b3`,
+  release digest
+  `1eb046cd247c362ab6b6052ca7fecddea914340dd7421bf136012a9a086c9fcf`,
+  and exact formal count 543. V1.18 and V1.19 remain byte-identical.
 
 ## Current task
 
-Task 10C V1.20 formal promotion readiness is
-`READY FOR FINAL PROMOTION AUTHORIZATION`. The approved Design/Plan authority
-is committed at `59f9f52443405b7e467da8c69855bc45d3dd8223`; the independently
-reviewed implementation is committed at
+Task 10C V1.20 formal promotion is `CLOSED / PASS`. The approved Design/Plan
+authority is committed at `59f9f52443405b7e467da8c69855bc45d3dd8223`;
+the independently reviewed implementation is committed at
 `06bd83768a6619d69a9394ed1b9bf16564c15759`. Final independent review is
 Critical 0 / Important 0 / Minor 0. Two non-formal dry-runs independently pass
 21/21 checks and are byte-identical. They bind release digest
@@ -40,9 +46,12 @@ formal SQLite SHA-256
 `b3e4911259fbc4063e788f418f6e52a53017ff079895bce679837914a5539292`,
 and semantic SHA-256
 `e3f3d2b09fa7869ee266d3afb01e6160406764c96127adfaf236a8deee8700ba`.
-Formal current remains immutable V1.19 at 502 questions; `releases/V1.20/`
-remains absent. No 2015 or other source may be ingested until the exact final
-V1.20 promotion decision is made.
+The exact final approval was received and consumed once by the public
+publication API. The isolated formal release commit is
+`e8bae856a6f3ad71374b71cc20ac125bae5d621c`. Formal `releases/V1.20/`
+independently verifies 21/21 with 543 published/selectable questions. No
+current-release pointer/index exists or changed, and no next ingest or
+implementation task is authorized.
 
 Task 10B HKDSE PDF / PP-MS source adapter engineering implementation is
 `COMPLETED / PASS`. Its approved source-specific Design and RED-first Plan are
@@ -78,8 +87,8 @@ SQLite SHA-256
 `d8ff5bf9e38f27e23e72c39ae41cb297b4223fde5d2bc149178a7033fe9769d1`,
 manifest SHA-256
 `673a598b7d5b59394ebaf1307943f90a293c165ecc7aa349c23c2947397f5052`,
-and projected count 543. Its independent verifier is 24/24 PASS.
-`releases/V1.20/` does not exist.
+and projected count 543. Its independent verifier is 24/24 PASS. Task 10C has
+since promoted that exact candidate without rewriting it.
 
 Task 9D formal V1.19 promotion is `CLOSED / PASS`. Its independently reviewed
 Design is committed at
@@ -280,17 +289,16 @@ Scope:
 
 - Current explicit maintained suite, excluding the separately attributed legacy
   behavior module: 935/935 passed; skip=0 and expectedFailure=0.
-- Task 10C focused promotion-readiness suite: 30/30 passed; two real dry-runs
-  each independently verify 21/21, are byte-identical, and leave formal
-  `releases/V1.20/` absent. Final independent review: Critical 0 / Important 0 /
-  Minor 0.
+- Task 10C focused promotion suite: 30/30 passed; two real dry-runs and formal
+  `releases/V1.20/` each independently verify 21/21 and are byte-identical.
+  Final independent review: Critical 0 / Important 0 / Minor 0.
 - Task 10B focused implementation suite: 50/50 passed; final independent
   implementation review: Critical 0 / Important 0.
 - Task 10A focused implementation suite: 144/144 passed; final independent
   implementation review: Critical 0 / Important 0 / Minor 0.
-- Formal V1.19 independent verifier: 18/18 PASS. Current V1.20 candidate
-  generation `000003` independently verifies 24/24; no formal V1.20 artifact
-  exists and formal V1.19 remains the exact 502-question authority.
+- Formal V1.19 independent verifier: 18/18 PASS. V1.20 candidate generation
+  `000003` independently verifies 24/24; formal V1.20 independently verifies
+  21/21 and is the exact 543-question authority.
 - Task 9D focused promotion suite: 48/48 passed; final independent review:
   Critical 0 / Important 0 / Minor 0.
 - Task 9C Phase B focused writer/verifier suite: 71/71 passed; final independent
@@ -332,11 +340,10 @@ Scope:
 
 ## Next task
 
-Task 9A, Task 9B, Task 9C, Task 9D, Task 10A, and Task 10B implementation are
-closed. Task 10C readiness implementation is complete and independently
-reviewed. Formal V1.19 remains published at 502 questions; frozen V1.18 remains
-unchanged at 497. The exact current V1.20 candidate projects 543 questions from
-three approved batches, but formal V1.20 remains unpublished. No
-current-release pointer/index exists or was added.
+Task 9A, Task 9B, Task 9C, Task 9D, Task 10A, Task 10B, and Task 10C are closed.
+Formal V1.20 is published and independently verified at 543 questions; formal
+V1.19 remains immutable at 502 and frozen V1.18 remains unchanged at 497. No
+current-release pointer/index exists or was added. No next implementation or
+ingest task is authorized.
 
-`NEXT: WAIT FOR EXACT FINAL V1.20 PROMOTION AUTHORIZATION`
+`WAIT FOR EXPLICIT NEXT-TASK AUTHORIZATION`

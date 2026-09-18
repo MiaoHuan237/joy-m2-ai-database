@@ -1,8 +1,8 @@
-# Task 10C V1.20 Promotion Readiness Verification
+# Task 10C V1.20 Formal Promotion Verification
 
-Date: 2026-09-17 (Asia/Shanghai)
+Date: 2026-09-18 (Asia/Shanghai)
 
-Status: `READY FOR FINAL PROMOTION AUTHORIZATION`
+Status: `FORMAL V1.20 PROMOTION — PASS`
 
 ## 1. Authority and implementation
 
@@ -12,7 +12,11 @@ Status: `READY FOR FINAL PROMOTION AUTHORIZATION`
 - Implementation commit:
   `06bd83768a6619d69a9394ed1b9bf16564c15759`
   (`feat: add V1.20 promotion readiness`).
-- Formal publication was not executed. `releases/V1.20/` remains absent.
+- Formal release commit:
+  `e8bae856a6f3ad71374b71cc20ac125bae5d621c`
+  (`release: publish formal V1.20`).
+- The exact digest-bound approval was received and consumed once by
+  `publish_v120_release()`.
 - No current-release pointer or index was created or changed.
 
 The implementation is the smallest append-only V1.19-to-V1.20 promotion
@@ -87,7 +91,7 @@ all 41 are `published` and selectable, and the ordered ledger has 3 rows.
 
 ## 5. Artifact, publication, and rollback safety
 
-The exact formal tree, if and only if final approval is later consumed, is:
+The exact published formal tree is:
 
 ```text
 releases/V1.20/
@@ -125,6 +129,7 @@ rebuilt or altered for it.
 | Formal V1.19 candidate verifier | 16/16 PASS |
 | Formal V1.19 promotion verifier | 18/18 PASS |
 | Current V1.20 candidate verifier | 24/24 PASS |
+| Formal V1.20 promotion verifier | 21/21 PASS |
 | Task 7 | 7/7 PASS |
 | V1.18 independent validator | PASS |
 | `git diff --check` | PASS |
@@ -134,13 +139,17 @@ attribution surface remains the approved 9 PASS / 2 FAIL categories only:
 deterministic SQLite hash attribution and frozen artifact byte-equivalence.
 Those are not maintained blockers.
 
-## 7. Final gate
+## 7. Formal publication closure
 
-Formal current remains V1.19 / 502. Formal V1.20 is not published. The only
-next action is an explicit human decision using exactly:
+The exact final approval statement received was:
 
 ```text
 USER APPROVED RELEASE PROMOTION V1.20 1eb046cd247c362ab6b6052ca7fecddea914340dd7421bf136012a9a086c9fcf
 ```
 
-Until that exact statement is received, publication is forbidden.
+The public publication API atomically installed the approved byte-identical
+tree at `releases/V1.20/`. Independent post-publication verification is 21/21
+PASS; SQLite integrity is `ok`, foreign-key errors are 0, and all 543 formal
+questions are published and selectable. Formal V1.19 remains byte-identical at
+502 questions and frozen V1.18 remains byte-identical at 497 questions. No
+next task is authorized.
