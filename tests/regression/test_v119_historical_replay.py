@@ -98,13 +98,24 @@ _TASK10C_PUBLIC = (
     "V120PublicationRequest", "V120PromotionArtifacts",
     "build_v120_promotion", "verify_v120_promotion", "publish_v120_release",
 )
+_V121_PUBLIC = (
+    "V121BatchImportManifest", "V121AdaptedImportPackage",
+    "V121BatchLedgerEntry", "V121EffectiveState", "V121PreflightRequest",
+    "V121ImportPreflightReport", "V121ImportPreflightResult",
+    "V121ImportApproval", "V121ApprovedBatch", "V121CandidateContract",
+    "V121CandidateBuildRequest", "V121CandidateVerificationRequest",
+    "V121CandidateArtifacts", "load_v121_import_manifest",
+    "preflight_v121_import", "build_v121_candidate", "verify_v121_candidate",
+    "adapt_verified_hkdse_pdf_transcription_v121",
+)
 
 
 class V119HistoricalReplayTests(unittest.TestCase):
     def test_root_public_surface_is_exact_append_only_v119_then_v120(self) -> None:
         self.assertEqual(
             ingest.__all__,
-            _V119_PUBLIC + _V120_PUBLIC + _TASK10B_PUBLIC + _TASK10C_PUBLIC,
+            _V119_PUBLIC + _V120_PUBLIC + _TASK10B_PUBLIC[:9] + _V121_PUBLIC
+            + _TASK10B_PUBLIC[9:] + _TASK10C_PUBLIC,
         )
         self.assertEqual(ingest.__all__[: len(_V119_PUBLIC)], _V119_PUBLIC)
         self.assertEqual(

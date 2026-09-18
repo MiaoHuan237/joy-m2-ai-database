@@ -63,6 +63,16 @@ TASK10C_EXPORTS = (
     "V120PublicationRequest", "V120PromotionArtifacts",
     "build_v120_promotion", "verify_v120_promotion", "publish_v120_release",
 )
+TASK11_EXPORTS = (
+    "V121BatchImportManifest", "V121AdaptedImportPackage",
+    "V121BatchLedgerEntry", "V121EffectiveState", "V121PreflightRequest",
+    "V121ImportPreflightReport", "V121ImportPreflightResult",
+    "V121ImportApproval", "V121ApprovedBatch", "V121CandidateContract",
+    "V121CandidateBuildRequest", "V121CandidateVerificationRequest",
+    "V121CandidateArtifacts", "load_v121_import_manifest",
+    "preflight_v121_import", "build_v121_candidate", "verify_v121_candidate",
+    "adapt_verified_hkdse_pdf_transcription_v121",
+)
 SHA = "1" * 64
 
 
@@ -103,7 +113,8 @@ class PromotionPublicContractTests(unittest.TestCase):
             _require_public(name)
         self.assertEqual(
             ingest.__all__,
-            BASE_EXPORTS + TASK9D_EXPORTS + TASK10A_EXPORTS + TASK10B_EXPORTS
+            BASE_EXPORTS + TASK9D_EXPORTS + TASK10A_EXPORTS
+            + TASK10B_EXPORTS[:9] + TASK11_EXPORTS + TASK10B_EXPORTS[9:]
             + TASK10C_EXPORTS,
         )
 

@@ -43,6 +43,7 @@ from tests.integration.test_v121_preflight import (
     _make_package,
     _request,
 )
+from tests.integration.test_v120_preflight import _rename_declared_image, _rewrite_record
 
 
 GENESIS = "331192032f184a44ed383e6dacc2f06fbacb60ad94414298fcb935ff56cb5906"
@@ -309,6 +310,96 @@ class V121CandidateBehaviorTests(unittest.TestCase):
             child.state.batch_ledger[1].parent_candidate_digest,
             parent.state.candidate_digest,
         )
+
+    def test_duplicate_against_previous_v121_candidate_is_blocking(self):
+        from joy_m2.ingest import build_v121_candidate
+
+        approved_a = _approved(self.package, self.config)
+        parent_root = self.root / "parent-duplicate"
+        build_v121_candidate(
+            V121CandidateBuildRequest((approved_a,), parent_root, _contract()),
+            self.config,
+        )
+        package_b = _make_named_package(self.root, "b")
+        first = approved_a.preflight_result.candidates[0]
+        _rename_declared_image(package_b, first.image_paths[0])
+        _rewrite_record(package_b, {
+            "proposed_question_id": first.proposed_question_id,
+            "source_id": first.source_id,
+            "source_question_number": first.source_question_number,
+            "source_section": first.source_section,
+            "source_fragment_hash": first.source_fragment_hash,
+            "question_text_original": first.question_text_original,
+            "image_paths": list(first.image_paths),
+            "image_roles": list(first.image_roles),
+        })
+        request = V121PreflightRequest(
+            load_v121_import_manifest(package_b / "import_manifest.json"),
+            package_b,
+            ArtifactRef(BASELINE, BASELINE_SHA, BASELINE_SIZE, "sqlite"),
+            V121CandidateVerificationRequest(
+                parent_root, (approved_a,), _contract()
+            ),
+            _contract(),
+        )
+        result = preflight_v121_import(request, self.config)
+        self.assertEqual(result.report.status, "BLOCKED — IMPORT PREFLIGHT FAILED")
+        self.assertIn("duplicate_exact", {issue.code for issue in result.issues})
+
+    def test_stale_preflight_and_approval_cannot_append_and_preserve_parent(self):
+        from joy_m2.ingest import build_v121_candidate
+
+        approved_a = _approved(self.package, self.config)
+        parent_a = self.root / "parent-a"
+        build_v121_candidate(
+            V121CandidateBuildRequest((approved_a,), parent_a, _contract()),
+            self.config,
+        )
+        package_b = _make_named_package(self.root, "b")
+        approved_b = _approved(
+            package_b,
+            self.config,
+            V121CandidateVerificationRequest(parent_a, (approved_a,), _contract()),
+        )
+        parent_ab = self.root / "parent-ab"
+        build_v121_candidate(
+            V121CandidateBuildRequest(
+                (approved_a, approved_b), parent_ab, _contract()
+            ),
+            self.config,
+        )
+        before = _tree(parent_ab)
+        package_c = _make_named_package(self.root, "c")
+        stale_c = _approved(
+            package_c,
+            self.config,
+            V121CandidateVerificationRequest(parent_a, (approved_a,), _contract()),
+        )
+        current_c = _approved(
+            _make_named_package(self.root / "current", "c"),
+            self.config,
+            V121CandidateVerificationRequest(
+                parent_ab, (approved_a, approved_b), _contract()
+            ),
+        )
+        self.assertNotEqual(
+            stale_c.preflight_result.report.parent_candidate_digest,
+            current_c.preflight_result.report.parent_candidate_digest,
+        )
+        self.assertNotEqual(
+            stale_c.preflight_result.report.preflight_sha256,
+            current_c.preflight_result.report.preflight_sha256,
+        )
+        output = self.root / "stale-child"
+        with self.assertRaises(ImportApprovalError):
+            build_v121_candidate(
+                V121CandidateBuildRequest(
+                    (approved_a, approved_b, stale_c), output, _contract()
+                ),
+                self.config,
+            )
+        self.assertFalse(output.exists())
+        self.assertEqual(_tree(parent_ab), before)
 
 
 if __name__ == "__main__":

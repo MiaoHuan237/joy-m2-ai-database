@@ -5,6 +5,7 @@ import hashlib
 import json
 from pathlib import Path
 import shutil
+import sqlite3
 import sys
 import tempfile
 import unittest
@@ -22,6 +23,13 @@ from joy_m2.ingest.v121_models import (
     V121PreflightRequest,
 )
 from joy_m2.models import ArtifactRef
+from tests.integration.test_v120_preflight import (
+    REFERENCE_FRAGMENT,
+    REFERENCE_NUMBER,
+    REFERENCE_SECTION,
+    REFERENCE_SOURCE_ID,
+    _rewrite_record,
+)
 
 
 FIXTURE = ROOT / "tests/fixtures/task10a/v120-batch-a"
@@ -172,6 +180,27 @@ class V121GenesisPreflightTests(unittest.TestCase):
         result = self.preflight()
         self.assertEqual(result.report.status, "BLOCKED — IMPORT PREFLIGHT FAILED")
         self.assertIn("invalid_candidate_top_level", {issue.code for issue in result.issues})
+
+    def test_exact_duplicate_against_formal_v120_is_blocking(self):
+        with sqlite3.connect(BASELINE) as connection:
+            row = connection.execute(
+                "SELECT question_text_original FROM formal_complete_questions_v120 "
+                "WHERE source_id=? AND source_question_number=? AND source_section=?",
+                (REFERENCE_SOURCE_ID, REFERENCE_NUMBER, REFERENCE_SECTION),
+            ).fetchone()
+        self.assertIsNotNone(row)
+        _rewrite_record(self.package, {
+            "source_id": REFERENCE_SOURCE_ID,
+            "source_question_number": REFERENCE_NUMBER,
+            "source_section": REFERENCE_SECTION,
+            "source_fragment_hash": REFERENCE_FRAGMENT,
+            "question_text_original": row[0],
+            "image_paths": [],
+            "image_roles": [],
+        })
+        result = self.preflight()
+        self.assertEqual(result.report.status, "BLOCKED — IMPORT PREFLIGHT FAILED")
+        self.assertIn("duplicate_exact", {issue.code for issue in result.issues})
 
 
 if __name__ == "__main__":

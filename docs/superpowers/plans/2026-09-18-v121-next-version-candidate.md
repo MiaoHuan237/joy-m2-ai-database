@@ -89,6 +89,9 @@
 
 **Files:**
 - Create: `tests/regression/test_v121_historical_replay.py`
+- Modify: `tests/unit/test_v119_writer_models.py`
+- Modify: `tests/unit/test_v119_promotion_models.py`
+- Modify: `tests/regression/test_v119_historical_replay.py`
 - Create: `docs/reports/V121_CANDIDATE_AUTHORITY_VERIFICATION.md`
 - Modify: `PROJECT_STATE.md`
 
@@ -96,6 +99,7 @@
 - Proves V1.19/V1.20 history and all formal releases remain unchanged.
 
 - [ ] Write and run historical replay tests for V1.20 manifest/preflight/approval/candidate identity and absence of `releases/V1.21/`.
+- [ ] Extend only the three historical exact-`__all__` expectations with the approved append-only V1.21 public surface; keep every V1.19/V1.20 behavior assertion unchanged.
 - [ ] Run all V1.21 focused tests and the explicit maintained suite with zero skip/expected failure.
 - [ ] Run Task 9A, 9B, 9C, 9D, 10A, 10B, 10C, V1.18 validator, V1.19 verifier, and V1.20 formal verifier.
 - [ ] Re-hash and recount V1.18/497, V1.19/502, V1.20/543.
@@ -118,4 +122,3 @@
 - [ ] Run preflight twice against exact formal V1.20 and genesis; require identical result/digest.
 - [ ] Re-verify formal V1.18/V1.19/V1.20 hashes/counts and all focused gates.
 - [ ] If READY, report exact metrics and stop at `USER DECISION REQUIRED — REAL BATCH IMPORT`; do not approve, write candidate, or promote.
-

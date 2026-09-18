@@ -279,6 +279,9 @@ NEW       tests/integration/test_v121_hkdse_bridge.py
 NEW       tests/integration/test_v121_preflight.py
 NEW       tests/integration/test_v121_candidate.py
 NEW       tests/regression/test_v121_historical_replay.py
+MODIFIED  tests/unit/test_v119_writer_models.py
+MODIFIED  tests/unit/test_v119_promotion_models.py
+MODIFIED  tests/regression/test_v119_historical_replay.py
 MODIFIED  PROJECT_STATE.md
 NEW       docs/reports/V121_CANDIDATE_AUTHORITY_VERIFICATION.md
 NEW       docs/superpowers/specs/2026-09-18-v121-next-version-candidate-design.md
@@ -288,6 +291,9 @@ NEW       docs/superpowers/plans/2026-09-18-v121-next-version-candidate.md
 Ignored real operational output may be written only below
 `data/staging/task11-v121-hkdse-2015/**`. No fixture, project script, dependency,
 CLI, formal release path, promotion module, or unrelated refactor is approved.
+The three historical test modifications are limited to extending their exact
+append-only `joy_m2.ingest.__all__` expectation with the approved V1.21 public
+surface; their V1.19/V1.20 behavior assertions remain unchanged.
 
 ## 13. TDD, review, and completion gates
 
