@@ -102,6 +102,7 @@ from .v121_models import (
     V121ImportPreflightResult,
     V121PreflightRequest,
 )
+from .v121_preflight import preflight_v121_import
 
 
 __all__ = (
@@ -177,6 +178,7 @@ __all__ = (
     "V121CandidateVerificationRequest",
     "V121CandidateArtifacts",
     "load_v121_import_manifest",
+    "preflight_v121_import",
     "adapt_verified_hkdse_pdf_transcription_v121",
     "extract_hkdse_pdf_embedded_pass",
     "load_hkdse_pdf_extraction_pass",

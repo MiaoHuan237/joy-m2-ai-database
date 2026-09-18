@@ -71,7 +71,12 @@ class V121ModelContractTests(unittest.TestCase):
             "V121CandidateBuildRequest", "V121CandidateVerificationRequest",
             "V121CandidateArtifacts", "load_v121_import_manifest",
         )
-        self.assertEqual(root.__all__[-len(expected):], expected)
+        start = root.__all__.index(expected[0])
+        self.assertEqual(root.__all__[start:start + len(expected)], expected)
+        self.assertEqual(
+            tuple(name for name in root.__all__ if name in expected),
+            expected,
+        )
         self.assertTrue(all(getattr(root, name, None) is not None for name in expected))
 
     def _artifact(self, kind: str = "sqlite") -> ArtifactRef:
