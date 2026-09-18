@@ -35,6 +35,34 @@ Updated: 2026-09-18 (Asia/Shanghai)
 
 ## Current task
 
+V1.21 next-version candidate authority is `CLOSED / PASS`. Human Gate A
+authorized a versioned, append-only staging lifecycle over immutable formal
+V1.20/543. Design/Plan and implementation are committed in checkpoints
+`983c8db`, `e30bb78`, `3b674d2`, `e8d7c18`, `1961a6e`, and `aaa4ac0`.
+Independent review is Critical 0 / Important 0 / Minor 0. V1.21 focused tests
+are 44/44 PASS; the maintained suite is 979/979 PASS; Task 9A/9B/9C/9D and
+Task 10A/10B/10C are respectively 41/342/71/48 and 144/50/30 all PASS.
+V1.19 candidate/formal verifiers pass 16/16 and 18/18; the formal V1.20
+verifier passes 21/21. The fixed V1.21 genesis digest is
+`331192032f184a44ed383e6dacc2f06fbacb60ad94414298fcb935ff56cb5906`.
+No formal `releases/V1.21/` exists and no V1.21 promotion authority exists.
+Completion evidence is
+`docs/reports/V121_CANDIDATE_AUTHORITY_VERIFICATION.md`.
+
+The first real 2015 operational run reused approved transcription digest
+`41e284c25e41759f72debd192e58c00288d14a355e704978d80587c201e970fc`
+without OCR or source-content changes. Its initial V1.21 preflight correctly
+blocked 12/12 records because historical `Txx` module proposals and free-form
+tags were outside the controlled formal taxonomy. A taxonomy-only remediation
+proposal now exists below
+`data/staging/task11-v121-hkdse-2015/taxonomy-remediation-proposal/`, with new
+transcription digest
+`9dc9cbf54fccc4aac856292e7d2202b134999967c1317c7523201fe155054cd1`.
+It changes only `module_proposal` and `tag_proposals`; all source/MS content and
+evidence remain unchanged. Status is `PENDING EXACT PDF TRANSCRIPTION
+APPROVAL`. No V1.21 canonical package from the revised payload, import
+approval, candidate database, formal release, or promotion has been created.
+
 Task 10C V1.20 formal promotion is `CLOSED / PASS`. The approved Design/Plan
 authority is committed at `59f9f52443405b7e467da8c69855bc45d3dd8223`;
 the independently reviewed implementation is committed at
@@ -50,8 +78,8 @@ The exact final approval was received and consumed once by the public
 publication API. The isolated formal release commit is
 `e8bae856a6f3ad71374b71cc20ac125bae5d621c`. Formal `releases/V1.20/`
 independently verifies 21/21 with 543 published/selectable questions. No
-current-release pointer/index exists or changed, and no next ingest or
-implementation task is authorized.
+current-release pointer/index exists or changed. The subsequently authorized
+V1.21 staging lifecycle does not modify or supersede this formal authority.
 
 Task 10B HKDSE PDF / PP-MS source adapter engineering implementation is
 `COMPLETED / PASS`. Its approved source-specific Design and RED-first Plan are
