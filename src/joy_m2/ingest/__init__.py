@@ -85,6 +85,22 @@ from .v120_promotion_models import (
     V120ReleasePromotionApproval,
 )
 from .v120_promotion_verification import verify_v120_promotion
+from .v121_manifest import load_v121_import_manifest
+from .v121_models import (
+    V121AdaptedImportPackage,
+    V121ApprovedBatch,
+    V121BatchImportManifest,
+    V121BatchLedgerEntry,
+    V121CandidateArtifacts,
+    V121CandidateBuildRequest,
+    V121CandidateContract,
+    V121CandidateVerificationRequest,
+    V121EffectiveState,
+    V121ImportApproval,
+    V121ImportPreflightReport,
+    V121ImportPreflightResult,
+    V121PreflightRequest,
+)
 
 
 __all__ = (
@@ -160,4 +176,18 @@ __all__ = (
     "build_v120_promotion",
     "verify_v120_promotion",
     "publish_v120_release",
+    "V121BatchImportManifest",
+    "V121AdaptedImportPackage",
+    "V121BatchLedgerEntry",
+    "V121EffectiveState",
+    "V121PreflightRequest",
+    "V121ImportPreflightReport",
+    "V121ImportPreflightResult",
+    "V121ImportApproval",
+    "V121ApprovedBatch",
+    "V121CandidateContract",
+    "V121CandidateBuildRequest",
+    "V121CandidateVerificationRequest",
+    "V121CandidateArtifacts",
+    "load_v121_import_manifest",
 )
