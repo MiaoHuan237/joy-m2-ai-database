@@ -105,6 +105,16 @@ from .v121_models import (
 from .v121_preflight import preflight_v121_import
 from .v121_verification import verify_v121_candidate
 from .v121_writer import build_v121_candidate
+from .v121_promotion import build_v121_promotion, publish_v121_release
+from .v121_promotion_models import (
+    V121PromotionArtifacts,
+    V121PromotionBuildRequest,
+    V121PromotionContract,
+    V121PromotionVerificationRequest,
+    V121PublicationRequest,
+    V121ReleasePromotionApproval,
+)
+from .v121_promotion_verification import verify_v121_promotion
 
 
 __all__ = (
@@ -198,4 +208,13 @@ __all__ = (
     "build_v120_promotion",
     "verify_v120_promotion",
     "publish_v120_release",
+    "V121PromotionContract",
+    "V121PromotionBuildRequest",
+    "V121PromotionVerificationRequest",
+    "V121ReleasePromotionApproval",
+    "V121PublicationRequest",
+    "V121PromotionArtifacts",
+    "build_v121_promotion",
+    "verify_v121_promotion",
+    "publish_v121_release",
 )

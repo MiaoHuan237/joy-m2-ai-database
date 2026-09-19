@@ -108,6 +108,12 @@ _V121_PUBLIC = (
     "preflight_v121_import", "build_v121_candidate", "verify_v121_candidate",
     "adapt_verified_hkdse_pdf_transcription_v121",
 )
+_V121_PROMOTION_PUBLIC = (
+    "V121PromotionContract", "V121PromotionBuildRequest",
+    "V121PromotionVerificationRequest", "V121ReleasePromotionApproval",
+    "V121PublicationRequest", "V121PromotionArtifacts",
+    "build_v121_promotion", "verify_v121_promotion", "publish_v121_release",
+)
 
 
 class V119HistoricalReplayTests(unittest.TestCase):
@@ -115,7 +121,7 @@ class V119HistoricalReplayTests(unittest.TestCase):
         self.assertEqual(
             ingest.__all__,
             _V119_PUBLIC + _V120_PUBLIC + _TASK10B_PUBLIC[:9] + _V121_PUBLIC
-            + _TASK10B_PUBLIC[9:] + _TASK10C_PUBLIC,
+            + _TASK10B_PUBLIC[9:] + _TASK10C_PUBLIC + _V121_PROMOTION_PUBLIC,
         )
         self.assertEqual(ingest.__all__[: len(_V119_PUBLIC)], _V119_PUBLIC)
         self.assertEqual(

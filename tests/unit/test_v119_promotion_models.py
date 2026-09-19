@@ -73,6 +73,12 @@ TASK11_EXPORTS = (
     "preflight_v121_import", "build_v121_candidate", "verify_v121_candidate",
     "adapt_verified_hkdse_pdf_transcription_v121",
 )
+V121_PROMOTION_EXPORTS = (
+    "V121PromotionContract", "V121PromotionBuildRequest",
+    "V121PromotionVerificationRequest", "V121ReleasePromotionApproval",
+    "V121PublicationRequest", "V121PromotionArtifacts",
+    "build_v121_promotion", "verify_v121_promotion", "publish_v121_release",
+)
 SHA = "1" * 64
 
 
@@ -115,7 +121,7 @@ class PromotionPublicContractTests(unittest.TestCase):
             ingest.__all__,
             BASE_EXPORTS + TASK9D_EXPORTS + TASK10A_EXPORTS
             + TASK10B_EXPORTS[:9] + TASK11_EXPORTS + TASK10B_EXPORTS[9:]
-            + TASK10C_EXPORTS,
+            + TASK10C_EXPORTS + V121_PROMOTION_EXPORTS,
         )
 
     def test_contract_exact_fields_types_defaults_and_frozen(self):
