@@ -367,7 +367,10 @@ class V121PromotionBehaviorTests(unittest.TestCase):
                 )
 
     def test_parsed_invalid_and_artifact_corruption_are_structured_fail_without_mutation(self) -> None:
-        for case in ("wrong-status", "missing", "extra", "database"):
+        for case in (
+            "wrong-status", "wrong-images", "wrong-image-entry", "wrong-database-ref",
+            "wrong-ledger", "missing", "extra", "database",
+        ):
             with self.subTest(case=case), tempfile.TemporaryDirectory(prefix="task11-corrupt-red-", dir=STAGING) as directory:
                 output = Path(directory) / "release"
                 self.build(output)
@@ -375,6 +378,26 @@ class V121PromotionBehaviorTests(unittest.TestCase):
                     manifest = output / "manifest.json"
                     payload = json.loads(manifest.read_text(encoding="utf-8"))
                     payload["release_status"] = []
+                    manifest.write_text(json.dumps(payload), encoding="utf-8")
+                elif case == "wrong-images":
+                    manifest = output / "manifest.json"
+                    payload = json.loads(manifest.read_text(encoding="utf-8"))
+                    payload["images"] = True
+                    manifest.write_text(json.dumps(payload), encoding="utf-8")
+                elif case == "wrong-image-entry":
+                    manifest = output / "manifest.json"
+                    payload = json.loads(manifest.read_text(encoding="utf-8"))
+                    payload["images"] = [{"relative_path": []}]
+                    manifest.write_text(json.dumps(payload), encoding="utf-8")
+                elif case == "wrong-database-ref":
+                    manifest = output / "manifest.json"
+                    payload = json.loads(manifest.read_text(encoding="utf-8"))
+                    payload["database"] = {}
+                    manifest.write_text(json.dumps(payload), encoding="utf-8")
+                elif case == "wrong-ledger":
+                    manifest = output / "manifest.json"
+                    payload = json.loads(manifest.read_text(encoding="utf-8"))
+                    payload["batch_ledger"] = [True]
                     manifest.write_text(json.dumps(payload), encoding="utf-8")
                 elif case == "missing":
                     (output / "rollback.json").unlink()
@@ -452,6 +475,36 @@ class V121PromotionBehaviorTests(unittest.TestCase):
             self.assertFalse(next(
                 check for check in report.checks if check.name == "candidate_binding"
             ).passed)
+
+    def test_verifier_parsed_invalid_candidate_manifest_is_structured_fail(self) -> None:
+        for missing_key in ("baseline", "batch_ledger", "batch_authority_artifacts"):
+            with self.subTest(missing_key=missing_key), tempfile.TemporaryDirectory(
+                prefix="task11-candidate-manifest-red-", dir=STAGING,
+            ) as directory:
+                root = Path(directory)
+                candidate_root = root / "candidate"
+                shutil.copytree(self.candidate.candidate_dir, candidate_root)
+                manifest_path = candidate_root / self.candidate.contract.manifest_filename
+                payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+                payload.pop(missing_key)
+                write_json(manifest_path, payload)
+                candidate = V121CandidateVerificationRequest(
+                    candidate_root,
+                    self.candidate.approved_batches,
+                    self.candidate.contract,
+                )
+                release = STAGING / "task11-v121-promotion-dry-run-a"
+                report = verify_v121_promotion(
+                    V121PromotionVerificationRequest(release, candidate, self.contract),
+                    self.config,
+                )
+                self.assertEqual(report.status, "FAIL")
+                self.assertFalse(next(
+                    check for check in report.checks if check.name == "candidate_verification"
+                ).passed)
+                self.assertFalse(next(
+                    check for check in report.checks if check.name == "candidate_binding"
+                ).passed)
 
     def test_private_build_failure_cleans_owned_output(self) -> None:
         with tempfile.TemporaryDirectory(prefix="task11-cleanup-red-", dir=STAGING) as directory:

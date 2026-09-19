@@ -364,7 +364,6 @@ def _candidate_manifest(request: V121CandidateVerificationRequest) -> dict[str, 
 
 
 def _baseline_projection(candidate: dict[str, object]) -> dict[str, object]:
-    baseline = candidate["baseline"]
     return {
         "release_version": "V1.20", "question_count": 543,
         "release_digest": BASELINE_RELEASE_DIGEST,
@@ -431,8 +430,8 @@ def _manifest_valid(
         value["database_schema"] == contract.formal_database_schema,
         value["baseline"] == _baseline_projection(candidate),
         value["candidate"] == _candidate_projection(),
-        value["batch_ledger"] == candidate["batch_ledger"],
-        value["batch_authority_artifacts"] == candidate["batch_authority_artifacts"],
+        value["batch_ledger"] == candidate.get("batch_ledger"),
+        value["batch_authority_artifacts"] == candidate.get("batch_authority_artifacts"),
         counts == {"baseline_question_count": 543, "accepted_batch_count": 4,
                    "promoted_question_count": 48, "formal_question_count": 591},
         _database_artifact_valid(database)
@@ -475,14 +474,14 @@ def _parse_sums(raw: bytes) -> tuple[tuple[str, str], ...] | None:
 
 
 def _file_matches(root: Path, value: dict[str, object]) -> bool:
-    path = root / value["relative_path"]
     try:
+        path = root / value["relative_path"]
         return (
             path.is_file() and not path.is_symlink()
             and path.stat().st_size == value["size_bytes"]
             and _sha_file(path) == value["sha256"]
         )
-    except (OSError, RuntimeError, TypeError, ValueError):
+    except (KeyError, OSError, RuntimeError, TypeError, ValueError):
         return False
 
 
@@ -721,10 +720,15 @@ def verify_v121_promotion(
     )
     expected_files: set[str] = set()
     if type(manifest) is dict and type(manifest.get("images")) is list:
+        image_paths = {
+            item["relative_path"]
+            for item in manifest["images"]
+            if type(item) is dict and _safe_relative(item.get("relative_path"))
+        }
         expected_files = {
             request.contract.database_filename, request.contract.manifest_filename,
             request.contract.sha256s_filename, request.contract.rollback_filename,
-            *(item.get("relative_path") for item in manifest["images"] if type(item) is dict),
+            *image_paths,
         }
     actual_files = {
         path.relative_to(resolved).as_posix()
@@ -745,10 +749,12 @@ def verify_v121_promotion(
         )
     )
     if type(manifest) is dict:
-        refs = [manifest.get("database"), manifest.get("rollback"), *manifest.get("images", [])]
-        states["artifact_references"] = all(
-            type(item) is dict and _file_matches(resolved, item) for item in refs
-        )
+        manifest_images = manifest.get("images")
+        if type(manifest_images) is list:
+            refs = [manifest.get("database"), manifest.get("rollback"), *manifest_images]
+            states["artifact_references"] = all(
+                type(item) is dict and _file_matches(resolved, item) for item in refs
+            )
     rollback_expected = None
     if type(manifest) is dict and type(manifest.get("promotion")) is dict:
         rollback_expected = {
@@ -770,11 +776,14 @@ def verify_v121_promotion(
     formal_path = resolved / request.contract.database_filename
     states.update(_database_states(formal_path, candidate_database, request.contract))
     if candidate_manifest is not None and type(manifest) is dict:
+        ledger = manifest.get("batch_ledger")
         states["provenance_closure"] = (
-            manifest.get("batch_ledger") == candidate_manifest.get("batch_ledger")
+            type(ledger) is list
+            and all(type(item) is dict for item in ledger)
+            and ledger == candidate_manifest.get("batch_ledger")
             and manifest.get("batch_authority_artifacts")
             == candidate_manifest.get("batch_authority_artifacts")
-            and tuple(item.get("batch_id") for item in manifest.get("batch_ledger", []))
+            and tuple(item.get("batch_id") for item in ledger)
             == tuple(item[0] for item in (
                 ("JOY-M2-HKDSE-2015-PP-MS",),
                 ("JOY-M2-HKDSE-2016-PP-MS",),
