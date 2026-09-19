@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-09-18 (Asia/Shanghai)
+Updated: 2026-09-19 (Asia/Shanghai)
 
 ## Formal data
 
@@ -35,33 +35,31 @@ Updated: 2026-09-18 (Asia/Shanghai)
 
 ## Current task
 
-V1.21 next-version candidate authority is `CLOSED / PASS`. Human Gate A
-authorized a versioned, append-only staging lifecycle over immutable formal
-V1.20/543. Design/Plan and implementation are committed in checkpoints
-`983c8db`, `e30bb78`, `3b674d2`, `e8d7c18`, `1961a6e`, and `aaa4ac0`.
-Independent review is Critical 0 / Important 0 / Minor 0. V1.21 focused tests
-are 44/44 PASS; the maintained suite is 979/979 PASS; Task 9A/9B/9C/9D and
-Task 10A/10B/10C are respectively 41/342/71/48 and 144/50/30 all PASS.
-V1.19 candidate/formal verifiers pass 16/16 and 18/18; the formal V1.20
-verifier passes 21/21. The fixed V1.21 genesis digest is
-`331192032f184a44ed383e6dacc2f06fbacb60ad94414298fcb935ff56cb5906`.
-No formal `releases/V1.21/` exists and no V1.21 promotion authority exists.
-Completion evidence is
-`docs/reports/V121_CANDIDATE_AUTHORITY_VERIFICATION.md`.
+V1.21 formal promotion readiness is
+`READY FOR FINAL V1.21 PROMOTION AUTHORIZATION`. The approved Design/Plan and
+implementation are committed at `6eb48ce`, `e7cdf4d`, `45dbb19`, `5f690ee`,
+and review remediation `3eef866`. Independent review is Critical 0 / Important
+0. The exact generation `000004` contains the four approved 2015–2018 batches,
+12 questions each, with candidate digest
+`ecf624e3cb9fd8e7b1e0c664ddc5d51ef67f2d7f16f277c276be828eba32282c`,
+candidate SQLite SHA-256
+`6e27e5b5eff5a701b4671a3e12ee538eed985147d86c23edef1e9489f714a53c`,
+and candidate manifest SHA-256
+`dc82e04639a4b54e24bbf7eceeb4ecec8a3751dfa7e8595f260b9d894d91fc83`.
+It projects immutable formal V1.20/543 plus 48 exact promoted records to 591.
 
-The first real 2015 operational run reused approved transcription digest
-`41e284c25e41759f72debd192e58c00288d14a355e704978d80587c201e970fc`
-without OCR or source-content changes. Its initial V1.21 preflight correctly
-blocked 12/12 records because historical `Txx` module proposals and free-form
-tags were outside the controlled formal taxonomy. A taxonomy-only remediation
-proposal now exists below
-`data/staging/task11-v121-hkdse-2015/taxonomy-remediation-proposal/`, with new
-transcription digest
-`9dc9cbf54fccc4aac856292e7d2202b134999967c1317c7523201fe155054cd1`.
-It changes only `module_proposal` and `tag_proposals`; all source/MS content and
-evidence remain unchanged. Status is `PENDING EXACT PDF TRANSCRIPTION
-APPROVAL`. No V1.21 canonical package from the revised payload, import
-approval, candidate database, formal release, or promotion has been created.
+Two independent non-formal dry-runs pass 21/21 checks and are byte-identical.
+They bind release digest
+`f69f7068312c8a1afe754871acc027c322b7f2a401ab87312400f39b27301fb3`,
+formal SQLite SHA-256
+`93b7676f83659c2ceaa9de978ba998ce9347a45b995bb5446ed382251f96737a`,
+and semantic SHA-256
+`0a4e70acb1cc657207dd0fefb1e20581d34baadda804219ae2fbbfb2b5ca817f`.
+The V1.21 promotion focused suite is 26/26 PASS and the complete maintained
+suite is 1005/1005 PASS with zero skips or expected failures. No formal
+`releases/V1.21/` exists; the public publication API has run only in isolated
+temporary repositories. Completion evidence is
+`docs/reports/V121_PROMOTION_READINESS_VERIFICATION.md`.
 
 Task 10C V1.20 formal promotion is `CLOSED / PASS`. The approved Design/Plan
 authority is committed at `59f9f52443405b7e467da8c69855bc45d3dd8223`;
@@ -280,8 +278,9 @@ Scope:
   verifier are implemented at
   `c2668332e4c912d19e149361ca143637899422c7`. The historical V1.19 API remains
   the exact ordered public prefix; only the approved V1.20 suffix was added.
-  Real-source adaptation/preflight has not started, no V1.20 candidate or
-  formal release exists, and promotion remains unauthorized.
+  Subsequent approved operational runs accumulated the 2012–2014 batches, and
+  Task 10C promoted their exact generation without rewriting Task 10A
+  authority.
 - `teacher_notes` and `common_errors` are Task 9A hashed import evidence/enrichment metadata, not current V2 formal fields; future formal representation requires separate schema authority.
 - Task 9A images are read-only deterministic evidence only; no copy, move, rename, destination, or formal image identity change is authorized.
 - Import approval binds `(batch_id, preflight_sha256, V1.19)` and is strictly separate from formal release/promotion authorization.
@@ -316,7 +315,13 @@ Scope:
 ## Completion gate
 
 - Current explicit maintained suite, excluding the separately attributed legacy
-  behavior module: 935/935 passed; skip=0 and expectedFailure=0.
+  behavior module: 1005/1005 passed; failures=0, errors=0, skip=0, and
+  expectedFailure=0.
+- V1.21 promotion readiness focused suite: 26/26 passed; the exact generation
+  `000004` candidate verifies 24/24 and both real dry-runs verify 21/21. Final
+  independent review: Critical 0 / Important 0. Formal `releases/V1.21/`
+  remains absent pending the exact digest-bound final human gate.
+- V1.21 candidate authority focused suite: 44/44 passed.
 - Task 10C focused promotion suite: 30/30 passed; two real dry-runs and formal
   `releases/V1.20/` each independently verify 21/21 and are byte-identical.
   Final independent review: Critical 0 / Important 0 / Minor 0.
@@ -365,13 +370,19 @@ Scope:
 - Task 10A verification record: `docs/reports/TASK10A_VERIFICATION.md`.
 - Task 10B verification record: `docs/reports/TASK10B_VERIFICATION.md`.
 - Task 10C verification record: `docs/reports/TASK10C_VERIFICATION.md`.
+- V1.21 promotion readiness record:
+  `docs/reports/V121_PROMOTION_READINESS_VERIFICATION.md`.
 
 ## Next task
 
 Task 9A, Task 9B, Task 9C, Task 9D, Task 10A, Task 10B, and Task 10C are closed.
 Formal V1.20 is published and independently verified at 543 questions; formal
-V1.19 remains immutable at 502 and frozen V1.18 remains unchanged at 497. No
-current-release pointer/index exists or was added. No next implementation or
-ingest task is authorized.
+V1.19 remains immutable at 502 and frozen V1.18 remains unchanged at 497. The
+exact four-batch V1.21 generation `000004` is ready for promotion, but no formal
+V1.21 release exists. No current-release pointer/index exists or was added.
 
-`WAIT FOR EXPLICIT NEXT-TASK AUTHORIZATION`
+`USER DECISION REQUIRED — FINAL V1.21 PROMOTION AUTHORIZATION`
+
+The only accepted statement is:
+
+`USER APPROVED RELEASE PROMOTION V1.21 f69f7068312c8a1afe754871acc027c322b7f2a401ab87312400f39b27301fb3`
