@@ -1,17 +1,17 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-09-19 (Asia/Shanghai)
+Updated: 2026-09-20 (Asia/Shanghai)
 
 ## Formal data
 
-- Current formal release: V1.20
-- Formal SQLite: `releases/V1.20/Joy_M2_Complete_Question_DB_V1_20.sqlite3`
-- Formal SQLite SHA-256: `b3e4911259fbc4063e788f418f6e52a53017ff079895bce679837914a5539292`
-- Complete-question records: 543 (502 immutable V1.19 records + 41 approved
-  Task 10 additions)
+- Current formal release: V1.21
+- Formal SQLite: `releases/V1.21/Joy_M2_Complete_Question_DB_V1_21.sqlite3`
+- Formal SQLite SHA-256: `93b7676f83659c2ceaa9de978ba998ce9347a45b995bb5446ed382251f96737a`
+- Complete-question records: 591 (543 immutable V1.20 records + 48 approved
+  2015–2018 HKDSE PP/MS additions)
 - V1.17 retained records: 45
 - Task 6 migrated records: 452
-- Answer identity: 438 `source_provided`, 71 `ai_solved_verified`, 34 `missing_from_source`
+- Answer identity: 486 `source_provided`, 71 `ai_solved_verified`, 34 `missing_from_source`
 - P0/P1 audit blockers: 0/0
 - V1.18 remains the frozen, byte-identical 497-question baseline and must not be
   edited in place. Its SQLite SHA-256 remains
@@ -32,11 +32,17 @@ Updated: 2026-09-19 (Asia/Shanghai)
   release digest
   `1eb046cd247c362ab6b6052ca7fecddea914340dd7421bf136012a9a086c9fcf`,
   and exact formal count 543. V1.18 and V1.19 remain byte-identical.
+- V1.21 is formally published as four release artifacts, binds release digest
+  `f69f7068312c8a1afe754871acc027c322b7f2a401ab87312400f39b27301fb3`,
+  and contains 591 published/selectable complete questions. The manifest SHA-256
+  is `a04f7ee7b67991427bffd3e5a3de70a310d0889fdf8f0535649840a44baf3a40`;
+  semantic SHA-256 is
+  `0a4e70acb1cc657207dd0fefb1e20581d34baadda804219ae2fbbfb2b5ca817f`.
+  V1.18/497, V1.19/502, and V1.20/543 remain immutable historical authority.
 
 ## Current task
 
-V1.21 formal promotion readiness is
-`READY FOR FINAL V1.21 PROMOTION AUTHORIZATION`. The approved Design/Plan and
+V1.21 formal promotion is `CLOSED / PASS`. The approved Design/Plan and
 implementation are committed at `6eb48ce`, `e7cdf4d`, `45dbb19`, `5f690ee`,
 and review remediation `3eef866`. Independent review is Critical 0 / Important
 0. The exact generation `000004` contains the four approved 2015–2018 batches,
@@ -46,7 +52,7 @@ candidate SQLite SHA-256
 `6e27e5b5eff5a701b4671a3e12ee538eed985147d86c23edef1e9489f714a53c`,
 and candidate manifest SHA-256
 `dc82e04639a4b54e24bbf7eceeb4ecec8a3751dfa7e8595f260b9d894d91fc83`.
-It projects immutable formal V1.20/543 plus 48 exact promoted records to 591.
+It binds immutable formal V1.20/543 plus 48 exact promoted records to 591.
 
 Two independent non-formal dry-runs pass 21/21 checks and are byte-identical.
 They bind release digest
@@ -55,11 +61,29 @@ formal SQLite SHA-256
 `93b7676f83659c2ceaa9de978ba998ce9347a45b995bb5446ed382251f96737a`,
 and semantic SHA-256
 `0a4e70acb1cc657207dd0fefb1e20581d34baadda804219ae2fbbfb2b5ca817f`.
-The V1.21 promotion focused suite is 26/26 PASS and the complete maintained
-suite is 1005/1005 PASS with zero skips or expected failures. No formal
-`releases/V1.21/` exists; the public publication API has run only in isolated
-temporary repositories. Completion evidence is
-`docs/reports/V121_PROMOTION_READINESS_VERIFICATION.md`.
+The exact final approval was received:
+`USER APPROVED RELEASE PROMOTION V1.21 f69f7068312c8a1afe754871acc027c322b7f2a401ab87312400f39b27301fb3`.
+Its authorized publication already created `releases/V1.21/`; this lifecycle
+closure did not rebuild, republish, roll back, or alter those bytes. Formal
+V1.21 independently verifies 21/21 and matches both approved dry-runs exactly.
+The isolated formal release commit is
+`879ca8dee9b7e58fa4b24f9c7e82b15aeb63107b`.
+
+The stale pre-promotion absence assertion was migrated to exact post-promotion
+identity plus unchanged historical replay in
+`tests/regression/test_v121_historical_replay.py`, committed at
+`2c50f48cab94d444d0906b80ac0d86b0a054c953`. All V1.20 protections remain;
+isolated before/after replay preserves V1.20/V1.21 candidate, preflight, and
+approval authority. The migrated regression is 3/3 PASS; independent lifecycle
+review is Critical 0 / Important 0 / Minor 0. The V1.21 promotion focused suite
+is 26/26 PASS and the complete maintained suite is 1005/1005 PASS with zero
+failures, errors, skips, or expected failures on the final serial run. Formal
+V1.18/V1.19/V1.20, all four V1.21 candidate generations/packages, the approved
+dry-runs, and the existing formal V1.21 files retain their exact bytes.
+No production code changed. Unresolved closure blockers: `NONE`.
+The original pre-promotion evidence remains historical and auditable in
+sections 1–8 of `docs/reports/V121_PROMOTION_READINESS_VERIFICATION.md`;
+section 9 records the post-promotion closure and fresh gate results.
 
 Task 10C V1.20 formal promotion is `CLOSED / PASS`. The approved Design/Plan
 authority is committed at `59f9f52443405b7e467da8c69855bc45d3dd8223`;
@@ -77,7 +101,7 @@ publication API. The isolated formal release commit is
 `e8bae856a6f3ad71374b71cc20ac125bae5d621c`. Formal `releases/V1.20/`
 independently verifies 21/21 with 543 published/selectable questions. No
 current-release pointer/index exists or changed. The subsequently authorized
-V1.21 staging lifecycle does not modify or supersede this formal authority.
+V1.21 formal publication leaves V1.20 unchanged as historical authority.
 
 Task 10B HKDSE PDF / PP-MS source adapter engineering implementation is
 `COMPLETED / PASS`. Its approved source-specific Design and RED-first Plan are
@@ -187,10 +211,12 @@ Scope:
   `018e6184a26be5df7c1502e4e6a92d34fd0ee688`. The branch tracks
   `origin/task8b/pipeline-migration`; no force push or history rewrite is
   authorized.
-- V1.19 is the current formal release. V1.18, compatibility objects, `legacy/`,
+- At the historical Task 9D checkpoint, V1.19 became the formal release.
+  V1.18, compatibility objects, `legacy/`,
   and all pre-existing formal data remain unchanged. The approved synthetic
   candidate, verified real Task 9C candidate, and Task 9D dry-run roots remain
-  non-formal staging evidence; only `releases/V1.19/` is new formal authority.
+  non-formal staging evidence; only `releases/V1.19/` became new formal
+  authority at that checkpoint. Current formal authority is V1.21 as above.
 - Task 8B unresolved blockers: `NONE`. Task 9A unresolved implementation
   blockers: `NONE`. Its exact sixteen-code issue pipeline includes
   `file_integrity_mismatch` as the sole package/file-level integrity issue; its
@@ -291,7 +317,8 @@ Scope:
   literal oracle fully reproducible without inspecting production projection
   code.
 - The literal happy-path oracle remains unchanged: `manifest_sha256` is `b5a0ae6597028c48c6f7cdc81bd7e67d61dd369cbf96d7c6a4e96efd73984c5d` and final `preflight_sha256` is `087574a8af6fe28ac65a5b5810794952044cb5f0778ed3492d1e7819a4be33c2`.
-- Formal database is V1.19 with 502 questions. Human Gate C authorized exactly
+- At the historical Task 9D checkpoint, formal V1.19 contained 502 questions.
+  Human Gate C authorized exactly
   the five-question real candidate and the exact Human Gate D statement
   authorized its formal promotion. The frozen V1.18 baseline remains unchanged
   at 497 questions.
@@ -317,10 +344,12 @@ Scope:
 - Current explicit maintained suite, excluding the separately attributed legacy
   behavior module: 1005/1005 passed; failures=0, errors=0, skip=0, and
   expectedFailure=0.
-- V1.21 promotion readiness focused suite: 26/26 passed; the exact generation
+- V1.21 promotion focused suite: 26/26 passed; the exact generation
   `000004` candidate verifies 24/24 and both real dry-runs verify 21/21. Final
-  independent review: Critical 0 / Important 0. Formal `releases/V1.21/`
-  remains absent pending the exact digest-bound final human gate.
+  independent implementation review: Critical 0 / Important 0. Formal
+  `releases/V1.21/` independently verifies 21/21 with 591 questions and the
+  exact approved identity. Post-promotion lifecycle regression: 3/3 PASS;
+  independent migration review: Critical 0 / Important 0 / Minor 0.
 - V1.21 candidate authority focused suite: 44/44 passed.
 - Task 10C focused promotion suite: 30/30 passed; two real dry-runs and formal
   `releases/V1.20/` each independently verify 21/21 and are byte-identical.
@@ -376,13 +405,14 @@ Scope:
 ## Next task
 
 Task 9A, Task 9B, Task 9C, Task 9D, Task 10A, Task 10B, and Task 10C are closed.
-Formal V1.20 is published and independently verified at 543 questions; formal
-V1.19 remains immutable at 502 and frozen V1.18 remains unchanged at 497. The
-exact four-batch V1.21 generation `000004` is ready for promotion, but no formal
-V1.21 release exists. No current-release pointer/index exists or was added.
+Formal V1.21 promotion is `CLOSED / PASS` at 591 complete questions. Formal
+V1.20/543, V1.19/502, and frozen V1.18/497 remain unchanged. The approved
+four-batch V1.21 generation `000004` remains immutable staging evidence.
+No current-release pointer/index exists or was added.
 
-`USER DECISION REQUIRED — FINAL V1.21 PROMOTION AUTHORIZATION`
-
-The only accepted statement is:
-
-`USER APPROVED RELEASE PROMOTION V1.21 f69f7068312c8a1afe754871acc027c322b7f2a401ab87312400f39b27301fb3`
+After closure and ordinary remote backup, the next operational action is
+2019 real-source ingestion using V1.21/591 as the immutable formal baseline.
+It is `NOT STARTED` in this checkpoint. Do not begin V1.22 architecture work;
+only establish the minimum next-version candidate authority if actual 2019
+ingestion reaches the existing authority boundary. This turn stops after
+closure and push; it grants no new import approval or promotion authority.

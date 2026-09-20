@@ -2,7 +2,14 @@
 
 Date: 2026-09-19 (Asia/Shanghai)
 
-Status: `READY FOR FINAL V1.21 PROMOTION AUTHORIZATION`
+Readiness milestone status (2026-09-19): `READY FOR FINAL V1.21 PROMOTION AUTHORIZATION`
+
+Current status (2026-09-20): `PASS — FORMAL V1.21 PROMOTION CLOSED`
+
+Sections 1–8 below are preserved pre-promotion evidence, including the absence
+of formal V1.21 and the then-pending human gate. They are historical statements,
+not current execution authority. Section 9 records the approved publication
+and post-promotion lifecycle closure.
 
 ## 1. Authority and implementation
 
@@ -152,3 +159,127 @@ USER DECISION REQUIRED — FINAL V1.21 PROMOTION AUTHORIZATION
 
 USER APPROVED RELEASE PROMOTION V1.21 f69f7068312c8a1afe754871acc027c322b7f2a401ab87312400f39b27301fb3
 ```
+
+## 9. Post-promotion lifecycle closure — 2026-09-20
+
+### Approval, publication, and preservation
+
+The exact section 8 approval was received and the authorized publication
+created the four formal files under `releases/V1.21/`. The subsequent user
+authorization was test-authority migration only: preserve that existing
+release, migrate the obsolete absence assertion, verify, close, and perform
+ordinary remote backup. No publication action was rerun during this migration;
+no formal file was deleted, rebuilt, rolled back, or rewritten.
+
+Formal V1.21 contains exactly the four section 4 artifacts with those exact
+SHA-256 values and sizes, including SQLite 10,063,872 bytes, manifest 7,913
+bytes, rollback 657 bytes, and SHA256SUMS 268 bytes. It is byte-identical to
+both approved non-formal dry-runs and independently verifies 21/21 checks.
+Its 591 complete questions are published/selectable; answer identity is
+486 `source_provided`, 71 `ai_solved_verified`, and 34 `missing_from_source`.
+
+| Formal authority | Count | Unchanged SQLite SHA-256 |
+|---|---:|---|
+| V1.18 | 497 | `fd9fe44f1d4bebb3e6dc94ef9d0ef28afde217920c09682e3b4840a97522f5a7` |
+| V1.19 | 502 | `5a7f1ca01c29dc638fb592c668ea9f597551f94d73001898587b187bdbe490ff` |
+| V1.20 | 543 | `b3e4911259fbc4063e788f418f6e52a53017ff079895bce679837914a5539292` |
+| V1.21 | 591 | `93b7676f83659c2ceaa9de978ba998ce9347a45b995bb5446ed382251f96737a` |
+
+All four SQLite integrity checks returned `ok`, with zero foreign-key errors.
+Before/after fingerprints match for all fourteen protected roots: four formal
+release trees, four V1.21 candidate generations, four canonical input packages,
+and two approved dry-runs. No database bytes changed during test migration.
+
+### Minimal lifecycle migration and independent review
+
+The only changed test file is
+`tests/regression/test_v121_historical_replay.py`; no production code or test
+helper changed. The old `releases/V1.21/` global absence assertion is replaced
+by exact post-promotion formal identity and unchanged historical replay.
+The original V1.20 inventory, sizes, hashes, 543-question view, metadata, and
+public-surface protections remain. Explicit V1.18/V1.19 SHA/count checks are
+also retained in the migrated lifecycle test.
+
+An isolated temporary root replays the committed V1.20/V1.21 typed candidate,
+preflight, and approval inputs before and after adding only a copy of the
+approved formal V1.21 tree. Full typed requests and verification reports are
+equal in both states; input bytes remain unchanged. The real formal tree is
+validated through the existing independent 21-check verifier, not duplicated
+production verification logic. No assertion was skipped or replaced by a no-op.
+
+The existing post-publication 1004 PASS / 1 FAIL was the valid lifecycle RED.
+Focused reproduction collected 3 tests: 2 PASS / 1 FAIL / 0 ERROR, exit 1;
+the sole failure was the stale absence assertion. After migration, focused
+regression is 3/3 PASS, exit 0. Independent read-only review reran this gate
+and found Critical 0 / Important 0 / Minor 0.
+
+### Fresh closure gates
+
+| Gate | Post-promotion result |
+|---|---:|
+| Migrated historical replay | 3/3 PASS |
+| Complete maintained suite, serial, excluding attributed legacy behavior | 1005/1005 PASS |
+| V1.21 promotion focused | 26/26 PASS |
+| V1.21 candidate focused | 44/44 PASS |
+| V1.21 real candidate verifier | 24/24 PASS |
+| V1.21 formal verifier | 21/21 PASS |
+| V1.19 candidate verifier | 16/16 PASS |
+| V1.19 formal verifier | 18/18 PASS |
+| V1.20 historical candidate verifier | 24/24 PASS |
+| V1.20 formal verifier | 21/21 PASS |
+| Task 10C / Task 10B / Task 10A | 30/30 / 50/50 / 144/144 PASS |
+| Task 9D / Task 9C / Task 9B / Task 9A | 48/48 / 71/71 / 342/342 / 41/41 PASS |
+| Public Models / Models + Config | 66/66 / 80/80 PASS |
+| Audit / Task 3A / Database / Export | 21/21 / 6/6 / 14/14 / 22/22 PASS |
+| Release / Export + Database | 48/48 / 36/36 PASS |
+| Task 7 / Task 8 equivalence | 7/7 / 3/3 PASS |
+| Task 6 oracle / Task 3–6 gates | 22/22 / 54/54 PASS |
+| V1.18 independent validator | PASS |
+| `git diff --check` | PASS |
+
+Final maintained result: 1005 collected, 1005 PASS, 0 FAIL, 0 ERROR, 0 skip,
+0 expectedFailure, 0 unexpectedSuccess. Counts grouped above reuse the same
+maintained tests where suites overlap; they are not additive.
+
+One earlier verification attempt overlapped the full suite with a separate
+V1.21 test process. It produced 1003 PASS / 1 FAIL / 1 ERROR because Task 9D's
+whole-staging before/after snapshots observed the other process's temporary
+`task11-*` fixtures:
+
+- `tests.integration.test_v119_promotion.PromotionBehaviorContractTests.test_successful_build_exact_tree_and_verification_closure`:
+  tearDown snapshot encountered a removed `task11-symlink-red-*` directory.
+- `tests.integration.test_v119_promotion.PromotionBehaviorContractTests.test_task9d_sqlite_connections_close_on_success_and_partial_open_failure`:
+  tearDown compared different transient `task11-projection-red-*` and
+  `task11-candidate-red-*` trees.
+
+No code, assertion, or gate was weakened to address this runner interference.
+After all other test processes finished, the complete suite was rerun serially
+and passed 1005/1005, including both named tests.
+
+Fresh legacy attribution remains 9 PASS / 2 FAIL / 0 ERROR. The two names are
+`Task5LegacyBehaviorTests.test_build_is_deterministic_and_matches_reviewed_core_hashes`
+and `Task6LegacyBehaviorTests.test_build_matches_all_seven_frozen_primary_artifacts`.
+They remain only the approved deterministic SQLite hash and frozen
+byte-equivalence attribution categories, not maintained blockers.
+
+### Commit and next-action boundary
+
+- Starting closure HEAD: `2056a44294991955bf379b0eede29b744c223569`.
+- Test-only lifecycle migration: `2c50f48cab94d444d0906b80ac0d86b0a054c953`
+  — `test: align V1.21 post-promotion historical replay`.
+- Isolated existing formal artifacts: `879ca8dee9b7e58fa4b24f9c7e82b15aeb63107b`
+  — `release: publish formal V1.21`. This commit records the already-published
+  files; it does not rerun the publication API.
+- Closure documentation is the separate commit containing this section and
+  the corresponding current `PROJECT_STATE.md` update.
+- Commit diff checks pass. Ordinary push and exact remote HEAD/ahead/behind
+  verification follow the closure documentation commit and are reported in
+  the final delivery response. No force push or history rewrite is permitted.
+
+Current formal authority is V1.21/591. The next operational action after
+closure and push is 2019 real-source ingestion against that immutable baseline,
+but it is NOT STARTED in this checkpoint. V1.22 work, new architecture, new
+import approval, and another promotion are not authorized by this closure.
+Only establish minimum next-version candidate authority if actual ingestion
+reaches the existing boundary. No PR, tag, merge, rebase, squash, reset, or
+amend was performed. Unresolved lifecycle blockers: NONE.
