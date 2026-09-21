@@ -17,6 +17,7 @@ from joy_m2.ingest.models import (
 )
 from joy_m2.models import ArtifactRef, VerificationCheck, VerificationReport
 
+from .v122_manifest import load_v122_import_manifest
 from .v122_models import (
     V122ApprovedBatch,
     V122BatchImportManifest,
@@ -430,6 +431,55 @@ def _read_json(path: Path) -> tuple[bytes, object] | None:
     return raw, parsed
 
 
+def _canonical_candidates_match(approved: V122ApprovedBatch, root: Path) -> bool:
+    """Reconstruct READY carriers from package bytes, not supplied preflight objects."""
+    manifest = approved.preflight_result.manifest
+    raw_fields = {field.name for field in fields(ImportCandidate)} - {
+        "normalized_text_sha256", "image_sha256s",
+    }
+    images = {item.relative_path: item.sha256 for item in manifest.image_files}
+    sources = {item.relative_path for item in manifest.source_files}
+    reconstructed = []
+    for evidence in manifest.candidate_records:
+        loaded = _read_json(root / evidence.relative_path)
+        if loaded is None or type(loaded[1]) is not list:
+            return False
+        for record in loaded[1]:
+            if type(record) is not dict or set(record) != raw_fields:
+                return False
+            if any(type(record[name]) is not list for name in ("image_paths", "image_roles", "tags")):
+                return False
+            if any(type(path) is not str or path not in images for path in record["image_paths"]):
+                return False
+            for status_name, evidence_name in (
+                ("translation_status", "translation_evidence"),
+                ("explanation_status", "explanation_evidence"),
+            ):
+                source = record[evidence_name]
+                if record[status_name] == "source_present" and (
+                    type(source) is not str or not source.startswith("source:")
+                    or "#" not in source[7:] or source[7:].split("#", 1)[0] not in sources
+                ):
+                    return False
+            # Validate raw types before normalization; booleans and parallel
+            # carriers cannot acquire authority through equality coercion.
+            candidate = ImportCandidate(
+                **record,
+                normalized_text_sha256="0" * 64,
+                image_sha256s=tuple(images[path] for path in record["image_paths"]),
+            )
+            candidate = ImportCandidate(
+                **record,
+                normalized_text_sha256=_normalized_text_sha256(candidate.question_text_original),
+                image_sha256s=candidate.image_sha256s,
+            )
+            reconstructed.append(candidate)
+    return (
+        tuple(reconstructed) == approved.preflight_result.candidates
+        and {path for item in reconstructed for path in item.image_paths} == set(images)
+    )
+
+
 def _package_evidence_valid(approved: V122ApprovedBatch) -> bool:
     try:
         root = approved.package_root
@@ -437,11 +487,7 @@ def _package_evidence_valid(approved: V122ApprovedBatch) -> bool:
         if root.is_symlink() or not resolved.is_dir():
             return False
         manifest_path = resolved / "import_manifest.json"
-        manifest_read = _read_json(manifest_path)
-        if manifest_read is None:
-            return False
-        _, parsed = manifest_read
-        if not _exact_json(parsed, _manifest_projection(approved.preflight_result.manifest)):
+        if load_v122_import_manifest(manifest_path) != approved.preflight_result.manifest:
             return False
         declared = tuple(
             item
@@ -453,6 +499,8 @@ def _package_evidence_valid(approved: V122ApprovedBatch) -> bool:
         )
         declared_paths = {item.relative_path for item in declared}
         for item in declared:
+            if item.relative_path.lower().endswith((".mmd.zip", ".mmd", ".pdf")):
+                return False
             relative_path(item.relative_path)
             path = resolved / item.relative_path
             target = path.resolve(strict=True)
@@ -470,7 +518,7 @@ def _package_evidence_valid(approved: V122ApprovedBatch) -> bool:
                 return False
             if path.is_file() and path != manifest_path:
                 actual_paths.add(path.relative_to(resolved).as_posix())
-        return actual_paths == declared_paths
+        return actual_paths == declared_paths and _canonical_candidates_match(approved, resolved)
     except (OSError, PipelineError, RuntimeError, TypeError, ValueError):
         return False
 
@@ -1058,8 +1106,8 @@ def _sqlite_checks(
         return state
     candidate = baseline = None
     try:
-        candidate = sqlite3.connect(f"file:{candidate_path}?mode=ro", uri=True)
-        baseline = sqlite3.connect(f"file:{baseline_path}?mode=ro", uri=True)
+        candidate = sqlite3.connect(candidate_path.resolve().as_uri() + "?mode=ro", uri=True)
+        baseline = sqlite3.connect(baseline_path.resolve().as_uri() + "?mode=ro", uri=True)
         candidate.execute("PRAGMA foreign_keys=ON")
         candidate.execute("SELECT name FROM sqlite_master LIMIT 1").fetchall()
         baseline.execute("SELECT name FROM sqlite_master LIMIT 1").fetchall()

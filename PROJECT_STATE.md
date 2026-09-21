@@ -51,8 +51,27 @@ Task 2 verified canonical bridge is GREEN (66/66 combined gate).
 Task 3 genesis-only read-only preflight is GREEN (61/61 combined gate).
 Task 4A first-generation writer/verifier, 4B1 verified-parent preflight and
 4B2 synthetic multi-batch accumulation are implemented in that RED/GREEN order.
-Task 5 full gates and independent review remain pending. No real canonical/
-preflight operation or V1.22 candidate has been created.
+The user closed the Task 5 test-scope omission; docs commit `a61bd93` adds
+only `tests/unit/test_v121_promotion_models.py` to the 21-path closed scope.
+Its stale absolute-tail assertion now locks the full historical 99-name prefix
+and exact approved 18-name V1.22 suffix; all other test behavior is unchanged.
+The historical 1075 PASS / 1 FAIL / 0 ERROR run remains valid migration RED.
+Two in-scope Important findings (canonical-record/carrier binding and SQLite
+URI encoding) now have expanded RED evidence: 4 methods, 10 failed assertions,
+0 ERROR, followed by minimal V122 verifier-only correction and 4/4 GREEN.
+Follow-up strict-manifest review found one additional Important; duplicate-key
+and reordered-envelope RED (2 methods / 4 FAIL / 0 ERROR) preceded the minimal
+strict-loader boundary fix and 2/2 GREEN. Final V122 focused: 77/77 PASS.
+Final serial maintained gate: 1082/1082 PASS with zero errors/skips/xfails.
+The earlier parallel run's two staging-snapshot teardown failures were execution
+interference and are documented, not hidden or counted as valid behavior RED.
+Task9A 41/41, Task10B 50/50, Task7 7/7, historical replay 3/3 and all four
+formal validators pass. Legacy attribution remains the known 9 PASS / 2 FAIL
+surface. Independent final re-review: Critical 0 / Important 0 / Minor 0.
+Task 5 is complete; next is its ordinary engineering commit/push and Task 6
+canonical/preflight-only execution, stopping at the exact real import gate.
+Task 6 has NOT STARTED. No real canonical/preflight operation or V1.22
+candidate has been created. Current engineering HEAD is `a61bd93`.
 The docs checkpoint is backed up remotely at
 `2e67696bd6ab12a6716360f4b868af7fbad160c1`.
 Execution evidence: `docs/reports/V122_CANDIDATE_AUTHORITY_VERIFICATION.md`.

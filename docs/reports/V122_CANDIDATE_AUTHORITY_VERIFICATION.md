@@ -26,7 +26,8 @@ The Design's closed file scope takes precedence; cost if wrong is record relocat
 
 - Task 1: models/loader/API complete; base 2e67696bd6ab12a6716360f4b868af7fbad160c1.
 - Tasks 2 / 3 / 4A / 4B1 / 4B2: implemented in dependency order; evidence below.
-- Task 5: pending final regression/review. Task 6: not started.
+- Task 5: complete; final maintained 1082/1082 and independent review C0/I0/M0.
+- Task 6: not started.
 
 ## Task 1 evidence
 
@@ -125,3 +126,164 @@ Command: runtime Python -m unittest -q tests.integration.test_v122_candidate
 tests.integration.test_v122_preflight tests.integration.test_v122_hkdse_bridge
 tests.unit.test_v122_models tests.integration.test_v121_candidate
 tests.integration.test_v120_candidate.
+
+## Historical Task 5 first review — superseded scope blocker
+
+Task 4 commit: 788eee1f28a8e91ccf6af45f4fbf6572529b76b8.
+New historical replay: 3/3 PASS; existing formal verifier checks V119 18/18,
+V120 21/21 and V121 21/21 PASS with materialization disabled.
+Explicit Task9A + Task10B + Task7 gate: 41 + 50 + 7 = 98/98 PASS.
+V1.18 independent validator: PASS, 497 questions.
+All four formal database hashes/counts (497/502/543/591), 21 original 2019
+files and seven approval-bound evidence files passed immutable replay.
+Historical HKDSE function/class ASTs are unchanged; the original 99 public
+names remain an exact ordered prefix followed by the approved 18 names.
+
+Full maintained suite command follows Plan Task5's module enumeration,
+excluding only the separately attributed legacy module:
+1076 collected, 1075 PASS, 1 FAIL, 0 ERROR, 0 skip, 0 expectedFailure;
+279.790 seconds. This run preceded the three new remediation RED tests.
+Failure: tests.unit.test_v121_promotion_models.V121PromotionPublicContractTests
+.test_exact_append_only_public_surface, line 73.
+Its absolute suffix assertion conflicts with V122's mandated append-only
+surface. That file is absent from Design §10's closed scope (lines 385–418)
+and the Plan closed file map. It was neither modified nor skipped.
+This is a scope-authority conflict, not permission to weaken a maintained gate.
+Minimum resolution: explicitly authorize this fourth historical test-surface
+migration, preserving the nine V121 names and their order immediately before
+the 18 V122 names; leave all model/behavior assertions unchanged.
+
+Independent reviewer: /root/v122_implementation_review (gpt-6-astra), fresh
+read-only review of base 2e67696 through 788eee1 plus the new replay test.
+Verdict: Critical 0 / Important 2 / Minor 0, NOT PASS.
+1. v122_verification.py:615–630: supplied candidate carrier can diverge from
+   canonical records while matching a recomputed preflight/approval digest.
+   Synthetic changed answer was written and verifier returned PASS 24/24.
+2. v122_verification.py:1061–1062: unencoded SQLite URI with '#' or '?' may
+   misaddress/open a sibling DB instead of remaining read-only.
+Targeted test-first reproduction: 3 methods, 6 assertion FAIL, 0 ERROR, exit 1.
+These cover changed answer/question/controlled taxonomy, independent verifier
+acceptance and both reserved path characters. No production fix yet; the
+full-gate scope conflict was discovered while these RED tests ran.
+After scope authorization, fix within existing V122 files and re-review.
+
+Reviewer declined to judge real import/promotion/2020 (correctly unauthorized)
+and independent replay of earlier intermediate RED command outputs (ledger
+records observations from this execution, not independently archived logs).
+Executor ruling: preserve that evidentiary limitation; do not claim independent
+reproduction of historical intermediate REDs. No behavior was silently omitted.
+
+No new real canonical package, preflight, import approval or V122 candidate;
+releases/V1.22 remains absent. Legacy attribution was not rerun; known 9/2
+surface is historical, not part of this maintained GREEN claim.
+That checkpoint stopped for the narrow test-file scope decision. It does not
+override the subsequent explicit authorization recorded below.
+
+## Task 5 authorized remediation
+
+User authorization: MINIMAL TEST-ONLY SCOPE EXTENSION. Docs-only commit
+`a61bd93` adds exactly `tests/unit/test_v121_promotion_models.py`, bringing
+Design/Plan to 21 paths; no other behavior/scope is enlarged.
+Only its exact-surface test method changed: the fixed historical 99-name prefix
+plus the exact approved 18-name suffix is asserted. All nine V1.21 promotion
+names/order and all other test-method ASTs are unchanged. The recorded
+1075/1/0 maintained run is the accepted migration RED; migrated suite 6/6 GREEN.
+
+Before production remediation, extended counterexamples ran 4 methods with
+10 failed assertions / 0 ERROR / exit 1 in 4.782s. Failures reproduce canonical
+answer, question, controlled taxonomy, source identity/evidence, difficulty
+and record-order forgery, independent verifier acceptance, and both '#'/'?'
+SQLite output paths. Matching forged reports/approval digests do not excuse
+divergence from the unchanged canonical package.
+
+The minimal production change is confined to `v122_verification.py`:
+independently reconstruct the exact canonical candidate tuple (all raw fields,
+derived normalized/image hashes and declared order), validate package binding,
+and use encoded absolute file URIs with mode=ro for both SQLite connections.
+Writer preflight uses this package-authority gate before creating output.
+No historical preflight/model/writer/verifier production file changed.
+
+Targeted GREEN: 4/4 PASS in 3.624s. V1.22 focused 75 plus migrated historical
+surface/model suite 6 = 81/81 PASS in 35.573s. Task9A 41/41, Task10B 50/50,
+Task7 7/7, V1.18 validator PASS; formal read-only V119 18/18, V120 21/21,
+V121 21/21 PASS. Frozen counts remain 497/502/543/591.
+
+Fresh separate legacy attribution: 11 collected, 9 PASS / 2 FAIL / 0 ERROR,
+exit 1. Exact failures remain:
+- Task5LegacyBehaviorTests.test_build_is_deterministic_and_matches_reviewed_core_hashes
+- Task6LegacyBehaviorTests.test_build_matches_all_seven_frozen_primary_artifacts
+Both are the known runtime SQLite hash/byte-equivalence baseline surface;
+there is no new failure category and neither is represented as maintained PASS.
+
+All 21 actual changed paths match the closed authority. All old HKDSE adapter
+function/class ASTs remain unchanged. Final full-maintained output and
+independent re-review disposition will be recorded before Task 5 closes.
+
+### Follow-up strict-manifest remediation and independent re-review
+
+The fresh reviewer found one additional Important inside existing V122 scope:
+ordinary JSON parsing accepted duplicate/reordered canonical manifest fields
+after approval, although fresh preflight's strict loader rejected them.
+Two independent writer/verifier test methods established 4 assertion FAIL,
+0 ERROR, exit 1 in 2.305s; each first proves that strict loading rejects the
+mutated envelope. Minimal correction reuses `load_v122_import_manifest` at
+the package-authority boundary and compares the frozen manifest carrier.
+It preserves record rebinding and does not modify the strict loader or any
+historical production module. Focused GREEN: 2/2 in 1.186s.
+Final V122 focused suite: 77/77 PASS in 41.694s.
+
+Independent reviewer `/root/v122_remediation_rereview` (gpt-6-astra) re-read
+the final diff and repeated the original hostile-manifest probe: writer blocks,
+verifier returns FAIL with `batch_authority_artifacts` failed, and the package
+and existing synthetic candidate remain byte-identical. Fresh reviewer suite
+(candidate + historical promotion models + historical replay): 40/40 PASS,
+41.848s, zero errors/skips/expected failures. Final verdict:
+Critical 0 / Important 0 / Minor 0. All three Important findings are closed.
+
+Reviewer did not judge the main agent's still-running full gate, historical
+intermediate RED reproduction, real transcription mathematics, Task 6 not yet
+executed, or unauthorized real import/promotion/later-year ingestion. Executor
+accepts these limits; the exact previously approved transcription remains
+input authority and the full gate must independently pass before Task 6.
+
+### Full-suite isolation
+
+An overlapping full run (1080 tests, 347.183s) had two teardown failures:
+- tests.integration.test_v119_promotion.PromotionBehaviorContractTests.test_manifest_upstream_sizes_and_canonical_json_bytes_are_verified
+- tests.integration.test_v119_writer.V119DeterminismAndAtomicityRedTests.test_transaction_artifact_and_rename_failures_clean_only_private_temp
+Both compare the entire shared staging tree, and detected temporary
+`task12-v122-hkdse-2019/synthetic-*` roots created concurrently by the focused
+test/reviewer processes. This is execution interference, not valid behavior
+RED or a passing gate. No assertion was changed, skipped or suppressed.
+All concurrent probes completed and cleaned up before the final 1082-test
+serial maintained run; that final result is required for completion.
+
+## Task 5 final gate — PASS
+
+Final serial maintained run: **1082/1082 PASS**, 288.613s, 0 FAIL, 0 ERROR,
+0 skip, 0 expectedFailure, 0 unexpectedSuccess. Only the separately named legacy
+attribution module is excluded by the approved maintained command.
+
+After the final production correction, explicit gates were run sequentially:
+Task9A 41/41; Task10B 50/50; Task7 7/7; historical replay 3/3;
+V1.18 independent validator PASS (497); formal verifiers V119 18/18,
+V120 21/21, V121 21/21 PASS. Legacy attribution was re-run separately:
+9 PASS / 2 FAIL / 0 ERROR, exact same named tests/categories; the byte-difference
+may first surface in SQLite or its hash-derived frozen report because artifact
+iteration order differs. This is not a new failure class or a maintained blocker.
+`git diff --check` passes. No production change followed clean independent review.
+
+The exact 24 checks remain:
+`candidate_directory`, `candidate_contract`, `baseline_authority`,
+`batch_authority_artifacts`, `parent_chain`, `approval_binding`,
+`preflight_reconstruction`, `filesystem_closure`, `sha256sums_closure`,
+`artifact_references`, `rollback_contract`, `image_projection`,
+`sqlite_readability`, `sqlite_integrity`, `sqlite_foreign_keys`,
+`sqlite_schema`, `v121_preservation`, `batch_ledger`,
+`candidate_projection`, `effective_collision_closure`, `count_closure`,
+`candidate_digest`, `deterministic_identity`, `formal_boundary`.
+
+Task 5 may close and be committed/pushed normally. Task 6 is the only next
+approved execution: exact recorded 2019 transcription approval, two canonical
+roots, read-only preflight, then human import gate. No real import approval,
+candidate database, release or 2020 ingestion has been created.

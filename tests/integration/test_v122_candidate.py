@@ -469,6 +469,163 @@ class V122CandidateBehaviorTests(unittest.TestCase):
                     self.fail("writer accepted a forged carrier")
                 self.assertFalse(output.exists())
 
+    def _forged_candidates(self, approved, candidates):
+        from dataclasses import replace
+        from joy_m2.ingest.v122_verification import _preflight_payload
+        from joy_m2.ingest.v122_writer_profiles import canonical_json_file_bytes
+        result = replace(approved.preflight_result, candidates=candidates)
+        report = replace(
+            result.report,
+            proposed_ids=tuple(c.proposed_question_id for c in candidates),
+            level_counts=tuple(
+                (level, sum(c.difficulty_level == level for c in candidates))
+                for level in range(1, 6) if any(c.difficulty_level == level for c in candidates)
+            ),
+        )
+        result = replace(result, report=report)
+        intermediate = object.__new__(V122ApprovedBatch)
+        for key, value in vars(approved).items():
+            object.__setattr__(intermediate, key, result if key == "preflight_result" else value)
+        digest = hashlib.sha256(canonical_json_file_bytes(_preflight_payload(intermediate))).hexdigest()
+        result = replace(result, report=replace(report, preflight_sha256=digest))
+        approval = replace(approved.approval, preflight_sha256=digest,
+            statement=f"USER APPROVED IMPORT BATCH {report.batch_id} {digest} V1.22 PARENT {GENESIS}")
+        return V122ApprovedBatch(result, approved.package_root, approval)
+
+    def test_writer_reconstructs_candidates_from_canonical_bytes(self):
+        from dataclasses import replace
+        from joy_m2.ingest import build_v122_candidate
+        from joy_m2.ingest.v122_preflight import _formal_indexes
+        from joy_m2.ingest.v122_verification import _normalized_text_sha256
+        approved = _approved(self.package, self.config)
+        source = approved.preflight_result.candidates[0]
+        primary = next(x for x in sorted(_formal_indexes(BASELINE)[1]) if x != source.primary_type)
+        changes = (
+            {"solution_original": "not the canonical answer"},
+            {"question_text_original": "Not the canonical question",
+             "normalized_text_sha256": _normalized_text_sha256("Not the canonical question")},
+            {"primary_type": primary},
+            {"source_question_number": "forged-source-number"},
+            {"translation_evidence": "source:source/source.txt#forged-fragment"},
+            {"difficulty_level": 2},
+        )
+        before = _tree(self.package)
+        for index, change in enumerate(changes):
+            with self.subTest(change=change):
+                forged = self._forged_candidates(approved, (replace(source, **change),))
+                output = self.root / f"forged-record-{index}"
+                with self.assertRaises(ImportApprovalError):
+                    build_v122_candidate(V122CandidateBuildRequest((forged,), output, _contract()), self.config)
+                self.assertFalse(output.exists())
+                self.assertEqual(_tree(self.package), before)
+
+    def test_writer_rejects_reordered_canonical_candidates(self):
+        from joy_m2.ingest import build_v122_candidate
+        records_path = self.package / "records/candidates.json"
+        records = json.loads(records_path.read_text(encoding="utf-8"))
+        records.append(dict(
+            records[0], proposed_question_id="TASK12-ORDER-002",
+            source_question_number="A2", source_fragment_hash="b" * 64,
+            question_text_original="Solve 7y + 2 = 37.",
+        ))
+        raw = (json.dumps(records, ensure_ascii=False) + "\n").encode("utf-8")
+        records_path.write_bytes(raw)
+        manifest_path = self.package / "import_manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest["candidate_records"][0].update(
+            sha256=hashlib.sha256(raw).hexdigest(), size_bytes=len(raw))
+        manifest_path.write_text(json.dumps(manifest) + "\n", encoding="utf-8")
+        approved = _approved(self.package, self.config)
+        self.assertEqual(approved.preflight_result.report.new_candidate_count, 2)
+        forged = self._forged_candidates(approved, approved.preflight_result.candidates[::-1])
+        before = _tree(self.package)
+        output = self.root / "forged-order"
+        with self.assertRaises(ImportApprovalError):
+            build_v122_candidate(V122CandidateBuildRequest((forged,), output, _contract()), self.config)
+        self.assertFalse(output.exists())
+        self.assertEqual(_tree(self.package), before)
+
+    def test_verifier_independently_reconstructs_canonical_record_authority(self):
+        from dataclasses import replace
+        from unittest import mock
+        from joy_m2.ingest import build_v122_candidate, verify_v122_candidate
+        approved = _approved(self.package, self.config)
+        forged = self._forged_candidates(approved, (
+            replace(approved.preflight_result.candidates[0], solution_original="not canonical"),))
+        output = self.root / "forged-persisted"
+        # Construct hostile synthetic artifacts while bypassing only the writer's
+        # package binding; the later independent verifier has no patched checks.
+        with mock.patch("joy_m2.ingest.v122_verification._package_evidence_valid", return_value=True):
+            build_v122_candidate(V122CandidateBuildRequest((forged,), output, _contract()), self.config)
+        before = _tree(output)
+        report = verify_v122_candidate(V122CandidateVerificationRequest(output, (forged,), _contract()), self.config)
+        self.assertEqual(report.status, "FAIL")
+        self.assertFalse(next(c.passed for c in report.checks if c.name == "batch_authority_artifacts"))
+        self.assertEqual(_tree(output), before)
+
+    def _invalid_manifest_envelopes(self):
+        original = (self.package / "import_manifest.json").read_text(encoding="utf-8")
+        parsed = json.loads(original)
+        return (
+            ("duplicate-key", original.replace("{", '{"target_release_version":"V1.21",', 1)),
+            ("reordered-fields", json.dumps(dict(reversed(tuple(parsed.items())))) + "\n"),
+        )
+
+    def test_writer_rejects_stale_noncanonical_manifest_envelope(self):
+        from joy_m2.ingest import build_v122_candidate
+        approved = _approved(self.package, self.config)
+        manifest_path = self.package / "import_manifest.json"
+        cases = self._invalid_manifest_envelopes()
+        for name, raw in cases:
+            with self.subTest(name=name):
+                manifest_path.write_text(raw, encoding="utf-8")
+                with self.assertRaises(PipelineError):
+                    load_v122_import_manifest(manifest_path)
+                before = _tree(self.package)
+                output = self.root / name
+                with self.assertRaises(ImportApprovalError):
+                    build_v122_candidate(V122CandidateBuildRequest((approved,), output, _contract()), self.config)
+                self.assertFalse(output.exists())
+                self.assertEqual(_tree(self.package), before)
+
+    def test_verifier_rejects_stale_noncanonical_manifest_envelope(self):
+        from joy_m2.ingest import verify_v122_candidate
+        approved, artifacts = self.build()
+        manifest_path = self.package / "import_manifest.json"
+        cases = self._invalid_manifest_envelopes()
+        for name, raw in cases:
+            with self.subTest(name=name):
+                manifest_path.write_text(raw, encoding="utf-8")
+                with self.assertRaises(PipelineError):
+                    load_v122_import_manifest(manifest_path)
+                before = _tree(self.root)
+                report = verify_v122_candidate(V122CandidateVerificationRequest(
+                    artifacts.database.path.parent, (approved,), _contract()), self.config)
+                self.assertEqual(report.status, "FAIL")
+                self.assertFalse(next(c.passed for c in report.checks if c.name == "batch_authority_artifacts"))
+                self.assertEqual(_tree(self.root), before)
+
+    def test_uri_reserved_output_names_are_read_only_and_cleanup_safe(self):
+        from unittest import mock
+        from joy_m2.ingest import build_v122_candidate, verify_v122_candidate
+        approved = _approved(self.package, self.config)
+        for marker in ("#", "?"):
+            with self.subTest(marker=marker):
+                output = self.root / f"candidate{marker}1"
+                try:
+                    artifacts = build_v122_candidate(V122CandidateBuildRequest((approved,), output, _contract()), self.config)
+                except PipelineError as error:
+                    self.fail(f"valid path failed and may create stray files: {error}")
+                before = _tree(self.root)
+                report = verify_v122_candidate(V122CandidateVerificationRequest(output, (approved,), _contract()), self.config)
+                self.assertEqual(report.status, "PASS")
+                self.assertEqual(_tree(self.root), before)
+                target = self.root / f"fault{marker}2"
+                with mock.patch("joy_m2.ingest.v122_writer.atomic_rename_no_replace", side_effect=OSError("injected")):
+                    with self.assertRaises(PipelineError):
+                        build_v122_candidate(V122CandidateBuildRequest((approved,), target, _contract()), self.config)
+                self.assertEqual(_tree(self.root), before)
+
     def test_unsafe_output_targets_and_read_only_baseline_connection(self):
         from joy_m2.ingest import build_v122_candidate
         from unittest import mock
