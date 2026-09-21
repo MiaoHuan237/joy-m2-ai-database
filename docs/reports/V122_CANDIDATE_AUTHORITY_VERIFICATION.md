@@ -56,3 +56,21 @@ Task 2 GREEN: 9 new + 7 old bridge + 50 Task 10B = 66/66 PASS.
 The first combined GREEN command misspelled an integration module; its
 import ERROR is not RED or a passing gate. The corrected command passed.
 No real 2019 proposal, source, approval or candidate was changed.
+
+Task 2 complete: commit be360e8.
+
+## Task 3 evidence
+
+Base be360e8. Initial genesis behavior RED: 12 test methods, 2 PASS /
+13 failed assertions including subcases / 0 ERROR, exclusively missing
+preflight behavior. No parent creation was used as a prerequisite.
+Schema/count fixture SQL and unrepresentable-record expected counts were
+corrected after first GREEN attempt; these construction/expectation failures
+are not claimed as behavior RED.
+Additional sibling-manifest contract RED: valid DB plus wrong/missing sibling
+manifest incorrectly accepted (2 failed assertions); fixed with exact frozen
+manifest hash/size and regular-file validation.
+Final genesis + unchanged V121 + Task 9A: 61/61 PASS, zero skips/xfails.
+Exact 591-row index including 2015–2018 duplicate, deep schema/view/count
+controls, genesis oracle, path-independent equality and zero-write verified.
+Non-None parent still raises explicit NotImplementedError pending Task 4B1.

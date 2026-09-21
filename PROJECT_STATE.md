@@ -47,8 +47,10 @@ Updated: 2026-09-21 (Asia/Shanghai)
 The user approved the committed V1.22 Design and Plan and continuous inline
 execution in dependency order 1 → 2 → 3 → 4A → 4B1 → 4B2 → 5 → 6.
 Task 1 models, strict loader and append-only public API scaffolds are GREEN.
-Task 2 verified canonical bridge is GREEN; preflight/writer/verifier behavior
-is not implemented yet. New/old bridge plus Task 10B gate: 66/66 PASS.
+Task 2 verified canonical bridge is GREEN (66/66 combined gate).
+Task 3 genesis-only read-only preflight is GREEN (61/61 combined gate).
+Verified-parent preflight and writer/verifier remain incomplete; no real
+canonical/preflight operation or V1.22 candidate has been created.
 The docs checkpoint is backed up remotely at
 `2e67696bd6ab12a6716360f4b868af7fbad160c1`.
 Execution evidence: `docs/reports/V122_CANDIDATE_AUTHORITY_VERIFICATION.md`.
