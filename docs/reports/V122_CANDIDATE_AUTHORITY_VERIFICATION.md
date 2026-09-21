@@ -5,7 +5,10 @@
 Design clarification: f51aaceaf08359747983a4dbccdb3b5ad0ee9cea.
 Plan: 2e67696bd6ab12a6716360f4b868af7fbad160c1; user approved Native / Inline Execution.
 Docs remote checkpoint verified at 2e67696bd6ab12a6716360f4b868af7fbad160c1.
-No real V1.22 writer, release, 2020 ingestion, or formal baseline mutation is authorized.
+During the implementation and pre-approval checkpoints, no real V1.22 writer was
+authorized. The subsequent exact 2019 import approval and candidate write are
+recorded in the final section below. Formal release, 2020 ingestion and formal
+baseline mutation remain unauthorized.
 
 Ruling: Keep the inline execution ledger in this approved report and scratch evidence
 under tmp/pdfs/task12-v122-hkdse-2019 instead of the skill's default scratch directory.
@@ -27,7 +30,10 @@ The Design's closed file scope takes precedence; cost if wrong is record relocat
 - Task 1: models/loader/API complete; base 2e67696bd6ab12a6716360f4b868af7fbad160c1.
 - Tasks 2 / 3 / 4A / 4B1 / 4B2: implemented in dependency order; evidence below.
 - Task 5: complete; final maintained 1082/1082 and independent review C0/I0/M0.
-- Task 6: canonical/preflight complete; stopped at real import human gate below.
+- Task 6: canonical/preflight complete; stopped at the human gate, subsequently
+  satisfied by the exact user approval recorded in the final section.
+- Post-approval operation: 2019 accepted as V1.22 candidate generation 000001;
+  independent verification 24/24 PASS. No formal promotion.
 
 ## Task 1 evidence
 
@@ -288,7 +294,7 @@ approved execution: exact recorded 2019 transcription approval, two canonical
 roots, read-only preflight, then human import gate. No real import approval,
 candidate database, release or 2020 ingestion has been created.
 
-## Task 6 actual operational checkpoint
+## Historical Task 6 pre-approval operational checkpoint
 
 Task 5 engineering commit `59140a0207ea4e9b348b7b55e403a2c3b2552052` was
 pushed normally; remote/local matched with 0/0 ahead/behind before Task 6.
@@ -344,9 +350,79 @@ no V122 staging SQLite or `releases/V1.22` exists. No 2020 ingestion.
 USER APPROVED IMPORT BATCH JOY-M2-HKDSE-2019-PP-MS 674624abcd338b2fa3683b982300a30082e3d0e62f95f97e3e8d25e12d1d0fa5 V1.22 PARENT 7f449c4428900537f99a7118ed702da462afa0f00ae1aa38e5296dacf6099dd7
 ```
 
-This statement is a requested human decision, not approval received.
+At that checkpoint this statement was a requested human decision, not approval
+received. The later actual authorization and execution are recorded below.
 
 Post-operation fresh Task9A + Task7 + immutable historical replay: 51/51 PASS,
 7.039s, zero skips/expected failures. `git diff --check` PASS; delivery sync
 modifies only this report and `PROJECT_STATE.md`. Canonical outputs and the
 one-off API orchestration script remain ignored runtime artifacts.
+
+## Approved 2019 import — generation 000001
+
+Execution baseline: `7567f080d5c3db2cfa41fa18371e3d303fae430a`,
+`task8b/pipeline-migration`, clean tree/index and upstream ahead/behind 0/0.
+The user explicitly supplied this exact statement:
+
+```text
+USER APPROVED IMPORT BATCH JOY-M2-HKDSE-2019-PP-MS 674624abcd338b2fa3683b982300a30082e3d0e62f95f97e3e8d25e12d1d0fa5 V1.22 PARENT 7f449c4428900537f99a7118ed702da462afa0f00ae1aa38e5296dacf6099dd7
+```
+
+Before writing, the strict loader and maintained preflight independently
+reconstructed both existing canonical roots; their full results matched each
+other and the unchanged pre-approval report. Exact batch/preflight/target/genesis
+matched the user statement; detected/new 12/12, duplicate/rejected/ambiguous/
+adaptations 0/0/0/0, issues 0, before/projected 591/603. No accepted V1.22
+generation or output existed. No synthetic approval was reused.
+
+Fresh serial pre-write regression: V122 models 21, bridge 9, preflight 13,
+candidate 31, historical replay 3 = **77/77 PASS**; Task9A **41/41**;
+Task10B **50/50**; Task7 **7/7**. Total **175/175 PASS**, zero skips,
+expected failures or unexpected successes. V1.18 independent validator PASS.
+The prior 1082/1082 full maintained result is historical engineering evidence;
+this operational execution made no production or test changes. Legacy
+attribution was not rerun; the separately recorded 9 PASS / 2 known FAIL
+surface is not represented as fresh maintained verification.
+
+`build_v122_candidate()` consumed the exact `V122ApprovedBatch` and atomically
+published only this new staging generation:
+`data/staging/task12-v122-hkdse-2019/candidate-generation-000001`.
+
+| Field | Accepted value |
+|---|---|
+| Generation / accepted batches | 000001 / 1 |
+| Accumulated additions / projected count | 12 / 603 |
+| Candidate digest / next required parent | 83c5efa109132c85dca8b96679ac97d4d9a59dd94e0cc76a57c80871a944ff07 |
+| Candidate SQLite SHA-256 | 7a3b8892063ec3feba36f4cda61d955ffe09d9bf0498056684e3066b46eea4d0 |
+| Candidate manifest SHA-256 | 4feeb629ff0c28a20e10c031f8823217b2d42b673d9a0eb1e771fca833d64147 |
+| Independent verifier | 24/24 PASS |
+| New rows | candidate, selectable=0, aggregate_order 592–603 |
+| Formal production | V1.21 / 591, unchanged |
+
+The independent `verify_v122_candidate()` ran after publication and again in
+a separate process, with fresh preflight/request reconstruction; all 24 named
+checks passed and the candidate file tree was unchanged by verification.
+Read-only SQLite checks confirmed private user_version 122, 591 preserved
+formal rows, 12 candidate rows, 603 aggregate rows and the sole ledger entry's
+exact batch/parent/preflight/approval statement.
+
+Post-write Task9A + Task7 + historical replay: **51/51 PASS**, 7.138s,
+zero skips/expected failures/unexpected successes. Historical replay includes
+read-only formal V119/V120/V121 verification (18/21/21 checks). The independent
+read-back also matched the stored receipt exactly. `git diff --check` PASS;
+tracked changes are restricted to this report and `PROJECT_STATE.md`.
+
+`REAL_BATCH_IMPORT_RECEIPT.json` in the same staging parent records the complete
+verification report, exact approval, artifact hashes, source/canonical identities,
+four frozen release trees/counts, and original 2019 evidence hashes.
+`REAL_BATCH_IMPORT_APPROVAL_REPORT.json` remains byte-identical historical
+pre-approval evidence. Candidate-local `rollback.json` is a declarative receipt,
+not permission to delete any generation. No operational artifact enters Git.
+
+Formal V1.18/497, V1.19/502, V1.20/543 and V1.21/591 retain their exact SQLite
+and release-tree hashes. The original 2019 proposals, approvals, Q10(d) note,
+Q12 printed typo, source evidence and both canonical packages are unchanged.
+No production/test/Design/Plan/legacy change, formal mutation, `releases/V1.22`,
+promotion or 2020 ingestion occurred. Generation 000002 must use the new verified
+candidate digest, not genesis. Stop at this operational checkpoint until the
+user explicitly selects further ingestion or authorizes promotion-readiness work.

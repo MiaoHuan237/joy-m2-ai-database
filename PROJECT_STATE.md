@@ -62,12 +62,14 @@ Legacy attribution remains known 9 PASS / 2 FAIL, not a maintained blocker.
 Historical failed runs and their remediation remain in
 `docs/reports/V122_CANDIDATE_AUTHORITY_VERIFICATION.md`.
 
-### Active human gate — HKDSE 2019 V1.22 real batch import
+### Completed operational checkpoint — HKDSE 2019 V1.22 generation 000001
 
-**USER DECISION REQUIRED — REAL BATCH IMPORT**
+**APPROVED REAL BATCH IMPORT — CANDIDATE VERIFIED; NOT FORMALLY PUBLISHED**
 
-Task 6 canonical/preflight-only execution completed using the existing exact
-2019 transcription approval, without re-transcription or source mutation:
+The user supplied the exact requested import statement after checkpoint
+`7567f080d5c3db2cfa41fa18371e3d303fae430a`. Fresh two-root preflight reconstruction
+matched the approved report and genesis before the maintained writer ran.
+No re-transcription, taxonomy change or source mutation occurred:
 
 - Batch: `JOY-M2-HKDSE-2019-PP-MS`; 12 complete questions / 100 marks.
 - Transcription digest:
@@ -76,7 +78,7 @@ Task 6 canonical/preflight-only execution completed using the existing exact
   `674624abcd338b2fa3683b982300a30082e3d0e62f95f97e3e8d25e12d1d0fa5`.
 - Required authority parent (no parent artifact for generation 000001):
   `7f449c4428900537f99a7118ed702da462afa0f00ae1aa38e5296dacf6099dd7`.
-- Status: `READY FOR USER IMPORT APPROVAL`; detected/new 12/12;
+- Approved preflight status: `READY FOR USER IMPORT APPROVAL`; detected/new 12/12;
   duplicate/rejected/ambiguous/adaptations 0/0/0/0; issues 0.
 - Before/projected count: 591/603. Missing answers 0; independent explanations
   missing 12. Official MS is preserved; no explanation is fabricated.
@@ -87,24 +89,47 @@ Task 6 canonical/preflight-only execution completed using the existing exact
 - Full identities, taxonomy summaries and frozen proofs:
   `data/staging/task12-v122-hkdse-2019/REAL_BATCH_IMPORT_APPROVAL_REPORT.json`.
 
-Proposed output only:
-`data/staging/task12-v122-hkdse-2019/candidate-generation-000001`;
-this path and all real V122 SQLite outputs remain absent.
-No import approval has been received, no real writer was called, no
-`releases/V1.22` exists, and no promotion or 2020 ingestion began.
-Formal V1.18/497, V1.19/502, V1.20/543, V1.21/591 and original 2019
-source/approval evidence remain byte-identical.
-The only next action is exact human approval:
+The exact human approval received and stored in candidate authority is:
 
 ```text
 USER APPROVED IMPORT BATCH JOY-M2-HKDSE-2019-PP-MS 674624abcd338b2fa3683b982300a30082e3d0e62f95f97e3e8d25e12d1d0fa5 V1.22 PARENT 7f449c4428900537f99a7118ed702da462afa0f00ae1aa38e5296dacf6099dd7
 ```
 
+The existing writer atomically created the new, immutable staging generation:
+`data/staging/task12-v122-hkdse-2019/candidate-generation-000001`.
+
+- Accepted batches: 1 (`000001 — JOY-M2-HKDSE-2019-PP-MS`).
+- Accumulated additions: 12; projected V1.22 count: 603.
+- Candidate digest / required parent for any later V1.22 batch:
+  `83c5efa109132c85dca8b96679ac97d4d9a59dd94e0cc76a57c80871a944ff07`.
+  Genesis must not be reused for generation 000002.
+- Candidate SQLite SHA-256:
+  `7a3b8892063ec3feba36f4cda61d955ffe09d9bf0498056684e3066b46eea4d0`.
+- Candidate manifest SHA-256:
+  `4feeb629ff0c28a20e10c031f8823217b2d42b673d9a0eb1e771fca833d64147`.
+- Independent candidate verification: 24/24 PASS, including a separate-process
+  read-back. New records are `candidate`, `selectable=0`, ordered 592–603;
+  the copied 591-row formal baseline remains unchanged.
+- Import receipt: `data/staging/task12-v122-hkdse-2019/REAL_BATCH_IMPORT_RECEIPT.json`.
+  The earlier approval report remains unchanged as pre-approval evidence.
+  `rollback.json` is declarative only; no deletion was executed.
+- Fresh pre-write regression: V122 77/77, Task9A 41/41, Task10B 50/50,
+  Task7 7/7 (175 total), zero skips/expected failures; V1.18 validator PASS.
+- Fresh post-write Task9A + Task7 + historical replay: 51/51 PASS,
+  zero skips/expected failures; all formal historical verifiers remain PASS.
+
+Formal V1.18/497, V1.19/502, V1.20/543, V1.21/591, canonical packages and
+original 2019 source/approval evidence remain byte-identical. Formal production
+is still V1.21/591. No `releases/V1.22`, promotion or 2020 ingestion exists.
+Operational checkpoint reached: wait for the user's next explicitly selected
+batch or separate promotion-readiness authorization; do not advance automatically.
+
 ### Historical checkpoint — HKDSE 2019 transcription approval and Design
 
 The following records the pre-implementation checkpoint; statements about
 unavailable V122 APIs or unstarted canonical/preflight work below are historical,
-not current execution authority. The human approval above is still required.
+not current execution authority. The later exact import approval and accepted
+candidate checkpoint are recorded above.
 
 `JOY-M2-HKDSE-2019-PP-MS` has received exact human transcription approval;
 this is not import approval. The exact source staging, PP and MS were verified;
