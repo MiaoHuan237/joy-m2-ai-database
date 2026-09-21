@@ -27,7 +27,7 @@ The Design's closed file scope takes precedence; cost if wrong is record relocat
 - Task 1: models/loader/API complete; base 2e67696bd6ab12a6716360f4b868af7fbad160c1.
 - Tasks 2 / 3 / 4A / 4B1 / 4B2: implemented in dependency order; evidence below.
 - Task 5: complete; final maintained 1082/1082 and independent review C0/I0/M0.
-- Task 6: not started.
+- Task 6: canonical/preflight complete; stopped at real import human gate below.
 
 ## Task 1 evidence
 
@@ -287,3 +287,66 @@ Task 5 may close and be committed/pushed normally. Task 6 is the only next
 approved execution: exact recorded 2019 transcription approval, two canonical
 roots, read-only preflight, then human import gate. No real import approval,
 candidate database, release or 2020 ingestion has been created.
+
+## Task 6 actual operational checkpoint
+
+Task 5 engineering commit `59140a0207ea4e9b348b7b55e403a2c3b2552052` was
+pushed normally; remote/local matched with 0/0 ahead/behind before Task 6.
+The recorded, already-approved 2019 transcription was loaded and verified:
+`3139b39d7c42d17fbc28870d00127dd2792943860ef615a2c950d528f98b6829`,
+12 whole questions / 100 marks. No new transcription approval was fabricated.
+Q10(d)'s exact human-confirmed note and Q12's source typo remain unchanged.
+
+Two fresh canonical roots under `data/staging/task12-v122-hkdse-2019/`:
+`canonical-v122-approved-a` and `canonical-v122-approved-b`.
+Relative file sets, all bytes and full preflight results are equal.
+Actual report: `REAL_BATCH_IMPORT_APPROVAL_REPORT.json` in the same staging
+directory (ignored, not committed), containing full source/canonical identities,
+all primary-type/tag counts, difficulty, exact issues and frozen tree hashes.
+
+| Field | Actual result |
+|---|---|
+| batch_id | JOY-M2-HKDSE-2019-PP-MS |
+| preflight_sha256 | 674624abcd338b2fa3683b982300a30082e3d0e62f95f97e3e8d25e12d1d0fa5 |
+| parent_candidate_digest | 7f449c4428900537f99a7118ed702da462afa0f00ae1aa38e5296dacf6099dd7 |
+| status | READY FOR USER IMPORT APPROVAL |
+| detected / new | 12 / 12 |
+| duplicate / rejected / ambiguous / adaptations | 0 / 0 / 0 / 0 |
+| issues | 0 |
+| before / projected count | 591 / 603 |
+| missing answers / independent explanations | 0 / 12 |
+| difficulty | D2:4 / D3:4 / D4:2 / D5:2 |
+| image files / image references / source figure references | 0 / 0 / 0 |
+
+Official MS is complete and preserved as answer authority; missing independent
+explanation content is reported honestly and not auto-filled.
+
+Source staging SHA:
+`4b730381e97743b34fc3bf41e1da29cb303895ebe5ccea5a8de270f1eaf0b755`.
+PP SHA: `5fb0366a46c08c9215410d7bd8005998fd5bc00178aa4abde92c6b2961caf879`.
+MS SHA: `076cdf9a43cb41f196450c78bf1ee4be3069ca0e5303c0680fdda9f2fce244e6`.
+Canonical manifest file-byte SHA:
+`240a9b7919106e6792c0c796c3d2cd1b3958444efcc17d791923d0c1bc493310`.
+Preflight's canonical manifest projection SHA (distinct from original file bytes):
+`67e4b9cc7b4f2d19364aae2a0ef6d71737a526f7cc5666f2c7bfedf17cdf5613`.
+Canonical record-byte SHA:
+`9bf42ba5a0e0fc26f6fd13bfd4936d24e222991ec860b0d91cdadde92a5b14eb`.
+
+All four formal release trees/SQLite SHA/counts are unchanged before/after.
+Original 2019 approval/evidence tree is unchanged. Before genesis preflight,
+no accepted V122 generation existed. No real import approval object or writer
+invocation occurred. Proposed `candidate-generation-000001` remains absent;
+no V122 staging SQLite or `releases/V1.22` exists. No 2020 ingestion.
+
+**USER DECISION REQUIRED — REAL BATCH IMPORT**
+
+```text
+USER APPROVED IMPORT BATCH JOY-M2-HKDSE-2019-PP-MS 674624abcd338b2fa3683b982300a30082e3d0e62f95f97e3e8d25e12d1d0fa5 V1.22 PARENT 7f449c4428900537f99a7118ed702da462afa0f00ae1aa38e5296dacf6099dd7
+```
+
+This statement is a requested human decision, not approval received.
+
+Post-operation fresh Task9A + Task7 + immutable historical replay: 51/51 PASS,
+7.039s, zero skips/expected failures. `git diff --check` PASS; delivery sync
+modifies only this report and `PROJECT_STATE.md`. Canonical outputs and the
+one-off API orchestration script remain ignored runtime artifacts.

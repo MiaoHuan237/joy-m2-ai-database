@@ -42,44 +42,69 @@ Updated: 2026-09-21 (Asia/Shanghai)
 
 ## Current task
 
-### Active engineering checkpoint — V1.22 Native / Inline Execution
+### Completed engineering checkpoint — V1.22 Native / Inline Execution
 
-The user approved the committed V1.22 Design and Plan and continuous inline
-execution in dependency order 1 → 2 → 3 → 4A → 4B1 → 4B2 → 5 → 6.
-Task 1 models, strict loader and append-only public API scaffolds are GREEN.
-Task 2 verified canonical bridge is GREEN (66/66 combined gate).
-Task 3 genesis-only read-only preflight is GREEN (61/61 combined gate).
-Task 4A first-generation writer/verifier, 4B1 verified-parent preflight and
-4B2 synthetic multi-batch accumulation are implemented in that RED/GREEN order.
-The user closed the Task 5 test-scope omission; docs commit `a61bd93` adds
-only `tests/unit/test_v121_promotion_models.py` to the 21-path closed scope.
-Its stale absolute-tail assertion now locks the full historical 99-name prefix
-and exact approved 18-name V1.22 suffix; all other test behavior is unchanged.
-The historical 1075 PASS / 1 FAIL / 0 ERROR run remains valid migration RED.
-Two in-scope Important findings (canonical-record/carrier binding and SQLite
-URI encoding) now have expanded RED evidence: 4 methods, 10 failed assertions,
-0 ERROR, followed by minimal V122 verifier-only correction and 4/4 GREEN.
-Follow-up strict-manifest review found one additional Important; duplicate-key
-and reordered-envelope RED (2 methods / 4 FAIL / 0 ERROR) preceded the minimal
-strict-loader boundary fix and 2/2 GREEN. Final V122 focused: 77/77 PASS.
-Final serial maintained gate: 1082/1082 PASS with zero errors/skips/xfails.
-The earlier parallel run's two staging-snapshot teardown failures were execution
-interference and are documented, not hidden or counted as valid behavior RED.
-Task9A 41/41, Task10B 50/50, Task7 7/7, historical replay 3/3 and all four
-formal validators pass. Legacy attribution remains the known 9 PASS / 2 FAIL
-surface. Independent final re-review: Critical 0 / Important 0 / Minor 0.
-Task 5 is complete; next is its ordinary engineering commit/push and Task 6
-canonical/preflight-only execution, stopping at the exact real import gate.
-Task 6 has NOT STARTED. No real canonical/preflight operation or V1.22
-candidate has been created. Current engineering HEAD is `a61bd93`.
-The docs checkpoint is backed up remotely at
-`2e67696bd6ab12a6716360f4b868af7fbad160c1`.
-Execution evidence: `docs/reports/V122_CANDIDATE_AUTHORITY_VERIFICATION.md`.
-The following pre-implementation narrative is historical; it grants no import.
-Real 2019 transcription approval remains valid, but no real V1.22 import
-approval has been given. Formal V1.18–V1.21 remain immutable.
+The approved sequence 1 → 2 → 3 → 4A → 4B1 → 4B2 → 5 was completed
+with dependency-valid RED-first evidence. User-authorized scope clarification
+`a61bd93` adds only the stale V1.21 public-surface test migration, preserving
+the historical 99-name prefix and exact approved 18-name V1.22 suffix.
+Canonical-record binding, URI encoding and strict-manifest replay findings
+were fixed within the V122 verifier after valid REDs. Final independent
+re-review: Critical 0 / Important 0 / Minor 0.
 
-### Active operational checkpoint — HKDSE 2019 transcription approved
+Engineering commit `59140a0207ea4e9b348b7b55e403a2c3b2552052` was ordinarily
+pushed to `origin/task8b/pipeline-migration`; local/remote matched with 0/0
+ahead/behind and a clean tree at that checkpoint. Final serial maintained:
+1082/1082 PASS, zero errors/skips/xfails; V122 focused 77/77; Task9A 41/41;
+Task10B 50/50; Task7 7/7; historical replay 3/3; V1.18 validator PASS;
+formal V119/V120/V121 verifiers 18/18, 21/21, 21/21 PASS.
+Legacy attribution remains known 9 PASS / 2 FAIL, not a maintained blocker.
+Historical failed runs and their remediation remain in
+`docs/reports/V122_CANDIDATE_AUTHORITY_VERIFICATION.md`.
+
+### Active human gate — HKDSE 2019 V1.22 real batch import
+
+**USER DECISION REQUIRED — REAL BATCH IMPORT**
+
+Task 6 canonical/preflight-only execution completed using the existing exact
+2019 transcription approval, without re-transcription or source mutation:
+
+- Batch: `JOY-M2-HKDSE-2019-PP-MS`; 12 complete questions / 100 marks.
+- Transcription digest:
+  `3139b39d7c42d17fbc28870d00127dd2792943860ef615a2c950d528f98b6829`.
+- Actual preflight SHA-256:
+  `674624abcd338b2fa3683b982300a30082e3d0e62f95f97e3e8d25e12d1d0fa5`.
+- Required authority parent (no parent artifact for generation 000001):
+  `7f449c4428900537f99a7118ed702da462afa0f00ae1aa38e5296dacf6099dd7`.
+- Status: `READY FOR USER IMPORT APPROVAL`; detected/new 12/12;
+  duplicate/rejected/ambiguous/adaptations 0/0/0/0; issues 0.
+- Before/projected count: 591/603. Missing answers 0; independent explanations
+  missing 12. Official MS is preserved; no explanation is fabricated.
+- Difficulty D2:4 / D3:4 / D4:2 / D5:2; no taxonomy/source edits.
+- Two byte-identical roots:
+  `data/staging/task12-v122-hkdse-2019/canonical-v122-approved-a` and
+  `canonical-v122-approved-b`. Their preflight results are identical.
+- Full identities, taxonomy summaries and frozen proofs:
+  `data/staging/task12-v122-hkdse-2019/REAL_BATCH_IMPORT_APPROVAL_REPORT.json`.
+
+Proposed output only:
+`data/staging/task12-v122-hkdse-2019/candidate-generation-000001`;
+this path and all real V122 SQLite outputs remain absent.
+No import approval has been received, no real writer was called, no
+`releases/V1.22` exists, and no promotion or 2020 ingestion began.
+Formal V1.18/497, V1.19/502, V1.20/543, V1.21/591 and original 2019
+source/approval evidence remain byte-identical.
+The only next action is exact human approval:
+
+```text
+USER APPROVED IMPORT BATCH JOY-M2-HKDSE-2019-PP-MS 674624abcd338b2fa3683b982300a30082e3d0e62f95f97e3e8d25e12d1d0fa5 V1.22 PARENT 7f449c4428900537f99a7118ed702da462afa0f00ae1aa38e5296dacf6099dd7
+```
+
+### Historical checkpoint — HKDSE 2019 transcription approval and Design
+
+The following records the pre-implementation checkpoint; statements about
+unavailable V122 APIs or unstarted canonical/preflight work below are historical,
+not current execution authority. The human approval above is still required.
 
 `JOY-M2-HKDSE-2019-PP-MS` has received exact human transcription approval;
 this is not import approval. The exact source staging, PP and MS were verified;
