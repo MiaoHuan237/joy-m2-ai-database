@@ -111,12 +111,18 @@ It must not be repurposed to claim a V1.21/591-based preflight. The user's
 minimum append-only next-version roll-forward authorization now applies.
 The user confirmed the minimal design direction. Its written specification is
 `docs/superpowers/specs/2026-09-21-v122-next-version-candidate-design.md`, status
-`DESIGN DIRECTION CONFIRMED — WRITTEN DESIGN REVIEW REQUIRED`. It fixes formal
+`APPROVED — FIRST-GENERATION GENESIS PARENT BINDING CLARIFIED`. It fixes formal
 V1.21/591 as the baseline and V1.22 as the target, preserves every historical
 interface, and defines independent genesis
 `7f449c4428900537f99a7118ed702da462afa0f00ae1aa38e5296dacf6099dd7`.
-The written Design is now the review checkpoint; no V1.22 Plan, production code,
-tests, canonical package, preflight, or candidate database has been created.
+The written Design review had no Critical finding and one required clarification,
+now closed: generation 000001 may lack a parent artifact, never parent digest
+authority. Its preflight/approval must bind the exact genesis above; writer and
+verifier independently reconstruct it. Generation 000002+ requires the verified
+previous V1.22 digest. After the docs-only clarification commit, the Design is
+approved and the next action is Plan writing/review/commit, without another
+Design approval. No V1.22 Plan, production code, tests, canonical package,
+preflight, or candidate database has been created.
 The transcription approval above remains valid and must not be requested again
 merely because the versioned engineering contract is pending. No import or
 promotion approval is implied by design confirmation.
@@ -493,10 +499,10 @@ No current-release pointer/index exists or was added.
 
 2019 real-source ingestion is in progress using V1.21/591 as the immutable
 formal baseline. Q10(d) source recovery and exact transcription approval are
-complete. The minimum append-only V1.22 design direction is confirmed and its
-written Design is ready for user review. The next step is review of that written
-specification, then its implementation Plan and RED-first work; neither written
-artifact's approval may be inferred from the earlier conversational confirmation.
+complete. The written V1.22 Design is approved with its sole required genesis
+parent clarification closed. Commit that clarification, then write, review and
+commit its implementation Plan before any RED-first implementation. No new
+Design approval is required unless a genuine new authority conflict appears.
 Keep the approved transcription unchanged, preserve historical APIs and formal
 releases, and stop at exact real-batch import approval after a valid preflight.
 No 2019 import approval, candidate write, speculative architecture, or automatic

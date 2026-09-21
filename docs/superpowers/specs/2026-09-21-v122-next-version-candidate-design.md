@@ -2,17 +2,20 @@
 
 Date: 2026-09-21 (Asia/Shanghai)
 
-Status: DESIGN DIRECTION CONFIRMED — WRITTEN DESIGN REVIEW REQUIRED
+Status: APPROVED — FIRST-GENERATION GENESIS PARENT BINDING CLARIFIED
 
 ## 1. Intent, authority, and current checkpoint
 
 Continue the already-authorized real HKDSE 2019 ingestion over immutable formal
 V1.21/591. The user authorized the minimum append-only next-version roll-forward
 needed for that ingestion and confirmed this design direction in conversation.
-That confirmation permits this written specification; it is not approval of a
-not-yet-written implementation Plan, any real import, or release promotion.
-Review this written Design before creating the Plan. Both documents must be
-committed and unambiguous before implementation starts.
+The subsequent written Design review approved it subject to the sole
+first-generation genesis parent clarification, now recorded in section 5.
+After this clarification is committed, proceed directly to writing and reviewing
+the implementation Plan; no further Design approval is required absent a new
+authority conflict. Both documents must be committed and unambiguous, and the
+Plan reviewed, before implementation starts. Design approval is not approval
+of any real import or release promotion.
 
 The immediate operational deliverable is an exact V1.22 canonical package and
 authoritative, read-only preflight for the approved 2019 transcription, followed
@@ -185,10 +188,30 @@ compact separators, `ensure_ascii=False`, `allow_nan=False`, and one final LF:
 Computed SHA-256:
 `7f449c4428900537f99a7118ed702da462afa0f00ae1aa38e5296dacf6099dd7`.
 
-The operational first batch may use `parent_candidate=None` only while there
-is no accepted V1.22 generation. Subsequent operations must use the exact current
-V1.22 parent and independently verify it. An older version's genesis, approval,
-candidate artifact, or parent digest is not interchangeable.
+For generation `000001`, `parent_candidate=None` means only that no parent
+candidate artifact/path exists, and is permitted only while there is no accepted
+V1.22 generation. It never means that parent authority is absent. The first
+preflight report MUST bind `parent_candidate_digest` to exactly
+`7f449c4428900537f99a7118ed702da462afa0f00ae1aa38e5296dacf6099dd7`.
+The first real import approval MUST be:
+
+```text
+USER APPROVED IMPORT BATCH <batch_id> <preflight_sha256> V1.22 PARENT 7f449c4428900537f99a7118ed702da462afa0f00ae1aa38e5296dacf6099dd7
+```
+
+Authority-level parent digests that are `None`, empty, omitted, a V1.20/V1.21
+genesis, or any alternative digest MUST be rejected. The writer and verifier
+must each independently reconstruct the V1.22 genesis digest from the exact
+frozen canonical projection above and verify equality with both the bound
+preflight parent digest and approval parent digest. Merely trusting a supplied
+constant or matching two supplied values is insufficient; a recomputation using
+an alternative projection cannot create replacement authority.
+
+For generation `000002` and later, the exact independently verified previous
+V1.22 candidate digest replaces genesis as the required parent authority. The
+previous candidate artifact must be supplied and verified; neither absent-parent
+mode nor genesis may bypass an existing generation. An older version's genesis,
+approval, candidate artifact, or parent digest is not interchangeable.
 
 ## 6. Canonical bridge and source fidelity
 
@@ -242,7 +265,9 @@ database read-only. Never substitute an older formal view with fewer questions.
 
 For a non-genesis parent, independently verify its exact V1.22 contract, ordered
 batch prefix, approvals, digests, and candidate bytes before extending the
-reference indexes. Preserve the existing normalization, controlled taxonomy,
+reference indexes. With no first-generation parent artifact, the report still
+binds the mandatory exact genesis parent digest from section 5; it cannot omit
+or null that field. Preserve the existing normalization, controlled taxonomy,
 sixteen-code issue taxonomy, classification precedence, adaptation semantics,
 image evidence, report construction, and issue ordering.
 
@@ -280,6 +305,8 @@ USER APPROVED IMPORT BATCH <batch_id> <preflight_sha256> V1.22 PARENT <parent_ca
 `V122ImportApproval` binds that exact statement. `V122ApprovedBatch` binds the
 exact READY result, package root, and approval. The writer reconstructs preflight
 and the entire approved parent prefix rather than trusting in-memory carriers.
+For the first batch, both writer and verifier independently reconstruct genesis
+and enforce the exact preflight/approval parent binding specified in section 5.
 Wrong target, wrong parent, stale package/preflight, reordered prefix, and reused
 older-version approval are rejected. Import approval is not promotion approval.
 
@@ -409,6 +436,9 @@ existence RED may justify only the smallest API scaffold, not full behavior.
 
 Required negative controls include exact-type/default/field-order violations;
 wrong baseline hash/size/schema/view/count; old-version or wrong genesis parent;
+missing/null/empty first-generation authority parent digest despite a permitted
+absent parent artifact; forged matching preflight/approval parent digests;
+independent genesis reconstruction and generation-000002 genesis reuse;
 unsafe or conflicting output paths; forged transcription approval; mutated
 canonical bytes; duplicate against a 2015–2018 record in formal V1.21; parent
 candidate duplicates/collisions; reordered prefix; stale approval/preflight;
@@ -431,8 +461,9 @@ findings. Preserve RED/GREEN, review/remediation, exact commands/counts/hashes,
 scope, and no-real-write evidence in the verification report. Inspect diff and
 run `git diff --check`; explicitly stage only approved engineering/docs paths.
 Ordinary commits/upstream pushes follow existing autonomy policy, with no force,
-merge, rebase, squash, tag, or PR. The written Design and Plan review stages are
-not bypassed by the user's conversational design confirmation.
+merge, rebase, squash, tag, or PR. The written Design review is satisfied by the
+user's conditional approval and this committed clarification. The separate Plan
+writing, review, and commit requirements remain mandatory before implementation.
 
 Completion of engineering is separate from real import. The current operational
 run ends at the 2019 real-batch import approval gate. It neither publishes V1.22
