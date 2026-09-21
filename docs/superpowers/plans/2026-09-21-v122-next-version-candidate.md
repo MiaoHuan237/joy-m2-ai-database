@@ -56,12 +56,23 @@ Paths are repository-relative; execute from the existing isolated worktree on `t
 | MODIFIED | `tests/unit/test_v119_writer_models.py` | Append exact new export names only; Task 1 |
 | MODIFIED | `tests/unit/test_v119_promotion_models.py` | Append exact new export names only; Task 1 |
 | MODIFIED | `tests/regression/test_v119_historical_replay.py` | Append exact new export names only; Task 1 |
+| MODIFIED | `tests/unit/test_v121_promotion_models.py` | Migrate only stale absolute-tail export expectation; Task 5 remediation |
 | MODIFIED | `PROJECT_STATE.md` | Current checkpoint, never grant import authority |
 | NEW | `docs/reports/V122_CANDIDATE_AUTHORITY_VERIFICATION.md` | RED/GREEN/review/frozen evidence; Tasks 1–6 |
 | EXISTING | `docs/superpowers/specs/2026-09-21-v122-next-version-candidate-design.md` | Committed Design; do not redesign during implementation |
 | NEW | `docs/superpowers/plans/2026-09-21-v122-next-version-candidate.md` | This Plan |
 
-This is exactly Design §10's 20-path scope, including the already-created Design. Test helper functions live inside the listed tests, not a new helper/fixture module. Existing fixture inputs may be copied into isolated temporary roots; originals remain read-only. The three historical test edits must not change any behavioral assertion. No shared/historical production module may be edited.
+This is exactly Design §10's 21-path scope, including the already-created Design. Test helper functions live inside the listed tests, not a new helper/fixture module. Existing fixture inputs may be copied into isolated temporary roots; originals remain read-only. The four historical test edits must not change any behavioral assertion. No shared/historical production module may be edited.
+
+The user-authorized Task 5 test-only extension replaces only the V1.21 promotion
+test's stale absolute-tail assertion. Freeze the complete historical V1.21-era
+public prefix plus the exact approved 18-name V1.22 suffix, retaining all nine
+promotion names/order and rejecting omissions, duplicates and aliases. Do not
+use subset-only checks or alter any other assertion. The observed maintained
+1075 PASS / 1 FAIL / 0 ERROR is the valid migration RED; no artificial RED is
+required. Canonical-carrier binding and SQLite URI fixes remain within existing
+V1.22 production scope and require their recorded behavior RED, GREEN and
+independent re-review before Task 5 closes.
 
 ## Commands, authority references and dependency order
 

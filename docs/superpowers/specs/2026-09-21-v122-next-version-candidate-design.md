@@ -405,14 +405,21 @@ NEW       tests/regression/test_v122_historical_replay.py
 MODIFIED  tests/unit/test_v119_writer_models.py
 MODIFIED  tests/unit/test_v119_promotion_models.py
 MODIFIED  tests/regression/test_v119_historical_replay.py
+MODIFIED  tests/unit/test_v121_promotion_models.py
 MODIFIED  PROJECT_STATE.md
 NEW       docs/reports/V122_CANDIDATE_AUTHORITY_VERIFICATION.md
 NEW       docs/superpowers/specs/2026-09-21-v122-next-version-candidate-design.md
 NEW       docs/superpowers/plans/2026-09-21-v122-next-version-candidate.md
 ```
 
-The three historical test modifications may only append the exact new public
-names to their package-surface expectations. Keep historical behavioral assertions
+The four historical test modifications may only append the exact new public
+names to their package-surface expectations. For the user-authorized V1.21
+promotion test migration, replace only the stale absolute-tail expectation:
+lock the entire historical V1.21-era prefix and the exact approved 18-name
+V1.22 suffix. All nine V1.21 promotion names retain their identity and order;
+no missing name, duplicate, alias, subset-only check or other behavioral change
+is allowed. This makes the closed scope exactly 21 paths.
+Keep historical behavioral assertions
 and frozen hashes unchanged. The adapter modification may only add the V1.22
 entry point/imports; keep existing bridges and source/transcription behavior
 unchanged. Do not modify any V119/V120/V121 production module or shared model.
