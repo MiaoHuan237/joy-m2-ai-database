@@ -42,6 +42,19 @@ Updated: 2026-09-21 (Asia/Shanghai)
 
 ## Current task
 
+### Active engineering checkpoint — V1.22 Native / Inline Execution
+
+The user approved the committed V1.22 Design and Plan and continuous inline
+execution in dependency order 1 → 2 → 3 → 4A → 4B1 → 4B2 → 5 → 6.
+Task 1 models, strict loader and append-only public API scaffolds are GREEN.
+Bridge/preflight/writer/verifier scaffolds do not implement behavior yet.
+The docs checkpoint is backed up remotely at
+`2e67696bd6ab12a6716360f4b868af7fbad160c1`.
+Execution evidence: `docs/reports/V122_CANDIDATE_AUTHORITY_VERIFICATION.md`.
+The following pre-implementation narrative is historical; it grants no import.
+Real 2019 transcription approval remains valid, but no real V1.22 import
+approval has been given. Formal V1.18–V1.21 remain immutable.
+
 ### Active operational checkpoint — HKDSE 2019 transcription approved
 
 `JOY-M2-HKDSE-2019-PP-MS` has received exact human transcription approval;

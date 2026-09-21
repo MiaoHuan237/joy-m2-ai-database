@@ -1482,3 +1482,14 @@ __all__ = (
     "load_hkdse_pdf_extraction_pass",
     "propose_hkdse_pdf_transcription",
 )
+
+
+from .v122_models import V122AdaptedImportPackage
+
+
+def adapt_verified_hkdse_pdf_transcription_v122(
+    verified: VerifiedHkdsePdfTranscriptionBatch,
+    output_dir: Path,
+    config: PipelineConfig,
+) -> V122AdaptedImportPackage:
+    raise NotImplementedError("V1.22 bridge behavior not implemented")

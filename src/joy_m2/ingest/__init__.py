@@ -115,6 +115,26 @@ from .v121_promotion_models import (
     V121ReleasePromotionApproval,
 )
 from .v121_promotion_verification import verify_v121_promotion
+from .v122_models import (
+    V122BatchImportManifest,
+    V122AdaptedImportPackage,
+    V122BatchLedgerEntry,
+    V122EffectiveState,
+    V122PreflightRequest,
+    V122ImportPreflightReport,
+    V122ImportPreflightResult,
+    V122ImportApproval,
+    V122ApprovedBatch,
+    V122CandidateContract,
+    V122CandidateBuildRequest,
+    V122CandidateVerificationRequest,
+    V122CandidateArtifacts,
+)
+from .v122_manifest import load_v122_import_manifest
+from .v122_preflight import preflight_v122_import
+from .v122_writer import build_v122_candidate
+from .v122_verification import verify_v122_candidate
+from .hkdse_pdf_adapter import adapt_verified_hkdse_pdf_transcription_v122
 
 
 __all__ = (
@@ -217,4 +237,22 @@ __all__ = (
     "build_v121_promotion",
     "verify_v121_promotion",
     "publish_v121_release",
+    "V122BatchImportManifest",
+    "V122AdaptedImportPackage",
+    "V122BatchLedgerEntry",
+    "V122EffectiveState",
+    "V122PreflightRequest",
+    "V122ImportPreflightReport",
+    "V122ImportPreflightResult",
+    "V122ImportApproval",
+    "V122ApprovedBatch",
+    "V122CandidateContract",
+    "V122CandidateBuildRequest",
+    "V122CandidateVerificationRequest",
+    "V122CandidateArtifacts",
+    "load_v122_import_manifest",
+    "preflight_v122_import",
+    "build_v122_candidate",
+    "verify_v122_candidate",
+    "adapt_verified_hkdse_pdf_transcription_v122",
 )

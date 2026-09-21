@@ -10,7 +10,7 @@
 
 **Spec:** `docs/superpowers/specs/2026-09-21-v122-next-version-candidate-design.md`, approved clarification commit `f51aaceaf08359747983a4dbccdb3b5ad0ee9cea`.
 
-**Status:** PLAN TECHNICAL REVIEW PASSED — IMPLEMENTATION NOT STARTED. Human Plan review/execution handoff remains pending.
+**Status:** APPROVED — V1.22 IMPLEMENTATION PLAN. User approved Native / Inline Execution; implementation checkpoints are recorded in the verification report.
 
 ## Global Constraints
 
