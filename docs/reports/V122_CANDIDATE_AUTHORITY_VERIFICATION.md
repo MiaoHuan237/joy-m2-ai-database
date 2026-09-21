@@ -25,7 +25,8 @@ The Design's closed file scope takes precedence; cost if wrong is record relocat
 ## Progress
 
 - Task 1: models/loader/API complete; base 2e67696bd6ab12a6716360f4b868af7fbad160c1.
-- Task 2 / 3 / 4A / 4B1 / 4B2 / 5 / 6: not started.
+- Tasks 2 / 3 / 4A / 4B1 / 4B2: implemented in dependency order; evidence below.
+- Task 5: pending final regression/review. Task 6: not started.
 
 ## Task 1 evidence
 
@@ -74,3 +75,53 @@ Final genesis + unchanged V121 + Task 9A: 61/61 PASS, zero skips/xfails.
 Exact 591-row index including 2015–2018 duplicate, deep schema/view/count
 controls, genesis oracle, path-independent equality and zero-write verified.
 Non-None parent still raises explicit NotImplementedError pending Task 4B1.
+
+Task 3 complete: commit 72227cd.
+
+## Task 4A evidence
+
+Base 72227cd. First-generation RED (after correcting test wrapper construction):
+14 methods / 1 API PASS / 15 failed assertions including subcases / 0 ERROR.
+Earlier uncaught deliberate stubs and wrapper syntax error are NOT valid RED.
+Writer/verifier/profile implementation accepts only a single approved batch;
+multi-batch entry explicitly remains NotImplementedError, as does parent preflight.
+New regression identified candidate SQLite readability incorrectly inferred
+without reading its schema: assertion RED → candidate schema read → GREEN.
+The output-path negative fixture was corrected because its initial path was
+actually inside approved staging; no production rule was relaxed.
+Final Task 4A + Tasks 1–3: 60/60 PASS (17 candidate tests), zero skips/xfails.
+Verified 24 checks, full old SQLite schema/row preservation, first order 592,
+private user_version 122, candidate selectable=0, deterministic roots, independent
+genesis calls, forged matching parents, corruption and cleanup controls.
+This is NOT evidence of parent-preflight or multi-batch GREEN.
+
+## Task 4B1 / 4B2 and hardening evidence
+
+- After 4A GREEN, parent-preflight RED: 3 methods / 3 FAIL / 0 ERROR,
+  each first built and independently verified generation 1, then reached the
+  explicit parent-preflight stub. Minimum parent implementation: 3/3 GREEN.
+- After 4B1 GREEN, multi-batch RED: 4 methods / 5 assertion failures
+  (including subcases) / 0 ERROR. Valid B preflight/approval bound generation
+  1 before writer/verifier calls. Removing first-generation-only entry guards
+  enabled full-prefix reconstruction; initial 4B2 GREEN: 4/4.
+- Genesis mutation checks executed in memory, without source edits: removing
+  writer's own boundary caused its targeted test to FAIL; removing verifier's
+  own boundary caused its targeted test to FAIL (each 1 FAIL / 0 ERROR).
+- Additional forged empty-prefix/nested-approval control: 1 method / 2 FAIL /
+  0 ERROR (IndexError/AttributeError leaked by writer); request validation now
+  precedes field access. Existing genesis checks remain independent.
+- Added forged count, source-byte drift, parent-output overlap and second
+  generation deterministic artifact assertions.
+- The integrity-negative fixture was calibrated before claiming coverage:
+  read-only SQLite in this runtime did not report the attempted CHECK/header
+  mutations. Those failed fixture assertions are not production RED. Corrupting
+  the synthetic candidate data b-tree page type produces a real integrity
+  failure and its dedicated failed verification check (focused 1/1 GREEN).
+- No real batch approval was constructed; all writer inputs are synthetic.
+
+Final Task 4 focused regression: 153/153 PASS in 51.703s, zero skips/xfails;
+25 new candidate cases + Tasks 1–3 + unchanged V120/V121 candidate suites.
+Command: runtime Python -m unittest -q tests.integration.test_v122_candidate
+tests.integration.test_v122_preflight tests.integration.test_v122_hkdse_bridge
+tests.unit.test_v122_models tests.integration.test_v121_candidate
+tests.integration.test_v120_candidate.
