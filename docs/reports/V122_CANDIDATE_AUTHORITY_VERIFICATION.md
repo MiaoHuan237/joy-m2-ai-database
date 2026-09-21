@@ -41,3 +41,18 @@ The Design's closed file scope takes precedence; cost if wrong is record relocat
 - Loader implemented: models/API/loader plus historical model/surface/replay
   tests 57/57 PASS before additional frozen/copy/genesis lock.
 - No real source processing or candidate write.
+
+Final Task 1 gate: 58/58 PASS, 0 skips/expected failures; commit 1fbbc0d.
+Baseline maintained suite (started before edits): 1005/1005 PASS, 0 errors,
+skips or expected failures, 253.860 seconds.
+
+## Task 2 evidence
+
+Base 1fbbc0d. Synthetic bridge RED: 9 methods, 1 API PASS, 12 failed
+assertions including subcases; 0 ERROR. Only deliberate missing behavior.
+Bridge implementation is a fixed V122 sibling; existing four payload helpers
+and old bridge bodies remain unchanged.
+Task 2 GREEN: 9 new + 7 old bridge + 50 Task 10B = 66/66 PASS.
+The first combined GREEN command misspelled an integration module; its
+import ERROR is not RED or a passing gate. The corrected command passed.
+No real 2019 proposal, source, approval or candidate was changed.
