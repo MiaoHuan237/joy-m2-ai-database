@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-09-20 (Asia/Shanghai)
+Updated: 2026-09-21 (Asia/Shanghai)
 
 ## Formal data
 
@@ -41,6 +41,87 @@ Updated: 2026-09-20 (Asia/Shanghai)
   V1.18/497, V1.19/502, and V1.20/543 remain immutable historical authority.
 
 ## Current task
+
+### Active operational checkpoint — HKDSE 2019 transcription approved
+
+`JOY-M2-HKDSE-2019-PP-MS` has received exact human transcription approval;
+this is not import approval. The exact source staging, PP and MS were verified;
+the batch contains 12 whole questions and 100 marks. The original unresolved
+proposal remains unchanged at
+`data/staging/task10b-hkdse-2019/transcription-review-proposal/` and its digest is
+`b2883e39869b86286d4ce0a8f66e772c261128b815b0869d4c8fb61acd87844d`.
+That historical proposal has 11 `PROPOSED`, 1 `REVIEW_REQUIRED`, and 0
+`VERIFIED` records; it is not the new approval target.
+
+Q10(d), MS PDF page 9 / printed page 77, has a visibly truncated right-edge
+scoring remark. On 2026-09-21 the user explicitly confirmed the exact official
+note `保留不給 1M 若遺漏檢驗` as supplemental human source authority, resolving
+only that field. This is not automatic recovery from the cropped PDF and does
+not approve the batch. The primary MS SHA remains
+`076cdf9a43cb41f196450c78bf1ee4be3069ca0e5303c0680fdda9f2fce244e6`.
+The supplied page image is preserved byte-identically with SHA
+`386a577e6fa64b8ef8effe3a57b7687b4656d318edf2bdc683226cfa45062bab`.
+
+The new proposal is
+`data/staging/task10b-hkdse-2019/transcription-human-resolution-000002/proposal/`,
+with transcription digest
+`3139b39d7c42d17fbc28870d00127dd2792943860ef615a2c950d528f98b6829`.
+The immutable proposal has 12 `PROPOSED`, 0 `REVIEW_REQUIRED`, 0 issues, and
+0 `VERIFIED` records; approval does not rewrite its stored payload.
+Question text and official MS are complete for 12/12; formula, subpart and
+figure mismatches are zero. Its sibling `evidence/` directory preserves the
+human decision, screenshot identity, old diagnostic and semantic immutability
+proof. Both new visual-pass copies carry the same human-authorized note;
+this does not claim two independent OCR recoveries. All semantic content
+outside this one note and derived review/digest state is unchanged.
+Q12's printed MS cross-reference `藉 (b)(ii)` is preserved, not silently
+corrected. Original PDFs, staging, complete-question boundaries, official
+working, alternative methods, marks, difficulty, and page anchors are retained.
+Controlled taxonomy has 12 primary types, zero unknown primary types and zero
+unknown tags. Difficulty remains D2:4 / D3:4 / D4:2 / D5:2.
+
+The user subsequently supplied exactly:
+`USER APPROVED PDF TRANSCRIPTION BATCH JOY-M2-HKDSE-2019-PP-MS 3139b39d7c42d17fbc28870d00127dd2792943860ef615a2c950d528f98b6829`.
+The maintained `approve_hkdse_pdf_transcription()` API accepted this approval
+after semantic digest reconstruction, producing 12 `VERIFIED` carrier records.
+Only the carrier status changes; all record content, ordering, and source
+identities remain unchanged. The sibling `approval/` directory contains
+`approval.json` and `approval_verification.json`; verified-record payload SHA is
+`81a5e564f6eb1c0a4edb2d8a461f94aa89f3e6bd0abebdc0cf4f660f34192733`.
+No historical proposal or evidence file was overwritten.
+
+The embedded extraction evidence is retained alongside the visually reviewed
+proposal. Source pages were independently read in two groups; Q7–12 also had
+an independent draft comparison, while the main agent completed Q1–6's draft
+comparison in a second source-page reading. This checkpoint does not claim a
+full independent-review PASS or real import approval. The original proposal's
+two-root determinism evidence remains preserved. Fresh approval-checkpoint
+regressions pass Task 10B 50/50, Task 9A 41/41, Task 7 7/7 and the V1.18
+validator, with no skipped or expected-failure tests. Formal V1.21's earlier
+21/21 verifier result remains historical; this patch freshly checks unchanged
+formal release bytes and exact SQLite counts, not a new promotion operation.
+
+No 2019 canonical package, authoritative preflight, candidate database, import,
+or promotion was created/run. No production/test change was made. Formal
+V1.18/497, V1.19/502, V1.20/543 and V1.21/591 remain byte-identical.
+Read-only inspection confirms that the current versioned bridge/preflight
+contract binds formal V1.20/543 to target V1.21; no V1.22 runtime contract or API
+exists.
+It must not be repurposed to claim a V1.21/591-based preflight. The user's
+minimum append-only next-version roll-forward authorization now applies.
+The user confirmed the minimal design direction. Its written specification is
+`docs/superpowers/specs/2026-09-21-v122-next-version-candidate-design.md`, status
+`DESIGN DIRECTION CONFIRMED — WRITTEN DESIGN REVIEW REQUIRED`. It fixes formal
+V1.21/591 as the baseline and V1.22 as the target, preserves every historical
+interface, and defines independent genesis
+`7f449c4428900537f99a7118ed702da462afa0f00ae1aa38e5296dacf6099dd7`.
+The written Design is now the review checkpoint; no V1.22 Plan, production code,
+tests, canonical package, preflight, or candidate database has been created.
+The transcription approval above remains valid and must not be requested again
+merely because the versioned engineering contract is pending. No import or
+promotion approval is implied by design confirmation.
+
+### Completed formal V1.21 checkpoint
 
 V1.21 formal promotion is `CLOSED / PASS`. The approved Design/Plan and
 implementation are committed at `6eb48ce`, `e7cdf4d`, `45dbb19`, `5f690ee`,
@@ -410,9 +491,13 @@ V1.20/543, V1.19/502, and frozen V1.18/497 remain unchanged. The approved
 four-batch V1.21 generation `000004` remains immutable staging evidence.
 No current-release pointer/index exists or was added.
 
-After closure and ordinary remote backup, the next operational action is
-2019 real-source ingestion using V1.21/591 as the immutable formal baseline.
-It is `NOT STARTED` in this checkpoint. Do not begin V1.22 architecture work;
-only establish the minimum next-version candidate authority if actual 2019
-ingestion reaches the existing authority boundary. This turn stops after
-closure and push; it grants no new import approval or promotion authority.
+2019 real-source ingestion is in progress using V1.21/591 as the immutable
+formal baseline. Q10(d) source recovery and exact transcription approval are
+complete. The minimum append-only V1.22 design direction is confirmed and its
+written Design is ready for user review. The next step is review of that written
+specification, then its implementation Plan and RED-first work; neither written
+artifact's approval may be inferred from the earlier conversational confirmation.
+Keep the approved transcription unchanged, preserve historical APIs and formal
+releases, and stop at exact real-batch import approval after a valid preflight.
+No 2019 import approval, candidate write, speculative architecture, or automatic
+promotion is authorized.
