@@ -119,10 +119,27 @@ The written Design review had no Critical finding and one required clarification
 now closed: generation 000001 may lack a parent artifact, never parent digest
 authority. Its preflight/approval must bind the exact genesis above; writer and
 verifier independently reconstruct it. Generation 000002+ requires the verified
-previous V1.22 digest. After the docs-only clarification commit, the Design is
-approved and the next action is Plan writing/review/commit, without another
-Design approval. No V1.22 Plan, production code, tests, canonical package,
-preflight, or candidate database has been created.
+previous V1.22 digest. The docs-only clarification is committed at
+`f51aaceaf08359747983a4dbccdb3b5ad0ee9cea`; the Design is approved without another
+Design approval checkpoint. Its RED-first Plan is written at
+`docs/superpowers/plans/2026-09-21-v122-next-version-candidate.md`.
+The Plan keeps the exact 20-path scope and sequences public models/scaffolds,
+canonical bridge, genesis preflight, coupled parent/writer/verifier tests,
+historical gates and independent implementation review, then real read-only
+preflight. Self-review and independent Plan review are complete: Critical 0 /
+Important 0 / Minor 0. The sole sequencing finding was closed by separate
+first-generation writer/verifier, parent-preflight and multi-batch writer/verifier
+RED/GREEN gates (4A → 4B1 → 4B2). This docs-only checkpoint records the Plan;
+human Plan review/execution handoff still precedes implementation.
+No V1.22 production code, tests, canonical package, preflight, or candidate
+database has been created.
+
+Fresh docs-checkpoint verification: Task 9A 41/41, Task 10B 50/50, Task 7 7/7
+and the V1.18 validator PASS. The maintained command collects 1005 existing
+tests; collection is not a fresh full-suite PASS. The 20 Design/Plan scope paths
+match exactly, canonical genesis recomputes to the frozen digest, and unrelated
+Design sections remain unchanged. Formal release bytes/counts, production/test
+hashes, and all 28 recorded original/proposal evidence hashes are unchanged.
 The transcription approval above remains valid and must not be requested again
 merely because the versioned engineering contract is pending. No import or
 promotion approval is implied by design confirmation.
@@ -500,9 +517,11 @@ No current-release pointer/index exists or was added.
 2019 real-source ingestion is in progress using V1.21/591 as the immutable
 formal baseline. Q10(d) source recovery and exact transcription approval are
 complete. The written V1.22 Design is approved with its sole required genesis
-parent clarification closed. Commit that clarification, then write, review and
-commit its implementation Plan before any RED-first implementation. No new
-Design approval is required unless a genuine new authority conflict appears.
+parent clarification committed. The implementation Plan has been written and
+technically reviewed with zero Critical/Important findings, and is recorded in
+this docs-only checkpoint. Human Plan review/execution handoff is next; no task
+in it has started. No new Design approval is required unless a genuine new
+authority conflict appears.
 Keep the approved transcription unchanged, preserve historical APIs and formal
 releases, and stop at exact real-batch import approval after a valid preflight.
 No 2019 import approval, candidate write, speculative architecture, or automatic
