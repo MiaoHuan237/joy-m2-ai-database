@@ -7,8 +7,9 @@ Plan: 2e67696bd6ab12a6716360f4b868af7fbad160c1; user approved Native / Inline Ex
 Docs remote checkpoint verified at 2e67696bd6ab12a6716360f4b868af7fbad160c1.
 During the implementation and pre-approval checkpoints, no real V1.22 writer was
 authorized. The subsequent exact 2019 import approval and candidate write are
-recorded in the final section below. Formal release, 2020 ingestion and formal
-baseline mutation remain unauthorized.
+recorded in the approved-2019 section below. The later user-selected 2020
+transcription checkpoint is recorded at the end; it grants no import approval.
+Formal V1.22 release and formal baseline mutation remain unauthorized.
 
 Ruling: Keep the inline execution ledger in this approved report and scratch evidence
 under tmp/pdfs/task12-v122-hkdse-2019 instead of the skill's default scratch directory.
@@ -31,9 +32,12 @@ The Design's closed file scope takes precedence; cost if wrong is record relocat
 - Tasks 2 / 3 / 4A / 4B1 / 4B2: implemented in dependency order; evidence below.
 - Task 5: complete; final maintained 1082/1082 and independent review C0/I0/M0.
 - Task 6: canonical/preflight complete; stopped at the human gate, subsequently
-  satisfied by the exact user approval recorded in the final section.
+  satisfied by the exact user approval recorded in the approved-2019 section.
 - Post-approval operation: 2019 accepted as V1.22 candidate generation 000001;
   independent verification 24/24 PASS. No formal promotion.
+- Current selected operation: 2020 transcription proposal complete, independent
+  source review clear; waiting for exact human transcription approval. No 2020
+  canonical package, preflight or import.
 
 ## Task 1 evidence
 
@@ -426,3 +430,114 @@ No production/test/Design/Plan/legacy change, formal mutation, `releases/V1.22`,
 promotion or 2020 ingestion occurred. Generation 000002 must use the new verified
 candidate digest, not genesis. Stop at this operational checkpoint until the
 user explicitly selects further ingestion or authorizes promotion-readiness work.
+
+## User-selected 2020 operation — transcription approval checkpoint
+
+Date: 2026-09-22 (Asia/Shanghai). Baseline commit:
+`300d30430d6233f7dd4a6c6c1709810611a844b2`, branch
+`task8b/pipeline-migration`; clean tree/index and upstream ahead/behind 0/0
+before this operation. The user selected `JOY-M2-HKDSE-2020-PP-MS` and bound
+any future import to parent
+`83c5efa109132c85dca8b96679ac97d4d9a59dd94e0cc76a57c80871a944ff07`.
+This operation stops before transcription approval, canonicalization and
+authoritative preflight. It introduces no new architecture or production behavior.
+
+### Original source and remediation evidence
+
+| Source | SHA-256 | Extent |
+|---|---|---|
+| `joy_m2_hkdse_2020_pp_ms_staging.json` (main-checkout `data/staging/`) | ab0be496c010c06b3f14d60ed7424219c446a670d73e91a4edaf00eea4e1ed38 | 12 records |
+| `M2_2020-pp.pdf` | 67a082668641a40e8e74f50c8349fb6c5bbb6d4e4a17fa4bea93003e1a13a324 | 28 PDF pages |
+| `M2_2020-ms.pdf` | cd1fcae06d0c211e5680361864ff165c6ed68905b68e7c7530012570fa0d91d1 | 15 PDF pages |
+
+Original files are unchanged. All question-bearing PP pages 2–28 and marking
+pages MS 1–13 were visually reviewed; MS 14–15 / printed 86–87 are performance
+commentary, not omitted solution steps. There are no source diagrams in these
+question/MS spans. Mathematical matrices and sign tables remain in the text.
+
+The first strict-loader attempt rejected the absent `formal_import_performed`
+wrapper field. The failed attempt is retained, not counted as a successful
+proposal. A new input copy explicitly records `false`, consistent with the
+original staging-only/no-formal-import state. No loader or contract was changed.
+Official PP and MS independently establish Q4 marks 6, not staging 5, and Q8
+marks 8, not staging 9. Only these mark anchors and the missing wrapper value
+change in the new input; total marks remain 100. Remediated input SHA:
+`780e0c22dd32474859512fd14aa1ea24132c5f5d1c75a44d409ef45df80a3835`.
+
+Evidence root: `data/staging/task10b-hkdse-2020/source-remediation-000002/`.
+It preserves original staging bytes, independent visual drafts, first-review
+findings, wrapper diagnosis, strict embedded/raw/original-mark comparisons,
+source-reconciled comparisons and `operational-evidence.json`. The original
+mark comparison retains its two `mark_mismatch` diagnostics; original raw
+draft comparison retains all 12 formatting/prose disagreements. None is erased
+or relabelled as an original raw agreement.
+
+The main draft and independent Q1–6/Q7–12 visual drafts were written before
+cross-comparison. Reopening official pages resolved prose/marking-note
+paraphrases in Q3/Q5/Q6 and the Q8 reference. The final pair intentionally
+contains the same source-reconciled serialization: final machine agreement is
+not a claim that the original independent drafts matched byte-for-byte.
+All original alternative MS methods and Q11's shared 1M are preserved.
+Final independent source reviews in `tmp/pdfs/task10b-hkdse-2020/`
+(`q1-6-final-review.json`, `q7-12-final-review.json`) report
+Critical 0 / Important 0 / Minor 0. This is not human approval.
+
+Controlled taxonomy was mapped against the immutable V1.21 vocabulary. Q3 is
+trigonometric identity proof, not equation solving; Q4 is integration/rotation
+volume, not optimization. Original Txx proposals remain in the archived staging.
+Taxonomy-only mapping retains identical question/MS/subparts/marks/pages/figures/
+difficulty projection SHA:
+`b9a41a3da3f0a23f28853047f7b9da42b418c480ea4326f5e37a2f1828f9faf7`.
+Exact per-record primary types/tags and original-module mappings are in the
+review report; there is exactly one primary type per whole question.
+
+### Actual proposal and gates
+
+Proposal directory: `transcription-proposal-000001/` under the evidence root.
+Read its `transcription.json` and `PDF_TRANSCRIPTION_REVIEW.md` together.
+The four proposal files are byte-identical to a separate-root deterministic
+replay. The semantic digest is independently reconstructed, distinct from the
+SHA-256 of the complete stored JSON file.
+
+| Field | Actual result |
+|---|---|
+| Batch | JOY-M2-HKDSE-2020-PP-MS |
+| Complete questions / total marks | 12 / 100 |
+| PROPOSED / VERIFIED | 12 / 0 |
+| Complete question text / complete official MS | 12 / 12 |
+| review_required / issues | 0 / 0 |
+| Unresolved formula / subpart / figure mismatches | 0 / 0 / 0 |
+| Unknown primary types / tags | 0 / 0 |
+| Difficulty (unchanged) | D2:3 / D3:5 / D4:2 / D5:2 |
+| Transcription digest | b3c3ddafdfa0df756aa23649c7fb6a9cb8a1819a502c45df8cf2b25e5fe15e74 |
+| `transcription.json` file SHA-256 | 71a4830c3f128b79bb01beebfc5de7c2fcabf0c6c8a8b0210a5b56e4d96880de |
+
+Fresh targeted regression: Task10B 50/50, Task9A 41/41, Task7 7/7,
+V122 models/bridge/preflight/candidate/historical-replay 77/77 = **175/175 PASS**.
+Failures/errors/skips/expected failures: 0. Historical replay includes read-only
+formal V119/V120/V121 verification. V1.18 independent validator PASS. The
+2019 candidate verifier independently passes 24/24 with unchanged receipt,
+canonical packages and full candidate tree. No real 2020 preflight was run by
+these tests. The historical 1082-test full maintained result and known legacy
+9 PASS / 2 FAIL attribution are not claimed as freshly rerun here.
+
+Before/after snapshots match all formal release-tree files and SQLite hashes:
+V1.18/497, V1.19/502, V1.20/543, V1.21/591. Production/tests, original 2020
+sources, original 2019 transcription/approval evidence and accepted candidate
+files are unchanged. Existing generation remains 000001, one accepted batch,
+12 accumulated additions and 603 projected questions. No generation 000002,
+2020 candidate DB, `releases/V1.22`, promotion or V1.23 work exists.
+Duplicate/net-new counts for 2020 remain undecided until approved transcription
+permits canonicalization and authoritative preflight against the exact parent.
+Only this report and `PROJECT_STATE.md` are tracked documentation changes;
+source/proposal/scratch artifacts remain local and ignored. `git diff --check` PASS.
+
+**USER DECISION REQUIRED — PDF TRANSCRIPTION APPROVAL**
+
+```text
+USER APPROVED PDF TRANSCRIPTION BATCH JOY-M2-HKDSE-2020-PP-MS b3c3ddafdfa0df756aa23649c7fb6a9cb8a1819a502c45df8cf2b25e5fe15e74
+```
+
+This exact statement is requested, not received. It will authorize only the
+transcription carrier transition, not real import or formal publication. No
+2019 approval/preflight or genesis parent is reused. Stop at this human gate.

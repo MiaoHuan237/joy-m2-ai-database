@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-09-21 (Asia/Shanghai)
+Updated: 2026-09-22 (Asia/Shanghai)
 
 ## Formal data
 
@@ -41,6 +41,56 @@ Updated: 2026-09-21 (Asia/Shanghai)
   V1.18/497, V1.19/502, and V1.20/543 remain immutable historical authority.
 
 ## Current task
+
+### Current operational checkpoint — HKDSE 2020 transcription proposal
+
+**USER DECISION REQUIRED — PDF TRANSCRIPTION APPROVAL**
+
+The user explicitly selected `JOY-M2-HKDSE-2020-PP-MS` under the existing
+Task 10B / V1.22 workflow. Execution started at clean, synchronized
+`300d30430d6233f7dd4a6c6c1709810611a844b2` on `task8b/pipeline-migration`.
+No new architecture or production/test change was needed.
+
+- Proposal: 12 complete questions / 100 marks; 12 `PROPOSED`, 0 `VERIFIED`.
+- Transcription digest:
+  `b3c3ddafdfa0df756aa23649c7fb6a9cb8a1819a502c45df8cf2b25e5fe15e74`.
+- Proposal/report directory:
+  `data/staging/task10b-hkdse-2020/source-remediation-000002/transcription-proposal-000001/`.
+  Read `PDF_TRANSCRIPTION_REVIEW.md` and `transcription.json` together.
+- Question text / official MS complete: 12/12 each; review_required 0; issues 0;
+  unresolved formula/subpart/figure mismatches 0; unknown primary types/tags 0/0.
+- Difficulty unchanged: D2:3 / D3:5 / D4:2 / D5:2. No source diagrams occur in
+  the selected question/MS spans; matrices and sign tables remain transcribed.
+- Original staging and PDFs are unchanged. A new input copy records the absent
+  wrapper field `formal_import_performed=false`; official PP/MS establish Q4
+  marks 6 (not staging 5) and Q8 marks 8 (not staging 9). Total remains 100.
+  Original IDs/order, complete-question boundaries, page mappings and difficulty
+  are retained. Original Txx proposals are preserved; controlled taxonomy is
+  source-supported and does not change question/MS content.
+- Original independent visual drafts and their disagreement diagnostics remain
+  preserved. Final source-reconciled text is not claimed to be raw extraction
+  agreement. Independent final source review: Critical 0 / Important 0 / Minor 0.
+  Two-root final proposal replay is byte-identical.
+- Fresh operational gates: V122 77/77, Task9A 41/41, Task10B 50/50, Task7 7/7
+  (**175/175 PASS**, zero skips/expected failures); V1.18 validator PASS.
+  Existing 2019 candidate independent verification remains 24/24 PASS.
+
+Formal V1.18/497, V1.19/502, V1.20/543 and V1.21/591 retain their complete
+release-tree hashes. Existing V1.22 generation 000001 remains 1 accepted batch,
+12 additions and 603 projected questions; its required parent for 2020 is
+`83c5efa109132c85dca8b96679ac97d4d9a59dd94e0cc76a57c80871a944ff07`.
+No 2020 canonical package, authoritative preflight, import approval, candidate
+generation or writer call exists. Duplicate/net-new counts are not yet decided.
+No `releases/V1.22`, promotion or V1.23 work. The only next action is the exact
+human transcription decision below; it does not authorize import or publication:
+
+```text
+USER APPROVED PDF TRANSCRIPTION BATCH JOY-M2-HKDSE-2020-PP-MS b3c3ddafdfa0df756aa23649c7fb6a9cb8a1819a502c45df8cf2b25e5fe15e74
+```
+
+This statement is requested, not received. Full source identities, remediation
+evidence and human-gate boundaries are recorded in
+`docs/reports/V122_CANDIDATE_AUTHORITY_VERIFICATION.md`.
 
 ### Completed engineering checkpoint — V1.22 Native / Inline Execution
 
@@ -120,9 +170,10 @@ The existing writer atomically created the new, immutable staging generation:
 
 Formal V1.18/497, V1.19/502, V1.20/543, V1.21/591, canonical packages and
 original 2019 source/approval evidence remain byte-identical. Formal production
-is still V1.21/591. No `releases/V1.22`, promotion or 2020 ingestion exists.
-Operational checkpoint reached: wait for the user's next explicitly selected
-batch or separate promotion-readiness authorization; do not advance automatically.
+is still V1.21/591. At that completed checkpoint no `releases/V1.22`, promotion
+or 2020 ingestion existed. The user subsequently selected the 2020 batch;
+its current transcription-only human gate is recorded above. No promotion
+or import approval is inferred from that selection.
 
 ### Historical checkpoint — HKDSE 2019 transcription approval and Design
 
