@@ -36,9 +36,9 @@ The Design's closed file scope takes precedence; cost if wrong is record relocat
   satisfied by the exact user approval recorded in the approved-2019 section.
 - Post-approval operation: 2019 accepted as V1.22 candidate generation 000001;
   independent verification 24/24 PASS. No formal promotion.
-- Current selected operation: exact 2020 transcription approval received;
-  two-root canonical/preflight complete, waiting for separate real import
-  approval. No 2020 candidate write or formal promotion.
+- Current selected operation: exact 2020 import approval received and executed;
+  generation 000002 verified, 24 accumulated additions / 615 projected questions.
+  No formal promotion or later-year ingestion.
 
 ## Task 1 evidence
 
@@ -543,7 +543,7 @@ At that checkpoint this exact statement was requested, not received. It
 authorized neither real import nor formal publication. No 2019 approval or
 genesis parent was reused. The subsequent exact user decision is recorded below.
 
-## Approved 2020 transcription — parent-bound read-only preflight
+## Historical approved 2020 transcription — parent-bound read-only preflight
 
 Execution baseline: `34b8455e86ef86cfd45ebbc413fb0caf921d33c9`. The preceding
 transcription gate is now historical: the user supplied exactly:
@@ -609,7 +609,62 @@ the final passing read-back; neither was an artifact or production defect.
 USER APPROVED IMPORT BATCH JOY-M2-HKDSE-2020-PP-MS f57e4aea6fa36d3721ca6705214c47316010a2db58ed7a092fe08f2e68d63530 V1.22 PARENT 83c5efa109132c85dca8b96679ac97d4d9a59dd94e0cc76a57c80871a944ff07
 ```
 
-This is a requested statement, not approval received. Proposed output
-`data/staging/task12-v122-hkdse-2020/candidate-generation-000002` remains absent.
-Only the existing exact import gate can authorize the append; no promotion
-authority follows from it. Stop here.
+At that checkpoint this was a requested statement, not approval received, and
+the proposed generation 000002 was absent. The subsequent exact user approval
+and append are recorded below; no promotion authority follows from them.
+
+## Approved 2020 import — generation 000002
+
+Execution baseline: `bffaa3e4829ba4f46d5989564f8d485968337469`, clean branch
+`task8b/pipeline-migration`. The user supplied exactly:
+
+```text
+USER APPROVED IMPORT BATCH JOY-M2-HKDSE-2020-PP-MS f57e4aea6fa36d3721ca6705214c47316010a2db58ed7a092fe08f2e68d63530 V1.22 PARENT 83c5efa109132c85dca8b96679ac97d4d9a59dd94e0cc76a57c80871a944ff07
+```
+
+The accepted 2019 prefix and both unchanged 2020 canonical roots were freshly
+reconstructed. Their full preflight reports equalled the stored approval report:
+READY, 603 before, 12 detected/new, zero duplicate/rejected/ambiguous/adaptations,
+issues 0, projected 615. Exact batch/digest/target/current-parent matched the
+human statement. No genesis fallback or prior approval reuse occurred.
+
+Fresh pre-write operational regression: 175/175 PASS (V122 77, Task9A 41,
+Task10B 50, Task7 7), no skips/expected failures; V1.18 validator PASS.
+The maintained `build_v122_candidate()` consumed the ordered approved prefix
+(2019, 2020) and atomically published only
+`data/staging/task12-v122-hkdse-2020/candidate-generation-000002`.
+It did not overwrite generation 000001 or a formal database.
+
+| Field | Accepted value |
+|---|---|
+| Generation / accepted batches | 000002 / 2 |
+| Accumulated additions / projected count | 24 / 615 |
+| Candidate digest / next required parent | 877cafa7425b53a08835277c828b346f29112ecbfce82ae861336a2575047cfc |
+| Candidate SQLite SHA | 0d55cf8224819e5ec432e0deb32e90a1b59759ea6cfca4292872c02ff379633f |
+| Candidate manifest SHA | 4d56f5a4bd187ccb091bfca79252c258632f85b701b29f716acb52dcf7b57d52 |
+| Independent verifier | 24/24 PASS |
+| Formal rows / candidate rows | 591 / 24 |
+| Candidate state | candidate, selectable=0, aggregate_order 592–615 |
+
+Read-only SQLite checks confirmed two ordered ledger entries and the exact
+2020 approval/parent/preflight binding at ordinal 2. Candidate-local
+`rollback.json` remains declarative; no deletion was performed.
+`REAL_BATCH_IMPORT_RECEIPT.json` in the staging parent records the full verifier,
+artifact hashes, ledger, exact approval and protected source/formal/parent
+evidence. The pre-approval report, original proposal, approved transcription,
+both canonical roots and entire 2019 operation tree remain unchanged.
+Full frozen release trees/SQLite hashes/counts remain V1.18/497, V1.19/502,
+V1.20/543, V1.21/591. No source/taxonomy retranscription, production/tests or
+Design/Plan changes. No `releases/V1.22`, promotion, later batch or V1.23 work.
+This checkpoint completes only the approved 2020 candidate append; stop here.
+
+Separate-process verifier/receipt read-back: 24/24 PASS with identical candidate
+files. Fresh post-write Task9A + Task7 + historical replay: 51/51 PASS,
+no skips/expected failures. Original PDF/staging hashes and source/production/test
+snapshots also match the pre-transcription checkpoint. Operational artifacts
+remain ignored; only this report and `PROJECT_STATE.md` are tracked changes.
+
+Final independent operational/documentation review: Critical 0 / Important 0 /
+Minor 0. The reviewer separately executed read-only verification (24/24), matched
+the receipt and confirmed exact approval/parent binding, preserved formal/source/
+prior-generation authority, and no promotion or later-year work.

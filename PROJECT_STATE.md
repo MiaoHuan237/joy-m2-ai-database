@@ -42,7 +42,47 @@ Updated: 2026-09-22 (Asia/Shanghai)
 
 ## Current task
 
-### Current operational checkpoint — HKDSE 2020 V1.22 import approval gate
+### Current operational checkpoint — HKDSE 2020 V1.22 generation 000002
+
+**APPROVED REAL BATCH IMPORT — CANDIDATE VERIFIED; NOT FORMALLY PUBLISHED**
+
+The user supplied the exact 2020 import statement below after checkpoint
+`bffaa3e4829ba4f46d5989564f8d485968337469`. Fresh two-root preflight matched
+that approval and the verified generation 000001 parent before writing.
+The existing maintained writer atomically created only the new staging generation:
+`data/staging/task12-v122-hkdse-2020/candidate-generation-000002`.
+
+- Accepted batches: 2 — `000001 JOY-M2-HKDSE-2019-PP-MS` and
+  `000002 JOY-M2-HKDSE-2020-PP-MS`, each 12 complete questions.
+- Accumulated additions: 24; projected V1.22 count: 615.
+- Candidate digest / required parent for a later V1.22 batch:
+  `877cafa7425b53a08835277c828b346f29112ecbfce82ae861336a2575047cfc`.
+- Consumed 2020 preflight:
+  `f57e4aea6fa36d3721ca6705214c47316010a2db58ed7a092fe08f2e68d63530`.
+- Consumed parent:
+  `83c5efa109132c85dca8b96679ac97d4d9a59dd94e0cc76a57c80871a944ff07`.
+- Candidate SQLite SHA:
+  `0d55cf8224819e5ec432e0deb32e90a1b59759ea6cfca4292872c02ff379633f`.
+- Candidate manifest SHA:
+  `4d56f5a4bd187ccb091bfca79252c258632f85b701b29f716acb52dcf7b57d52`.
+- Independent candidate verifier: 24/24 PASS; 591 preserved formal rows and
+  24 candidate rows (`candidate`, `selectable=0`), aggregate order 592–615.
+- Receipt: `data/staging/task12-v122-hkdse-2020/REAL_BATCH_IMPORT_RECEIPT.json`.
+  The earlier approval report and all source/canonical evidence are unchanged.
+- Fresh pre-write gates: 175/175 PASS, no skips/expected failures;
+  V1.18 validator PASS. No production/test/Design/Plan change.
+- Separate-process candidate read-back: 24/24 PASS; post-write Task9A + Task7
+  + historical replay: 51/51 PASS, no skips/expected failures.
+- Independent operational/documentation acceptance: Critical 0 / Important 0
+  / Minor 0; reviewer separately verified the candidate and receipt.
+
+Formal production remains V1.21/591. Full V1.18/497, V1.19/502, V1.20/543,
+V1.21/591 release hashes and generation 000001 bytes are unchanged. This is
+candidate accumulation, not formal promotion; `releases/V1.22` is absent.
+No later-year ingestion or V1.23 work. Stop at this operational checkpoint;
+wait for the user's next selected batch or separate promotion-readiness authority.
+
+### Historical checkpoint — HKDSE 2020 V1.22 import approval gate
 
 **USER DECISION REQUIRED — REAL BATCH IMPORT**
 
@@ -82,8 +122,9 @@ release, promotion or later ingestion. Stop for the exact separate approval:
 USER APPROVED IMPORT BATCH JOY-M2-HKDSE-2020-PP-MS f57e4aea6fa36d3721ca6705214c47316010a2db58ed7a092fe08f2e68d63530 V1.22 PARENT 83c5efa109132c85dca8b96679ac97d4d9a59dd94e0cc76a57c80871a944ff07
 ```
 
-This import statement is requested, not received; transcription approval does
-not authorize writing or promotion.
+At that checkpoint this import statement was requested, not received. The user
+has now supplied it exactly; its execution is recorded above. It does not
+authorize promotion.
 
 ### Historical checkpoint — HKDSE 2020 transcription proposal
 
