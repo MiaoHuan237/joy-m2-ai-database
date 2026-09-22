@@ -42,7 +42,50 @@ Updated: 2026-09-22 (Asia/Shanghai)
 
 ## Current task
 
-### Current operational checkpoint — HKDSE 2020 transcription proposal
+### Current operational checkpoint — HKDSE 2020 V1.22 import approval gate
+
+**USER DECISION REQUIRED — REAL BATCH IMPORT**
+
+The user supplied the exact 2020 transcription approval recorded below.
+At baseline `34b8455e86ef86cfd45ebbc413fb0caf921d33c9`, the maintained approval
+API reconstructed its digest and returned 12 VERIFIED carrier records; only
+status changed. The stored proposal and all source evidence remain unchanged.
+
+- Batch: `JOY-M2-HKDSE-2020-PP-MS`; 12 complete questions / 100 marks.
+- Actual preflight digest:
+  `f57e4aea6fa36d3721ca6705214c47316010a2db58ed7a092fe08f2e68d63530`.
+- Required verified parent:
+  `83c5efa109132c85dca8b96679ac97d4d9a59dd94e0cc76a57c80871a944ff07`.
+- Status: READY FOR USER IMPORT APPROVAL; detected/new 12/12;
+  duplicate/rejected/ambiguous/adaptations 0/0/0/0; issues 0; approved_count 0.
+- Before/projected count: 603/615. Missing answers 0; missing independent
+  explanations 12. Official MS remains present; explanations are not fabricated.
+- Difficulty D2:3 / D3:5 / D4:2 / D5:2; image files/references 0/0.
+- Two byte-identical canonical roots under `data/staging/task12-v122-hkdse-2020/`:
+  `canonical-v122-approved-a` and `canonical-v122-approved-b`. Full preflight
+  results agree; both use the exact non-genesis parent verification request.
+- Report: `data/staging/task12-v122-hkdse-2020/REAL_BATCH_IMPORT_APPROVAL_REPORT.json`.
+  It contains exact source/canonical/approval identities, taxonomy summaries,
+  parent verification and frozen release proofs.
+- Fresh regression: 175/175 PASS (V122 77, Task9A 41, Task10B 50, Task7 7),
+  no skips/expected failures; V1.18 validator PASS; parent verifier 24/24 PASS.
+- Independent read-only operational/documentation review: Critical 0 / Important 0
+  / Minor 0; both reports/digests and the verified parent were reconstructed.
+
+Formal V1.18/497, V1.19/502, V1.20/543 and V1.21/591 are unchanged. Existing
+generation 000001 remains 603 questions; 615 is only the projected post-import
+count. Proposed `data/staging/task12-v122-hkdse-2020/candidate-generation-000002`
+does not exist. No 2020 import approval or writer invocation, formal V1.22
+release, promotion or later ingestion. Stop for the exact separate approval:
+
+```text
+USER APPROVED IMPORT BATCH JOY-M2-HKDSE-2020-PP-MS f57e4aea6fa36d3721ca6705214c47316010a2db58ed7a092fe08f2e68d63530 V1.22 PARENT 83c5efa109132c85dca8b96679ac97d4d9a59dd94e0cc76a57c80871a944ff07
+```
+
+This import statement is requested, not received; transcription approval does
+not authorize writing or promotion.
+
+### Historical checkpoint — HKDSE 2020 transcription proposal
 
 **USER DECISION REQUIRED — PDF TRANSCRIPTION APPROVAL**
 
@@ -88,7 +131,8 @@ human transcription decision below; it does not authorize import or publication:
 USER APPROVED PDF TRANSCRIPTION BATCH JOY-M2-HKDSE-2020-PP-MS b3c3ddafdfa0df756aa23649c7fb6a9cb8a1819a502c45df8cf2b25e5fe15e74
 ```
 
-This statement is requested, not received. Full source identities, remediation
+At that checkpoint this statement was requested, not received; it has since
+been supplied exactly by the user. Full source identities, remediation
 evidence and human-gate boundaries are recorded in
 `docs/reports/V122_CANDIDATE_AUTHORITY_VERIFICATION.md`.
 
@@ -172,7 +216,7 @@ Formal V1.18/497, V1.19/502, V1.20/543, V1.21/591, canonical packages and
 original 2019 source/approval evidence remain byte-identical. Formal production
 is still V1.21/591. At that completed checkpoint no `releases/V1.22`, promotion
 or 2020 ingestion existed. The user subsequently selected the 2020 batch;
-its current transcription-only human gate is recorded above. No promotion
+its current operational human gate is recorded above. No promotion
 or import approval is inferred from that selection.
 
 ### Historical checkpoint — HKDSE 2019 transcription approval and Design

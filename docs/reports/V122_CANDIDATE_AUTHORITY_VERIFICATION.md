@@ -8,7 +8,8 @@ Docs remote checkpoint verified at 2e67696bd6ab12a6716360f4b868af7fbad160c1.
 During the implementation and pre-approval checkpoints, no real V1.22 writer was
 authorized. The subsequent exact 2019 import approval and candidate write are
 recorded in the approved-2019 section below. The later user-selected 2020
-transcription checkpoint is recorded at the end; it grants no import approval.
+transcription and preflight checkpoints are recorded below; neither grants
+import approval.
 Formal V1.22 release and formal baseline mutation remain unauthorized.
 
 Ruling: Keep the inline execution ledger in this approved report and scratch evidence
@@ -35,9 +36,9 @@ The Design's closed file scope takes precedence; cost if wrong is record relocat
   satisfied by the exact user approval recorded in the approved-2019 section.
 - Post-approval operation: 2019 accepted as V1.22 candidate generation 000001;
   independent verification 24/24 PASS. No formal promotion.
-- Current selected operation: 2020 transcription proposal complete, independent
-  source review clear; waiting for exact human transcription approval. No 2020
-  canonical package, preflight or import.
+- Current selected operation: exact 2020 transcription approval received;
+  two-root canonical/preflight complete, waiting for separate real import
+  approval. No 2020 candidate write or formal promotion.
 
 ## Task 1 evidence
 
@@ -431,7 +432,7 @@ promotion or 2020 ingestion occurred. Generation 000002 must use the new verifie
 candidate digest, not genesis. Stop at this operational checkpoint until the
 user explicitly selects further ingestion or authorizes promotion-readiness work.
 
-## User-selected 2020 operation — transcription approval checkpoint
+## Historical user-selected 2020 operation — transcription approval checkpoint
 
 Date: 2026-09-22 (Asia/Shanghai). Baseline commit:
 `300d30430d6233f7dd4a6c6c1709810611a844b2`, branch
@@ -538,6 +539,77 @@ source/proposal/scratch artifacts remain local and ignored. `git diff --check` P
 USER APPROVED PDF TRANSCRIPTION BATCH JOY-M2-HKDSE-2020-PP-MS b3c3ddafdfa0df756aa23649c7fb6a9cb8a1819a502c45df8cf2b25e5fe15e74
 ```
 
-This exact statement is requested, not received. It will authorize only the
-transcription carrier transition, not real import or formal publication. No
-2019 approval/preflight or genesis parent is reused. Stop at this human gate.
+At that checkpoint this exact statement was requested, not received. It
+authorized neither real import nor formal publication. No 2019 approval or
+genesis parent was reused. The subsequent exact user decision is recorded below.
+
+## Approved 2020 transcription — parent-bound read-only preflight
+
+Execution baseline: `34b8455e86ef86cfd45ebbc413fb0caf921d33c9`. The preceding
+transcription gate is now historical: the user supplied exactly:
+
+```text
+USER APPROVED PDF TRANSCRIPTION BATCH JOY-M2-HKDSE-2020-PP-MS b3c3ddafdfa0df756aa23649c7fb6a9cb8a1819a502c45df8cf2b25e5fe15e74
+```
+
+The maintained approval API reconstructed the proposal digest and returned 12
+VERIFIED records. Per-record comparison proved only status changed; stored
+proposal, PP/MS, staging and evidence bytes remain unchanged. No re-transcription
+or taxonomy adjustment occurred. Exact approval is stored separately in
+`data/staging/task12-v122-hkdse-2020/TRANSCRIPTION_APPROVAL.json`.
+
+The already-approved 2019 prefix was independently reconstructed and its
+generation 000001 verified (24/24). Both new canonical roots use a non-None
+`V122CandidateVerificationRequest` for that exact prefix; 2019 approval is used
+only to verify the accepted parent, never as 2020 authorization. The canonical
+bridge/preflight are existing maintained APIs, not new orchestration behavior.
+
+Under `data/staging/task12-v122-hkdse-2020/`, roots
+`canonical-v122-approved-a` and `canonical-v122-approved-b` have identical five
+file sets/bytes and equal complete preflight results. `REAL_BATCH_IMPORT_APPROVAL_REPORT.json`
+records exact source hashes, both package paths/file hashes, full report/issues,
+taxonomy and difficulty summaries, approval and frozen/parent verification.
+
+| Field | Actual result |
+|---|---|
+| Batch | JOY-M2-HKDSE-2020-PP-MS |
+| Status | READY FOR USER IMPORT APPROVAL |
+| Preflight SHA-256 | f57e4aea6fa36d3721ca6705214c47316010a2db58ed7a092fe08f2e68d63530 |
+| Required parent | 83c5efa109132c85dca8b96679ac97d4d9a59dd94e0cc76a57c80871a944ff07 |
+| Before / detected / new / projected | 603 / 12 / 12 / 615 |
+| Duplicate / rejected / ambiguous / adaptations | 0 / 0 / 0 / 0 |
+| Issues / approved_count | 0 / 0 |
+| Missing answers / independent explanations | 0 / 12 |
+| Difficulty | D2:3 / D3:5 / D4:2 / D5:2 |
+| Image files / references | 0 / 0 |
+| Manifest file-byte SHA | 7367d683781fe85cff1e556b34e934a0959b9f23a9f26fe434a14fead7acfdb2 |
+| Manifest preflight projection SHA | e19789aa161b2e9099d2ebbc7bf853aa14936ee6ff19e007d9a7a5abadcfef23 |
+| Canonical candidates SHA | a14af6f5cef13b5d572ad913228ce22df10efde2f8e5e8ecb1e6eedc9d5a5563 |
+
+Official MS is complete; absent independent explanations remain absent. No
+source questions were deleted or altered to obtain READY. The stored proposal
+remains PROPOSED; the separately approved typed carrier is VERIFIED.
+
+Fresh operational regressions: **175/175 PASS**, no skips/expected failures
+(V122 77, Task9A 41, Task10B 50, Task7 7); V1.18 validator PASS. Full formal
+release-tree hashes/counts, original source/proposal and 2019 operation tree
+match before/after. Formal production remains V1.21/591; current candidate
+remains generation 000001/603. No 2020 SQLite, generation 000002, release,
+promotion or later batch was created. Production/tests/Design/Plan are unchanged.
+
+Independent read-only review reconstructed the parent (24/24), both complete
+preflight reports and exact digest, checked source/proposal/frozen identities and
+the documentation diff: Critical 0 / Important 0 / Minor 0. Reviewer harness
+tuple-vs-JSON comparison and approval-field-name mistakes were corrected before
+the final passing read-back; neither was an artifact or production defect.
+
+**USER DECISION REQUIRED — REAL BATCH IMPORT**
+
+```text
+USER APPROVED IMPORT BATCH JOY-M2-HKDSE-2020-PP-MS f57e4aea6fa36d3721ca6705214c47316010a2db58ed7a092fe08f2e68d63530 V1.22 PARENT 83c5efa109132c85dca8b96679ac97d4d9a59dd94e0cc76a57c80871a944ff07
+```
+
+This is a requested statement, not approval received. Proposed output
+`data/staging/task12-v122-hkdse-2020/candidate-generation-000002` remains absent.
+Only the existing exact import gate can authorize the append; no promotion
+authority follows from it. Stop here.
