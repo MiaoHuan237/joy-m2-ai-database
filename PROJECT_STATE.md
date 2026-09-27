@@ -42,7 +42,59 @@ Updated: 2026-09-27 (Asia/Shanghai)
 
 ## Current task
 
-### Current operational checkpoint — HKDSE 2022 transcription approval gate
+### Current operational checkpoint — HKDSE 2022 V1.22 import approval gate
+
+**USER DECISION REQUIRED — REAL BATCH IMPORT**
+
+The user supplied the exact 2022 transcription approval shown in the historical
+checkpoint below. The maintained approval API reconstructed that digest and
+returned 12 VERIFIED records, changing only their status. The original proposal
+and source evidence remain byte-identical.
+
+- Batch: `JOY-M2-HKDSE-2022-PP-MS`; 12 whole questions / 100 marks.
+- Actual preflight SHA:
+  `ae96a9a971fafdd6e900ced6f80ee39d4c1365e166b5d4efa7fbcc47383b1fad`.
+- Required current parent:
+  `20342ba339ef8200ee6d941683d12698c2504c0872548a26717b2771ee2d1707`.
+- Status: READY FOR USER IMPORT APPROVAL. Detected/new: 12/12;
+  duplicate/rejected/ambiguous/adaptations: 0/0/0/0; issues: 0;
+  approved_count: 0. Before/projected count: 627/639.
+- Missing answers: 0. Missing independent explanations: 12; official MS is
+  retained in full, without fabricated supplementary explanations.
+- Difficulty: D2:4 / D3:4 / D4:2 / D5:2. Controlled taxonomy summaries and
+  exact source/canonical identities are in the approval report.
+- Canonical image files/paths: 0/0. Q9(c)'s official MS graph remains an
+  explicit PDF SHA/page locator in the transcription, answer and source map;
+  no reviewed crop was supplied or invented. Enrichment remains incomplete.
+- Canonical roots under `data/staging/task12-v122-hkdse-2022/`:
+  `canonical-v122-approved-a` and `canonical-v122-approved-b`.
+  Their file bytes and complete preflight results are identical.
+- Report: `data/staging/task12-v122-hkdse-2022/REAL_BATCH_IMPORT_APPROVAL_REPORT.json`.
+- All three previous batches were reconstructed from their immutable canonical
+  packages and recorded approvals, then independently verified with 24 checks
+  per generation. The exact current ledger is 2019, 2020, 2021; no 2022 entry.
+- Formal V1.18–V1.21, all existing candidate generations and source proposals
+  remain unchanged. Formal production is V1.21/591; generation 000003 is 627.
+- Fresh relevant regressions: 175/175 PASS, no skips/expected failures;
+  V1.18 independent validator PASS; no production/test/Design/Plan change.
+- Independent read-only operational review: Critical 0 / Important 0 / Minor 0;
+  parent chain, both preflight results and canonical source projection replayed.
+
+No real 2022 candidate database was created. The proposed path is
+`data/staging/task12-v122-hkdse-2022/candidate-generation-000004`.
+639 is only the post-import projection, not an accepted count.
+No `releases/V1.22`, promotion, 2023 ingestion or V1.23 work.
+Fresh parent verification is required again before consuming an import approval;
+an approval bound to a changed parent must not be reused.
+
+```text
+USER APPROVED IMPORT BATCH JOY-M2-HKDSE-2022-PP-MS ae96a9a971fafdd6e900ced6f80ee39d4c1365e166b5d4efa7fbcc47383b1fad V1.22 PARENT 20342ba339ef8200ee6d941683d12698c2504c0872548a26717b2771ee2d1707
+```
+
+This import statement is requested, not received. Transcription approval alone
+does not authorize candidate writing or promotion.
+
+### Historical checkpoint — HKDSE 2022 transcription approval gate
 
 **USER DECISION REQUIRED — PDF TRANSCRIPTION APPROVAL**
 
