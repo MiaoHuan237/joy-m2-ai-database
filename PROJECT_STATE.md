@@ -42,7 +42,36 @@ Updated: 2026-09-27 (Asia/Shanghai)
 
 ## Current task
 
-### Current operational checkpoint — HKDSE 2022 V1.22 generation 000004
+### V1.22 promotion readiness — 2019–2022
+
+**TECHNICAL READINESS PASS — PENDING EXPLICIT FINAL PROMOTION AUTHORIZATION**
+
+The user's 2026-09-27 authorization permits fixed-version Design/Plan, TDD,
+isolated dry-run, independent review and engineering checkpoint only.
+Authority: `docs/superpowers/specs/2026-09-27-v122-promotion-readiness-design.md`
+and corresponding Plan (docs checkpoints `174ee6d`, `31b4b35`).
+
+- Exact input remains generation 000004, candidate digest
+  `82b10a551f70eebda2e0aa4d10c962e317767e936b4f0d9aa798629bb8070d46`.
+- Ordered approved 2019–2022 ledger: four batches, 12 each; 591 + 48 = 639.
+- Two non-formal dry-runs are byte-identical and independently verify 21/21.
+- Actual dry-run release digest:
+  `89a592abf52507cc0325f9c6f30ee2c74d4ec55fdcef988fdae6cb12f5a3073b`.
+- Candidate generations and formal V1.18–V1.21 remain unchanged.
+  Formal production/query baseline is still V1.21/591.
+- Fresh maintained regression: 1117/1117 PASS; promotion focused: 34/34 PASS;
+  no skips or expected failures. Legacy Task 3–6 gates: 54/54 PASS.
+- Independent implementation review: Critical 0 / Important 0 / Minor 0.
+  Candidate verifier 24/24, both dry-run formal verifiers 21/21,
+  historical formal verifiers and V1.18 validator PASS.
+  Evidence and exact artifact hashes: `docs/reports/V122_PROMOTION_READINESS.md`.
+- `releases/V1.22/` remains absent. No real promotion approval has been supplied
+  or consumed. No 2023 ingestion or V1.23 work.
+
+Current human gate: `USER DECISION REQUIRED — FINAL V1.22 PROMOTION AUTHORIZATION`.
+No further real write is authorized by technical readiness alone.
+
+### Historical operational checkpoint — HKDSE 2022 V1.22 generation 000004
 
 **APPROVED REAL BATCH IMPORT — CANDIDATE VERIFIED; NOT FORMALLY PUBLISHED**
 
@@ -80,8 +109,8 @@ before the maintained writer atomically created only the new staging generation:
 
 All V1.18–V1.21 formal bytes and generations 000001–000003 remain unchanged.
 `releases/V1.22` is absent. No promotion, 2023 ingestion or V1.23 work.
-Stop here at the user's requested operational checkpoint; further ingestion
-or promotion readiness requires the user's next explicit selection.
+That operational checkpoint stopped for the user's next selection. The subsequent
+readiness-only authorization is recorded above; further ingestion remains unauthorized.
 
 ### Historical checkpoint — HKDSE 2022 V1.22 import approval gate
 

@@ -562,7 +562,13 @@ class V119WriterPublicContractTests(unittest.TestCase):
             self.ingest_package.__all__,
             PUBLIC_NAMES + TASK10A_PUBLIC_NAMES + TASK10B_PUBLIC_NAMES[:9]
             + TASK11_PUBLIC_NAMES + TASK10B_PUBLIC_NAMES[9:]
-            + TASK10C_PUBLIC_NAMES + V121_PROMOTION_PUBLIC_NAMES,
+            + TASK10C_PUBLIC_NAMES + V121_PROMOTION_PUBLIC_NAMES
+            + (
+                "V122PromotionContract", "V122PromotionBuildRequest",
+                "V122PromotionVerificationRequest", "V122ReleasePromotionApproval",
+                "V122PublicationRequest", "V122PromotionArtifacts",
+                "build_v122_promotion", "verify_v122_promotion", "publish_v122_release",
+            ),
         )
         self.assertFalse(hasattr(self.ingest_package, "ImportApprovalError"))
         for name in PUBLIC_NAMES:

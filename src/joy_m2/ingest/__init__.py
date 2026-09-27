@@ -255,4 +255,21 @@ __all__ = (
     "build_v122_candidate",
     "verify_v122_candidate",
     "adapt_verified_hkdse_pdf_transcription_v122",
+    "V122PromotionContract",
+    "V122PromotionBuildRequest",
+    "V122PromotionVerificationRequest",
+    "V122ReleasePromotionApproval",
+    "V122PublicationRequest",
+    "V122PromotionArtifacts",
+    "build_v122_promotion",
+    "verify_v122_promotion",
+    "publish_v122_release",
 )
+
+from .v122_promotion_models import (
+    V122PromotionContract, V122PromotionBuildRequest,
+    V122PromotionVerificationRequest, V122ReleasePromotionApproval,
+    V122PublicationRequest, V122PromotionArtifacts,
+)
+from .v122_promotion import build_v122_promotion, publish_v122_release
+from .v122_promotion_verification import verify_v122_promotion

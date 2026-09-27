@@ -139,7 +139,7 @@ class V119HistoricalReplayTests(unittest.TestCase):
         self.assertEqual(
             ingest.__all__,
             _V119_PUBLIC + _V120_PUBLIC + _TASK10B_PUBLIC[:9] + _V121_PUBLIC
-            + _TASK10B_PUBLIC[9:] + _TASK10C_PUBLIC + _V121_PROMOTION_PUBLIC,
+        + _TASK10B_PUBLIC[9:] + _TASK10C_PUBLIC + _V121_PROMOTION_PUBLIC + ("V122PromotionContract", "V122PromotionBuildRequest", "V122PromotionVerificationRequest", "V122ReleasePromotionApproval", "V122PublicationRequest", "V122PromotionArtifacts", "build_v122_promotion", "verify_v122_promotion", "publish_v122_release"),
         )
         self.assertEqual(ingest.__all__[: len(_V119_PUBLIC)], _V119_PUBLIC)
         self.assertEqual(

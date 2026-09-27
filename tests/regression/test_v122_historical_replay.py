@@ -2,6 +2,7 @@
 from pathlib import Path
 import hashlib
 import json
+import re
 import sqlite3
 import unittest
 
@@ -24,6 +25,28 @@ from tests.integration.test_v121_promotion import (
 )
 
 ROOT = Path(__file__).resolve().parents[2]
+# Trusted human-gate evidence, never inferred from generated release artifacts.
+# Only a later exact human promotion authorization may update this literal.
+APPROVED_V122_RELEASE_DIGEST = None
+
+
+def assert_v122_lifecycle(root, approved_digest):
+    target = root / "releases/V1.22"
+    if approved_digest is None:
+        assert not target.exists() and not target.is_symlink(), "unapproved V1.22 publication"
+        return
+    assert type(approved_digest) is str and re.fullmatch(r"[0-9a-f]{64}", approved_digest)
+    assert target.is_dir() and not target.is_symlink(), "approved release missing"
+    from tests.integration.test_v122_promotion import real_candidate, promotion_contract
+    from joy_m2.ingest import V122PromotionVerificationRequest, verify_v122_promotion
+    report = verify_v122_promotion(
+        V122PromotionVerificationRequest(target, real_candidate(root=root), promotion_contract()),
+        PipelineConfig(root),
+    )
+    assert report.status == "PASS" and len(report.checks) == 21 and all(c.passed for c in report.checks)
+    manifest = json.loads((target / "manifest.json").read_text())
+    assert manifest["promotion"]["release_digest"] == approved_digest, "approval identity mismatch"
+
 FROZEN = (
     ("V1.18", 497, "complete_questions_v2", "fd9fe44f1d4bebb3e6dc94ef9d0ef28afde217920c09682e3b4840a97522f5a7"),
     ("V1.19", 502, "formal_complete_questions_v119", "5a7f1ca01c29dc638fb592c668ea9f597551f94d73001898587b187bdbe490ff"),
@@ -95,7 +118,27 @@ class V122HistoricalReplayTests(unittest.TestCase):
                             f"SELECT formal_order FROM {view} ORDER BY formal_order"
                         ).fetchall(), [(i,) for i in range(1, 592)])
         self.assertTrue((ROOT / "releases/V1.21").is_dir())
-        self.assertFalse((ROOT / "releases/V1.22").exists())
+        assert_v122_lifecycle(ROOT, APPROVED_V122_RELEASE_DIGEST)
+
+    def test_isolated_lifecycle_requires_explicit_exact_approval(self):
+        from tempfile import TemporaryDirectory
+        from tests.integration.test_v122_promotion import isolated_candidate, fixture_release, promotion_contract
+        with TemporaryDirectory() as d:
+            root = Path(d).resolve()
+            candidate = isolated_candidate(root)
+            assert_v122_lifecycle(root, None)
+            with self.assertRaises(AssertionError):
+                assert_v122_lifecycle(root, "1" * 64)
+            target = fixture_release(root / "releases/V1.22", candidate, promotion_contract())
+            digest = json.loads((target / "manifest.json").read_text())["promotion"]["release_digest"]
+            with self.assertRaises(AssertionError):
+                assert_v122_lifecycle(root, None)
+            with self.assertRaises(AssertionError):
+                assert_v122_lifecycle(root, "0" * 64)
+            for bad in ("", True, [], digest.upper()):
+                with self.subTest(bad=bad), self.assertRaises(AssertionError):
+                    assert_v122_lifecycle(root, bad)
+            assert_v122_lifecycle(root, digest)
 
     def test_exact_historical_candidate_and_formal_replay_is_read_only(self):
         roots = [ROOT / "releases" / version for version, *_ in FROZEN]

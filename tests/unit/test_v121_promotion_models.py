@@ -192,7 +192,7 @@ class V121PromotionPublicContractTests(unittest.TestCase):
             "adapt_verified_hkdse_pdf_transcription_v122",
         )
         self.assertEqual(historical_prefix[-len(EXPORTS):], EXPORTS)
-        self.assertEqual(ingest.__all__, historical_prefix + v122_suffix)
+        self.assertEqual(ingest.__all__, historical_prefix + v122_suffix + ("V122PromotionContract", "V122PromotionBuildRequest", "V122PromotionVerificationRequest", "V122ReleasePromotionApproval", "V122PublicationRequest", "V122PromotionArtifacts", "build_v122_promotion", "verify_v122_promotion", "publish_v122_release"))
 
     def test_contract_exact_fields_types_defaults_frozen_and_values(self) -> None:
         cls = _public("V121PromotionContract")
