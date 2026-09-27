@@ -4,14 +4,14 @@ Updated: 2026-09-27 (Asia/Shanghai)
 
 ## Formal data
 
-- Current formal release: V1.21
-- Formal SQLite: `releases/V1.21/Joy_M2_Complete_Question_DB_V1_21.sqlite3`
-- Formal SQLite SHA-256: `93b7676f83659c2ceaa9de978ba998ce9347a45b995bb5446ed382251f96737a`
-- Complete-question records: 591 (543 immutable V1.20 records + 48 approved
-  2015–2018 HKDSE PP/MS additions)
+- Current formal release: V1.22
+- Formal SQLite: `releases/V1.22/Joy_M2_Complete_Question_DB_V1_22.sqlite3`
+- Formal SQLite SHA-256: `a474846a5b1d10a0fe48a259522fbb327747319f4a114452bf9f294405d8d9e0`
+- Complete-question records: 639 (591 immutable V1.21 records + 48 approved
+  2019–2022 HKDSE PP/MS additions)
 - V1.17 retained records: 45
 - Task 6 migrated records: 452
-- Answer identity: 486 `source_provided`, 71 `ai_solved_verified`, 34 `missing_from_source`
+- Answer identity: 534 `source_provided`, 71 `ai_solved_verified`, 34 `missing_from_source`
 - P0/P1 audit blockers: 0/0
 - V1.18 remains the frozen, byte-identical 497-question baseline and must not be
   edited in place. Its SQLite SHA-256 remains
@@ -42,7 +42,32 @@ Updated: 2026-09-27 (Asia/Shanghai)
 
 ## Current task
 
-### V1.22 promotion readiness — 2019–2022
+### V1.22 approved formal publication — 2019–2022
+
+**CLOSED / PASS — HUMAN-APPROVED FORMAL V1.22 PUBLISHED**
+
+The user explicitly supplied:
+`USER APPROVED RELEASE PROMOTION V1.22 89a592abf52507cc0325f9c6f30ee2c74d4ec55fdcef988fdae6cb12f5a3073b`.
+The committed publisher at `c5f946b88966447603b77b9ab4186ea14c74d088`
+consumed that exact approval once and atomically published the four byte-identical
+dry-run files to `releases/V1.22/`. No candidate rebuild/import replay occurred.
+
+- Formal release digest: `89a592abf52507cc0325f9c6f30ee2c74d4ec55fdcef988fdae6cb12f5a3073b`.
+- Manifest SHA: `441e00ac1536b959b40b6177bd17a6f14632a287f85145e202a51bcf137ddc8b`.
+- Semantic SHA: `964cceff64cdeaedf663d1f9be98aaaf6adf3ffe2cddf6a18447ea141948a1c4`.
+- Independent formal verifier: 21/21 PASS; candidate verifier: 24/24 PASS.
+- 591 inherited records + four approved 12-question batches = 639; new rows
+  are published/selectable, with original content/provenance preserved.
+- Pre-publication maintained gate: 1117/1117 PASS, zero skips/expected failures.
+- Post-publication maintained gate: 1117/1117 PASS, zero failures/errors/skips/
+  expected failures; independent publication review Critical 0 / Important 0.
+- All 275 protected historical/candidate/source files retain their identities.
+- Design §6 permits recording this human-approved digest in the existing
+  lifecycle test literal; no test logic or production code is changed.
+- No app/query configuration switch, rollback, 2023 ingestion or V1.23 work.
+- Next action: wait for explicit next operational authorization.
+
+### Historical V1.22 promotion readiness — 2019–2022
 
 **TECHNICAL READINESS PASS — PENDING EXPLICIT FINAL PROMOTION AUTHORIZATION**
 
@@ -68,8 +93,10 @@ and corresponding Plan (docs checkpoints `174ee6d`, `31b4b35`).
 - `releases/V1.22/` remains absent. No real promotion approval has been supplied
   or consumed. No 2023 ingestion or V1.23 work.
 
-Current human gate: `USER DECISION REQUIRED — FINAL V1.22 PROMOTION AUTHORIZATION`.
-No further real write is authorized by technical readiness alone.
+At the readiness checkpoint, the human gate was:
+`USER DECISION REQUIRED — FINAL V1.22 PROMOTION AUTHORIZATION`.
+It was subsequently satisfied by the explicit approval recorded above;
+technical readiness alone did not authorize publication.
 
 ### Historical operational checkpoint — HKDSE 2022 V1.22 generation 000004
 

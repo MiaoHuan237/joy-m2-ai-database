@@ -27,7 +27,7 @@ from tests.integration.test_v121_promotion import (
 ROOT = Path(__file__).resolve().parents[2]
 # Trusted human-gate evidence, never inferred from generated release artifacts.
 # Only a later exact human promotion authorization may update this literal.
-APPROVED_V122_RELEASE_DIGEST = None
+APPROVED_V122_RELEASE_DIGEST = "89a592abf52507cc0325f9c6f30ee2c74d4ec55fdcef988fdae6cb12f5a3073b"
 
 
 def assert_v122_lifecycle(root, approved_digest):

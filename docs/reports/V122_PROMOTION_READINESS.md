@@ -1,8 +1,11 @@
 # V1.22 Promotion Readiness — 2019–2022
 
 Technical checkpoint, 2026-09-27. **NOT A PUBLICATION APPROVAL.**
+The readiness sections below are historical pre-publication evidence; the final
+section records the subsequent explicit human approval and formal publication.
 Full maintained gate: 1117/1117 PASS; independent implementation review is closed.
-No real V1.22 formal directory or query-default transition has occurred.
+At the readiness checkpoint, no real V1.22 formal directory or query-default
+transition had occurred. See the subsequent publication section for current state.
 
 ## Locked authority
 
@@ -124,3 +127,27 @@ USER APPROVED RELEASE PROMOTION V1.22 89a592abf52507cc0325f9c6f30ee2c74d4ec55fdc
 
 This statement is offered for human decision, not recorded as received approval.
 No 2023 ingestion, V1.23, real V1.22 promotion or approval consumption.
+
+## Subsequent human-approved publication — 2026-09-27
+
+The user supplied the exact approval statement above. At engineering HEAD
+`c5f946b88966447603b77b9ab4186ea14c74d088`, a fresh maintained gate passed
+1117/1117 with zero failures/errors/skips/expected failures. The maintained
+publisher then consumed the exact typed approval once and atomically created
+`releases/V1.22/`; no rebuild, import replay or overwrite was performed.
+
+Independent post-publication verifier: **21/21 PASS**. Candidate: **24/24 PASS**.
+The formal four-file tree exactly matches both dry-runs and all hashes listed
+above. Formal query count is **639**, inherited V1.21 view remains **591**;
+SQLite integrity and foreign keys PASS. All 275 protected files in historical
+formal releases, four candidate generations and source/approval roots are unchanged.
+
+Design §6's trusted lifecycle literal is updated from None to the actual
+human-approved digest; no logic or production behavior changes. Post-publication
+maintained regression: **1117/1117 PASS**, zero failures/errors/skips/expected
+failures. Independent publication review: **Critical 0 / Important 0**; the
+single documentation-tense Minor was clarified. The raw operational receipt is retained locally at
+`tmp/pdfs/task12-v122-promotion-readiness/PUBLICATION_RECEIPT.json`.
+The formal manifest contains the migration/provenance/hash evidence and
+`rollback.json` records the existing digest-bound rollback boundary. No rollback
+or application query-default configuration change occurred. No next batch is started.
