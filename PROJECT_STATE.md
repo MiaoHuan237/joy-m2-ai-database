@@ -42,7 +42,48 @@ Updated: 2026-09-27 (Asia/Shanghai)
 
 ## Current task
 
-### Current operational checkpoint — HKDSE 2022 V1.22 import approval gate
+### Current operational checkpoint — HKDSE 2022 V1.22 generation 000004
+
+**APPROVED REAL BATCH IMPORT — CANDIDATE VERIFIED; NOT FORMALLY PUBLISHED**
+
+The user supplied the exact 2022 import statement recorded below. Fresh
+two-root preflight and the complete verified parent chain matched that approval
+before the maintained writer atomically created only the new staging generation:
+`data/staging/task12-v122-hkdse-2022/candidate-generation-000004`.
+
+- Accepted ledger: `000001 JOY-M2-HKDSE-2019-PP-MS`,
+  `000002 JOY-M2-HKDSE-2020-PP-MS`, `000003 JOY-M2-HKDSE-2021-PP-MS`,
+  `000004 JOY-M2-HKDSE-2022-PP-MS`; 12 complete questions per batch.
+- This append: 12 net-new questions. Accumulated additions: 48;
+  projected V1.22 count: 639. Formal production remains V1.21/591.
+- New candidate digest / required parent for any later authorized batch:
+  `82b10a551f70eebda2e0aa4d10c962e317767e936b4f0d9aa798629bb8070d46`.
+- Consumed preflight:
+  `ae96a9a971fafdd6e900ced6f80ee39d4c1365e166b5d4efa7fbcc47383b1fad`.
+- Consumed parent:
+  `20342ba339ef8200ee6d941683d12698c2504c0872548a26717b2771ee2d1707`.
+- Candidate SQLite SHA:
+  `f1adf0ff7c2034445b1ee4724c03e8c66c6026c5e94d37cc469e1b350c2a9a7a`.
+- Candidate manifest SHA:
+  `dc974a1f3180fc3d7d416385242d21aec78266f4e52f5a9de5732f31d57a5403`.
+- Independent candidate verifier: 24/24 PASS; 591 preserved formal rows plus
+  48 candidate rows, with candidate status and `selectable=0`.
+- Receipt: `data/staging/task12-v122-hkdse-2022/REAL_BATCH_IMPORT_RECEIPT.json`.
+  Original source/transcription, canonical packages and pre-import report
+  remain unchanged. Q9 MS graph remains a PDF source locator, not a new crop.
+- Fresh pre-write regressions: 175/175 PASS; V1.18 validator PASS.
+  No code, tests, Design or Plan change was required.
+- Separate-process post-write candidate read-back: 24/24 PASS; Task9A,
+  Task7 and historical replay: 51/51 PASS, no skips/expected failures.
+- Independent read-only operational/documentation acceptance: Critical 0 /
+  Important 0 / Minor 0; verifier, exact ledger and protected hashes confirmed.
+
+All V1.18–V1.21 formal bytes and generations 000001–000003 remain unchanged.
+`releases/V1.22` is absent. No promotion, 2023 ingestion or V1.23 work.
+Stop here at the user's requested operational checkpoint; further ingestion
+or promotion readiness requires the user's next explicit selection.
+
+### Historical checkpoint — HKDSE 2022 V1.22 import approval gate
 
 **USER DECISION REQUIRED — REAL BATCH IMPORT**
 
@@ -91,8 +132,9 @@ an approval bound to a changed parent must not be reused.
 USER APPROVED IMPORT BATCH JOY-M2-HKDSE-2022-PP-MS ae96a9a971fafdd6e900ced6f80ee39d4c1365e166b5d4efa7fbcc47383b1fad V1.22 PARENT 20342ba339ef8200ee6d941683d12698c2504c0872548a26717b2771ee2d1707
 ```
 
-This import statement is requested, not received. Transcription approval alone
-does not authorize candidate writing or promotion.
+At this historical checkpoint the import statement was requested, not received.
+The exact statement has now been supplied and consumed as recorded above.
+It does not authorize promotion.
 
 ### Historical checkpoint — HKDSE 2022 transcription approval gate
 
