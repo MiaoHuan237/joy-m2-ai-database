@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-09-22 (Asia/Shanghai)
+Updated: 2026-09-27 (Asia/Shanghai)
 
 ## Formal data
 
@@ -42,7 +42,60 @@ Updated: 2026-09-22 (Asia/Shanghai)
 
 ## Current task
 
-### Current operational checkpoint — HKDSE 2020 V1.22 generation 000002
+### Current operational checkpoint — HKDSE 2022 transcription approval gate
+
+**USER DECISION REQUIRED — PDF TRANSCRIPTION APPROVAL**
+
+Fresh recovery from the actual ledger, receipt and maintained independent
+candidate verifier confirms generation `000003`: accepted batches are 2019,
+2020 and 2021, each 12 complete questions; 36 additions and 627 projected
+questions. The verifier passed 24/24 checks. The prior current-task text was
+stale at generation `000002`; that checkpoint is retained below as history.
+
+- Current candidate / required next parent:
+  `20342ba339ef8200ee6d941683d12698c2504c0872548a26717b2771ee2d1707`.
+- Candidate path: `data/staging/task12-v122-hkdse-2021/candidate-generation-000003`.
+- Receipt: `data/staging/task12-v122-hkdse-2021/REAL_BATCH_IMPORT_RECEIPT.json`.
+- Candidate SQLite SHA:
+  `f9518ee3f954573ecb01a672756804fa0bb8e156ace3edd324742191f8a24801`.
+- Batch being prepared: `JOY-M2-HKDSE-2022-PP-MS`; 12 whole questions / 100 marks.
+- Unapproved transcription digest:
+  `5fcf6b948c3e36518f66c550cc49039d095cf7af6b85d17ca9042699553abd6a`.
+- Proposal/report:
+  `data/staging/task10b-hkdse-2022/source-review-000001/transcription-proposal-000001/`.
+  `PDF_TRANSCRIPTION_REVIEW.md` includes complete source-bound question/MS text.
+- Original staging SHA:
+  `5c29ee7c4d0fb8dedb55109df4be98e4b18c3f321ea8b96136775e13f1ddba94`.
+- PP `M2_2022-pp.pdf`, 28 pages, SHA:
+  `5ada06c06c13790f67c3e70731ca4cdbf053304705da025ae936f04b7a67563a`.
+- MS `M2_2022-ms.pdf`, 21 pages, SHA:
+  `c42aa39e1db5f4f6d437b41a3954d9b9efc68fb4e425caceb98f336dbe6215df`.
+- Two independent visual drafts and raw discrepancies remain archived.
+  Final passes are source-reconciled serialization, not raw independent
+  auto-agreement. Q6(a)'s printed identity symbol was restored; Q9(c)'s
+  official graph remains bound to MS SHA/page 8, without redraw.
+- Controlled taxonomy is source-supported; Q4 concerns inflection points
+  and Q6 indefinite integration. Difficulty, marks and whole-question
+  boundaries are unchanged. Unknown primary types/tags: 0/0.
+- Question/MS completeness: 12/12 each. Unresolved review/issues: 0/0.
+  Final source review: Critical 0 / Important 0. Status remains PROPOSED,
+  VERIFIED records 0; no human approval has been inferred.
+- Fresh relevant regressions: 175/175 PASS, no skips/expected failures;
+  V1.18 validator PASS. Two output roots have identical proposal bytes.
+- Original sources, all V1.18–V1.21 release bytes and existing V1.22
+  generations remain unchanged. Formal production remains V1.21/591.
+
+2022 has not been accepted. No 2022 canonical package, authoritative
+preflight, real writer call or candidate generation was created.
+`releases/V1.22` remains absent; no promotion, 2023 ingestion or V1.23 work.
+After exact transcription approval, reverify the current parent and prepare
+the parent-bound preflight; import requires a separate exact approval.
+
+```text
+USER APPROVED PDF TRANSCRIPTION BATCH JOY-M2-HKDSE-2022-PP-MS 5fcf6b948c3e36518f66c550cc49039d095cf7af6b85d17ca9042699553abd6a
+```
+
+### Historical checkpoint — HKDSE 2020 V1.22 generation 000002
 
 **APPROVED REAL BATCH IMPORT — CANDIDATE VERIFIED; NOT FORMALLY PUBLISHED**
 
