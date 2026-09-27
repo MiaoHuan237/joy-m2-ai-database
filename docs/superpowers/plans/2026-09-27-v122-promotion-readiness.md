@@ -32,6 +32,7 @@ Codex Python runtime when `python` is unavailable. Keep full gate logs in ignore
   `tests/integration/test_v122_promotion.py`.
 - MODIFY: `tests/unit/test_v121_promotion_models.py` and
   `tests/unit/test_v122_models.py`, `tests/unit/test_v119_promotion_models.py`,
+  `tests/unit/test_v119_writer_models.py`,
   `tests/regression/test_v119_historical_replay.py`, preserve exact historical export prefixes
   and add the approved suffix.
 - MODIFY: `tests/regression/test_v122_historical_replay.py`, replace only the
@@ -39,6 +40,12 @@ Codex Python runtime when `python` is unavailable. Keep full gate logs in ignore
 - DOC: this Plan, its Design, `PROJECT_STATE.md`,
   `docs/reports/V122_PROMOTION_READINESS.md`.
 - Ignored runtime: the two exact roots in Design §6. No other tracked scope.
+
+Full-gate scope correction: the V1.19 writer model suite also asserts the
+complete package surface. Its historical prefix remains exact and unchanged;
+only the same approved nine-name V1.22 promotion suffix may be appended. The
+1117-test gate exposed this omitted assertion (one FAIL, zero ERROR); this is
+test-surface alignment under Design §6, not new writer or publication authority.
 
 ### Task 1: Lock baseline and immutable evidence
 
