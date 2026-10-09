@@ -67,10 +67,19 @@ Updated: 2026-10-09 (Asia/Shanghai)
   is fabricated or inherited from another year.
 - Proposal: `transcription-proposal-000001/transcription.json` within that root;
   digest `3a3a223a23f694083469281c64be5c5402152c557e3bc36654d400ce5143d618`.
-  Full human review: `FULL_TRANSCRIPTION_REVIEW.md`. Exact human transcription
-  approval is pending; all 12 records remain PROPOSED, not VERIFIED. Issues and
+  Full human review: `FULL_TRANSCRIPTION_REVIEW.md`. The original proposal
+  preserves its 12 PROPOSED records as immutable pre-approval evidence. Issues and
   review-required records are zero; both controlled-vocabulary unknown counts
   are zero. Two independent output roots reproduce the same four proposal files.
+- Exact human transcription approval for this batch/digest has now been received
+  and saved as `TRANSCRIPTION_APPROVAL.json` within the same ignored root.
+  The existing `approve_hkdse_pdf_transcription` API reconstructed and verified
+  the exact proposal, producing 12 VERIFIED records / 100 marks without changing
+  any question, MS, metadata or original proposal file. The pre-approval review
+  and operational-evidence files remain unchanged historical snapshots.
+  This approval does not approve the V1.23 Design, create canonical/preflight
+  output, authorize a real import, or grant promotion. Written Design approval
+  remains the next gate; no V1.23 Plan or implementation has started.
 - Independent source reviewer `hkdse2023_source_review` visually checked the
   twelve PP question pages and nineteen MS pages. Q6's two figures are bound
   to the original PDF SHA/page/region; Q7's shared (b) condition and Q10's
