@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-09-27 (Asia/Shanghai)
+Updated: 2026-10-09 (Asia/Shanghai)
 
 ## Formal data
 
@@ -42,7 +42,60 @@ Updated: 2026-09-27 (Asia/Shanghai)
 
 ## Current task
 
-### V1.22 approved formal publication — 2019–2022
+### V1.23 minimal candidate roll-forward / HKDSE 2023 preparation
+
+**DIRECTION APPROVED — WRITTEN DESIGN PENDING HUMAN REVIEW**
+
+- Authority draft: `docs/superpowers/specs/2026-10-09-v123-next-version-candidate-design.md`.
+  The user approved the fixed V1.22/639 -> V1.23 direction, not an unwritten
+  Design/Plan. No Plan or V1.23 implementation has started. After written Design
+  approval, prepare/review the Plan and obtain the required execution approval.
+- Formal V1.22 remains the published 639-record baseline; this is not a count
+  of semantically distinct originals. All V1.18–V1.22 formal identities and old
+  candidates remain frozen. No `releases/V1.23/` or real V1.23 generation exists.
+- Existing 2023 originals are already represented by `2023-Q1`–`2023-Q12`.
+  Full official MS/figures/source supplementation is useful, but the existing
+  classifier is fingerprint-based and the writer only appends records. Exact
+  duplicate/collision blockers remain blocking; no old-record update operation
+  or guaranteed twelve-record addition is authorized. Design section 4 records
+  the exact preserved cases and the narrow decision needed if supplementation
+  cannot be accepted under them.
+- The separate Task 10B track completed a new 12-question/100-mark proposal
+  under ignored `data/staging/task10b-hkdse-2023/source-review-000001/`, reusing
+  verified PP/MS and local page evidence. The original staging is metadata,
+  not a complete approved transcription. No 2023 transcription/import approval
+  is fabricated or inherited from another year.
+- Proposal: `transcription-proposal-000001/transcription.json` within that root;
+  digest `3a3a223a23f694083469281c64be5c5402152c557e3bc36654d400ce5143d618`.
+  Full human review: `FULL_TRANSCRIPTION_REVIEW.md`. Exact human transcription
+  approval is pending; all 12 records remain PROPOSED, not VERIFIED. Issues and
+  review-required records are zero; both controlled-vocabulary unknown counts
+  are zero. Two independent output roots reproduce the same four proposal files.
+- Independent source reviewer `hkdse2023_source_review` visually checked the
+  twelve PP question pages and nineteen MS pages. Q6's two figures are bound
+  to the original PDF SHA/page/region; Q7's shared (b) condition and Q10's
+  notation are preserved. Full official alternatives/marking notes are included.
+  Source-backed page/taxonomy corrections use a new staging copy; original
+  artifacts are retained. Q7's integral tag and Q12's unsupported application
+  tag were corrected before final review (Critical 0 / Important 0 / Minor 0).
+  Pass B records this source reconciliation, not a claimed blind transcription.
+- Before any real canonical package/preflight, BOTH the version implementation
+  and exact human transcription approval must pass. Real candidate writing
+  then requires exact batch/preflight/V1.23/parent import approval.
+- Historical cleanup is paused, not an ingestion prerequisite. No merging,
+  deletion, whole-library recategorization, historical approval reconstruction,
+  2024 processing or promotion. Preserve the user's unrelated AGENTS.md edit.
+- Docs checkpoint checks: Task 7 7/7, Task 10B 50/50, V1.22 independent formal
+  verifier 21/21 and V1.18 validator PASS; no skipped/expected-failure tests.
+  The 292-file protected audit snapshot and the pre-existing AGENTS.md content
+  remain unchanged. No production/tests changed; the full maintained suite is
+  reserved for the later implementation gate, not rerun for this docs draft.
+- Independent written-Design technical reviewer `v123_design_review` checked
+  actual predecessor code, formal SQLite and genesis: Critical 0 / Important 0 /
+  Minor 0 after a classification-wording correction. Human written-Design
+  approval is still pending and is not replaced by this technical review.
+
+### Historical V1.22 approved formal publication — 2019–2022
 
 **CLOSED / PASS — HUMAN-APPROVED FORMAL V1.22 PUBLISHED**
 
@@ -64,8 +117,9 @@ dry-run files to `releases/V1.22/`. No candidate rebuild/import replay occurred.
 - All 275 protected historical/candidate/source files retain their identities.
 - Design §6 permits recording this human-approved digest in the existing
   lifecycle test literal; no test logic or production code is changed.
-- No app/query configuration switch, rollback, 2023 ingestion or V1.23 work.
-- Next action: wait for explicit next operational authorization.
+- At this publication checkpoint no app/query configuration switch, rollback,
+  2023 ingestion or V1.23 work occurred. The later authorization above now
+  governs the next operational work; publication itself remains CLOSED / PASS.
 
 ### Historical V1.22 promotion readiness — 2019–2022
 
