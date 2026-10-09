@@ -44,12 +44,14 @@ Updated: 2026-10-09 (Asia/Shanghai)
 
 ### V1.23 minimal candidate roll-forward / HKDSE 2023 preparation
 
-**DIRECTION APPROVED — WRITTEN DESIGN PENDING HUMAN REVIEW**
+**WRITTEN DESIGN APPROVED — PLAN REVIEW / EXECUTION CONFIRMATION PENDING**
 
-- Authority draft: `docs/superpowers/specs/2026-10-09-v123-next-version-candidate-design.md`.
-  The user approved the fixed V1.22/639 -> V1.23 direction, not an unwritten
-  Design/Plan. No Plan or V1.23 implementation has started. After written Design
-  approval, prepare/review the Plan and obtain the required execution approval.
+- Approved Design: `docs/superpowers/specs/2026-10-09-v123-next-version-candidate-design.md`.
+  The user explicitly approved the written Design and authorized its Plan.
+  Plan: `docs/superpowers/plans/2026-10-09-v123-next-version-candidate.md`.
+  Implementation remains NOT STARTED pending human Plan review and execution
+  confirmation; Native / Inline Execution is recommended, not yet authorized.
+  Do not request the completed Design approval again.
 - Formal V1.22 remains the published 639-record baseline; this is not a count
   of semantically distinct originals. All V1.18–V1.22 formal identities and old
   candidates remain frozen. No `releases/V1.23/` or real V1.23 generation exists.
@@ -78,8 +80,8 @@ Updated: 2026-10-09 (Asia/Shanghai)
   any question, MS, metadata or original proposal file. The pre-approval review
   and operational-evidence files remain unchanged historical snapshots.
   This approval does not approve the V1.23 Design, create canonical/preflight
-  output, authorize a real import, or grant promotion. Written Design approval
-  remains the next gate; no V1.23 Plan or implementation has started.
+  output, authorize a real import, or grant promotion. Written Design has since
+  been separately approved; Plan review/execution confirmation is the next gate.
 - Independent source reviewer `hkdse2023_source_review` visually checked the
   twelve PP question pages and nineteen MS pages. Q6's two figures are bound
   to the original PDF SHA/page/region; Q7's shared (b) condition and Q10's
@@ -102,7 +104,23 @@ Updated: 2026-10-09 (Asia/Shanghai)
 - Independent written-Design technical reviewer `v123_design_review` checked
   actual predecessor code, formal SQLite and genesis: Critical 0 / Important 0 /
   Minor 0 after a classification-wording correction. Human written-Design
-  approval is still pending and is not replaced by this technical review.
+  approval has now also been explicitly received, separately from this review.
+- Plan dependency gates: models/scaffolds -> strict loader -> canonical bridge
+  -> genesis preflight -> first-generation writer/verifier -> verified-parent
+  preflight -> multi-batch writer/verifier -> full regression/independent review
+  -> already-approved 2023 canonical/read-only preflight -> real import gate.
+  No claim of parent/multi-batch behavior RED before its prerequisite GREEN.
+  Existing duplicate/collision blockers and PDF-locator-only image projection
+  remain unchanged; no forecast of twelve net-new records.
+- Plan self-review and independent technical reviewer `v123_plan_review` PASS:
+  Critical 0 / Important 0 / Minor 0. Closed scope is exactly 23 Design paths;
+  all five APIs and eighteen appended exports are mapped to tests. Corrected
+  one test-preparation ambiguity (valid manifest before preflight file-tamper
+  controls); no production or test implementation has begun. Fresh planning
+  checks: Task 7 7/7, Task 10B 50/50, approved transcription binding 12 records /
+  100 marks, formal read-only count 639/639 unique IDs, 292 protected identities
+  unchanged, exact genesis recomputation and diff checks PASS. The next action
+  is human Plan review and execution confirmation, not another Design approval.
 
 ### Historical V1.22 approved formal publication — 2019–2022
 

@@ -2,17 +2,15 @@
 
 Date: 2026-10-09
 
-Status: WRITTEN DESIGN — PENDING HUMAN REVIEW
+Status: APPROVED — V1.23 WRITTEN DESIGN; PLAN REVIEW / EXECUTION APPROVAL PENDING
 
 ## 1. Approved direction, not implementation approval
 
-The user approved a fixed V1.22/639 -> V1.23 candidate direction and independent
-HKDSE 2023 transcription preparation. This document captures that direction;
-it is not yet a human-approved written Design. No implementation Plan or
-production change is authorized by this document's creation or commit alone.
-After written Design approval, write and independently review the Plan. Obtain
-the required Plan review and execution-method selection before implementation.
-Do not ask again for the already-approved direction.
+The user approved this written Design and authorized preparation and independent
+review of its implementation Plan. The fixed V1.22/639 -> V1.23 direction and
+written Design gates are complete; do not request them again. Obtain human Plan
+review and execution-method confirmation before implementation. This Design
+approval does not authorize a real batch import or promotion.
 
 The goal is usable PP/MS material, not historical cleanup. Keep existing
 multi-source records, the 24 audited historical pairs, and all historical
@@ -132,8 +130,8 @@ original questions. Original user staging already declares IDs
 truthful PP/MS provenance. Do not rename records, alter legitimate transcription
 to defeat a match, forge fragments, or suppress issues to force `new_candidate`.
 
-Before final transcription exists there is no authoritative classification
-count. After approval/implementation, preserve the exact preflight result and
+Until the approved implementation runs authoritative preflight there is no
+classification count. After approval/implementation, preserve that result and
 add a human-facing source-reconciliation table (report only, not digest/schema):
 new stored records; already-known originals with another source; proposed
 content/evidence supplementation; genuinely previously unrepresented originals.
@@ -339,6 +337,18 @@ requirement that every historical path be re-staged under the V1.23 root.
 
 ## 9. 2023 operational preparation and stopping points
 
+Current checkpoint: preparation and exact human transcription approval are
+complete. Under `data/staging/task10b-hkdse-2023/source-review-000001/`, the
+immutable proposal is `transcription-proposal-000001/transcription.json`, digest
+`3a3a223a23f694083469281c64be5c5402152c557e3bc36654d400ce5143d618`; the actual
+received approval is `TRANSCRIPTION_APPROVAL.json`. Corrected staging is
+`input/source-corrected-staging-v2.json`, SHA
+`351462b3e45d4ea0f5b84b400d28aa0431bf3c0a830b16aff8a2eda7940a7490`.
+The existing approval API verifies 12 complete records / 100 marks, zero issues.
+No canonical/preflight has run. The preparation rules below remain the source
+contract, not instructions to repeat completed work or seek the same approval.
+Reapproval is required only if the actual approved semantic payload changes.
+
 Input identity (already present, no reupload required):
 
 ```text
@@ -379,10 +389,11 @@ parent and preflight SHA. Do not start 2024 afterwards.
 
 ## 10. Closed scope
 
-Current docs checkpoint: this Design and PROJECT_STATE.md only. Runtime
+Current Plan docs checkpoint: this Design's progress state, its implementation
+Plan and PROJECT_STATE.md only; no technical-contract change. Runtime
 transcription evidence is ignored under
 `data/staging/task10b-hkdse-2023/source-review-000001/**`; preserve all inputs.
-No Plan is written before human written-Design approval.
+Written-Design approval has been received; Plan creation/review is now authorized.
 
 After Design/Plan/execution approval, the proposed engineering scope is exactly:
 
