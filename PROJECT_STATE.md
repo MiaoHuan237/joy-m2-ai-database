@@ -56,7 +56,11 @@ Updated: 2026-10-10 (Asia/Shanghai)
   Task 2 bridge is now GREEN: 11 focused tests / 96 with models and Task10B.
   Five-file output, four unchanged non-manifest projections, duplicate-looking
   source retention and PDF-locator-only image semantics are locked. Genesis
-  preflight and candidate writing remain unimplemented; no real output consumed.
+  preflight and candidate writing were still unimplemented at that checkpoint.
+  Task 3 genesis preflight is now GREEN: 23 focused / 69 cumulative V123 tests.
+  It indexes all 639 formal rows with exact baseline identity, reads published/
+  selectable rows only and preserves duplicate/collision/adaptation semantics.
+  Parent preflight and writer/verifier remain scaffolds. No real output consumed.
   Do not request the completed Design approval again.
 - Formal V1.22 remains the published 639-record baseline; this is not a count
   of semantically distinct originals. All V1.18–V1.22 formal identities and old

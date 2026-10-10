@@ -24,6 +24,15 @@ Human Native / Inline execution approval received 2026-10-10. No real import app
 - Forged proposal/record/approval, nonverified input, symlink/path escape/source overlap, existing destination and atomic publication failure are independently exercised. Failure leaves no new output/owned temporary tree.
 - Scoped inline review: only the V123 bridge/imports implement behavior; neutral projection and safety helpers are reused, all historical bridge bodies remain unchanged. Real 2023 source/approval not consumed yet.
 
+## Task 3 — genesis preflight
+
+- RED: 23 collected, 27 assertion/subtest failures, 0 errors, exit 1. Strict package-load smoke passes before calling the scaffold. Two preservation/API tests are already GREEN; no setup errors count as RED.
+- GREEN: 23/23 focused; Tasks1–3 69/69, no skips/expected failures. Effective state 639/empty ledger/fixed reconstructed genesis, one synthetic net-new projects640; not a prediction for real2023.
+- Tests cover all four 2019–2022 inherited layers and historical image reference identity, complete639 indexing, frozen counts, malformed/invalid candidate issues, taxonomy, exact duplicates despite fuller MS, truthful second-source hash collisions, adaptations and candidate-ID exclusion, ambiguity, mixed duplicate batch blocking, package blocker vs per-record counts, and untrusted file omission.
+- Copied-baseline negative controls reach metadata version/schema, view/count/unique-ID/published/selectable checks independently of outer file hashes. Escaped-space/#/Unicode URI baseline copies are read-only. No formal file changes.
+- Scoped review: no candidate DDL/writer or verified-parent branch implemented. Genesis helper reconstructs the literal approved projection using neutral canonical-JSON/hash helpers. The copied formal reader explicitly checks published/selectable state and query-only immutable URI under the approved V123 contract; historical readers are unchanged.
+- Protected snapshot: 292/292 files unchanged; user AGENTS SHA unchanged; releases/V1.23 absent.
+
 ## Execution rulings (continued)
 
 - Final independent review and any remediation re-review follow the approved Plan (stronger than the inline skill's no-re-review default); cost: additional review time only.
@@ -31,4 +40,4 @@ Human Native / Inline execution approval received 2026-10-10. No real import app
 
 ## Remaining gates
 
-Tasks 3–6, full candidate implementation, independent whole-implementation review, fresh final maintained/frozen gates and approved-2023 canonical/read-only preflight remain pending. No real writer, V1.23 formal release or next-year ingestion is authorized.
+Tasks 4A–6, full candidate implementation, independent whole-implementation review, fresh final maintained/frozen gates and approved-2023 canonical/read-only preflight remain pending. No real writer, V1.23 formal release or next-year ingestion is authorized.
