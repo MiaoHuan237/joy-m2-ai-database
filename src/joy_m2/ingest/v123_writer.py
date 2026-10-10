@@ -255,7 +255,8 @@ def _collision_authority_valid(
     baseline_path: Path,
 ) -> bool:
     try:
-        with sqlite3.connect(f"{baseline_path.resolve().as_uri()}?mode=ro", uri=True) as database:
+        with sqlite3.connect(f"{baseline_path.resolve().as_uri()}?mode=ro&immutable=1", uri=True) as database:
+            database.execute("PRAGMA query_only=ON")
             rows = tuple(database.execute(
                 "SELECT question_id,source_id,source_question_number,source_section,"
                 "source_fragment_hash,normalized_text_sha256,question_text_original,"
@@ -296,65 +297,65 @@ def _collision_authority_valid(
             for path, digest, role in image_values:
                 image_claims[(path, role)] = digest
 
-        approved = batches[0]
-        expected_adaptations: list[ImportAdaptation] = []
-        for candidate in approved.preflight_result.candidates:
-            locator = (
-                candidate.source_id,
-                candidate.source_question_number,
-                candidate.source_section,
-            )
-            locator_reference = locators.get(locator)
-            fragment_reference = fragments.get(candidate.source_fragment_hash)
-            allowed_adaptation = (
-                locator_reference is not None
-                and locator_reference == fragment_reference
-                and locator_reference[1]
-                and candidate.normalized_text_sha256 not in normalized
-            )
-            if allowed_adaptation:
-                reference_id = locator_reference[0]
-                expected_adaptations.append(ImportAdaptation(
-                    candidate.proposed_question_id,
-                    reference_id,
-                    "adapted",
-                    "matched=source_locator+source_fragment_hash;"
-                    f"candidate_normalized_text_sha256={candidate.normalized_text_sha256};"
-                    f"reference_normalized_text_sha256="
-                    f"{next((row[5] or _normalized_text_sha256(row[6]) for row in rows if row[0] == reference_id), '')}",
-                    "stable_source_identity_matches_with_transformed_text",
-                ))
-            if (
-                candidate.proposed_question_id in ids
-                or candidate.normalized_text_sha256 in normalized
-                or ((locator_reference is not None or fragment_reference is not None) and not allowed_adaptation)
-            ):
-                return False
-            for path, digest, role in zip(
-                candidate.image_paths,
-                candidate.image_sha256s,
-                candidate.image_roles,
-                strict=True,
-            ):
-                prior = image_claims.get((path, role))
-                if prior is not None and prior != digest:
+        for approved in batches:
+            expected_adaptations: list[ImportAdaptation] = []
+            for candidate in approved.preflight_result.candidates:
+                locator = (
+                    candidate.source_id,
+                    candidate.source_question_number,
+                    candidate.source_section,
+                )
+                locator_reference = locators.get(locator)
+                fragment_reference = fragments.get(candidate.source_fragment_hash)
+                allowed_adaptation = (
+                    locator_reference is not None
+                    and locator_reference == fragment_reference
+                    and locator_reference[1]
+                    and candidate.normalized_text_sha256 not in normalized
+                )
+                if allowed_adaptation:
+                    reference_id = locator_reference[0]
+                    expected_adaptations.append(ImportAdaptation(
+                        candidate.proposed_question_id,
+                        reference_id,
+                        "adapted",
+                        "matched=source_locator+source_fragment_hash;"
+                        f"candidate_normalized_text_sha256={candidate.normalized_text_sha256};"
+                        f"reference_normalized_text_sha256="
+                        f"{next((row[5] or _normalized_text_sha256(row[6]) for row in rows if row[0] == reference_id), '')}",
+                        "stable_source_identity_matches_with_transformed_text",
+                    ))
+                if (
+                    candidate.proposed_question_id in ids
+                    or candidate.normalized_text_sha256 in normalized
+                    or ((locator_reference is not None or fragment_reference is not None) and not allowed_adaptation)
+                ):
                     return False
-                image_claims[(path, role)] = digest
-            ids.add(candidate.proposed_question_id)
-            locators[locator] = (candidate.proposed_question_id, False)
-            fragments[candidate.source_fragment_hash] = (
-                candidate.proposed_question_id,
-                False,
-            )
-            normalized.add(candidate.normalized_text_sha256)
-        if tuple(sorted(expected_adaptations, key=lambda item: (
-            item.candidate_id,
-            item.reference_question_id,
-            item.adaptation_kind,
-            item.evidence,
-            item.reason,
-        ))) != approved.preflight_result.report.adaptations:
-            return False
+                for path, digest, role in zip(
+                    candidate.image_paths,
+                    candidate.image_sha256s,
+                    candidate.image_roles,
+                    strict=True,
+                ):
+                    prior = image_claims.get((path, role))
+                    if prior is not None and prior != digest:
+                        return False
+                    image_claims[(path, role)] = digest
+                ids.add(candidate.proposed_question_id)
+                locators[locator] = (candidate.proposed_question_id, False)
+                fragments[candidate.source_fragment_hash] = (
+                    candidate.proposed_question_id,
+                    False,
+                )
+                normalized.add(candidate.normalized_text_sha256)
+            if tuple(sorted(expected_adaptations, key=lambda item: (
+                item.candidate_id,
+                item.reference_question_id,
+                item.adaptation_kind,
+                item.evidence,
+                item.reason,
+            ))) != approved.preflight_result.report.adaptations:
+                return False
         return True
     except (json.JSONDecodeError, OSError, PipelineError, sqlite3.Error, TypeError, ValueError):
         return False
@@ -441,9 +442,6 @@ def _validate_request(
     ):
         raise ImportApprovalError("approved batch authority carrier is invalid")
 
-    if len(batches) != 1:
-        raise NotImplementedError("multi-batch writer awaits Task 4B2")
-
     validity, authority, identity = _authority_expectations(batches)
     if identity is None or not all(validity.values()):
         raise ImportApprovalError("approved batch prefix does not reconstruct exactly")
@@ -497,45 +495,45 @@ def _image_plan(
     image_root: str,
 ) -> dict[str, bytes]:
     physical: dict[str, bytes] = {}
-    batch = batches[0]
-    manifest = batch.preflight_result.manifest
-    evidence = {item.relative_path: item for item in manifest.image_files}
-    package_root = batch.package_root.resolve(strict=True)
-    for candidate in batch.preflight_result.candidates:
-        for source, expected_digest in zip(
-            candidate.image_paths,
-            candidate.image_sha256s,
-            strict=True,
-        ):
-            declared = evidence.get(source)
-            path = batch.package_root / source
-            try:
-                resolved = path.resolve(strict=True)
-                if (
-                    declared is None
-                    or declared.kind != "image"
-                    or path.is_symlink()
-                    or _has_symlink_component(path, batch.package_root)
-                    or not resolved.is_relative_to(package_root)
-                    or not resolved.is_file()
-                ):
-                    raise InputFormatError("image source does not bind package evidence")
-                data = resolved.read_bytes()
-            except InputFormatError:
-                raise
-            except (OSError, RuntimeError) as error:
-                raise InputMissingError("image source cannot be read") from error
-            digest = sha256_bytes(data)
-            if (
-                declared.sha256 != expected_digest
-                or declared.sha256 != digest
-                or declared.size_bytes != len(data)
+    for batch in batches:
+        manifest = batch.preflight_result.manifest
+        evidence = {item.relative_path: item for item in manifest.image_files}
+        package_root = batch.package_root.resolve(strict=True)
+        for candidate in batch.preflight_result.candidates:
+            for source, expected_digest in zip(
+                candidate.image_paths,
+                candidate.image_sha256s,
+                strict=True,
             ):
-                raise InputFormatError("image source bytes do not bind package evidence")
-            destination = image_destination(image_root, source, digest)
-            if destination in physical and physical[destination] != data:
-                raise InputFormatError("different image bytes claim one destination")
-            physical[destination] = data
+                declared = evidence.get(source)
+                path = batch.package_root / source
+                try:
+                    resolved = path.resolve(strict=True)
+                    if (
+                        declared is None
+                        or declared.kind != "image"
+                        or path.is_symlink()
+                        or _has_symlink_component(path, batch.package_root)
+                        or not resolved.is_relative_to(package_root)
+                        or not resolved.is_file()
+                    ):
+                        raise InputFormatError("image source does not bind package evidence")
+                    data = resolved.read_bytes()
+                except InputFormatError:
+                    raise
+                except (OSError, RuntimeError) as error:
+                    raise InputMissingError("image source cannot be read") from error
+                digest = sha256_bytes(data)
+                if (
+                    declared.sha256 != expected_digest
+                    or declared.sha256 != digest
+                    or declared.size_bytes != len(data)
+                ):
+                    raise InputFormatError("image source bytes do not bind package evidence")
+                destination = image_destination(image_root, source, digest)
+                if destination in physical and physical[destination] != data:
+                    raise InputFormatError("different image bytes claim one destination")
+                physical[destination] = data
     return physical
 
 
@@ -559,97 +557,97 @@ def _populate_database(
         for statement in TASK13_SCHEMA_SQL[:-1]:
             connection.execute(statement)
         cumulative = 0
-        ordinal, batch = 1, batches[0]
-        result = batch.preflight_result
-        approval = batch.approval
-        cumulative += len(result.candidates)
-        connection.execute(
-            "INSERT INTO task13_v123_batch_ledger_v1 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
-            (
-                ordinal,
-                approval.batch_id,
-                "V1.23",
-                "task13-v123-candidate-v1",
-                approval.parent_candidate_digest,
-                approval.preflight_sha256,
-                result.report.manifest_sha256,
-                approval.statement,
-                "V1.22",
-                BASELINE_SHA256,
-                BASELINE_RELEASE_DIGEST,
-                639,
-                len(result.candidates),
-                cumulative,
-                639 + cumulative,
-                "candidate",
-            ),
-        )
-        for order, candidate in enumerate(result.candidates):
-            projection = candidate_projection[(ordinal, approval.batch_id, order)]
-            values = [getattr(candidate, field.name) for field in fields(ImportCandidate)]
-            for index in (16, 17, 18, 20):
-                values[index] = _json_text(values[index])
-            row = (
-                ordinal,
-                approval.batch_id,
-                order,
-                projection["aggregate_order"],
-                *values,
-                _json_text(projection["candidate_image_paths"]),
-                "candidate",
-                0,
-            )
+        for ordinal, batch in enumerate(batches, start=1):
+            result = batch.preflight_result
+            approval = batch.approval
+            cumulative += len(result.candidates)
             connection.execute(
-                "INSERT INTO task13_v123_candidates_v1 VALUES ("
-                + ",".join("?" for _ in row)
-                + ")",
-                row,
+                "INSERT INTO task13_v123_batch_ledger_v1 VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)",
+                (
+                    ordinal,
+                    approval.batch_id,
+                    "V1.23",
+                    "task13-v123-candidate-v1",
+                    approval.parent_candidate_digest,
+                    approval.preflight_sha256,
+                    result.report.manifest_sha256,
+                    approval.statement,
+                    "V1.22",
+                    BASELINE_SHA256,
+                    BASELINE_RELEASE_DIGEST,
+                    639,
+                    len(result.candidates),
+                    cumulative,
+                    639 + cumulative,
+                    "candidate",
+                ),
             )
-            image_evidence = {
-                item.relative_path: item for item in result.manifest.image_files
-            }
-            for image_order, (source, digest, role, destination) in enumerate(zip(
-                candidate.image_paths,
-                candidate.image_sha256s,
-                candidate.image_roles,
-                projection["candidate_image_paths"],
-                strict=True,
-            )):
-                evidence = image_evidence[source]
-                connection.execute(
-                    "INSERT INTO task13_v123_images_v1 VALUES (?,?,?,?,?,?,?,?,?,?)",
-                    (
-                        ordinal,
-                        approval.batch_id,
-                        candidate.proposed_question_id,
-                        image_order,
-                        source,
-                        destination,
-                        digest,
-                        evidence.size_bytes,
-                        "image",
-                        role,
-                    ),
+            for order, candidate in enumerate(result.candidates):
+                projection = candidate_projection[(ordinal, approval.batch_id, order)]
+                values = [getattr(candidate, field.name) for field in fields(ImportCandidate)]
+                for index in (16, 17, 18, 20):
+                    values[index] = _json_text(values[index])
+                row = (
+                    ordinal,
+                    approval.batch_id,
+                    order,
+                    projection["aggregate_order"],
+                    *values,
+                    _json_text(projection["candidate_image_paths"]),
+                    "candidate",
+                    0,
                 )
-        primary_types = tuple(sorted({
-            candidate.primary_type for candidate in result.candidates
-        }))
-        tags = tuple(sorted({
-            tag for candidate in result.candidates for tag in candidate.tags
-        }))
-        for kind, values in (("primary_type", primary_types), ("tag", tags)):
-            for sort_order, value in enumerate(values, start=1):
                 connection.execute(
-                    "INSERT INTO task13_v123_taxonomy_v1 VALUES (?,?,?,?,?,?)",
-                    (
-                        ordinal,
-                        approval.batch_id,
-                        kind,
-                        value,
-                        sort_order,
-                        "candidate",
-                    ),
+                    "INSERT INTO task13_v123_candidates_v1 VALUES ("
+                    + ",".join("?" for _ in row)
+                    + ")",
+                    row,
                 )
+                image_evidence = {
+                    item.relative_path: item for item in result.manifest.image_files
+                }
+                for image_order, (source, digest, role, destination) in enumerate(zip(
+                    candidate.image_paths,
+                    candidate.image_sha256s,
+                    candidate.image_roles,
+                    projection["candidate_image_paths"],
+                    strict=True,
+                )):
+                    evidence = image_evidence[source]
+                    connection.execute(
+                        "INSERT INTO task13_v123_images_v1 VALUES (?,?,?,?,?,?,?,?,?,?)",
+                        (
+                            ordinal,
+                            approval.batch_id,
+                            candidate.proposed_question_id,
+                            image_order,
+                            source,
+                            destination,
+                            digest,
+                            evidence.size_bytes,
+                            "image",
+                            role,
+                        ),
+                    )
+            primary_types = tuple(sorted({
+                candidate.primary_type for candidate in result.candidates
+            }))
+            tags = tuple(sorted({
+                tag for candidate in result.candidates for tag in candidate.tags
+            }))
+            for kind, values in (("primary_type", primary_types), ("tag", tags)):
+                for sort_order, value in enumerate(values, start=1):
+                    connection.execute(
+                        "INSERT INTO task13_v123_taxonomy_v1 VALUES (?,?,?,?,?,?)",
+                        (
+                            ordinal,
+                            approval.batch_id,
+                            kind,
+                            value,
+                            sort_order,
+                            "candidate",
+                        ),
+                    )
         connection.execute(TASK13_SCHEMA_SQL[-1])
         connection.execute("PRAGMA user_version=123")
         connection.commit()
@@ -678,19 +676,19 @@ def _ledger_entries(
 ) -> tuple[V123BatchLedgerEntry, ...]:
     cumulative = 0
     result = []
-    ordinal, batch = 1, batches[0]
-    cumulative += len(batch.preflight_result.candidates)
-    result.append(V123BatchLedgerEntry(
-        ordinal,
-        batch.approval.batch_id,
-        batch.approval.parent_candidate_digest,
-        batch.approval.preflight_sha256,
-        batch.preflight_result.report.manifest_sha256,
-        batch.approval,
-        len(batch.preflight_result.candidates),
-        cumulative,
-        639 + cumulative,
-    ))
+    for ordinal, batch in enumerate(batches, start=1):
+        cumulative += len(batch.preflight_result.candidates)
+        result.append(V123BatchLedgerEntry(
+            ordinal,
+            batch.approval.batch_id,
+            batch.approval.parent_candidate_digest,
+            batch.approval.preflight_sha256,
+            batch.preflight_result.report.manifest_sha256,
+            batch.approval,
+            len(batch.preflight_result.candidates),
+            cumulative,
+            639 + cumulative,
+        ))
     return tuple(result)
 
 

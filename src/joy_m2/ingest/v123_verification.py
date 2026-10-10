@@ -535,62 +535,62 @@ def _candidate_identity(
     candidates: list[dict[str, object]] = []
     images: list[dict[str, object]] = []
     cumulative = 0
-    ordinal, approved = 1, approved_batches[0]
-    result = approved.preflight_result
-    approval = approved.approval
-    prior = cumulative
-    cumulative += len(result.candidates)
-    ledger.append({
-        "ordinal": ordinal,
-        "batch_id": approval.batch_id,
-        "parent_candidate_digest": approval.parent_candidate_digest,
-        "preflight_sha256": approval.preflight_sha256,
-        "manifest_sha256": result.report.manifest_sha256,
-        "approval": {
+    for ordinal, approved in enumerate(approved_batches, start=1):
+        result = approved.preflight_result
+        approval = approved.approval
+        prior = cumulative
+        cumulative += len(result.candidates)
+        ledger.append({
+            "ordinal": ordinal,
             "batch_id": approval.batch_id,
-            "preflight_sha256": approval.preflight_sha256,
-            "target_release_version": approval.target_release_version,
             "parent_candidate_digest": approval.parent_candidate_digest,
-            "statement": approval.statement,
-        },
-        "batch_candidate_count": len(result.candidates),
-        "cumulative_candidate_count": cumulative,
-        "projected_question_count": 639 + cumulative,
-    })
-    image_by_path = {item.relative_path: item for item in result.manifest.image_files}
-    for order, candidate in enumerate(result.candidates):
-        destinations = []
-        for image_order, (source, digest, role) in enumerate(zip(
-            candidate.image_paths,
-            candidate.image_sha256s,
-            candidate.image_roles,
-            strict=True,
-        )):
-            evidence = image_by_path[source]
-            if evidence.sha256 != digest or evidence.kind != "image":
-                raise ValueError("candidate image authority mismatch")
-            destination = image_destination("images/sha256", source, digest)
-            destinations.append(destination)
-            images.append({
+            "preflight_sha256": approval.preflight_sha256,
+            "manifest_sha256": result.report.manifest_sha256,
+            "approval": {
+                "batch_id": approval.batch_id,
+                "preflight_sha256": approval.preflight_sha256,
+                "target_release_version": approval.target_release_version,
+                "parent_candidate_digest": approval.parent_candidate_digest,
+                "statement": approval.statement,
+            },
+            "batch_candidate_count": len(result.candidates),
+            "cumulative_candidate_count": cumulative,
+            "projected_question_count": 639 + cumulative,
+        })
+        image_by_path = {item.relative_path: item for item in result.manifest.image_files}
+        for order, candidate in enumerate(result.candidates):
+            destinations = []
+            for image_order, (source, digest, role) in enumerate(zip(
+                candidate.image_paths,
+                candidate.image_sha256s,
+                candidate.image_roles,
+                strict=True,
+            )):
+                evidence = image_by_path[source]
+                if evidence.sha256 != digest or evidence.kind != "image":
+                    raise ValueError("candidate image authority mismatch")
+                destination = image_destination("images/sha256", source, digest)
+                destinations.append(destination)
+                images.append({
+                    "batch_ordinal": ordinal,
+                    "batch_id": approval.batch_id,
+                    "proposed_question_id": candidate.proposed_question_id,
+                    "image_order": image_order,
+                    "source_relative_path": source,
+                    "candidate_relative_path": destination,
+                    "sha256": digest,
+                    "size_bytes": evidence.size_bytes,
+                    "kind": "image",
+                    "role": role,
+                })
+            candidates.append({
+                "aggregate_order": 639 + prior + order + 1,
                 "batch_ordinal": ordinal,
                 "batch_id": approval.batch_id,
-                "proposed_question_id": candidate.proposed_question_id,
-                "image_order": image_order,
-                "source_relative_path": source,
-                "candidate_relative_path": destination,
-                "sha256": digest,
-                "size_bytes": evidence.size_bytes,
-                "kind": "image",
-                "role": role,
+                "batch_candidate_order": order,
+                "record": as_plain_dict(candidate),
+                "candidate_image_paths": destinations,
             })
-        candidates.append({
-            "aggregate_order": 639 + prior + order + 1,
-            "batch_ordinal": ordinal,
-            "batch_id": approval.batch_id,
-            "batch_candidate_order": order,
-            "record": as_plain_dict(candidate),
-            "candidate_image_paths": destinations,
-        })
     images.sort(key=lambda item: (
         item["candidate_relative_path"], item["batch_ordinal"], item["batch_id"],
         item["proposed_question_id"], item["image_order"],
@@ -624,73 +624,97 @@ def _authority_expectations(
     }
     authority: dict[str, bytes] = {}
     try:
-        if len(approved_batches) != 1:
-            raise ValueError("first-generation verification requires exactly one batch")
         identity, ledger, _, _ = _candidate_identity(approved_batches)
         prior_ledger: list[dict[str, object]] = []
+        prior_candidates: list[dict[str, object]] = []
+        prior_images: list[dict[str, object]] = []
         prior_digest = _genesis_digest()
         prior_count = 0
         seen_batch_ids: set[str] = set()
         seen_preflight_sha256s: set[str] = set()
-        ordinal, approved = 1, approved_batches[0]
-        if not _nested_authority_valid(approved):
-            raise TypeError
-        result = approved.preflight_result
-        approval = approved.approval
-        expected_statement = (
-            f"USER APPROVED IMPORT BATCH {approval.batch_id} "
-            f"{approval.preflight_sha256} V1.23 PARENT {approval.parent_candidate_digest}"
-        )
-        valid["approval"] &= (
-            approval.batch_id == result.manifest.batch_id
-            and approval.preflight_sha256 == result.report.preflight_sha256
-            and approval.target_release_version == "V1.23"
-            and approval.parent_candidate_digest == prior_digest
-            and approval.statement == expected_statement
-            and approval.batch_id not in seen_batch_ids
-        )
-        valid["parent"] &= (
-            result.effective_state.candidate_digest == prior_digest
-            and result.effective_state.candidate_count == prior_count
-            and result.effective_state.projected_question_count == 639 + prior_count
-            and len(result.effective_state.batch_ledger) == ordinal - 1
-            and [_plain(item) for item in result.effective_state.batch_ledger]
-            == prior_ledger
-            and result.report.parent_candidate_digest == prior_digest
-            and result.report.parent_batch_count == ordinal - 1
-            and result.report.before_count == 639 + prior_count
-        )
-        payload = _preflight_payload(approved)
-        manifest_sha = sha256_bytes(canonical_json_file_bytes(
-            _manifest_projection(result.manifest)
-        ))
-        preflight_sha = sha256_bytes(canonical_json_file_bytes(payload))
-        valid["preflight"] &= (
-            _preflight_authority_closed(approved)
-            and
-            result.report.status == "READY FOR USER IMPORT APPROVAL"
-            and not result.report.blocking_errors
-            and not result.issues
-            and result.report.manifest_sha256 == manifest_sha
-            and result.report.preflight_sha256 == preflight_sha
-            and approval.preflight_sha256 not in seen_preflight_sha256s
-        )
-        valid["packages"] &= _package_evidence_valid(approved)
-        directory = (
-            f"authority/batches/{ordinal:06d}/{approval.batch_id}"
-        )
-        authority[f"{directory}/preflight.json"] = canonical_json_file_bytes({
-            "preflight_sha256": approval.preflight_sha256,
-            "payload": payload,
-        })
-        authority[f"{directory}/approval.json"] = canonical_json_file_bytes({
-            "schema_version": "task13-v123-import-approval-v1",
-            "batch_id": approval.batch_id,
-            "preflight_sha256": approval.preflight_sha256,
-            "target_release_version": "V1.23",
-            "parent_candidate_digest": approval.parent_candidate_digest,
-            "statement": approval.statement,
-        })
+        for ordinal, approved in enumerate(approved_batches, start=1):
+            if not _nested_authority_valid(approved):
+                raise TypeError
+            result = approved.preflight_result
+            approval = approved.approval
+            expected_statement = (
+                f"USER APPROVED IMPORT BATCH {approval.batch_id} "
+                f"{approval.preflight_sha256} V1.23 PARENT {approval.parent_candidate_digest}"
+            )
+            valid["approval"] &= (
+                approval.batch_id == result.manifest.batch_id
+                and approval.preflight_sha256 == result.report.preflight_sha256
+                and approval.target_release_version == "V1.23"
+                and approval.parent_candidate_digest == prior_digest
+                and approval.statement == expected_statement
+                and approval.batch_id not in seen_batch_ids
+            )
+            valid["parent"] &= (
+                result.effective_state.candidate_digest == prior_digest
+                and result.effective_state.candidate_count == prior_count
+                and result.effective_state.projected_question_count == 639 + prior_count
+                and len(result.effective_state.batch_ledger) == ordinal - 1
+                and [_plain(item) for item in result.effective_state.batch_ledger]
+                == prior_ledger
+                and result.report.parent_candidate_digest == prior_digest
+                and result.report.parent_batch_count == ordinal - 1
+                and result.report.before_count == 639 + prior_count
+            )
+            payload = _preflight_payload(approved)
+            manifest_sha = sha256_bytes(canonical_json_file_bytes(
+                _manifest_projection(result.manifest)
+            ))
+            preflight_sha = sha256_bytes(canonical_json_file_bytes(payload))
+            valid["preflight"] &= (
+                _preflight_authority_closed(approved)
+                and
+                result.report.status == "READY FOR USER IMPORT APPROVAL"
+                and not result.report.blocking_errors
+                and not result.issues
+                and result.report.manifest_sha256 == manifest_sha
+                and result.report.preflight_sha256 == preflight_sha
+                and approval.preflight_sha256 not in seen_preflight_sha256s
+            )
+            valid["packages"] &= _package_evidence_valid(approved)
+            directory = (
+                f"authority/batches/{ordinal:06d}/{approval.batch_id}"
+            )
+            authority[f"{directory}/preflight.json"] = canonical_json_file_bytes({
+                "preflight_sha256": approval.preflight_sha256,
+                "payload": payload,
+            })
+            authority[f"{directory}/approval.json"] = canonical_json_file_bytes({
+                "schema_version": "task13-v123-import-approval-v1",
+                "batch_id": approval.batch_id,
+                "preflight_sha256": approval.preflight_sha256,
+                "target_release_version": "V1.23",
+                "parent_candidate_digest": approval.parent_candidate_digest,
+                "statement": approval.statement,
+            })
+            prior_ledger = ledger[:ordinal]
+            prior_candidates = identity["candidate_projection"][: prior_count + len(result.candidates)]
+            prior_images = [
+                item for item in identity["image_projection"]
+                if item["batch_ordinal"] <= ordinal
+            ]
+            prior_count += len(result.candidates)
+            prefix = {
+                "schema": "task13-v123-candidate-identity-v1",
+                "baseline": _BASELINE,
+                "target_release_version": "V1.23",
+                "batch_ledger": prior_ledger,
+                "candidate_projection": prior_candidates,
+                "image_projection": prior_images,
+                "counts": {
+                    "baseline_question_count": 639,
+                    "batch_count": ordinal,
+                    "new_candidate_count": prior_count,
+                    "projected_question_count": 639 + prior_count,
+                },
+            }
+            prior_digest = sha256_bytes(canonical_json_file_bytes(prefix))
+            seen_batch_ids.add(approval.batch_id)
+            seen_preflight_sha256s.add(approval.preflight_sha256)
         return valid, authority, identity
     except (
         AttributeError, KeyError, OSError, PipelineError, TypeError, ValueError,
@@ -890,39 +914,39 @@ def _sqlite_expected(
         (item["batch_ordinal"], item["batch_id"], item["batch_candidate_order"]): item
         for item in candidate_projection
     }
-    ordinal, approved = 1, approved_batches[0]
-    result = approved.preflight_result
-    approval = approved.approval
-    cumulative += len(result.candidates)
-    ledgers.append((
-        ordinal, approval.batch_id, "V1.23", "task13-v123-candidate-v1",
-        approval.parent_candidate_digest, approval.preflight_sha256,
-        result.report.manifest_sha256, approval.statement, "V1.22",
-        BASELINE_SHA256, BASELINE_RELEASE_DIGEST, 639, len(result.candidates),
-        cumulative, 639 + cumulative, "candidate",
-    ))
-    for order, candidate in enumerate(result.candidates):
-        projection = candidate_by_key[(ordinal, approval.batch_id, order)]
-        raw = [getattr(candidate, field.name) for field in fields(ImportCandidate)]
-        for index in (16, 17, 18, 20):
-            raw[index] = canonical_json_bytes(raw[index]).decode("utf-8")
-        candidates.append((
-            ordinal, approval.batch_id, order, projection["aggregate_order"],
-            *raw,
-            canonical_json_bytes(projection["candidate_image_paths"]).decode("utf-8"),
-            "candidate", 0,
+    for ordinal, approved in enumerate(approved_batches, start=1):
+        result = approved.preflight_result
+        approval = approved.approval
+        cumulative += len(result.candidates)
+        ledgers.append((
+            ordinal, approval.batch_id, "V1.23", "task13-v123-candidate-v1",
+            approval.parent_candidate_digest, approval.preflight_sha256,
+            result.report.manifest_sha256, approval.statement, "V1.22",
+            BASELINE_SHA256, BASELINE_RELEASE_DIGEST, 639, len(result.candidates),
+            cumulative, 639 + cumulative, "candidate",
         ))
-    primary_types = tuple(sorted({
-        candidate.primary_type for candidate in result.candidates
-    }))
-    tags = tuple(sorted({
-        tag for candidate in result.candidates for tag in candidate.tags
-    }))
-    for kind, values in (("primary_type", primary_types), ("tag", tags)):
-        for sort_order, value in enumerate(values, start=1):
-            taxonomy.append(
-                (ordinal, approval.batch_id, kind, value, sort_order, "candidate")
-            )
+        for order, candidate in enumerate(result.candidates):
+            projection = candidate_by_key[(ordinal, approval.batch_id, order)]
+            raw = [getattr(candidate, field.name) for field in fields(ImportCandidate)]
+            for index in (16, 17, 18, 20):
+                raw[index] = canonical_json_bytes(raw[index]).decode("utf-8")
+            candidates.append((
+                ordinal, approval.batch_id, order, projection["aggregate_order"],
+                *raw,
+                canonical_json_bytes(projection["candidate_image_paths"]).decode("utf-8"),
+                "candidate", 0,
+            ))
+        primary_types = tuple(sorted({
+            candidate.primary_type for candidate in result.candidates
+        }))
+        tags = tuple(sorted({
+            tag for candidate in result.candidates for tag in candidate.tags
+        }))
+        for kind, values in (("primary_type", primary_types), ("tag", tags)):
+            for sort_order, value in enumerate(values, start=1):
+                taxonomy.append(
+                    (ordinal, approval.batch_id, kind, value, sort_order, "candidate")
+                )
     images.extend(tuple(
         item[name] for name in (
             "batch_ordinal", "batch_id", "proposed_question_id", "image_order",
@@ -970,7 +994,8 @@ def _actual_collision_free(
         normalized: set[str] = set()
         image_claims: dict[tuple[str, str], str] = {}
         expected_adaptations: dict[int, list[ImportAdaptation]] = {
-            1: []
+            ordinal: []
+            for ordinal in range(1, len(approved_batches) + 1)
         }
         for row in references:
             normalized_value = row[5] or _normalized_text_sha256(row[6])
@@ -1051,7 +1076,7 @@ def _actual_collision_free(
                 item.evidence,
                 item.reason,
             ))) == approved.preflight_result.report.adaptations
-            for ordinal, approved in ((1, approved_batches[0]),)
+            for ordinal, approved in enumerate(approved_batches, start=1)
         )
     except (json.JSONDecodeError, sqlite3.Error, TypeError, ValueError):
         return False
@@ -1081,8 +1106,10 @@ def _sqlite_checks(
         return state
     candidate = baseline = None
     try:
-        candidate = sqlite3.connect(candidate_path.resolve().as_uri() + "?mode=ro", uri=True)
-        baseline = sqlite3.connect(baseline_path.resolve().as_uri() + "?mode=ro", uri=True)
+        candidate = sqlite3.connect(candidate_path.resolve().as_uri() + "?mode=ro&immutable=1", uri=True)
+        baseline = sqlite3.connect(baseline_path.resolve().as_uri() + "?mode=ro&immutable=1", uri=True)
+        candidate.execute("PRAGMA query_only=ON")
+        baseline.execute("PRAGMA query_only=ON")
         candidate.execute("PRAGMA foreign_keys=ON")
         candidate.execute("SELECT name FROM sqlite_master LIMIT 1").fetchall()
         baseline.execute("SELECT name FROM sqlite_master LIMIT 1").fetchall()

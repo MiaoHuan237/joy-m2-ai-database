@@ -753,9 +753,10 @@ def _parent_context(
     connection: sqlite3.Connection | None = None
     try:
         connection = sqlite3.connect(
-            f"{database_path.resolve(strict=True).as_uri()}?mode=ro",
+            f"{database_path.resolve(strict=True).as_uri()}?mode=ro&immutable=1",
             uri=True,
         )
+        connection.execute("PRAGMA query_only=ON")
         ledger_rows = tuple(connection.execute(
             "SELECT batch_ordinal,batch_id,parent_candidate_digest,preflight_sha256,"
             "manifest_sha256,approval_statement,batch_candidate_count,"

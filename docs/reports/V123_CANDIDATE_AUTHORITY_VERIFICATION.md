@@ -39,7 +39,6 @@ Human Native / Inline execution approval received 2026-10-10. No real import app
 - Scoped inline review: first-generation only. Single-batch projection and SQLite insertion; no prefix replay reconstruction. Multi-batch writer explicitly remains unimplemented and parent preflight remains a scaffold. Pure hash/JSON/path/SQL/image helpers reuse their version-neutral implementations.
 - GREEN development corrected a wrong helper import and fixed expected_user_version123 in the verifier contract; these implementation errors were not new RED evidence. A test prerequisite used the same output twice and now uses a separate control directory without relaxing assertions.
 
-## Execution rulings
 ## Task 4B1 — verified-parent preflight
 
 - RED: 9/9 failures, 0 errors, exit1, exclusively at parent-preflight scaffold after first-generation build and independent PASS. GREEN: 9 focused; candidate + genesis-preflight suites56/56 PASS, no skips/expected failures.
@@ -49,9 +48,19 @@ Human Native / Inline execution approval received 2026-10-10. No real import app
 
 ## Execution rulings
 
+## Task 4B2 — ordered multi-batch writer / verifier
+
+- RED: 8 collected, 9 assertion/subtest failures, 0 errors, exit1; every second-batch operation follows verified A and READY B bound to A. The already-safe nonmatching-generation verifier refusal passed before prefix support. Added URI hardening test independently failed on missing immutable flag, not an input/setup error.
+- GREEN: 9 focused / 111 cumulative V123 tests PASS, zero skips/expected failures. Full(A,B) gives641, third preflight642 and detects collisions against BOTH A and B. No real-data count is predicted.
+- Full prefix replay, stale B/C approvals, old target, null/empty/genesis reset, duplicate/truncated/reordered/substituted batches, forged counts/candidates, changed canonical bytes, no-replace, failed-publication preservation, two-root byte equality and all read-only connections are covered.
+- Scope review: only after 4B1 GREEN are full-prefix reconstruction and multi-batch database insertion enabled. All readonly SQLite connections in V123 use escaped absolute URI, mode=ro&immutable=1 and query_only=ON. The parent-preflight hardening is an owning-task in-scope correction under Plan Global Constraints, not historical reader changes.
+- Protected baseline/source/candidate snapshot292/292 unchanged; AGENTS hash unchanged; releases/V1.23 absent.
+
+## Execution rulings
+
 - Final independent review and any remediation re-review follow the approved Plan (stronger than the inline skill's no-re-review default); cost: additional review time only.
 - The skill's self-ignored per-plan workspace holds disposable logs/ledger under Design section 10's scratch allowance, not an extra maintained entry point.
 
 ## Remaining gates
 
-Tasks 4B2–6, full candidate implementation, independent whole-implementation review, fresh final maintained/frozen gates and approved-2023 canonical/read-only preflight remain pending. No real writer, V1.23 formal release or next-year ingestion is authorized.
+Tasks 5–6, independent whole-implementation review, fresh final maintained/frozen gates and approved-2023 canonical/read-only preflight remain pending. No real writer, V1.23 formal release or next-year ingestion is authorized.

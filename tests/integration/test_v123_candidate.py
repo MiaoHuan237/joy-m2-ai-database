@@ -80,7 +80,7 @@ def _approved(package: Path, config: PipelineConfig, parent=None) -> V123Approve
     result = preflight_v123_import(request, config)
     report = result.report
     assert report.status == "READY FOR USER IMPORT APPROVAL" and not report.blocking_errors
-    assert report.batch_id in {"TASK10-A", "TASK10-B"}, report.batch_id
+    assert report.batch_id in {"TASK10-A", "TASK10-B", "TASK10-C"}, report.batch_id
     assert report.parent_candidate_digest == (GENESIS if parent is None else json.loads((parent.candidate_dir / "candidate_manifest.json").read_text())["candidate_digest"])
     approval = V123ImportApproval(
         report.batch_id,
@@ -663,6 +663,280 @@ class V123FirstGenerationTests(unittest.TestCase):
         with mock.patch.object(writer.sqlite3,"connect",side_effect=audited_connect):
             self.build()
         self.assertTrue(calls)
+
+
+class V123MultiBatchTests(unittest.TestCase):
+
+    def test_all_read_only_connections_use_immutable_uri_and_query_only(self):
+        from unittest.mock import patch
+        from joy_m2.ingest import build_v123_candidate, verify_v123_candidate
+        original = sqlite3.connect
+        observed = []
+        def observe(*args, **kwargs):
+            connection = original(*args, **kwargs)
+            if "mode=ro" in str(args[0]):
+                statements = []
+                connection.set_trace_callback(statements.append)
+                observed.append((str(args[0]), kwargs, statements))
+            return connection
+        with patch.object(sqlite3, "connect", side_effect=observe):
+            a = _approved(self.package, self.config)
+            parent = self.root / "readonly-control"
+            build_v123_candidate(V123CandidateBuildRequest((a,),parent,_contract()),self.config)
+            request = V123CandidateVerificationRequest(parent,(a,),_contract())
+            self.assertEqual(verify_v123_candidate(request,self.config).status,"PASS")
+            _approved(_make_named_package(self.root,"b"),self.config,request)
+        self.assertTrue(observed)
+        for uri, kwargs, statements in observed:
+            self.assertIn("immutable=1",uri)
+            self.assertTrue(kwargs.get("uri"))
+            self.assertIn("PRAGMA query_only=ON", statements)
+
+    def prefix(self):
+        from joy_m2.ingest import build_v123_candidate, verify_v123_candidate
+        a = _approved(self.package, self.config)
+        parent = self.root / "parent-prefix"
+        artifacts = build_v123_candidate(V123CandidateBuildRequest((a,), parent, _contract()), self.config)
+        request = V123CandidateVerificationRequest(parent, (a,), _contract())
+        self.assertEqual(verify_v123_candidate(request, self.config).status, "PASS")
+        b = _approved(_make_named_package(self.root, "b"), self.config, request)
+        self.assertEqual(b.preflight_result.report.before_count, 640)
+        self.assertEqual(b.approval.parent_candidate_digest, artifacts.state.candidate_digest)
+        return a, b, parent
+
+    def append(self, prefix, target):
+        from joy_m2.ingest import build_v123_candidate
+        return self._invoke(build_v123_candidate,
+            V123CandidateBuildRequest(prefix, target, _contract()), self.config)
+
+    def test_third_preflight_contains_entire_prefix_not_only_last(self):
+        from dataclasses import replace
+        a, b, parent = self.prefix()
+        before = _tree(parent)
+        child = self.append((a, b), self.root / "child")
+        request = V123CandidateVerificationRequest(child.database.path.parent, (a,b), _contract())
+        c = _make_named_package(self.root, "c")
+        ready = preflight_v123_import(replace(_request(c), parent_candidate=request), self.config)
+        self.assertEqual((ready.report.before_count, ready.report.projected_after_count), (641,642))
+        self.assertEqual(ready.report.parent_batch_count, 2)
+        for accepted in (a,b):
+            first = accepted.preflight_result.candidates[0]
+            _rewrite_record(c, {"proposed_question_id": first.proposed_question_id})
+            blocked = preflight_v123_import(replace(_request(c), parent_candidate=request), self.config)
+            self.assertIn("collision_candidate_id", {i.code for i in blocked.issues})
+        self.assertEqual(_tree(parent), before)
+
+    def test_fault_and_existing_destination_preserve_every_parent_byte(self):
+        from unittest.mock import patch
+        a, b, parent = self.prefix()
+        self.append((a,b), self.root / "control")
+        before = _tree(self.root)
+        with patch("joy_m2.ingest.v123_writer.atomic_rename_no_replace", side_effect=OSError("injected")):
+            with self.assertRaises(PipelineError):
+                self.append((a,b), self.root / "failed")
+        self.assertEqual(_tree(self.root), before)
+        with self.assertRaises(OutputConflictError):
+            self.append((a,b), parent)
+        self.assertEqual(_tree(self.root), before)
+
+    def test_invalid_prefixes_approvals_and_substitution_are_rejected(self):
+        from dataclasses import replace
+        from joy_m2.ingest import verify_v123_candidate
+        a, b, parent = self.prefix()
+        child = self.append((a,b), self.root / "control")
+        before = _tree(self.root)
+        for label, prefix in (("duplicate-batch",(a,a)),("truncated",(b,)),("substituted",(b,a))):
+            with self.subTest(label=label), self.assertRaises(PipelineError):
+                self.append(prefix, self.root / label)
+            report = verify_v123_candidate(V123CandidateVerificationRequest(
+                child.database.path.parent, prefix, _contract()), self.config)
+            self.assertEqual(report.status, "FAIL")
+        for key, values in (("target_release_version", ("V1.22",)),
+                            ("parent_candidate_digest", (None,"",GENESIS,"0"*64))):
+            for value in values:
+                with self.subTest(key=key,value=value):
+                    approval = object.__new__(V123ImportApproval)
+                    for field, original in vars(b.approval).items():
+                        object.__setattr__(approval, field, value if field==key else original)
+                    forged = object.__new__(V123ApprovedBatch)
+                    for field, original in vars(b).items():
+                        object.__setattr__(forged, field, approval if field=="approval" else original)
+                    with self.assertRaises(PipelineError):
+                        self.append((a,forged),self.root/"forged")
+        self.assertEqual(_tree(self.root), before)
+
+    def test_collision_defense_rejects_forged_ready_batch(self):
+        from dataclasses import replace
+        a,b,parent = self.prefix()
+        self.append((a,b), self.root / "control")
+        # Valid authority cannot be manufactured by copying a previous candidate
+        # under a report that still claims one net-new B record.
+        forged_result = replace(b.preflight_result, candidates=a.preflight_result.candidates)
+        forged = replace(b, preflight_result=forged_result)
+        before = _tree(parent)
+        with self.assertRaises(PipelineError):
+            self.append((a,forged),self.root/"collision")
+        self.assertEqual(_tree(parent), before)
+    setUp = V123FirstGenerationTests.setUp
+    tearDown = V123FirstGenerationTests.tearDown
+    _invoke = V123FirstGenerationTests._invoke
+
+    def test_second_batch_requires_verified_parent_and_appends_atomically(self):
+        from joy_m2.ingest import build_v123_candidate as _build
+        build_v123_candidate = lambda *args: self._invoke(_build, *args)
+
+        approved_a = _approved(self.package, self.config)
+        parent_root = self.root / "parent"
+        parent = build_v123_candidate(
+            V123CandidateBuildRequest((approved_a,), parent_root, _contract()),
+            self.config,
+        )
+        package_b = _make_named_package(self.root, "b")
+        parent_request = V123CandidateVerificationRequest(
+            parent_root, (approved_a,), _contract()
+        )
+        approved_b = _approved(package_b, self.config, parent_request)
+        self.assertEqual(approved_b.approval.parent_candidate_digest, parent.state.candidate_digest)
+        self.assertEqual(approved_b.preflight_result.report.status, "READY FOR USER IMPORT APPROVAL")
+        child = build_v123_candidate(
+            V123CandidateBuildRequest(
+                (approved_a, approved_b), self.root / "child", _contract()
+            ),
+            self.config,
+        )
+        self.assertEqual(parent.state.projected_question_count, 640)
+        self.assertEqual(child.state.projected_question_count, 641)
+        self.assertEqual(len(child.state.batch_ledger), 2)
+        self.assertEqual(
+            child.state.batch_ledger[1].parent_candidate_digest,
+            parent.state.candidate_digest,
+        )
+        twin = build_v123_candidate(
+            V123CandidateBuildRequest((approved_a, approved_b),
+                                     self.root / "child-twin", _contract()),
+            self.config,
+        )
+        self.assertEqual(_tree(child.database.path.parent), _tree(twin.database.path.parent))
+        self.assertEqual(child.state.candidate_digest, twin.state.candidate_digest)
+        with self.assertRaises(PipelineError):
+            build_v123_candidate(
+                V123CandidateBuildRequest((approved_a, approved_b),
+                                         parent_root / "nested", _contract()),
+                self.config,
+            )
+
+    def test_stale_preflight_and_approval_cannot_append_and_preserve_parent(self):
+        from joy_m2.ingest import build_v123_candidate as _build
+        build_v123_candidate = lambda *args: self._invoke(_build, *args)
+
+        approved_a = _approved(self.package, self.config)
+        parent_a = self.root / "parent-a"
+        build_v123_candidate(
+            V123CandidateBuildRequest((approved_a,), parent_a, _contract()),
+            self.config,
+        )
+        package_b = _make_named_package(self.root, "b")
+        approved_b = _approved(
+            package_b,
+            self.config,
+            V123CandidateVerificationRequest(parent_a, (approved_a,), _contract()),
+        )
+        parent_ab = self.root / "parent-ab"
+        build_v123_candidate(
+            V123CandidateBuildRequest(
+                (approved_a, approved_b), parent_ab, _contract()
+            ),
+            self.config,
+        )
+        before = _tree(parent_ab)
+        package_c = _make_named_package(self.root, "c")
+        stale_c = _approved(
+            package_c,
+            self.config,
+            V123CandidateVerificationRequest(parent_a, (approved_a,), _contract()),
+        )
+        current_c = _approved(
+            _make_named_package(self.root / "current", "c"),
+            self.config,
+            V123CandidateVerificationRequest(
+                parent_ab, (approved_a, approved_b), _contract()
+            ),
+        )
+        self.assertNotEqual(
+            stale_c.preflight_result.report.parent_candidate_digest,
+            current_c.preflight_result.report.parent_candidate_digest,
+        )
+        self.assertNotEqual(
+            stale_c.preflight_result.report.preflight_sha256,
+            current_c.preflight_result.report.preflight_sha256,
+        )
+        output = self.root / "stale-child"
+        with self.assertRaises(ImportApprovalError):
+            build_v123_candidate(
+                V123CandidateBuildRequest(
+                    (approved_a, approved_b, stale_c), output, _contract()
+                ),
+                self.config,
+            )
+        self.assertFalse(output.exists())
+        self.assertEqual(_tree(parent_ab), before)
+
+
+    def test_multi_batch_verifier_rejects_nonmatching_existing_generation(self):
+        from joy_m2.ingest import build_v123_candidate, verify_v123_candidate
+        approved_a=_approved(self.package,self.config)
+        parent_root=self.root/"parent-verify"
+        parent=build_v123_candidate(V123CandidateBuildRequest((approved_a,),parent_root,_contract()),self.config)
+        request=V123CandidateVerificationRequest(parent_root,(approved_a,),_contract())
+        self.assertEqual(verify_v123_candidate(request,self.config).status,"PASS")
+        approved_b=_approved(_make_named_package(self.root,"b"),self.config,request)
+        self.assertEqual(approved_b.approval.parent_candidate_digest,parent.state.candidate_digest)
+        try:
+            result=verify_v123_candidate(V123CandidateVerificationRequest(parent_root,(approved_a,approved_b),_contract()),self.config)
+        except NotImplementedError:
+            self.fail("valid B authority reached multi-batch verifier missing behavior")
+        self.assertEqual(result.status,"FAIL")
+
+    def test_reordered_genesis_stale_package_and_forged_counts_block(self):
+        from joy_m2.ingest import build_v123_candidate, verify_v123_candidate
+        from dataclasses import replace
+        approved_a=_approved(self.package,self.config)
+        parent_root=self.root/"parent-negatives"
+        parent=build_v123_candidate(V123CandidateBuildRequest((approved_a,),parent_root,_contract()),self.config)
+        parent_request=V123CandidateVerificationRequest(parent_root,(approved_a,),_contract())
+        self.assertEqual(verify_v123_candidate(parent_request,self.config).status,"PASS")
+        package_b=_make_named_package(self.root,"b")
+        b=_approved(package_b,self.config,parent_request)
+        stale=_approved(package_b,self.config,None)
+        self.assertNotEqual(b.approval.parent_candidate_digest,stale.approval.parent_candidate_digest)
+        before=_tree(parent_root)
+        for label,prefix in (("reordered",(b,approved_a)),("stale-genesis",(approved_a,stale))):
+            with self.subTest(label=label):
+                output=self.root/label
+                try:
+                    with self.assertRaises(ImportApprovalError):
+                        build_v123_candidate(V123CandidateBuildRequest(prefix,output,_contract()),self.config)
+                except NotImplementedError:
+                    self.fail("valid B authority reached missing multi-batch writer")
+                self.assertFalse(output.exists())
+                self.assertEqual(_tree(parent_root),before)
+        forged_report = object.__new__(type(b.preflight_result.report))
+        for key, value in vars(b.preflight_result.report).items():
+            object.__setattr__(forged_report, key, value + 1 if key == "new_candidate_count" else value)
+        forged_result = replace(b.preflight_result, report=forged_report)
+        forged_b = replace(b, preflight_result=forged_result)
+        with self.assertRaises(ImportApprovalError):
+            build_v123_candidate(V123CandidateBuildRequest(
+                (approved_a, forged_b), self.root/"forged-counts", _contract()), self.config)
+        verification = verify_v123_candidate(V123CandidateVerificationRequest(
+            parent_root, (approved_a, forged_b), _contract()), self.config)
+        self.assertEqual(verification.status, "FAIL")
+        self.assertFalse((self.root/"forged-counts").exists())
+        record=package_b/"records/candidates.json"
+        record.write_bytes(record.read_bytes()+b" ")
+        with self.assertRaises(ImportApprovalError):
+            self._invoke(build_v123_candidate,V123CandidateBuildRequest((approved_a,b),self.root/"stale-bytes",_contract()),self.config)
+        self.assertEqual(_tree(parent_root),before)
 
 
 class V123ParentPreflightTests(unittest.TestCase):
