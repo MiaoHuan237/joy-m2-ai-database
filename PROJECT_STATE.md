@@ -51,7 +51,7 @@ Updated: 2026-10-10 (Asia/Shanghai)
   Plan: `docs/superpowers/plans/2026-10-09-v123-next-version-candidate.md`.
   The user explicitly approved the committed Plan and Native / Inline Execution.
   Task 1 models, exact API scaffolds and strict loader are GREEN (35 new tests;
-  90 including six historical surface suites). Other APIs remain scaffolds;
+  90 including six historical surface suites). At that checkpoint other APIs were scaffolds;
   this is not a completed candidate implementation or real-import authority.
   Task 2 bridge is now GREEN: 11 focused tests / 96 with models and Task10B.
   Five-file output, four unchanged non-manifest projections, duplicate-looking
@@ -60,7 +60,8 @@ Updated: 2026-10-10 (Asia/Shanghai)
   Task 3 genesis preflight is now GREEN: 23 focused / 69 cumulative V123 tests.
   It indexes all 639 formal rows with exact baseline identity, reads published/
   selectable rows only and preserves duplicate/collision/adaptation semantics.
-  Parent preflight and writer/verifier remain scaffolds. No real output consumed.
+  Task 4A first-generation writer/verifier is GREEN: 23 focused / 93 cumulative.
+  Parent preflight and multi-batch writing remain unimplemented. No real output consumed.
   Do not request the completed Design approval again.
 - Formal V1.22 remains the published 639-record baseline; this is not a count
   of semantically distinct originals. All V1.18–V1.22 formal identities and old

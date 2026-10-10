@@ -14,8 +14,6 @@ Human Native / Inline execution approval received 2026-10-10. No real import app
 - Scoped inline review: compared all 13 field/type envelopes, fixed V1.22/639 baseline and V1.23 namespace/genesis, five API annotations, exact export suffix and six historical test diffs. Preflight/bridge/writer/verifier remain NotImplementedError; profile module is docstring-only. No later behavior ported.
 - User AGENTS SHA remains `75ffa9680b18a0875fde8d36a8ca3e0ebda0603f10e8dc788e71ea8353d0311d`; excluded from every task commit.
 
-## Execution rulings
-
 ## Task 2 — approved-transcription canonical bridge
 
 - Effective RED: 11 collected, 1 API PASS, 14 assertion/subtest FAIL, 0 ERROR, exit 1. A preliminary forged-record fixture used the validating constructor and was corrected before recording behavioral RED; that setup error is not RED evidence.
@@ -33,11 +31,19 @@ Human Native / Inline execution approval received 2026-10-10. No real import app
 - Scoped review: no candidate DDL/writer or verified-parent branch implemented. Genesis helper reconstructs the literal approved projection using neutral canonical-JSON/hash helpers. The copied formal reader explicitly checks published/selectable state and query-only immutable URI under the approved V123 contract; historical readers are unchanged.
 - Protected snapshot: 292/292 files unchanged; user AGENTS SHA unchanged; releases/V1.23 absent.
 
-## Execution rulings (continued)
+## Task 4A — first-generation writer / verifier
+
+- Effective RED: 23 collected, 27 assertion/subtest failures, 0 errors, exit 1, at writer/verifier scaffolds. Earlier private-API setup errors were excluded. GREEN: 23/23 focused, 93/93 cumulative including public API; no skips/expected failures.
+- Fixed DDL adds only task13 tables/view and private user_version123. First synthetic batch yields640; all inherited schema SQL, tables/views/metadata and image fields remain exact. New rows remain candidate/selectable0.
+- Writer and verifier independently reconstruct genesis and bind report/approval. All24 checks, malformed-context exceptions vs parsed corruption FAIL, canonical reconstruction, closure, FK/schema/count/image/rollback tampering, no-replace/fault cleanup and two-root ALL-byte determinism are exercised.
+- Scoped inline review: first-generation only. Single-batch projection and SQLite insertion; no prefix replay reconstruction. Multi-batch writer explicitly remains unimplemented and parent preflight remains a scaffold. Pure hash/JSON/path/SQL/image helpers reuse their version-neutral implementations.
+- GREEN development corrected a wrong helper import and fixed expected_user_version123 in the verifier contract; these implementation errors were not new RED evidence. A test prerequisite used the same output twice and now uses a separate control directory without relaxing assertions.
+
+## Execution rulings
 
 - Final independent review and any remediation re-review follow the approved Plan (stronger than the inline skill's no-re-review default); cost: additional review time only.
 - The skill's self-ignored per-plan workspace holds disposable logs/ledger under Design section 10's scratch allowance, not an extra maintained entry point.
 
 ## Remaining gates
 
-Tasks 4A–6, full candidate implementation, independent whole-implementation review, fresh final maintained/frozen gates and approved-2023 canonical/read-only preflight remain pending. No real writer, V1.23 formal release or next-year ingestion is authorized.
+Tasks 4B1–6, full candidate implementation, independent whole-implementation review, fresh final maintained/frozen gates and approved-2023 canonical/read-only preflight remain pending. No real writer, V1.23 formal release or next-year ingestion is authorized.
