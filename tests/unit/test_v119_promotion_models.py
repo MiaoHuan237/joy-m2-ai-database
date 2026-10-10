@@ -139,7 +139,7 @@ class PromotionPublicContractTests(unittest.TestCase):
             ingest.__all__,
             BASE_EXPORTS + TASK9D_EXPORTS + TASK10A_EXPORTS
             + TASK10B_EXPORTS[:9] + TASK11_EXPORTS + TASK10B_EXPORTS[9:]
-        + TASK10C_EXPORTS + V121_PROMOTION_EXPORTS + ("V122PromotionContract", "V122PromotionBuildRequest", "V122PromotionVerificationRequest", "V122ReleasePromotionApproval", "V122PublicationRequest", "V122PromotionArtifacts", "build_v122_promotion", "verify_v122_promotion", "publish_v122_release"),
+        + TASK10C_EXPORTS + V121_PROMOTION_EXPORTS + ("V122PromotionContract", "V122PromotionBuildRequest", "V122PromotionVerificationRequest", "V122ReleasePromotionApproval", "V122PublicationRequest", "V122PromotionArtifacts", "build_v122_promotion", "verify_v122_promotion", "publish_v122_release") + ("V123BatchImportManifest", "V123AdaptedImportPackage", "V123BatchLedgerEntry", "V123EffectiveState", "V123PreflightRequest", "V123ImportPreflightReport", "V123ImportPreflightResult", "V123ImportApproval", "V123ApprovedBatch", "V123CandidateContract", "V123CandidateBuildRequest", "V123CandidateVerificationRequest", "V123CandidateArtifacts", "load_v123_import_manifest", "preflight_v123_import", "build_v123_candidate", "verify_v123_candidate", "adapt_verified_hkdse_pdf_transcription_v123",),
         )
 
     def test_contract_exact_fields_types_defaults_and_frozen(self):

@@ -1474,6 +1474,16 @@ def adapt_verified_hkdse_pdf_transcription_v121(
     )
 
 
+from .v123_models import V123AdaptedImportPackage
+
+
+def adapt_verified_hkdse_pdf_transcription_v123(
+    verified: VerifiedHkdsePdfTranscriptionBatch, output_dir: Path,
+    config: PipelineConfig,
+) -> V123AdaptedImportPackage:
+    raise NotImplementedError("V1.23 bridge not implemented")
+
+
 __all__ = (
     "adapt_verified_hkdse_pdf_transcription_v120",
     "adapt_verified_hkdse_pdf_transcription_v121",

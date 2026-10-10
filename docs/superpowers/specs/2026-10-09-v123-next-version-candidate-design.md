@@ -2,14 +2,14 @@
 
 Date: 2026-10-09
 
-Status: APPROVED — V1.23 WRITTEN DESIGN; PLAN REVIEW / EXECUTION APPROVAL PENDING
+Status: APPROVED — V1.23 WRITTEN DESIGN; PLAN AND NATIVE / INLINE EXECUTION APPROVED (2026-10-10)
 
 ## 1. Approved direction, not implementation approval
 
 The user approved this written Design and authorized preparation and independent
 review of its implementation Plan. The fixed V1.22/639 -> V1.23 direction and
-written Design gates are complete; do not request them again. Obtain human Plan
-review and execution-method confirmation before implementation. This Design
+written Design gates are complete; do not request them again. Human Plan review
+and Native / Inline confirmation were subsequently received. This Design
 approval does not authorize a real batch import or promotion.
 
 The goal is usable PP/MS material, not historical cleanup. Keep existing

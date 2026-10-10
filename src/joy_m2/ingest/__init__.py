@@ -273,3 +273,45 @@ from .v122_promotion_models import (
 )
 from .v122_promotion import build_v122_promotion, publish_v122_release
 from .v122_promotion_verification import verify_v122_promotion
+
+from .v123_models import (
+    V123BatchImportManifest,
+    V123AdaptedImportPackage,
+    V123BatchLedgerEntry,
+    V123EffectiveState,
+    V123PreflightRequest,
+    V123ImportPreflightReport,
+    V123ImportPreflightResult,
+    V123ImportApproval,
+    V123ApprovedBatch,
+    V123CandidateContract,
+    V123CandidateBuildRequest,
+    V123CandidateVerificationRequest,
+    V123CandidateArtifacts,
+)
+from .v123_manifest import load_v123_import_manifest
+from .v123_preflight import preflight_v123_import
+from .v123_writer import build_v123_candidate
+from .v123_verification import verify_v123_candidate
+from .hkdse_pdf_adapter import adapt_verified_hkdse_pdf_transcription_v123
+
+__all__ += (
+    "V123BatchImportManifest",
+    "V123AdaptedImportPackage",
+    "V123BatchLedgerEntry",
+    "V123EffectiveState",
+    "V123PreflightRequest",
+    "V123ImportPreflightReport",
+    "V123ImportPreflightResult",
+    "V123ImportApproval",
+    "V123ApprovedBatch",
+    "V123CandidateContract",
+    "V123CandidateBuildRequest",
+    "V123CandidateVerificationRequest",
+    "V123CandidateArtifacts",
+    "load_v123_import_manifest",
+    "preflight_v123_import",
+    "build_v123_candidate",
+    "verify_v123_candidate",
+    "adapt_verified_hkdse_pdf_transcription_v123",
+)

@@ -10,7 +10,7 @@
 
 **Spec:** `docs/superpowers/specs/2026-10-09-v123-next-version-candidate-design.md`, explicitly human-approved after checkpoint `f185b2e068720b3d6437272f73d1bfdc31b270f9`. Normative V122 source counterpart: `d006c502fd30bb9c655ed8c4694148c16b036f56`.
 
-**Status:** WRITTEN PLAN — PENDING HUMAN REVIEW AND EXECUTION CONFIRMATION. Implementation NOT STARTED. Human Design and 2023 transcription approvals are already complete; do not request them again.
+**Status:** HUMAN-APPROVED PLAN — NATIVE / INLINE EXECUTION AUTHORIZED (2026-10-10). Implementation in progress; Design and 2023 transcription approvals remain complete. No real import or promotion approval is granted.
 
 ## Global Constraints
 
@@ -284,9 +284,9 @@ For the first batch the parent token MUST be the literal V123 genesis above. The
 - [x] Dependency order is models/scaffolds → loader → bridge → genesis → first generation → parent preflight → multibatch → historical/review → real readonly preflight. No later stage is implemented by copying whole predecessor modules before its RED.
 - [x] Already-approved transcription is reused; no fake digest or repeated transcription gate. No net-new forecast or hidden image projection.
 - [x] Independent technical Plan review has zero Critical/Important; remediate in these docs only before commit.
-- [ ] Human Plan review and Native / Inline Execution confirmation BEFORE implementation. Do not repeat Design approval.
+- [x] Human Plan review and Native / Inline Execution confirmation received before implementation (2026-10-10). Do not repeat Design approval.
 
-Recommended method: **Native / Inline Execution**, with one owner for the closely coupled model/preflight/writer tasks, scoped checkpoint reviews and a separate final whole-implementation review. Recommendation is not execution authorization. All implementation checkboxes remain unchecked until the user approves this Plan and confirms execution.
+Approved method: **Native / Inline Execution**, with one owner for the closely coupled model/preflight/writer tasks, scoped checkpoint reviews and a separate final whole-implementation review. Execution approval is not real batch import approval. Implementation checkboxes are completed only with actual evidence.
 
 Technical review record (2026-10-09): read-only reviewer `v123_plan_review`
 independently checked the approved Design, actual predecessor interfaces,
@@ -294,4 +294,4 @@ fixtures, baseline, genesis and 2023 proposal/receipt. Final Critical 0 /
 Important 0 / Minor 0. One minor test-sequencing clarification was resolved:
 load a valid request before file tampering so preflight, not strict-loader setup,
 owns the structured failure. No implementation or PDF retranscription was
-performed by this review. Human Plan review/execution confirmation remains open.
+performed by this review. Human Plan review/execution confirmation was subsequently received on 2026-10-10.

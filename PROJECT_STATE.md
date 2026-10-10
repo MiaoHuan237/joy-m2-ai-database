@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-10-09 (Asia/Shanghai)
+Updated: 2026-10-10 (Asia/Shanghai)
 
 ## Formal data
 
@@ -44,13 +44,15 @@ Updated: 2026-10-09 (Asia/Shanghai)
 
 ### V1.23 minimal candidate roll-forward / HKDSE 2023 preparation
 
-**WRITTEN DESIGN APPROVED — PLAN REVIEW / EXECUTION CONFIRMATION PENDING**
+**PLAN APPROVED — NATIVE / INLINE IMPLEMENTATION IN PROGRESS**
 
 - Approved Design: `docs/superpowers/specs/2026-10-09-v123-next-version-candidate-design.md`.
   The user explicitly approved the written Design and authorized its Plan.
   Plan: `docs/superpowers/plans/2026-10-09-v123-next-version-candidate.md`.
-  Implementation remains NOT STARTED pending human Plan review and execution
-  confirmation; Native / Inline Execution is recommended, not yet authorized.
+  The user explicitly approved the committed Plan and Native / Inline Execution.
+  Task 1 models, exact API scaffolds and strict loader are GREEN (35 new tests;
+  90 including six historical surface suites). Other APIs remain scaffolds;
+  this is not a completed candidate implementation or real-import authority.
   Do not request the completed Design approval again.
 - Formal V1.22 remains the published 639-record baseline; this is not a count
   of semantically distinct originals. All V1.18–V1.22 formal identities and old
@@ -81,7 +83,7 @@ Updated: 2026-10-09 (Asia/Shanghai)
   and operational-evidence files remain unchanged historical snapshots.
   This approval does not approve the V1.23 Design, create canonical/preflight
   output, authorize a real import, or grant promotion. Written Design has since
-  been separately approved; Plan review/execution confirmation is the next gate.
+  been separately approved; Plan and Native execution approval have now followed.
 - Independent source reviewer `hkdse2023_source_review` visually checked the
   twelve PP question pages and nineteen MS pages. Q6's two figures are bound
   to the original PDF SHA/page/region; Q7's shared (b) condition and Q10's
@@ -120,7 +122,7 @@ Updated: 2026-10-09 (Asia/Shanghai)
   checks: Task 7 7/7, Task 10B 50/50, approved transcription binding 12 records /
   100 marks, formal read-only count 639/639 unique IDs, 292 protected identities
   unchanged, exact genesis recomputation and diff checks PASS. The next action
-  is human Plan review and execution confirmation, not another Design approval.
+  was human Plan review and execution confirmation; that gate is now complete.
 
 ### Historical V1.22 approved formal publication — 2019–2022
 
