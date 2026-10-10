@@ -16,9 +16,19 @@ Human Native / Inline execution approval received 2026-10-10. No real import app
 
 ## Execution rulings
 
+## Task 2 — approved-transcription canonical bridge
+
+- Effective RED: 11 collected, 1 API PASS, 14 assertion/subtest FAIL, 0 ERROR, exit 1. A preliminary forged-record fixture used the validating constructor and was corrected before recording behavioral RED; that setup error is not RED evidence.
+- GREEN: 11 bridge + 35 model/loader + 50 existing Task10B = 96/96 PASS, no skips/expected failures.
+- Independent files in two roots are byte-identical. Four non-manifest files exactly match V122 for the same synthetic verified carrier; only manifest target/schema changes. Two duplicate-looking synthetic source records are both retained, including MS, subparts, marks, taxonomy, difficulty and PDF region references. No canonical image assets are invented.
+- Forged proposal/record/approval, nonverified input, symlink/path escape/source overlap, existing destination and atomic publication failure are independently exercised. Failure leaves no new output/owned temporary tree.
+- Scoped inline review: only the V123 bridge/imports implement behavior; neutral projection and safety helpers are reused, all historical bridge bodies remain unchanged. Real 2023 source/approval not consumed yet.
+
+## Execution rulings (continued)
+
 - Final independent review and any remediation re-review follow the approved Plan (stronger than the inline skill's no-re-review default); cost: additional review time only.
 - The skill's self-ignored per-plan workspace holds disposable logs/ledger under Design section 10's scratch allowance, not an extra maintained entry point.
 
 ## Remaining gates
 
-Tasks 2–6, full candidate implementation, independent whole-implementation review, fresh final maintained/frozen gates and approved-2023 canonical/read-only preflight remain pending. No real writer, V1.23 formal release or next-year ingestion is authorized.
+Tasks 3–6, full candidate implementation, independent whole-implementation review, fresh final maintained/frozen gates and approved-2023 canonical/read-only preflight remain pending. No real writer, V1.23 formal release or next-year ingestion is authorized.

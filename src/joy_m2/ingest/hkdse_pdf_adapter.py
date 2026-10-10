@@ -1474,14 +1474,156 @@ def adapt_verified_hkdse_pdf_transcription_v121(
     )
 
 
-from .v123_models import V123AdaptedImportPackage
+from .v123_models import V123AdaptedImportPackage, V123BatchImportManifest
+from .v123_manifest import load_v123_import_manifest
 
 
 def adapt_verified_hkdse_pdf_transcription_v123(
-    verified: VerifiedHkdsePdfTranscriptionBatch, output_dir: Path,
+    verified: VerifiedHkdsePdfTranscriptionBatch,
+    output_dir: Path,
     config: PipelineConfig,
 ) -> V123AdaptedImportPackage:
-    raise NotImplementedError("V1.23 bridge not implemented")
+    if type(verified) is not VerifiedHkdsePdfTranscriptionBatch:
+        raise TypeError(
+            "verified must be an exact VerifiedHkdsePdfTranscriptionBatch"
+        )
+    proposal = verified.proposal
+    approval = getattr(verified, "approval", None)
+    if type(approval) is not HkdsePdfTranscriptionApproval:
+        raise PipelineError("verified transcription requires an exact approval")
+    try:
+        reconstructed_approval = HkdsePdfTranscriptionApproval(
+            approval.batch_id,
+            approval.transcription_digest,
+            approval.approval_text,
+        )
+    except (AttributeError, PipelineError) as exc:
+        raise PipelineError("verified transcription approval is invalid") from exc
+    if (
+        approval != reconstructed_approval
+        or approval.batch_id != proposal.batch_id
+        or approval.transcription_digest != proposal.transcription_digest
+    ):
+        raise PipelineError("verified transcription approval does not bind proposal")
+    resolved_output = _validate_output(output_dir, config)
+    proposal_root = proposal.artifact_root.resolve(strict=False)
+    if (
+        resolved_output.is_relative_to(proposal_root)
+        or proposal_root.is_relative_to(resolved_output)
+    ):
+        raise ConfigurationError(
+            "canonical output must not overlap transcription artifacts"
+        )
+    actual_digest = _sha_bytes(
+        _canonical_json(_proposal_semantic_payload(proposal)).encode("utf-8")
+    )
+    if actual_digest != proposal.transcription_digest:
+        raise PipelineError("verified proposal semantic payload digest is invalid")
+    if proposal.issues or any(
+        record.status != "PROPOSED" for record in proposal.records
+    ):
+        raise PipelineError("verified proposal is not approval-eligible")
+    expected_records = tuple(
+        replace(record, status="VERIFIED") for record in proposal.records
+    )
+    if verified.records != expected_records:
+        raise PipelineError("verified records do not preserve the proposal")
+
+    candidates = tuple(
+        _candidate_payload(proposal.batch_id, record, index)
+        for index, record in enumerate(verified.records)
+    )
+    candidates_bytes = (_canonical_json(list(candidates)) + "\n").encode("utf-8")
+    transcription_payload = {
+        **_proposal_semantic_payload(proposal),
+        "transcription_digest": proposal.transcription_digest,
+    }
+    transcription_bytes = (
+        _canonical_json(transcription_payload) + "\n"
+    ).encode("utf-8")
+    source_map_bytes = (
+        _canonical_json(_source_map_payload_v120(verified)) + "\n"
+    ).encode("utf-8")
+    answer_bytes = (
+        _canonical_json(_answer_payload_v120(verified)) + "\n"
+    ).encode("utf-8")
+    manifest = V123BatchImportManifest(
+        schema_version="task13-v123-import-manifest-v1",
+        batch_id=proposal.batch_id,
+        project="Joy M2 AI Database",
+        module="M2",
+        chapter="HKDSE M2",
+        target_release_version="V1.23",
+        candidate_records=(
+            _file_evidence(
+                "records/candidates.json", candidates_bytes, "candidate_json"
+            ),
+        ),
+        source_files=(
+            _file_evidence(
+                "source/transcription.json", transcription_bytes, "source"
+            ),
+            _file_evidence("source/source-map.json", source_map_bytes, "source"),
+        ),
+        answer_files=(
+            _file_evidence("answers/official-ms.json", answer_bytes, "answer"),
+        ),
+        image_files=(),
+        teacher_notes_files=(),
+        common_errors_files=(),
+        language_policy="preserve_source_and_store_reviewed_chinese_separately",
+        split_policy="one_complete_question_per_record",
+        difficulty_policy="joy_level_1_5",
+        tag_policy="controlled_primary_type_and_tags",
+        answer_policy="preserve_source_answer_identity",
+        explanation_policy="source_or_independently_verified_with_identity",
+    )
+    manifest_bytes = (
+        json.dumps(
+            _v120_manifest_payload(manifest),
+            ensure_ascii=False,
+            separators=(",", ":"),
+            allow_nan=False,
+        )
+        + "\n"
+    ).encode("utf-8")
+    files = (
+        ("records/candidates.json", candidates_bytes),
+        ("source/transcription.json", transcription_bytes),
+        ("source/source-map.json", source_map_bytes),
+        ("answers/official-ms.json", answer_bytes),
+        ("import_manifest.json", manifest_bytes),
+    )
+
+    resolved_output.parent.mkdir(parents=True, exist_ok=True)
+    temporary = Path(
+        tempfile.mkdtemp(
+            prefix=f".{resolved_output.name}-", dir=resolved_output.parent
+        )
+    )
+    try:
+        for relative_path, content in files:
+            target = temporary / relative_path
+            target.parent.mkdir(parents=True, exist_ok=True)
+            _write_private_file(target, content)
+        try:
+            atomic_rename_no_replace(temporary, resolved_output)
+        except OSError as exc:
+            if exc.errno in {errno.EEXIST, errno.ENOTEMPTY}:
+                raise OutputConflictError("output path already exists") from exc
+            raise
+    finally:
+        if temporary.exists():
+            shutil.rmtree(temporary)
+
+    loaded = load_v123_import_manifest(resolved_output / "import_manifest.json")
+    if loaded != manifest:
+        raise PipelineError("V1.23 package did not round-trip exactly")
+    return V123AdaptedImportPackage(
+        package_root=resolved_output,
+        manifest_path=resolved_output / "import_manifest.json",
+        manifest=loaded,
+    )
 
 
 __all__ = (
