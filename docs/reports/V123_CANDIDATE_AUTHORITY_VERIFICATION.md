@@ -40,10 +40,18 @@ Human Native / Inline execution approval received 2026-10-10. No real import app
 - GREEN development corrected a wrong helper import and fixed expected_user_version123 in the verifier contract; these implementation errors were not new RED evidence. A test prerequisite used the same output twice and now uses a separate control directory without relaxing assertions.
 
 ## Execution rulings
+## Task 4B1 — verified-parent preflight
+
+- RED: 9/9 failures, 0 errors, exit1, exclusively at parent-preflight scaffold after first-generation build and independent PASS. GREEN: 9 focused; candidate + genesis-preflight suites56/56 PASS, no skips/expected failures.
+- Exact parent digest/ledger/count640→641, accepted-parent duplicate and ID collision, retained2022 formal IDs, taxonomy union, missing closure/wrong-version/genesis-reset/stale-request refusal, concurrent parent-change rejection and equivalent-root digest equality are covered. Parent bytes remain unchanged.
+- A synthetic taxonomy test initially used B's different tag after intentionally removing formal vocabulary; its input now uses A's actual accepted taxonomy to isolate parent-derived vocabulary. No taxonomy contract or assertion was weakened.
+- Scoped review: only parent-preflight and tests changed; first-generation writer remains limited to one batch. All639 baseline rows plus verified parent rows form indexes; independent verification runs before and after parent reads.
+
+## Execution rulings
 
 - Final independent review and any remediation re-review follow the approved Plan (stronger than the inline skill's no-re-review default); cost: additional review time only.
 - The skill's self-ignored per-plan workspace holds disposable logs/ledger under Design section 10's scratch allowance, not an extra maintained entry point.
 
 ## Remaining gates
 
-Tasks 4B1–6, full candidate implementation, independent whole-implementation review, fresh final maintained/frozen gates and approved-2023 canonical/read-only preflight remain pending. No real writer, V1.23 formal release or next-year ingestion is authorized.
+Tasks 4B2–6, full candidate implementation, independent whole-implementation review, fresh final maintained/frozen gates and approved-2023 canonical/read-only preflight remain pending. No real writer, V1.23 formal release or next-year ingestion is authorized.

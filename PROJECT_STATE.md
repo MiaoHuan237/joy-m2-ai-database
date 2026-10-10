@@ -61,7 +61,8 @@ Updated: 2026-10-10 (Asia/Shanghai)
   It indexes all 639 formal rows with exact baseline identity, reads published/
   selectable rows only and preserves duplicate/collision/adaptation semantics.
   Task 4A first-generation writer/verifier is GREEN: 23 focused / 93 cumulative.
-  Parent preflight and multi-batch writing remain unimplemented. No real output consumed.
+  Task 4B1 verified-parent preflight is GREEN: 9 focused / 56 candidate+preflight.
+  Multi-batch writing remains unimplemented. No real output consumed.
   Do not request the completed Design approval again.
 - Formal V1.22 remains the published 639-record baseline; this is not a count
   of semantically distinct originals. All V1.18–V1.22 formal identities and old

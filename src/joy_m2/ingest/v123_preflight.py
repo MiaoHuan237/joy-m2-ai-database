@@ -28,6 +28,7 @@ from .v123_models import (
     V123PreflightRequest,
 )
 from .v123_writer_profiles import _genesis_digest
+from .v123_verification import verify_v123_candidate
 
 
 __all__ = ("preflight_v123_import",)
@@ -663,13 +664,209 @@ def _formal_indexes(path: Path) -> tuple[dict[str, object], frozenset[str], froz
             connection.close()
 
 
-def _parent_context(request, config, indexes, primary_types, tags):
-    if request.parent_candidate is not None:
-        raise NotImplementedError("V1.23 verified-parent preflight awaits Task 4B1")
-    return (
-        V123EffectiveState(request.baseline_database, _genesis_digest(), (), 0, 639),
-        indexes, primary_types, tags,
+def _ledger_entry(
+    ordinal: int,
+    approved: object,
+    cumulative: int,
+) -> V123BatchLedgerEntry:
+    result = approved.preflight_result
+    approval = approved.approval
+    return V123BatchLedgerEntry(
+        ordinal,
+        approval.batch_id,
+        approval.parent_candidate_digest,
+        approval.preflight_sha256,
+        result.report.manifest_sha256,
+        approval,
+        len(result.candidates),
+        cumulative,
+        639 + cumulative,
     )
+
+
+def _parent_context(
+    request: V123PreflightRequest,
+    config: PipelineConfig,
+    indexes: dict[str, object],
+    primary_types: frozenset[str],
+    tags: frozenset[str],
+) -> tuple[V123EffectiveState, dict[str, object], frozenset[str], frozenset[str]]:
+    parent = request.parent_candidate
+    if parent is None:
+        return (
+            V123EffectiveState(request.baseline_database, _genesis_digest(), (), 0, 639),
+            indexes,
+            primary_types,
+            tags,
+        )
+    if type(parent) is not V123CandidateVerificationRequest:
+        raise PipelineError("parent candidate authority is invalid")
+    verification = verify_v123_candidate(parent, config)
+    if (
+        type(verification) is not VerificationReport
+        or verification.status != "PASS"
+        or not verification.checks
+        or not all(check.passed for check in verification.checks)
+    ):
+        raise PipelineError("parent candidate must pass independent verification")
+    if request.manifest.batch_id in {
+        approved.approval.batch_id for approved in parent.approved_batches
+    }:
+        raise PipelineError("batch_id already exists in the accepted parent ledger")
+
+    manifest_path = parent.candidate_dir / request.contract.manifest_filename
+    try:
+        manifest = json.loads(
+            manifest_path.read_bytes().decode("utf-8"),
+            object_pairs_hook=_object_without_duplicates,
+            parse_constant=lambda value: (_ for _ in ()).throw(ValueError(value)),
+        )
+    except PipelineError:
+        raise
+    except (OSError, UnicodeError, ValueError, json.JSONDecodeError) as exc:
+        raise PipelineError("verified parent manifest cannot establish state") from exc
+    if type(manifest) is not dict:
+        raise PipelineError("verified parent manifest must be an object")
+
+    ledger: list[V123BatchLedgerEntry] = []
+    cumulative = 0
+    for ordinal, approved in enumerate(parent.approved_batches, start=1):
+        cumulative += len(approved.preflight_result.candidates)
+        ledger.append(_ledger_entry(ordinal, approved, cumulative))
+    expected_counts = {
+        "baseline_question_count": 639,
+        "batch_count": len(ledger),
+        "new_candidate_count": cumulative,
+        "projected_question_count": 639 + cumulative,
+    }
+    candidate_digest = manifest.get("candidate_digest")
+    if (
+        manifest.get("batch_ledger") != [_plain(item) for item in ledger]
+        or manifest.get("counts") != expected_counts
+        or type(candidate_digest) is not str
+        or len(candidate_digest) != 64
+        or any(character not in "0123456789abcdef" for character in candidate_digest)
+    ):
+        raise PipelineError("verified parent manifest does not close effective state")
+
+    database_path = parent.candidate_dir / request.contract.database_filename
+    connection: sqlite3.Connection | None = None
+    try:
+        connection = sqlite3.connect(
+            f"{database_path.resolve(strict=True).as_uri()}?mode=ro",
+            uri=True,
+        )
+        ledger_rows = tuple(connection.execute(
+            "SELECT batch_ordinal,batch_id,parent_candidate_digest,preflight_sha256,"
+            "manifest_sha256,approval_statement,batch_candidate_count,"
+            "cumulative_candidate_count,projected_question_count "
+            "FROM task13_v123_batch_ledger_v1 ORDER BY batch_ordinal"
+        ))
+        expected_ledger_rows = tuple(
+            (
+                item.ordinal,
+                item.batch_id,
+                item.parent_candidate_digest,
+                item.preflight_sha256,
+                item.manifest_sha256,
+                item.approval.statement,
+                item.batch_candidate_count,
+                item.cumulative_candidate_count,
+                item.projected_question_count,
+            )
+            for item in ledger
+        )
+        if ledger_rows != expected_ledger_rows:
+            raise PipelineError("verified parent SQLite ledger does not match prefix")
+        rows = tuple(connection.execute(
+            "SELECT aggregate_order,proposed_question_id,source_id,"
+            "source_question_number,source_section,source_fragment_hash,"
+            "normalized_text_sha256,image_paths_json,image_sha256s_json,"
+            "image_roles_json,primary_type,tags_json "
+            "FROM task13_v123_candidates_v1 ORDER BY aggregate_order"
+        ))
+    except PipelineError:
+        raise
+    except (OSError, sqlite3.Error, ValueError) as exc:
+        raise PipelineError("verified parent SQLite cannot establish state") from exc
+    finally:
+        if connection is not None:
+            connection.close()
+    if len(rows) != cumulative or tuple(row[0] for row in rows) != tuple(
+        range(640, 640 + cumulative)
+    ):
+        raise PipelineError("verified parent SQLite candidate count does not close")
+
+    combined = {
+        "references": dict(indexes["references"]),
+        **{
+            name: {key: tuple(value) for key, value in indexes[name].items()}
+            for name in (
+                "question_id",
+                "source_locator",
+                "source_fragment_sha256",
+                "normalized_text_sha256",
+                "image_binding",
+                "image_identity",
+            )
+        },
+    }
+    combined_primary_types = set(primary_types)
+    combined_tags = set(tags)
+
+    def add_index(name: str, key: object, question_id: str) -> None:
+        values = set(combined[name].get(key, ()))
+        values.add(question_id)
+        combined[name][key] = tuple(sorted(values))
+
+    for row in rows:
+        paths = _parse_array(row[7], "candidate image paths")
+        digests = _parse_array(row[8], "candidate image digests")
+        roles = _parse_array(row[9], "candidate image roles")
+        if not all(type(item) is str for item in (*paths, *digests, *roles)):
+            raise PipelineError("verified parent candidate image identity is invalid")
+        try:
+            images = tuple(zip(paths, roles, digests, strict=True))
+        except ValueError as exc:
+            raise PipelineError("verified parent candidate image identity is invalid") from exc
+        question_id = row[1]
+        reference = {
+            "question_id": question_id,
+            "locator": (row[2], row[3], row[4]),
+            "fragment": row[5],
+            "normalized": row[6],
+            "images": images,
+            "baseline": False,
+            "accepted": True,
+        }
+        if question_id in combined["references"]:
+            raise PipelineError("verified parent candidate ID is not unique")
+        combined["references"][question_id] = reference
+        add_index("question_id", question_id, question_id)
+        add_index("source_locator", reference["locator"], question_id)
+        add_index("source_fragment_sha256", reference["fragment"], question_id)
+        add_index("normalized_text_sha256", reference["normalized"], question_id)
+        for path, role, digest in images:
+            add_index("image_binding", (path, role), question_id)
+            add_index("image_identity", (path, role, digest), question_id)
+        combined_primary_types.add(row[10])
+        combined_tags.update(_parse_array(row[11], "candidate tags"))
+
+    confirmation = verify_v123_candidate(parent, config)
+    if (
+        type(confirmation) is not VerificationReport
+        or confirmation.status != "PASS"
+        or not all(check.passed for check in confirmation.checks)
+    ):
+        raise PipelineError("parent candidate changed while deriving effective state")
+    state = V123EffectiveState(
+        request.baseline_database,
+        candidate_digest,
+        tuple(ledger),
+        cumulative,
+        639 + cumulative,
+    )
+    return state, combined, frozenset(combined_primary_types), frozenset(combined_tags)
 
 
 def _evidence(value: dict[str, object]) -> str:
