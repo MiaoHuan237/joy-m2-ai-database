@@ -1,6 +1,7 @@
 # V1.23 candidate authority — implementation evidence
 
-Status: IN PROGRESS. Approved Design/Plan base: c7d54371bc809c204799f94ab6908bd6bd9641eb.
+Status: IMPLEMENTATION VERIFIED; REAL 2023 PREFLIGHT READY; EXACT IMPORT APPROVAL PENDING.
+Approved Design/Plan base: c7d54371bc809c204799f94ab6908bd6bd9641eb.
 Human Native / Inline execution approval received 2026-10-10. No real import approval.
 
 ## Task 1 — models / API scaffolds / strict loader
@@ -97,6 +98,55 @@ Human Native / Inline execution approval received 2026-10-10. No real import app
   deterministic hash / frozen byte equivalence) is not a maintained PASS claim.
   No actual V1.16 ZIP was searched, read or hashed.
 
+## Task 6 — actual approved 2023 canonical / read-only preflight
+
+- Task5 engineering checkpoint `ae9ad0a7f47b771007194f07d7a14d5cb3a2f283`
+  was ordinarily pushed; local/upstream0/0 before Task6. Post-commit historical/
+  fix verification8/8 PASS. No force/merge/rebase/amend/PR.
+- Reused exact received transcription approval for
+  `JOY-M2-HKDSE-2023-PP-MS` /
+  `3a3a223a23f694083469281c64be5c5402152c557e3bc36654d400ce5143d618`.
+  Proposal fileSHA `4c9df20019c54876f01e9c0a58352fceb07ed78d9d14246e3bd8288fcab6f700`.
+  Original PROPOSED bytes remain unchanged; existing approval API reconstructs
+  12 VERIFIED records / 100marks. No repeated OCR, patch or transcription gate.
+- Actual V123 state had no candidate database or receipt; parent artifact=None,
+  authority parent=`ea3b7db78210e045761784a2e415387c1b17f13b5aedde484ca2ae248a45eec7`.
+- NEW ignored operation root:
+  `data/staging/task13-v123-hkdse-2023/preflight-20261012-000001/`.
+  `canonical-a/` and `canonical-b/` are byte-identical across all5files.
+  Question/MS/subpart/taxonomy/difficulty/source-map projections equal the
+  approved proposal. Both preflight candidate tuples/issues/reports/digests
+  are identical; an additional read-only replay matches saved output.
+- **READY FOR USER IMPORT APPROVAL**. Actual preflight SHA:
+  `64b61671f337dafddd5d316ca0e9ba837e24948fe91256c5df7d1c1b779059a4`.
+  Before639; detected12; new_candidate12; duplicate0; rejected0; ambiguous0;
+  adaptations0; issues0; approved0; projected651. Real additions so far0.
+  Missing answers0, missing independent explanations12, incomplete enrichment12.
+  Unknown primary_type0/tag0; L2:4/L3:4/L4:2/L5:2.
+- All12 originals already have formal `2023-Q1`–`2023-Q12`.
+  Proposed `HKDSE-2023-M2-Q01`–`Q12` are known-original extra-source/content
+  evidence records, NOT12 newly discovered originals. No old row is replaced
+  or relabelled, and no fingerprint/collision behavior was bypassed.
+- Q6 preserves2approved PP SHA/page8/figure-region references only.
+  `image_files=()`; no canonical image assets were manufactured. Empty
+  missing_images reflects declared inventory only, not standalone figure
+  completeness. Source PDF remains necessary. Q7/Q10 approved bytes preserved.
+- Manifest projectionSHA:
+  `2aafa67c591dd1ca9976530e5cdead3d6b0021c244c0d8875b3826de1150b3ea`.
+  Physical manifest fileSHA:
+  `a4581692e8bcb356d0d22b390b132546818c576a30dcef8ac18614765de65dca`.
+  Exact source/canonical file hashes, per-ID source reconciliation, taxonomy,
+  counts and issues are saved in `PREFLIGHT_SUMMARY.json` and
+  `PREFLIGHT_RESULT.json`; human report is
+  `REAL_BATCH_IMPORT_APPROVAL_REPORT.md` within the operation root.
+- Source-review directory and all292 protected hashes unchanged; AGENTS unchanged
+  and uncommitted. Formal V122 remains639; no real V123 candidate/approval object,
+  writer call, release, next-year ingestion or promotion.
+- Independent Task6 evidence check by `v123_implementation_review`: C0/I0/M0.
+  Read-only JSON/hash/SQLite checks confirm six source identities, exact receipt,
+  two-root5-file equality, 12records/100marks, exact genesis, actual report counts,
+  known-original disclosure and Q6 image limitation. No reviewer rebuild or writer.
+
 ## Execution rulings
 
 - Final independent review and any remediation re-review follow the approved Plan (stronger than the inline skill's no-re-review default); cost: additional review time only.
@@ -109,7 +159,12 @@ Human Native / Inline execution approval received 2026-10-10. No real import app
 
 ## Remaining gates
 
-Task5 engineering verification and independent review are complete; its ordinary
-commit/push checkpoint precedes Task6. Task6 approved-2023 canonical/read-only
-preflight remains pending. No real writer, V1.23 formal release or next-year
-ingestion is authorized.
+Only the new exact real-import human decision remains. The approval request
+(not a received approval) is:
+
+```text
+USER APPROVED IMPORT BATCH JOY-M2-HKDSE-2023-PP-MS 64b61671f337dafddd5d316ca0e9ba837e24948fe91256c5df7d1c1b779059a4 V1.23 PARENT ea3b7db78210e045761784a2e415387c1b17f13b5aedde484ca2ae248a45eec7
+```
+
+Reverify parent before any future real write; a changed parent requires new
+preflight and approval. No V1.23 formal release or next-year ingestion is authorized.

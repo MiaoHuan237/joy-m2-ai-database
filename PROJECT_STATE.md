@@ -44,7 +44,7 @@ Updated: 2026-10-12 (Asia/Shanghai)
 
 ### V1.23 minimal candidate roll-forward / HKDSE 2023 preparation
 
-**IMPLEMENTATION VERIFIED — APPROVED 2023 PREFLIGHT NEXT**
+**USER DECISION REQUIRED — REAL BATCH IMPORT (2023 / V1.23)**
 
 - Approved Design: `docs/superpowers/specs/2026-10-09-v123-next-version-candidate-design.md`.
   The user explicitly approved the written Design and authorized its Plan.
@@ -71,9 +71,28 @@ Updated: 2026-10-12 (Asia/Shanghai)
   confined to V123 boundaries; historical APIs and functions remain unchanged.
   The initial concurrent staging snapshot failure is recorded in the report;
   final gates run serially without weakening any assertion.
-  Ordinary engineering commit/push precedes Task6 canonical/read-only preflight.
-  No real output consumed or real writer authorized at this checkpoint.
+  Engineering checkpoint `ae9ad0a7f47b771007194f07d7a14d5cb3a2f283` was
+  ordinarily pushed and verified local/upstream0/0 before Task6.
+  Task6 has now reused the approved2023 transcription, producing two identical
+  five-file canonical packages and matching authoritative read-only preflights.
+  No real writer is authorized or called.
   Do not request the completed Design approval again.
+- Actual2023 result: READY FOR USER IMPORT APPROVAL; detected12/new_candidate12/
+  duplicate0/rejected0/ambiguous0/adaptations0/issues0/approved0.
+  Before639; projected651 only after exact approval and successful append.
+  Preflight SHA `64b61671f337dafddd5d316ca0e9ba837e24948fe91256c5df7d1c1b779059a4`.
+  Parent artifact=None; exact genesis authority
+  `ea3b7db78210e045761784a2e415387c1b17f13b5aedde484ca2ae248a45eec7`.
+  New operation root:
+  `data/staging/task13-v123-hkdse-2023/preflight-20261012-000001/`;
+  `canonical-a` is the proposed consumption package; `canonical-b` is the
+  byte-equivalent replay. Human report: `REAL_BATCH_IMPORT_APPROVAL_REPORT.md`.
+  All12 are known-original additional-source/content-evidence records, not12
+  previously unrepresented originals. Actual new stored records remain0.
+  Missing answers0; independent explanations missing12. Q6 retains approved
+  PDF/page8/region evidence only, with no generated canonical image files.
+  No new transcription approval is needed; exact real-import approval IS needed.
+  Separate independent read-only Task6 evidence review: C0/I0/M0.
 - Formal V1.22 remains the published 639-record baseline; this is not a count
   of semantically distinct originals. All V1.18–V1.22 formal identities and old
   candidates remain frozen. No `releases/V1.23/` or real V1.23 generation exists.
