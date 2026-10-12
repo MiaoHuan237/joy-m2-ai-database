@@ -389,11 +389,12 @@ parent and preflight SHA. Do not start 2024 afterwards.
 
 ## 10. Closed scope
 
-Current Plan docs checkpoint: this Design's progress state, its implementation
+Historical Plan docs checkpoint covered this Design's progress state, its implementation
 Plan and PROJECT_STATE.md only; no technical-contract change. Runtime
 transcription evidence is ignored under
 `data/staging/task10b-hkdse-2023/source-review-000001/**`; preserve all inputs.
-Written-Design approval has been received; Plan creation/review is now authorized.
+Written Design, Plan and Native / Inline execution approval have been received.
+Implementation follows the closed engineering scope below; real import remains gated.
 
 After Design/Plan/execution approval, the proposed engineering scope is exactly:
 

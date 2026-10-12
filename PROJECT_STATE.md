@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-10-10 (Asia/Shanghai)
+Updated: 2026-10-12 (Asia/Shanghai)
 
 ## Formal data
 
@@ -44,7 +44,7 @@ Updated: 2026-10-10 (Asia/Shanghai)
 
 ### V1.23 minimal candidate roll-forward / HKDSE 2023 preparation
 
-**PLAN APPROVED — NATIVE / INLINE IMPLEMENTATION IN PROGRESS**
+**IMPLEMENTATION VERIFIED — APPROVED 2023 PREFLIGHT NEXT**
 
 - Approved Design: `docs/superpowers/specs/2026-10-09-v123-next-version-candidate-design.md`.
   The user explicitly approved the written Design and authorized its Plan.
@@ -63,8 +63,16 @@ Updated: 2026-10-10 (Asia/Shanghai)
   Task 4A first-generation writer/verifier is GREEN: 23 focused / 93 cumulative.
   Task 4B1 verified-parent preflight is GREEN: 9 focused / 56 candidate+preflight.
   Task 4B2 multi-batch writer/verifier is GREEN: 9 focused / 111 cumulative.
-  Full maintained gates and independent implementation review remain pending.
-  No real output consumed or real writer authorized.
+  Task5 final serial maintained gate is GREEN: 1236/1236, with zero failures,
+  errors, skips or expected failures. V123119/119 includes historical replay5/5;
+  Task9A41/41, Task10B50/50, Task7 7/7 and V1.18 validator PASS.
+  Independent implementation review/re-review is Critical0/Important0/Minor0.
+  One artifact-ancestor protection defect was fixed with genuine RED→GREEN,
+  confined to V123 boundaries; historical APIs and functions remain unchanged.
+  The initial concurrent staging snapshot failure is recorded in the report;
+  final gates run serially without weakening any assertion.
+  Ordinary engineering commit/push precedes Task6 canonical/read-only preflight.
+  No real output consumed or real writer authorized at this checkpoint.
   Do not request the completed Design approval again.
 - Formal V1.22 remains the published 639-record baseline; this is not a count
   of semantically distinct originals. All V1.18–V1.22 formal identities and old
@@ -1027,7 +1035,10 @@ Scope:
 - V1.21 promotion readiness record:
   `docs/reports/V121_PROMOTION_READINESS_VERIFICATION.md`.
 
-## Next task
+## Historical next-task handoff — V1.22 preparation (superseded)
+
+The following retained handoff is historical, not current execution authority.
+Current authority is the V1.23 section above and its approved Plan.
 
 Task 9A, Task 9B, Task 9C, Task 9D, Task 10A, Task 10B, and Task 10C are closed.
 Formal V1.21 promotion is `CLOSED / PASS` at 591 complete questions. Formal

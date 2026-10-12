@@ -1506,6 +1506,15 @@ def adapt_verified_hkdse_pdf_transcription_v123(
     ):
         raise PipelineError("verified transcription approval does not bind proposal")
     resolved_output = _validate_output(output_dir, config)
+    ancestor = resolved_output.parent
+    while ancestor != config.staging_root and ancestor.is_relative_to(config.staging_root):
+        for filename in ("candidate_manifest.json", "import_manifest.json"):
+            marker = ancestor / filename
+            if marker.exists() or marker.is_symlink():
+                raise ConfigurationError(
+                    "canonical output must not be nested in an existing artifact"
+                )
+        ancestor = ancestor.parent
     proposal_root = proposal.artifact_root.resolve(strict=False)
     if (
         resolved_output.is_relative_to(proposal_root)

@@ -856,19 +856,11 @@ def _has_candidate_ancestor(
 ) -> bool:
     current = path.parent
     while current != staging_root and current.is_relative_to(staging_root):
-        manifest = current / contract.manifest_filename
-        database = current / contract.database_filename
-        if manifest.is_file() and database.is_file():
-            try:
-                payload = json.loads(manifest.read_text(encoding="utf-8"))
-            except (OSError, UnicodeError, json.JSONDecodeError):
-                return True
-            if (
-                type(payload) is dict
-                and payload.get("schema_version") == contract.candidate_manifest_schema
-                and payload.get("release_version") == "V1.23"
-                and payload.get("release_status") == "candidate"
-            ):
+        # A nested output changes an immutable ancestor's inventory even
+        # without replacing a file. Protect historical and malformed markers.
+        for filename in (contract.manifest_filename, "import_manifest.json"):
+            marker = current / filename
+            if marker.exists() or marker.is_symlink():
                 return True
         current = current.parent
     return False

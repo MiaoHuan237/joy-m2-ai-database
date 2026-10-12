@@ -46,8 +46,6 @@ Human Native / Inline execution approval received 2026-10-10. No real import app
 - A synthetic taxonomy test initially used B's different tag after intentionally removing formal vocabulary; its input now uses A's actual accepted taxonomy to isolate parent-derived vocabulary. No taxonomy contract or assertion was weakened.
 - Scoped review: only parent-preflight and tests changed; first-generation writer remains limited to one batch. All639 baseline rows plus verified parent rows form indexes; independent verification runs before and after parent reads.
 
-## Execution rulings
-
 ## Task 4B2 — ordered multi-batch writer / verifier
 
 - RED: 8 collected, 9 assertion/subtest failures, 0 errors, exit1; every second-batch operation follows verified A and READY B bound to A. The already-safe nonmatching-generation verifier refusal passed before prefix support. Added URI hardening test independently failed on missing immutable flag, not an input/setup error.
@@ -56,11 +54,62 @@ Human Native / Inline execution approval received 2026-10-10. No real import app
 - Scope review: only after 4B1 GREEN are full-prefix reconstruction and multi-batch database insertion enabled. All readonly SQLite connections in V123 use escaped absolute URI, mode=ro&immutable=1 and query_only=ON. The parent-preflight hardening is an owning-task in-scope correction under Plan Global Constraints, not historical reader changes.
 - Protected baseline/source/candidate snapshot292/292 unchanged; AGENTS hash unchanged; releases/V1.23 absent.
 
+## Task 5 — historical regression and independent review
+
+- Added five read-only historical acceptance tests: formal V1.18–V1.22 hashes/
+  counts, complete639 inheritance, past candidate replay and formal verification,
+  approved2023 source/receipt preservation, exact API boundary and isolated
+  formal-output rejection. No historical candidate is rebuilt.
+- An initial full run overlapped a focused run and failed one historical
+  staging-tree snapshot tearDown: `test_all_inherited_baseline_and_candidate_relations_are_preserved`.
+  The difference consisted of concurrent synthetic V123 test directories.
+  No assertion was weakened or maintained module excluded. Single-process
+  recovery: 1233/1233 PASS in446.250s, FAIL0/ERROR0/skip0/expectedFailure0.
+- Independent reviewer `v123_implementation_review` initially found C0/I1/M0:
+  new output could be nested under historical candidate/canonical artifact
+  roots, invalidating their inventory closure without overwriting any file.
+  A zero-write diagnostic on the actual historical V122 root confirmed the
+  ancestor guard missed it; no real output was attempted.
+- Three public-API regression tests then produced genuine RED:
+  3 collected / 10 subtest assertion failures / 0 errors, exit1.
+  Writer and bridge unexpectedly accepted both fixed markers (ordinary file
+  and dangling symlink); verifier unexpectedly returned PASS for valid
+  synthetic candidates copied under either marker.
+- Minimal fix only in V123 writer, independent verifier and new bridge:
+  reject ancestors containing `candidate_manifest.json` or
+  `import_manifest.json`, even malformed/dangling markers, before output.
+  No historical database/schema parsing or shared historical-function changes.
+  Focused GREEN3/3; parent content/marker identity and noncreation are checked.
+- Independent incremental re-review: **Critical0 / Important0 / Minor0**.
+  Original I1 closed; 51 historical adapter definitions remain AST-identical.
+  Reviewer did not run tests concurrently, did not judge future Task6 runtime
+  outputs and did not add malicious external directory-replacement race/lock
+  guarantees.
+- Final serial maintained gate: **1236 collected/run, 1236 PASS**, 454.581s,
+  FAIL0/ERROR0/skip0/expectedFailure0. It includes the I1 fix and its new tests.
+  Separate fresh gates: Task9A41/41, Task10B50/50, Task7 7/7, V123119/119
+  (including historical replay5/5), all zero errors/skips/expected failures.
+  V1.18 independent validator PASS497, integrity ok, FK errors0, hash errors0.
+  Historical formal verifiers PASS18/21/21/21 checks for V119/V120/V121/V122.
+- All23 approved paths accounted for; diff check PASS; protected snapshot
+  292/292 unchanged. User AGENTS hash remains unchanged and excluded.
+  Legacy attribution was not rerun: its known9PASS/2FAIL surface (SQLite
+  deterministic hash / frozen byte equivalence) is not a maintained PASS claim.
+  No actual V1.16 ZIP was searched, read or hashed.
+
 ## Execution rulings
 
 - Final independent review and any remediation re-review follow the approved Plan (stronger than the inline skill's no-re-review default); cost: additional review time only.
 - The skill's self-ignored per-plan workspace holds disposable logs/ledger under Design section 10's scratch allowance, not an extra maintained entry point.
+- Staging-sensitive gates run serially; independent review is static/zero-write
+  while they run. Cost: longer runtime; historical protections stay intact.
+- External hostile directory-replacement races do not introduce an unapproved
+  lock/registry framework. Existing symlink/no-replace protections remain;
+  external TOCTOU risk is not claimed newly eliminated by this bounded fix.
 
 ## Remaining gates
 
-Tasks 5–6, independent whole-implementation review, fresh final maintained/frozen gates and approved-2023 canonical/read-only preflight remain pending. No real writer, V1.23 formal release or next-year ingestion is authorized.
+Task5 engineering verification and independent review are complete; its ordinary
+commit/push checkpoint precedes Task6. Task6 approved-2023 canonical/read-only
+preflight remains pending. No real writer, V1.23 formal release or next-year
+ingestion is authorized.

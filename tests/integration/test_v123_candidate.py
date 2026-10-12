@@ -275,6 +275,45 @@ class V123FirstGenerationTests(unittest.TestCase):
             )
         self.assertEqual(_tree(artifacts.database.path.parent), before)
 
+    def test_writer_rejects_existing_artifact_ancestors_without_mutation(self):
+        approved = _approved(self.package, self.config)
+        for marker in ("candidate_manifest.json", "import_manifest.json"):
+            for kind in ("file", "dangling-symlink"):
+                with self.subTest(marker=marker, kind=kind):
+                    protected = self.root / f"protected-{marker}-{kind}"
+                    protected.mkdir()
+                    path = protected / marker
+                    if kind == "file":
+                        path.write_text('{"release_version":"V1.22"}\n')
+                    else:
+                        path.symlink_to(protected / "missing-marker-target")
+                    before = _tree(protected)
+                    output = protected / "new-child"
+                    with self.assertRaises(PipelineError):
+                        self._build(V123CandidateBuildRequest(
+                            (approved,), output, _contract()), self.config)
+                    self.assertFalse(output.exists())
+                    self.assertEqual(_tree(protected), before)
+                    self.assertEqual(path.is_symlink(), kind == "dangling-symlink")
+
+    def test_verifier_rejects_candidate_nested_in_existing_artifact_root(self):
+        approved, artifacts = self.build()
+        self.assertEqual(artifacts.verification_report.status, "PASS")
+        for marker in ("candidate_manifest.json", "import_manifest.json"):
+            with self.subTest(marker=marker):
+                protected = self.root / f"verify-protected-{marker}"
+                protected.mkdir()
+                (protected / marker).write_text('{"release_version":"V1.22"}\n')
+                nested = protected / "nested"
+                shutil.copytree(artifacts.database.path.parent, nested)
+                before = _tree(protected)
+                report = self._verify(V123CandidateVerificationRequest(
+                    nested, (approved,), _contract()), self.config)
+                self.assertEqual(report.status, "FAIL")
+                self.assertFalse(next(c.passed for c in report.checks
+                                      if c.name == "formal_boundary"))
+                self.assertEqual(_tree(protected), before)
+
     def test_wrong_parent_approval_is_rejected(self):
         approved = _approved(self.package, self.config)
         forged = object.__new__(V123ImportApproval)

@@ -108,6 +108,26 @@ class V123HkdseBridgeTests(AdapterCase):
             config or self.config,
         )
 
+    def test_bridge_rejects_existing_artifact_ancestors_without_mutation(self):
+        for marker in ("candidate_manifest.json", "import_manifest.json"):
+            for kind in ("file", "dangling-symlink"):
+                with self.subTest(marker=marker, kind=kind):
+                    protected = self.root / "data/staging" / f"protected-{marker}-{kind}"
+                    protected.mkdir()
+                    path = protected / marker
+                    if kind == "file":
+                        path.write_text('{"release_version":"V1.22"}\n')
+                    else:
+                        path.symlink_to(protected / "missing-marker-target")
+                    output = protected / "new-child"
+                    with self.assertRaises(PipelineError):
+                        self.bridge(output)
+                    self.assertFalse(output.exists())
+                    self.assertEqual(tuple(protected.iterdir()), (path,))
+                    self.assertEqual(path.is_symlink(), kind == "dangling-symlink")
+                    if kind == "file":
+                        self.assertEqual(path.read_text(), '{"release_version":"V1.22"}\n')
+
     def test_exact_five_file_projection(self):
         package = self.bridge()
         self.assertEqual(
