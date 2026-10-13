@@ -42,9 +42,54 @@ Updated: 2026-10-13 (Asia/Shanghai)
 
 ## Current task
 
+### HKDSE 2025 PP/MS preparation after accepted 2024 source defect
+
+**USER DECISION REQUIRED — PDF TRANSCRIPTION APPROVAL**
+
+- The user explicitly accepted the unknown cropped suffix of the2024 Q11(c)
+  first1M remark, without confirming missing characters or approving the batch.
+  Existing Task10B approval cannot represent an accepted issue; the original
+  proposal and its diagnostic remain unchanged. The same instruction expressly
+  authorized2025 preparation if2024 cannot proceed under the existing contract.
+- Reused local2025 PP/MS,13-question/100-mark staging, historical question
+  contents and the existing year-specific audit. No whole-year OCR or source
+  re-upload. New ignored root:
+  `data/staging/task10b-hkdse-2025/source-review-000001/`.
+  Complete review: `FULL_TRANSCRIPTION_REVIEW.md`; proposal:
+  `transcription-proposal-000001/transcription.json`.
+  Actual unapproved transcription digest:
+  `35d28e145a03726c066170406980671979d689af8decec462a8987e4b247e13d`.
+- All13 questions/100marks and complete officialMS were visually reconciled to
+  source pages and independently reviewed. Q3(b) both methods, Q8 exact score
+  alignment, Q12(b) shared assumptions and Q13 shared method marks are retained.
+  Source bare1 scores and Q11(b)(ii)'s final1M are not silently rewritten.
+  Review_required0 / issues0 / unknown_primary_type0 / unknown_tag0.
+  There are no source figures; MS sign tables are preserved as tables.
+- Source PP SHA:
+  `79cd39e9ea906f57a2db9167de6e5920955bd39b13e315e8b42084022d175d5c`;
+  MS SHA:
+  `e9ec8117424f47e3ebc30ce71f491ae74626238855b3c8ec76ed88c2e1ef15ca`.
+  New staging copy corrects page anchors and controlled taxonomy, retaining
+  original difficulty, marks, IDs, order and source identities. Its serialized
+  original-staging snapshot is semantically identical, not a byte-identical
+  copy; both actual source and snapshot SHA are recorded separately.
+- Two roots reproduce identical four proposal files and semantic digest.
+  Pass agreement is source-reconciled after separate review, not blind OCR.
+  These13 originals already have historical formal records; no net-new storage
+  count is asserted. No2025 approval, canonical, preflight, writer or promotion.
+  Future preflight must reverify the actual parent (currently2023 generation1:
+  `f2fb80e7a7f9e4478877446a8e74cccac8cd1c8829784cef0eb93637bcfacaf1`).
+  Git documentation backup does not include ignored runtime artifacts.
+- Fresh operational gates: Task10B50/50, Task9A41/41, Task7 7/7, V1.18
+  validator PASS; independent formalV1.22 verifier21/21 and candidateV1.23
+  verifier24/24 PASS. All404 protected identities remain unchanged, including
+  the complete prior2024 operation outputs, formal releases, candidate and
+  original sources/userAGENTS. FormalV1.22 remains639; candidategeneration1
+  remains651. No new implementation and no full-suite freshness claim.
+
 ### HKDSE 2024 PP/MS operational preparation — V1.23
 
-**USER DECISION REQUIRED — PDF TRANSCRIPTION REVIEW**
+**LOCAL SOURCE DEFECT ACCEPTED — EXISTING APPROVAL CONTRACT BLOCKED**
 
 - The user separately authorized2024 preparation using the existing Task10B /
   V123 implementation; no new architecture or implementation work. Existing
@@ -68,8 +113,12 @@ Updated: 2026-10-13 (Asia/Shanghai)
   Sole unresolved source field: Q11(c), MS physical13 / printed83, first1M
   remark visibly ends `保留不給 1M 若遺漏步`; the high-resolution original edge
   does not reveal any following characters. No inferred completion was made.
-  Request only this official-page snippet or an explicit human source decision,
-  not another full-year upload or full OCR pass.
+  The user has now explicitly accepted this local defect while keeping the
+  suffix unknown; do not request the same screenshot or complete PDFs again.
+  Decision binding and teaching limitation are recorded in
+  `human-source-acceptance-000001/ACCEPTED_LOCAL_SOURCE_DEFECT.json` and
+  `REVIEW_RESOLUTION.md` under this operation root. No missing letter was
+  confirmed. Do not borrow2025's similar but fully legible note to complete it.
 - The reviewed passB withholds a *complete* Q11 MS string; passA and the proposal
   retain all available Q11 mathematics, both(b) methods and the partial remark.
   Existing adapter reports review_required1 / issues1 (`official_ms_missing`).
@@ -91,10 +140,14 @@ Updated: 2026-10-13 (Asia/Shanghai)
   source files and the user's AGENTS.md) remain unchanged; formal V1.22=639.
   No code/tests changed and no fresh full maintained-suite claim is made.
 - No2024 transcription approval, canonical package, preflight, real writer or
-  promotion. Resolve the source field, preserve this proposal, then request a
-  new exact transcription approval if payload changes. No2025, releases/V1.23
-  or V1.24 work. Ordinary Git backup covers only tracked documentation, never
-  these ignored runtime artifacts. The user's AGENTS.md change is untouched.
+  promotion. Design sections9/12 and the approval API reject any issue/non-
+  PROPOSED record; there is no accepted-defect carrier. The minimum unresolved
+  authority decision is a narrow digest-bound review resolution that preserves
+  this unknown and its teaching restriction. No contract or code was changed.
+  Do not clear diagnostics or fabricate VERIFIED. The original payload/digest
+  is unchanged and is not offered as an eligible final approval. Conditional
+  2025 preparation is now separately authorized above, not a2024 import.
+  No releases/V1.23 or V1.24 work. The user's AGENTS.md change is untouched.
 
 ### V1.23 minimal candidate roll-forward / HKDSE 2023 preparation
 
