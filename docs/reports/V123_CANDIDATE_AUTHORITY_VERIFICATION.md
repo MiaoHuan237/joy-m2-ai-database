@@ -1,8 +1,9 @@
 # V1.23 candidate authority — implementation evidence
 
-Status: IMPLEMENTATION VERIFIED; REAL 2023 PREFLIGHT READY; EXACT IMPORT APPROVAL PENDING.
+Status: IMPLEMENTATION VERIFIED; EXACT HUMAN-APPROVED 2023 IMPORT COMPLETED; V1.23 GENERATION 000001.
 Approved Design/Plan base: c7d54371bc809c204799f94ab6908bd6bd9641eb.
-Human Native / Inline execution approval received 2026-10-10. No real import approval.
+Human Native / Inline execution approval received 2026-10-10. Separate exact real
+import approval received and consumed once on 2026-10-13; no promotion approval.
 
 ## Task 1 — models / API scaffolds / strict loader
 
@@ -157,14 +158,60 @@ Human Native / Inline execution approval received 2026-10-10. No real import app
   lock/registry framework. Existing symlink/no-replace protections remain;
   external TOCTOU risk is not claimed newly eliminated by this bounded fix.
 
-## Remaining gates
+## Historical Task6 human gate (now satisfied)
 
-Only the new exact real-import human decision remains. The approval request
-(not a received approval) is:
+Task6 originally stopped at this request. The user has now supplied this exact
+statement, separately from transcription and engineering approvals:
 
 ```text
 USER APPROVED IMPORT BATCH JOY-M2-HKDSE-2023-PP-MS 64b61671f337dafddd5d316ca0e9ba837e24948fe91256c5df7d1c1b779059a4 V1.23 PARENT ea3b7db78210e045761784a2e415387c1b17f13b5aedde484ca2ae248a45eec7
 ```
 
-Reverify parent before any future real write; a changed parent requires new
-preflight and approval. No V1.23 formal release or next-year ingestion is authorized.
+The fresh pre-write replay matched this statement and confirmed no prior real
+V123 candidate/receipt. No V1.23 formal release or next-year ingestion is authorized.
+
+## Approved 2023 real import — 2026-10-13
+
+- The existing writer was called once after fresh focused gates and exact
+  preflight/genesis/source identity verification. No code, tests, old proposal,
+  canonical package or historical candidate was changed or rebuilt.
+- New ignored output:
+  `data/staging/task13-v123-hkdse-2023/candidate-generation-000001/`.
+  `REAL_BATCH_IMPORT_APPROVAL.json` records the received statement;
+  `REAL_BATCH_IMPORT_RECEIPT.json` records artifacts, ordered ledger, verification,
+  protected snapshots and the known-original/image limitations in the parent root.
+  Historical preflight reports remain untouched pre-approval snapshots.
+- Candidate digest / required next parent:
+  `f2fb80e7a7f9e4478877446a8e74cccac8cd1c8829784cef0eb93637bcfacaf1`.
+  SQLite SHA `4c37c43d1ea2c34c7837ff275331c5289e4089b5177237001492996233c83a35`
+  (10641408 bytes). Manifest SHA
+  `bd21d622fde3af459bcf7105e877650d51c3b43a72c4806208450b8416b542c6`
+  (3049 bytes). These are candidate identities, not a release/promotion digest.
+- Ledger `000001 — JOY-M2-HKDSE-2023-PP-MS`; one accepted batch,12 additions,
+  639 inherited+12candidate=651 unique record IDs. The12 are known-original
+  extra-source records, not12 new originals; no historical record was merged,
+  deleted, overwritten or reclassified. New rows remain candidate/selectable0;
+  inherited639 remain published/selectable1 and formal querying remains V1.22.
+- Writer verification and an independent public verifier call each PASS24/24;
+  an additional read-only reconstruction PASS24/24 without candidate mutation.
+  SQLite integrity/FK/count/IDs PASS. All332 protected file identities unchanged,
+  including292 historical/source audit paths,2023 source-review evidence,
+  both canonical roots and the user's AGENTS.md. `releases/V1.23/` is absent.
+- Fresh serial operational regression: V123119/119 (76.305s), Task9A41/41,
+  Task10B50/50, Task7 7/7; no skips or expected failures. Historical formal
+  verifier replay throughV1.22 is included in V123119; V1.18 validator PASS497,
+  integrity ok, FK errors0, hash errors0. Full1236/1236 remains the prior
+  implementation result; no new full-suite result is claimed for this operation.
+- Q6's two approved PDF/page8/region references remain source evidence, not
+  generated image files. Missing answers0; independent explanations missing12.
+  Rollback metadata exists only for this unpromoted generation; no rollback
+  was executed. No formal release, pointer change,2024/2025 orV1.24 work.
+- Independent operational review by `v123_implementation_review`: C0/I0/M0.
+  Reviewer independently constructed strict contract/preflight/approval/verifier
+  request from the real statement and canonical-a, obtaining24/24 PASS without
+  writer calls, rebuilds or tests. Direct read-only SQLite comparison confirms
+  all639 baseline rows field-by-field/in order, additions ordered640–651 and
+  exact six-file closure. All332 protected hashes and candidate bytes unchanged;
+  both five-file canonical roots agree. Current two-doc diff matches actual
+  identities/counts. Review did not reopen approved PDF mathematical transcription
+  or claim a new global concurrency/exactly-once service; neither is in scope.

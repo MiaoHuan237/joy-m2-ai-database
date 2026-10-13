@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-10-12 (Asia/Shanghai)
+Updated: 2026-10-13 (Asia/Shanghai)
 
 ## Formal data
 
@@ -44,7 +44,39 @@ Updated: 2026-10-12 (Asia/Shanghai)
 
 ### V1.23 minimal candidate roll-forward / HKDSE 2023 preparation
 
-**USER DECISION REQUIRED — REAL BATCH IMPORT (2023 / V1.23)**
+**APPROVED 2023 IMPORT COMPLETED — V1.23 CANDIDATE GENERATION 000001**
+
+- The exact human batch/preflight/V1.23/genesis approval was received and
+  consumed once on 2026-10-13. Fresh preflight reproduced the approved digest
+  before the existing atomic no-replace writer ran; no package rebuild or
+  transcription change. Receipt and received approval:
+  `data/staging/task13-v123-hkdse-2023/REAL_BATCH_IMPORT_RECEIPT.json` and
+  `REAL_BATCH_IMPORT_APPROVAL.json` in the same ignored operation root.
+- Candidate: `data/staging/task13-v123-hkdse-2023/candidate-generation-000001/`.
+  Ledger: `000001 — JOY-M2-HKDSE-2023-PP-MS`; accepted batches1, additions12,
+  projected records651. All12 are known-original additional-source records,
+  not twelve previously unrepresented original questions. Existing rows remain.
+  Candidate digest / required next parent:
+  `f2fb80e7a7f9e4478877446a8e74cccac8cd1c8829784cef0eb93637bcfacaf1`.
+  Candidate SQLite SHA:
+  `4c37c43d1ea2c34c7837ff275331c5289e4089b5177237001492996233c83a35`.
+  Candidate manifest SHA:
+  `bd21d622fde3af459bcf7105e877650d51c3b43a72c4806208450b8416b542c6`.
+- Independent candidate verifier24/24 PASS; subsequent read-only replay PASS.
+  SQLite integrity/FK and651 unique IDs PASS:639 published/selectable inherited
+  records plus12 candidate/nonselectable records. Formal V1.22 remains639.
+  All332 protected identities, including original sources, approved proposal,
+  canonical roots, historical artifacts and the user's AGENTS.md, are unchanged.
+  Fresh operational gates: V123119/119 (including historical formal verifier
+  replay), Task9A41/41, Task10B50/50, Task7 7/7, V1.18 validator PASS.
+  No production/tests changed; the earlier1236/1236 full maintained gate remains
+  the implementation checkpoint, not a claimed fresh full-suite run today.
+  Independent operational reviewer `v123_implementation_review`: C0/I0/M0;
+  separately reconstructed exact approval/preflight and verified24/24, all639
+  inherited rows field-by-field/in order,12 candidate rows and file preservation.
+- Stop after this batch. No2024/2025 work, V1.23 formal release/promotion,
+  formal-query pointer change or next-version work is authorized. Q6 remains
+  PDF/page/region evidence only; independent explanations remain missing12.
 
 - Approved Design: `docs/superpowers/specs/2026-10-09-v123-next-version-candidate-design.md`.
   The user explicitly approved the written Design and authorized its Plan.
@@ -75,7 +107,8 @@ Updated: 2026-10-12 (Asia/Shanghai)
   ordinarily pushed and verified local/upstream0/0 before Task6.
   Task6 has now reused the approved2023 transcription, producing two identical
   five-file canonical packages and matching authoritative read-only preflights.
-  No real writer is authorized or called.
+  At that Task6 checkpoint no real writer was authorized or called; the separate
+  exact approval and completed operation are recorded above.
   Do not request the completed Design approval again.
 - Actual2023 result: READY FOR USER IMPORT APPROVAL; detected12/new_candidate12/
   duplicate0/rejected0/ambiguous0/adaptations0/issues0/approved0.
@@ -88,14 +121,17 @@ Updated: 2026-10-12 (Asia/Shanghai)
   `canonical-a` is the proposed consumption package; `canonical-b` is the
   byte-equivalent replay. Human report: `REAL_BATCH_IMPORT_APPROVAL_REPORT.md`.
   All12 are known-original additional-source/content-evidence records, not12
-  previously unrepresented originals. Actual new stored records remain0.
+  previously unrepresented originals. At the pre-approval checkpoint actual
+  new stored records were0; the approved append above has now stored12.
   Missing answers0; independent explanations missing12. Q6 retains approved
   PDF/page8/region evidence only, with no generated canonical image files.
-  No new transcription approval is needed; exact real-import approval IS needed.
+  No new transcription approval was needed; the separate exact real-import
+  approval has now been received and consumed once.
   Separate independent read-only Task6 evidence review: C0/I0/M0.
 - Formal V1.22 remains the published 639-record baseline; this is not a count
   of semantically distinct originals. All V1.18–V1.22 formal identities and old
-  candidates remain frozen. No `releases/V1.23/` or real V1.23 generation exists.
+  candidates remain frozen. No `releases/V1.23/` exists; the new non-formal
+  V1.23 generation000001 is identified above.
 - Existing 2023 originals are already represented by `2023-Q1`–`2023-Q12`.
   Full official MS/figures/source supplementation is useful, but the existing
   classifier is fingerprint-based and the writer only appends records. Exact
