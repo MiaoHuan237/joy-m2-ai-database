@@ -42,9 +42,9 @@ Updated: 2026-10-13 (Asia/Shanghai)
 
 ## Current task
 
-### HKDSE 2025 PP/MS preparation after accepted 2024 source defect
+### HKDSE 2025 approved transcription / parent-bound V1.23 preflight
 
-**USER DECISION REQUIRED — PDF TRANSCRIPTION APPROVAL**
+**USER DECISION REQUIRED — REAL BATCH IMPORT**
 
 - The user explicitly accepted the unknown cropped suffix of the2024 Q11(c)
   first1M remark, without confirming missing characters or approving the batch.
@@ -57,8 +57,11 @@ Updated: 2026-10-13 (Asia/Shanghai)
   `data/staging/task10b-hkdse-2025/source-review-000001/`.
   Complete review: `FULL_TRANSCRIPTION_REVIEW.md`; proposal:
   `transcription-proposal-000001/transcription.json`.
-  Actual unapproved transcription digest:
+  Exact human-approved transcription digest:
   `35d28e145a03726c066170406980671979d689af8decec462a8987e4b247e13d`.
+  Received approval is recorded in `TRANSCRIPTION_APPROVAL.json` under that
+  source-review root. The existing approval API reconstructs the semantic
+  digest and produces VERIFIED carriers; the stored proposal stays unchanged.
 - All13 questions/100marks and complete officialMS were visually reconciled to
   source pages and independently reviewed. Q3(b) both methods, Q8 exact score
   alignment, Q12(b) shared assumptions and Q13 shared method marks are retained.
@@ -75,17 +78,47 @@ Updated: 2026-10-13 (Asia/Shanghai)
   copy; both actual source and snapshot SHA are recorded separately.
 - Two roots reproduce identical four proposal files and semantic digest.
   Pass agreement is source-reconciled after separate review, not blind OCR.
-  These13 originals already have historical formal records; no net-new storage
-  count is asserted. No2025 approval, canonical, preflight, writer or promotion.
-  Future preflight must reverify the actual parent (currently2023 generation1:
-  `f2fb80e7a7f9e4478877446a8e74cccac8cd1c8829784cef0eb93637bcfacaf1`).
+  These13 originals already have historical formal records. Current preflight
+  classifies13 additional stored records, not13 first-time original questions;
+  no historical record is overwritten or merged.
+- New ignored operation root:
+  `data/staging/task13-v123-hkdse-2025/preflight-20261013-000001/`.
+  `canonical-a` and `canonical-b` contain the same five files byte-for-byte;
+  original question/MS, taxonomy, difficulty, subparts and source references
+  are unchanged. Both independent-root preflights produce identical candidate
+  tuples, issues, report and digest. Complete report: `PREFLIGHT_SUMMARY.json`;
+  full result: `PREFLIGHT_RESULT.json`.
+- Actual status: `READY FOR USER IMPORT APPROVAL`; detected13 / new13 /
+  duplicate0 / rejected0 / ambiguous0 / adaptations0 / issues0; missing
+  answers0 / missing independent explanations13 / canonical image files0.
+  Difficulty counts: L1=1, L2=4, L3=4, L4=2, L5=2. Existing count651;
+  projected count after approval664. Real import approved_count remains0.
+  Preflight SHA:
+  `732f05c7d36203fcb920d5bfd59673041533abb84db5d82e6fa8fc3407bda5e0`.
+  Canonical manifest SHA:
+  `d3ebf556340a1e278d1141e2c87432c5dc12c2c113ca8566db90d8957a0c5862`.
+  Required verified parent:
+  `f2fb80e7a7f9e4478877446a8e74cccac8cd1c8829784cef0eb93637bcfacaf1`.
+- No2025 import approval, writer, new candidate generation or promotion.
+  The actual ledger still contains only2023;2024 remains unaccepted and its
+  preserved source-defect decision is not replaced by this2025 approval.
+  On later exact import approval, reverify unchanged content and current parent
+  before any atomic append. No automatic further batch or formal release.
   Git documentation backup does not include ignored runtime artifacts.
-- Fresh operational gates: Task10B50/50, Task9A41/41, Task7 7/7, V1.18
-  validator PASS; independent formalV1.22 verifier21/21 and candidateV1.23
-  verifier24/24 PASS. All404 protected identities remain unchanged, including
-  the complete prior2024 operation outputs, formal releases, candidate and
-  original sources/userAGENTS. FormalV1.22 remains639; candidategeneration1
-  remains651. No new implementation and no full-suite freshness claim.
+- Fresh scoped gates: Task10B50/50, Task9A41/41, V123119/119 (models,
+  bridge, preflight, candidate and historical replay), Task7 7/7; no skipped
+  or expected failures. V1.18 validator PASS; actual formalV1.22 verifier21/21
+  and parent candidate verifier24/24 PASS. Read-only preflight replay PASS.
+  All534 protected file identities remain unchanged, including prior2024 and
+  2025 source evidence, formal releases, existing candidate and userAGENTS.
+  Formal639 / candidate651 remain unchanged. No code/tests changed and no
+  claim that the entire maintained suite was rerun for this operation.
+- Independent operational review: Critical0 / Important0 / unresolved Minor0.
+  Reviewer independently reconstructed the transcription digest, replayed
+  parent-bound preflight and checked complete canonical/source/MS mappings
+  plus all534 protected identities. Review-request report:
+  `REAL_BATCH_IMPORT_REVIEW.md` in the operation root; it is not an approval
+  receipt. The only next action is exact human real-import approval.
 
 ### HKDSE 2024 PP/MS operational preparation — V1.23
 
