@@ -42,6 +42,60 @@ Updated: 2026-10-13 (Asia/Shanghai)
 
 ## Current task
 
+### HKDSE 2024 PP/MS operational preparation — V1.23
+
+**USER DECISION REQUIRED — PDF TRANSCRIPTION REVIEW**
+
+- The user separately authorized2024 preparation using the existing Task10B /
+  V123 implementation; no new architecture or implementation work. Existing
+  generation000001 was independently verified24/24 and remains unchanged:
+  accepted2023 batch1, additions12, projected651. Required next parent remains
+  `f2fb80e7a7f9e4478877446a8e74cccac8cd1c8829784cef0eb93637bcfacaf1`.
+- Reused the actual2024 PP/MS,13-question/100-mark staging,13 historical formal
+  source records and existing source-audit figure crops. This is additional
+  source preparation for known originals, not a claim of13 first-time originals
+  or13 accepted/new storage records. No2024 authoritative preflight has run.
+- New ignored operation root:
+  `data/staging/task10b-hkdse-2024/source-review-000001/`.
+  Proposal: `transcription-proposal-000001/transcription.json`; full human
+  review: `FULL_TRANSCRIPTION_REVIEW.md`; evidence: `operational-evidence.json`.
+  Unapproved transcription digest:
+  `48f260c37950c2e852abe326fcd1501e6058246312b5f1898daa29b8f49e3cb7`.
+- All13 question texts and100 marks were visually checked against PP; full
+  officialMS steps, alternatives, shared scoring and page anchors were read
+  against MS2–18, separately from historical answer summaries. Independent
+  source reviewer confirmed12 complete MS records and Q11 partial evidence.
+  Sole unresolved source field: Q11(c), MS physical13 / printed83, first1M
+  remark visibly ends `保留不給 1M 若遺漏步`; the high-resolution original edge
+  does not reveal any following characters. No inferred completion was made.
+  Request only this official-page snippet or an explicit human source decision,
+  not another full-year upload or full OCR pass.
+- The reviewed passB withholds a *complete* Q11 MS string; passA and the proposal
+  retain all available Q11 mathematics, both(b) methods and the partial remark.
+  Existing adapter reports review_required1 / issues1 (`official_ms_missing`).
+  Its MS-complete13 metric merely counts nonempty A strings, not complete source
+  validation; actual fully confirmed MS count is12/13. Auto-agree12 describes
+  source-reconciled serialization after independent review, not blind extraction.
+- Controlled taxonomy: unknown_primary_type0 / unknown_tag0. Q12 is mapped to
+  matrices/linear systems/vectors, not its historical integration misclassification;
+  Q1's unsupported trigonometry and Q6's generic application tags were excluded.
+  Q5's English module label was aligned; original difficulty, marks, order and
+  source identities remain. Changes exist only in a new staging copy.
+- Q9 figure is bound to PP12 / printed39; Q10 official graph to MS10 / printed80.
+  Existing audit crops were hash-verified and reused. These are source locators
+  and audit evidence, **not generated canonical image files**.
+- Two proposal roots have identical four output files and reconstructed digest.
+  Fresh gates: Task10B50/50, Task9A41/41, Task7 7/7, V1.18 validator PASS;
+  V1.22 independent formal verifier21/21 and V123 candidate verifier24/24 PASS.
+  All338 protected identities (formal releases, historical/candidate evidence,
+  source files and the user's AGENTS.md) remain unchanged; formal V1.22=639.
+  No code/tests changed and no fresh full maintained-suite claim is made.
+- No2024 transcription approval, canonical package, preflight, real writer or
+  promotion. Resolve the source field, preserve this proposal, then request a
+  new exact transcription approval if payload changes. No2025, releases/V1.23
+  or V1.24 work. Ordinary Git backup covers only tracked documentation, never
+  these ignored runtime artifacts. The user's AGENTS.md change is untouched.
+
 ### V1.23 minimal candidate roll-forward / HKDSE 2023 preparation
 
 **APPROVED 2023 IMPORT COMPLETED — V1.23 CANDIDATE GENERATION 000001**
@@ -74,8 +128,9 @@ Updated: 2026-10-13 (Asia/Shanghai)
   Independent operational reviewer `v123_implementation_review`: C0/I0/M0;
   separately reconstructed exact approval/preflight and verified24/24, all639
   inherited rows field-by-field/in order,12 candidate rows and file preservation.
-- Stop after this batch. No2024/2025 work, V1.23 formal release/promotion,
-  formal-query pointer change or next-version work is authorized. Q6 remains
+- At the2023 import checkpoint, execution stopped after that batch; the later
+  separate2024 preparation authorization is recorded above. No2025 work,
+  V1.23 formal release/promotion or formal-query pointer change is authorized. Q6 remains
   PDF/page/region evidence only; independent explanations remain missing12.
 
 - Approved Design: `docs/superpowers/specs/2026-10-09-v123-next-version-candidate-design.md`.
@@ -171,8 +226,10 @@ Updated: 2026-10-13 (Asia/Shanghai)
   and exact human transcription approval must pass. Real candidate writing
   then requires exact batch/preflight/V1.23/parent import approval.
 - Historical cleanup is paused, not an ingestion prerequisite. No merging,
-  deletion, whole-library recategorization, historical approval reconstruction,
-  2024 processing or promotion. Preserve the user's unrelated AGENTS.md edit.
+  deletion, whole-library recategorization or historical approval reconstruction.
+  This2023 preparation checkpoint did not authorize2024 processing; the separate
+  later authorization is recorded above. Promotion remains unauthorized.
+  Preserve the user's unrelated AGENTS.md edit.
 - Docs checkpoint checks: Task 7 7/7, Task 10B 50/50, V1.22 independent formal
   verifier 21/21 and V1.18 validator PASS; no skipped/expected-failure tests.
   The 292-file protected audit snapshot and the pre-existing AGENTS.md content
