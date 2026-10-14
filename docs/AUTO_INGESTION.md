@@ -136,15 +136,24 @@ mathematical re-solution or a claim of character-identical PDF typesetting.
 Proposal digest:
 `2038db4f3486aae8a92ec0e38acc338f9c0c2782a5b245301cca85792a29928f`.
 Review: `data/staging/oxford-c1-review-20261014/proposal-000001/PDF_TRANSCRIPTION_REVIEW.md`.
-The required statement, **not received approval**, is:
+The following exact statement was subsequently received from the user and
+saved in `received-transcription-approval.txt` (proposal bytes unchanged):
 
 ```text
 USER APPROVED PDF TRANSCRIPTION BATCH JOY-M2-STG-MOCK-2025-26-C-SET1-20260903 2038db4f3486aae8a92ec0e38acc338f9c0c2782a5b245301cca85792a29928f
 ```
 
-Repeated actual publisher-profile runs processed0 jobs, `no_change=true`, model
-calls0. Real canonical, authoritative preflight and candidate write remain
-unexecuted until their respective exact approvals; no net-new count is asserted.
+After receipt, the existing runner generated canonical and the actual V1.23
+preflight: READY; detected13/new13/duplicate0/rejected0/ambiguous0/adaptations0,
+issues0; missing answers0, independent explanations13. Before664/projected677.
+Preflight SHA `8531b270990b350afbbcdc16eff2fddf63a1f33d7a451402199344eae2447a20`,
+parent `9d6b16cf357e7d32268552ab17c74a16a409d502d7873aa6c7a3854f77edebb9`.
+Canonical manifest SHA `f015d0f334379c7ae524077c80c74f768c831cfcdc0b62f963f0ff07eba96b67`.
+The full report/approval statement is in
+`data/staging/oxford-c1-review-20261014/preflight-000001/REAL_BATCH_IMPORT_REVIEW.md`.
+Two identical replay runs processed0/model0 and preserved report/package bytes.
+These are fingerprint classifications, not proof of global original uniqueness.
+No exact import approval has been received and no real Oxford writer has run.
 
 Resume this real job using the existing runner:
 
@@ -153,11 +162,10 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:. python3 -B scripts/run_auto_ingestion
   --config data/staging/oxford-c1-review-20261014/runner.json
 ```
 
-The configured received-approval paths intentionally do not exist until the
-user provides the exact corresponding statements. Do not create them from a
-report's requested statement. No real canonical/preflight before transcription
-approval and no real candidate append before import approval. Synthetic E2E
-tests are not real pilot acceptance. Periodic scheduling remains deferred.
+The transcription approval path now contains the actually received statement;
+the import approval path remains absent. Never create an approval from a report's
+requested statement. No real candidate append before exact import approval.
+Synthetic E2E tests are not real pilot acceptance. Periodic scheduling remains deferred.
 
 The verified original 2023/2025 prefix remains generation000002, additions25,
 total664, digest `9d6b16cf357e7d32268552ab17c74a16a409d502d7873aa6c7a3854f77edebb9`.
@@ -204,6 +212,12 @@ The explicit inventory and result are in
 `data/staging/oxford-c1-review-20261014/{backup-file-list.json,BACKUP_RECOVERY_RESULT.json}`.
 No original file was restored/overwritten. Off-device copy remains outstanding;
 do not describe a Git push or this same-disk archive as off-device protection.
+
+The later approved-transcription/preflight checkpoint has its own649-file archive
+`dist/backups/oxford-c1-preflight-20261014-000002.zip`, SHA
+`5d724c6b63f081da1484e5f2e2fdcf9c8e0839ce7b1a5d244912f73799a47613`.
+Isolated restore PASS; original archive and all live candidates/formal files
+preserved. Its result is in `preflight-000001/BACKUP_RECOVERY_RESULT.json`.
 
 ## Phase 2 approval simplification — recommendation only
 

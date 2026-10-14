@@ -44,7 +44,7 @@ Updated: 2026-10-14 (Asia/Shanghai)
 
 ### Auto-ingestion phase 1 — approval-preserving orchestration
 
-**OXFORD SOURCE MAPPING IMPLEMENTED — EXACT TRANSCRIPTION APPROVAL REQUIRED**
+**OXFORD TRANSCRIPTION APPROVED — REAL PREFLIGHT READY / IMPORT APPROVAL REQUIRED**
 
 - User authorized direct, reversible implementation while retaining exact
   batch transcription/import approvals. Phase1 is not the long-term approval
@@ -69,8 +69,25 @@ Updated: 2026-10-14 (Asia/Shanghai)
   Controlled taxonomy passes; no unresolved source/review issues remain.
   Proposal: `data/staging/oxford-c1-review-20261014/proposal-000001/transcription.json`.
   Digest: `2038db4f3486aae8a92ec0e38acc338f9c0c2782a5b245301cca85792a29928f`.
-  No exact approval has been received. Real canonical/preflight/write have NOT
-  run. Real E2E import acceptance remains incomplete, pending both human gates.
+  Exact user transcription approval received and saved unchanged in
+  `data/staging/oxford-c1-review-20261014/received-transcription-approval.txt`.
+  Real canonical generation and parent-bound preflight completed with the
+  committed implementation `bca7aed`. No real import approval or writer call.
+  Real E2E import acceptance remains incomplete, pending the import human gate.
+- Actual preflight: READY, detected13/new13/duplicate0/rejected0/ambiguous0,
+  adaptations0/issues0; answers present13, independent explanations missing13.
+  Difficulty L2=1/L3=7/L4=3/L5=2; no missing/orphan images. Current fingerprint
+  classification is not a global semantic original-question uniqueness claim.
+  Parent remains `9d6b16cf357e7d32268552ab17c74a16a409d502d7873aa6c7a3854f77edebb9`;
+  before664/projected677, not yet written. Preflight SHA:
+  `8531b270990b350afbbcdc16eff2fddf63a1f33d7a451402199344eae2447a20`.
+  Canonical manifest SHA:
+  `f015d0f334379c7ae524077c80c74f768c831cfcdc0b62f963f0ff07eba96b67`.
+  Review/report: `data/staging/oxford-c1-review-20261014/preflight-000001/`;
+  package: `data/staging/auto-ingestion/packages/2038db4f3486aae8a92ec0e38acc338f9c0c2782a5b245301cca85792a29928f/`.
+  Fresh read-only prefix verification24/24 and focused regressions49/49 PASS;
+  two identical replay cycles processed0/model0, same report and package bytes.
+  All571 combined protected/present-generation file identities unchanged.
 - Resume config: `data/staging/oxford-c1-review-20261014/runner.json`.
   Repeated identical real runs processed0, `no_change=true`, model calls0;
   original draft, source PDFs and evidence are preserved. Receipt/crash recovery
@@ -94,6 +111,10 @@ Updated: 2026-10-14 (Asia/Shanghai)
   SHA: `d029babf84a1a895c88d7fc535f9742278c261388a8f45acf31fdb579eb917d3`.
   Result: `data/staging/oxford-c1-review-20261014/BACKUP_RECOVERY_RESULT.json`.
   No live path was restored. This is local-disk recovery, not off-device backup.
+- After transcription approval/preflight, a new immutable649-file archive and
+  isolated restore also passed: `dist/backups/oxford-c1-preflight-20261014-000002.zip`;
+  SHA `5d724c6b63f081da1484e5f2e2fdcf9c8e0839ce7b1a5d244912f73799a47613`.
+  Prior archive is preserved; neither archive is an off-device/Git backup.
 - No periodic task has been configured: requested real authoritative E2E
   acceptance has not succeeded. Phase2 approval simplification is advisory
   only in the operations guide, not a change to existing data contracts.
