@@ -42,6 +42,74 @@ Updated: 2026-10-14 (Asia/Shanghai)
 
 ## Current task
 
+### V1.23 promotion readiness — written Design checkpoint (2026-10-14)
+
+- Current priority is the entire immutable generation000003, not another Oxford
+  import. User authorized minimal missing promotion Design/Plan preparation and
+  later Native / Inline execution subject to the existing written approval gates.
+  Ordinary reviewed task commit/push is now permitted; the preceding checkpoint's
+  no-push instruction is historical. No real publication is authorized.
+- Design: `docs/superpowers/specs/2026-10-14-v123-promotion-readiness-design.md`.
+  Written Design awaits human review. Plan and implementation NOT STARTED;
+  candidate authority and import approvals are not promotion authority.
+- Independent read-only Design review and targeted re-review: Critical0,
+  Important0, Minor0 after explicitly fixing the baseline schema projection to
+  `task12-v122-formal-v1` and requiring an independent literal-oracle regression.
+  This is not human Design approval or implementation certification.
+- Fresh selected-candidate verifier24/24 PASS; receipt/manifest/SQLite agree on
+  2023(12) ->2025(13) ->Oxford(13),38 additions,639+38=677. No later accepted
+  generation was found. Candidate digest remains
+  `c5c51df58d64349d58bd71469fe67a72cced56e77369126d6fec66bb2fcc955a`.
+  SQLite/manifest identities remain those in the accepted-import checkpoint below.
+- Fresh publisher-mock plus V123 historical-replay tests18/18 PASS (11.417s),
+  including historical formal verifiers; V1.18 independent validator PASS/497.
+  Task7 project initialization7/7 PASS; tracked/new-doc whitespace checks PASS.
+  All587 protected/candidate checkpoint identities match. Existing local backup
+  archive and isolated restore both verify665/665; no new backup service or live
+  restore. This is local recoverability, not off-device backup.
+- Formal V1.22 remains639; Oxford13 remain candidate/selectable0, not published.
+  No V1.23 formal-equivalent build or release digest exists yet. The proposed
+  four-file release, formal677 projection and independent verification must be
+  implemented and proven only after the written Design/Plan gates.
+- No code, tests, scheduler, candidate, formal artifact or evidence changes.
+  `releases/V1.23/` remains absent. User's original AGENTS.md remains unstaged
+  and byte-identical. No2024 remediation, V1.24, historical cleanup or promotion.
+
+### Real content growth — publication capability checkpoint (2026-10-14)
+
+- User requested published/selectable growth, Oxford first, no schedule changes
+  and no automatic GitHub push. Fresh source/approval/canonical/SQLite comparison
+  confirms all13 Oxford records retain exact approved complete questions and
+  full publisher MS,100 marks, `publisher_mock`/Oxford identity and zero source
+  eligibility issues. This reuses approved page review; it is not a new whole-
+  PDF transcription or independent mathematical re-solution.
+- Current V123 generation000003 independently verifies24/24 PASS. Ledger stays
+  2023(12),2025(13),Oxford(13),38 additions/677 candidate total. Formal V122 is
+  still639 published/selectable; Oxford formal matches0. Fresh publisher-mock
+  and V123 historical-replay tests18/18 PASS; protected587 identities unchanged.
+- Concrete publication gap: there is no committed V123 promotion Design/Plan,
+  builder, formal verifier or publication approval carrier. Existing V122
+  promotion accepts exact V122 candidate/contract types and a V122 release
+  digest approval only. It cannot publish V123 by changing an output directory.
+  The committed V123 candidate Design explicitly stops before formal release.
+  A bounded V123 promotion extension needs its own written/reviewed authority
+  under AGENTS before implementation, then real dry-run identity and the final
+  exact promotion approval. Do not substitute the candidate digest or pretend
+  a release digest exists. No formal V123 artifacts were built this checkpoint.
+- Scoped PP follow-up: existing authorized HKDSE staging covers2012–2025;
+  2023/2025 supplemental batches already accepted, not replayed.2024's13-record
+  proposal still carries Q11 `official_ms_missing` review_required; its accepted
+  unknown suffix and evidence are unchanged. `approve_hkdse_pdf_transcription`
+  rejects nonempty issues/non-PROPOSED rows. No exact eligible transcription or
+  import approval exists for that batch; no diagnostic was cleared to force it.
+- Formal newly published records this checkpoint:0. No candidate write, code or
+  test edit, schedule change, historical cleanup or push. joy-m2 remains ACTIVE;
+  the original user AGENTS change is preserved. Next decision is the minimum
+  V123 promotion extension for the intact approved generation000003, not a new
+  adapter, ingestion framework or repeat Oxford import.
+- Machine-readable checkpoint:
+  `data/staging/oxford-c1-review-20261014/publication-capability-check-20261014.json`.
+
 ### Auto-ingestion phase 1 — approval-preserving orchestration
 
 **OXFORD EXACT-APPROVED IMPORT COMPLETED — V1.23 GENERATION 000003**
