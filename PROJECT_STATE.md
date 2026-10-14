@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-10-13 (Asia/Shanghai)
+Updated: 2026-10-14 (Asia/Shanghai)
 
 ## Formal data
 
@@ -42,9 +42,63 @@ Updated: 2026-10-13 (Asia/Shanghai)
 
 ## Current task
 
-### HKDSE 2025 approved transcription / parent-bound V1.23 preflight
+### HKDSE 2025 exact-approved append — V1.23 generation 000002
 
-**USER DECISION REQUIRED — REAL BATCH IMPORT**
+**APPROVED 2025 IMPORT COMPLETED — OPERATIONAL CHECKPOINT / STOP**
+
+- Before execution, actual receipts and candidate files showed only the2023
+  generation000001;2025 had not been written. Reconstructed the exact approved
+  transcription, canonical package, READY preflight and independent parent
+  verification before consuming the newly received2025 import approval once.
+  Existing successful output is verification-only on subsequent invocations;
+  an output/receipt mismatch is a recovery blocker, never a reason to rebuild.
+- Consumed exact preflight
+  `732f05c7d36203fcb920d5bfd59673041533abb84db5d82e6fa8fc3407bda5e0`
+  against parent
+  `f2fb80e7a7f9e4478877446a8e74cccac8cd1c8829784cef0eb93637bcfacaf1`.
+  Existing writer independently reconstructs the approved ordered prefix and
+  validates before atomic no-replace publication into the new staging root.
+- Complete accepted ledger:
+  1. `000001 — JOY-M2-HKDSE-2023-PP-MS`:12 records; cumulative12; total651.
+  2. `000002 — JOY-M2-HKDSE-2025-PP-MS`:13 records; cumulative25; total664.
+  These are additional source records for already-represented originals, not
+  a claim of25 first-time original questions. No old record was merged/deleted.
+- New candidate digest / next parent authority:
+  `9d6b16cf357e7d32268552ab17c74a16a409d502d7873aa6c7a3854f77edebb9`.
+  Candidate SQLite SHA:
+  `3bc409ce5e7afa01706a023b990ac99842484d65409e2c843a94565711dd1470`.
+  Manifest SHA:
+  `d10afaa7eb1453b8ccd05d85cd67e897ebd74692f0b9627678b8a54633c1047b`.
+- Output: `data/staging/task13-v123-hkdse-2025/candidate-generation-000002/`.
+  Exact received import approval and original success receipt are
+  `REAL_BATCH_IMPORT_APPROVAL.json` and `REAL_BATCH_IMPORT_RECEIPT.json` in its
+  parent directory. The receipt contains the complete ledger, approval chain,
+  artifact hashes, independent verification and protected-file snapshot.
+- Independent candidate verifier24/24 PASS; SQLite integrity/FK PASS;
+  664unique IDs =639 inherited published/selectable1 +25 candidate/selectable0.
+  Formal V1.22 remains639 with its original SHA and verifier21/21 PASS.
+  All563 protected identities remain unchanged, including formalV1.18–22,
+  oldgeneration000001, canonical/source/approval evidence,2024 and userAGENTS.
+- Fresh scoped regression: V123119 +Task7 7 =126/126 PASS;
+  Task10B50 +Task9A41 =91/91 PASS; no skips/expected failures.
+  V1.18 validator PASS. No production/test change or full-maintained-suite claim.
+- Independent operational reviewer: Critical0 / Important0 / Minor0. With
+  writer disabled, readonly replay returned the original successful receipt;
+  all639 inherited rows matched field-by-field and in order,25candidate rows
+  had the required state, all563 protected hashes and254reviewed runtime
+  artifacts remained unchanged. No duplicate2025 acceptance or2024 approval.
+- 2024 remains unapproved/unaccepted; its accepted local source defect and all
+  evidence remain intact. No releases/V1.23, promotion or next-batch work.
+  Prior preflight sections below are historical and do not authorize reuse of
+  their now-consumed parent. Any future batch needs the actual latest parent.
+- This operational append has no mandatory remote-sync-before-write gate.
+  Ordinary documentation backup is separate from ignored candidate/receipt
+  backup; Git push does not back up these runtime artifacts. UserAGENTS remains
+  unchanged and unstaged. Stop after this batch.
+
+### HKDSE 2025 approved transcription / pre-append preflight evidence
+
+**HISTORICAL APPROVAL GATE — CONSUMED BY GENERATION 000002 ABOVE**
 
 - The user explicitly accepted the unknown cropped suffix of the2024 Q11(c)
   first1M remark, without confirming missing characters or approving the batch.
@@ -99,8 +153,8 @@ Updated: 2026-10-13 (Asia/Shanghai)
   `d3ebf556340a1e278d1141e2c87432c5dc12c2c113ca8566db90d8957a0c5862`.
   Required verified parent:
   `f2fb80e7a7f9e4478877446a8e74cccac8cd1c8829784cef0eb93637bcfacaf1`.
-- No2025 import approval, writer, new candidate generation or promotion.
-  The actual ledger still contains only2023;2024 remains unaccepted and its
+- At this pre-append checkpoint, no2025 import approval, writer or new candidate
+  existed. Its ledger contained only2023;2024 remains unaccepted and its
   preserved source-defect decision is not replaced by this2025 approval.
   On later exact import approval, reverify unchanged content and current parent
   before any atomic append. No automatic further batch or formal release.
@@ -118,7 +172,8 @@ Updated: 2026-10-13 (Asia/Shanghai)
   parent-bound preflight and checked complete canonical/source/MS mappings
   plus all534 protected identities. Review-request report:
   `REAL_BATCH_IMPORT_REVIEW.md` in the operation root; it is not an approval
-  receipt. The only next action is exact human real-import approval.
+  receipt. That requested real-import approval was subsequently received and
+  consumed by generation000002 above; do not request or consume it again.
 
 ### HKDSE 2024 PP/MS operational preparation — V1.23
 
@@ -127,8 +182,9 @@ Updated: 2026-10-13 (Asia/Shanghai)
 - The user separately authorized2024 preparation using the existing Task10B /
   V123 implementation; no new architecture or implementation work. Existing
   generation000001 was independently verified24/24 and remains unchanged:
-  accepted2023 batch1, additions12, projected651. Required next parent remains
+  accepted2023 batch1, additions12, projected651. Its preparation-time parent was
   `f2fb80e7a7f9e4478877446a8e74cccac8cd1c8829784cef0eb93637bcfacaf1`.
+  This is historical, not the current parent after2025's generation000002.
 - Reused the actual2024 PP/MS,13-question/100-mark staging,13 historical formal
   source records and existing source-audit figure crops. This is additional
   source preparation for known originals, not a claim of13 first-time originals
