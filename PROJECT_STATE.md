@@ -42,6 +42,50 @@ Updated: 2026-10-14 (Asia/Shanghai)
 
 ## Current task
 
+### Auto-ingestion phase 1 — approval-preserving orchestration
+
+**ENGINE CHECKPOINT — REAL OXFORD E2E NOT YET COMPLETE**
+
+- User authorized direct, reversible implementation while retaining exact
+  batch transcription/import approvals. Phase1 is not the long-term approval
+  policy. Design/Plan checkpoint: `8d935fa1fa870bf9d91544aafac3349b1e8a7840`.
+  Entry point and operating instructions: `docs/AUTO_INGESTION.md`.
+- Added an independent ignored SQLite journal, explicit source inventory,
+  bounded retries, repository lock, existing Task10B/V123 orchestration,
+  parent-bound approval continuation and durable writer-intent recovery.
+  No new public ingest API, dependency, formal publisher or model client.
+  Unknown sources are identified, not silently parsed or approved. Existing
+  evidence passes are required for the supported HKDSE preparation path.
+- Real Oxford2025/26 C Set1 intake:13 unique structured records/100marks,
+  13 question-text fields and solution-outline fields; both PP/MS SHA values
+  match source declarations. The second identical run processed0 jobs,
+  `no_change=true`, model calls0. Local config and report:
+  `data/staging/auto-ingestion-config-20261014.json` and
+  `data/staging/auto-ingestion/last_run.json`.
+- The actual remaining gap is the strict HKDSE source profile, which cannot
+  consume Oxford mock identities and solution outlines as verified HKDSE MS.
+  A narrowly scoped mock-source evidence/approval mapping is required before
+  real canonical/preflight E2E. Do not rename IDs or invent approvals. No claim
+  of complete automatic OCR, mathematical review or real Oxford import.
+- Original2023/2025 receipts independently replayed:24/24 candidate checks,
+  generation000002,25 additions,total664, digest
+  `9d6b16cf357e7d32268552ab17c74a16a409d502d7873aa6c7a3854f77edebb9`.
+  No writer replay.2024 Q11 proposal/accepted-defect evidence remains unchanged
+  and unapproved, isolated from the Oxford job. All563 prior protected file
+  identities were checked unchanged; formalV1.22 remains639/originalSHA.
+- Maintained suite1265/1265 PASS,0errors/skips/expected failures. The final
+  cache-TOCTOU regression was added after that suite's collection; latest
+  focused suite30/30 PASS includes it. Independent reviewer re-ran30/30 and
+  found Critical0 / Important0 / Minor0 after recovery/cache-binding fixes.
+  V1.18 validator PASS. Known legacy attribution remains9PASS/2FAIL (historical
+  SQLite hash and frozen byte-equivalence only), not a maintained failure.
+- No periodic task has been configured: requested real authoritative E2E
+  acceptance has not succeeded. Phase2 approval simplification is advisory
+  only in the operations guide, not a change to existing data contracts.
+- UserAGENTS remains byte-identical to its incoming dirty state, unstaged and
+  uncommitted. Runtime journal/candidates/reports are ignored and are not backed
+  up by Git. No releases/V1.23, promotion or historical cleanup.
+
 ### HKDSE 2025 exact-approved append — V1.23 generation 000002
 
 **APPROVED 2025 IMPORT COMPLETED — OPERATIONAL CHECKPOINT / STOP**
