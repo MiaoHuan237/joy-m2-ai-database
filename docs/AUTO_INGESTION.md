@@ -173,7 +173,7 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:. python3 -B scripts/run_auto_ingestion
 Both approval paths now contain the actually received statements. Never create
 an approval from a report's requested statement. Re-running this job returns the
 verified accepted receipt, not another append. New batches need their own exact
-approvals and current parent. Periodic scheduling is not yet enabled.
+approvals and current parent. Daily scheduling was subsequently enabled as below.
 
 The verified original 2023/2025 prefix is preserved as generation000002, additions25,
 total664, digest `9d6b16cf357e7d32268552ab17c74a16a409d502d7873aa6c7a3854f77edebb9`.
@@ -236,17 +236,55 @@ The rollback manifest's digest-bound unpromoted-tree action is verified, not
 executed. Never delete a live accepted generation/receipt/journal to simulate
 rollback; destructive operational recovery requires its own explicit decision.
 
-## Periodic activation proposal — not enabled
+## Daily incremental check — enabled 2026-10-14
 
-Proposed first schedule: one daily cycle at09:00 Asia/Shanghai, using the existing
-runner/config and repository lock. Unchanged inputs stop without model calls;
-notify only for a new approval request, actionable failure or accepted batch.
-Only explicitly configured supported jobs can advance. Unknown inventory files
-remain discovery/review items, not automatically interpreted mathematics.
-Exact received transcription/import approvals remain required; formal publication
-is absent. Preserve current prefix and unchanged2024 exception. Confirm timing
-before activation and arrange an off-device copy of the independent archives.
-This proposal does not configure a scheduler or remove either human gate.
+Task `joy-m2` / `Joy M2 每日增量入库检查` is an ACTIVE Codex local-thread
+heartbeat, not an OS daemon or cloud source-processing service. It returns to
+the existing chat and explicitly uses
+`/Users/miaohuanjoy/Desktop/joy-m2-ai-database-current/.worktrees/task8b-pipeline-migration`.
+No fresh worktree is created. Schedule:daily09:00, host timezone Asia/Shanghai;
+the scheduler recorded its first due time as2026-10-15 09:01:25+08:00. This is
+not an exact-second execution guarantee. Keep this Mac on/available, the app
+running, local paths accessible and host timezone unchanged. No permissions,
+services or dependencies were added.
+
+Actual Python:
+`/Users/miaohuanjoy/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/bin/python3`.
+Use `PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:.`, `-B`, existing entry
+`scripts/run_auto_ingestion.py`, explicit `--repo` above and `--config
+data/staging/oxford-c1-review-20261014/runner.json`.
+Inventory scope is the existing authorized main-checkout `data/staging/`;
+PP/MS access is limited to exact paths in that config. It currently has one
+accepted Oxford job. Unknown newly discovered sources are inventory/review only,
+not automatically authorized writer jobs. At most one new substantive batch per
+cycle; never run an unrestricted multi-job cycle after a config expansion.
+
+Every run recovers the actual receipt chain and independently verifies its
+latest candidate, rather than pinning generation000003 forever. Existing lock,
+retry, exact transcription/import approval and recovery contracts still apply.
+Unchanged/waiting inputs retain their proposal/digest. No OCR, model-based
+question processing or full maintained suite on a no-op. The Python entry has
+no model calls, but Codex scheduling/interpretation itself consumes model usage.
+
+Logs:existing `data/staging/auto-ingestion/{state.sqlite3,last_run.json}` plus
+this chat's scheduled-run history. Only new approval needs, blocking exceptions,
+identity or backup failures should surface; unchanged waiting items, routine
+success and no-op stay quiet. No email/SMS integration was added. This is a
+prompt-level reporting policy, not a newly built notification service; actual
+unattended/OS notification delivery remains untested before the first run.
+
+Pause/resume through the app's scheduled-task card for `joy-m2`, or ask Codex to
+pause/resume that exact ID. Registration as PAUSED then update to ACTIVE was
+read back successfully. Both operations preserve the state database and receipts.
+
+Enablement smoke used the actual CLI with real writes explicitly forbidden:
+processed0/no_change=true/model_calls0/failed0, no new or missing inventory files.
+Lock contention returned BUSY; independent candidate verifier24/24 PASS;
+587 protected/candidate identities unchanged. The existing665-file archive was
+read and verified, including current generation and receipt. New generations
+must receive a new verified archive under the existing backup procedure. Local
+archive/Git push is not off-device backup; no live rollback was executed.
+No candidate append, formal publication, code or test modification occurred.
 
 ## Phase 2 approval simplification — recommendation only
 
@@ -268,7 +306,7 @@ Escalate mathematical ambiguity, missing content, integrity risk and unsupported
 source profiles. Ordinary known taxonomy values need no separate question-level
 approval. Keep exact import approval and formal promotion approval until a
 separate measured decision explicitly changes those contracts. No approval gate
-is removed here, and no periodic automation has been configured.
+is removed here. The enabled daily check preserves both approval gates.
 
 ## Verification checkpoint
 

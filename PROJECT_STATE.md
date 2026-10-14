@@ -148,10 +148,20 @@ Updated: 2026-10-14 (Asia/Shanghai)
   isolated restore also passed: `dist/backups/oxford-c1-preflight-20261014-000002.zip`;
   SHA `5d724c6b63f081da1484e5f2e2fdcf9c8e0839ce7b1a5d244912f73799a47613`.
   Prior archive is preserved; neither archive is an off-device/Git backup.
-- No periodic task has been configured. The real Oxford approval/write/replay
-  checkpoint now passes; a bounded daily-cycle proposal is in the operations
-  guide for user confirmation. Phase2 approval simplification remains advisory,
-  not a change to existing data contracts. No further batch is started here.
+- Daily incremental check enabled by explicit user authorization: Codex local
+  thread heartbeat `joy-m2`, daily09:00 using host Asia/Shanghai timezone.
+  PAUSED registration and ACTIVE resume were read back; scheduler's recorded
+  first due time is2026-10-15 09:01:25+08:00 (not an exact-second guarantee).
+  It targets this existing worktree and runner config, not a new checkout.
+  No duplicate ingestion schedule found. Smoke:processed0/no_change=true,
+  model_calls0/no new write; BUSY lock check PASS, candidate verifier24/24 PASS,
+  protected587 identities unchanged; current generation/receipt covered in the
+  verified665-file archive. Evidence: `data/staging/auto-ingestion/daily-check-enablement-20261014.json`.
+  App/thread notifications are restricted by the task instructions to new
+  approvals or blocking identity/backup failures; first unattended run and OS
+  notification delivery have not occurred/tested. Scheduling itself uses a
+  model; Python ingestion does not. No code/tests or approval policy changed.
+  Phase2 simplification remains advisory. No further batch started here.
 - UserAGENTS remains byte-identical to its incoming dirty state, unstaged and
   uncommitted. Runtime journal/candidates/reports are ignored, not carried by Git;
   the separate archive above provides the tested local recovery checkpoint.
