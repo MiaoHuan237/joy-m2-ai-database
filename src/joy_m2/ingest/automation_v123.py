@@ -147,14 +147,40 @@ class V123Operations:
                     raise ValueError('cached canonical package differs from approved proposal')
         return package, None
 
+    def publisher_transcription(self, job):
+        from .publisher_mock import inspect_proposal, build_package
+        inputs={k:Path(v) for k,v in job['inputs'].items()}
+        result=inspect_proposal(inputs,self.config)
+        if read_json(inputs['proposal'])['batch_id']!=job['source_id']:
+            raise ValueError('publisher batch identity mismatch')
+        if result['status']=='REVIEW_REQUIRED':
+            return None,result
+        path=Path(job.get('transcription_approval',self.runtime/'absent-approval'))
+        actual=path.read_text().strip() if path.is_file() else None
+        if actual!=result['required_approval']:
+            return None,result
+        package=safe_runtime(self.runtime/'packages'/result['transcription_digest'],self.config.repo_root)
+        if not package.exists():
+            build_package(inputs,actual,package,self.config)
+        else:
+            with TemporaryDirectory(dir=self.runtime) as temporary:
+                expected=Path(temporary)/'package'
+                build_package(inputs,actual,expected,self.config)
+                def files(root):
+                    return {str(p.relative_to(root)):p.read_bytes() for p in root.rglob('*') if p.is_file()}
+                if any(p.is_symlink() for p in package.rglob('*')) or files(package)!=files(expected):
+                    raise ValueError('cached publisher canonical differs from approved proposal')
+        return package,None
+
     def process(self, job, revision):
         if job['source_id'] in self.accepted:
             receipt = self.accepted[job['source_id']]
             if job['kind'] == 'v123_canonical' and Path(job['inputs']['package']).resolve() != Path(receipt['package_root']).resolve():
                 return {'status': 'REVIEW_REQUIRED', 'reason': 'accepted source now points to another package'}
             return {**receipt, 'status': 'ACCEPTED', 'verification_status': 'PASS'}
-        if job['kind'] == 'hkdse_pdf':
-            package, waiting = self.transcription(job)
+        if job['kind'] in ('hkdse_pdf','publisher_mock'):
+            prepare=self.publisher_transcription if job['kind']=='publisher_mock' else self.transcription
+            package, waiting = prepare(job)
             if waiting:
                 return waiting
         else:

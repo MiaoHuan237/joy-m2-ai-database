@@ -165,7 +165,7 @@ def run_cycle(config_path: Path, repo_root: Path) -> dict:
                 context.append(fingerprint(runtime/'pending-write.json'))
                 context.extend(fingerprint(runtime/name) for name in ('proposals', 'packages'))
                 context.extend(fingerprint(p) for p in sorted((repo/'data/staging').glob('task13-v123*/**/REAL_BATCH_IMPORT_RECEIPT.json')))
-                if any(j['kind'] in ('hkdse_pdf', 'v123_canonical') for j in jobs):
+                if any(j['kind'] in ('hkdse_pdf', 'publisher_mock', 'v123_canonical') for j in jobs):
                     context.append(fingerprint(repo/'releases/V1.22'))
                 # Bind full verified prefix/package trees, not just receipt text.
                 for p in (*receipts, *own_receipts):
@@ -190,7 +190,7 @@ def run_cycle(config_path: Path, repo_root: Path) -> dict:
                 revision = hashlib.sha256(canonical([job, watched, context, watch_error]).encode()).hexdigest()
                 input_identity = hashlib.sha256(canonical([job, watched]).encode()).hexdigest()
                 saved = db.execute('SELECT attempts,status,result FROM jobs WHERE source_id=? AND revision=?', (job['source_id'], revision)).fetchone()
-                if write_blocked and job['kind'] in ('hkdse_pdf','v123_canonical'):
+                if write_blocked and job['kind'] in ('hkdse_pdf','publisher_mock','v123_canonical'):
                     result = {'status':'REVIEW_REQUIRED', 'reason':'pending writer recovery; later writes disabled'}
                 elif saved and not (runtime/'pending-write.json').exists() and (saved[1] != 'FAILED' or saved[0] >= 3):
                     result = json.loads(saved[2])
@@ -204,7 +204,7 @@ def run_cycle(config_path: Path, repo_root: Path) -> dict:
                             raise FileNotFoundError('one or more declared inputs are missing')
                         if accepted and json.loads(accepted[0]).get('input_identity') != input_identity:
                             result = {'status': 'REVIEW_REQUIRED', 'reason': 'accepted source changed or parent advanced; use existing receipt, never auto-reimport', 'prior_receipt': json.loads(accepted[0])}
-                        elif job['kind'] not in ('hkdse_pdf', 'v123_canonical'):
+                        elif job['kind'] not in ('hkdse_pdf', 'publisher_mock', 'v123_canonical'):
                             result = assess_draft(job)
                         else:
                             from joy_m2.ingest.automation_v123 import V123Operations
