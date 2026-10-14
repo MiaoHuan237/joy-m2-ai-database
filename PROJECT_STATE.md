@@ -44,7 +44,39 @@ Updated: 2026-10-14 (Asia/Shanghai)
 
 ### Auto-ingestion phase 1 — approval-preserving orchestration
 
-**OXFORD TRANSCRIPTION APPROVED — REAL PREFLIGHT READY / IMPORT APPROVAL REQUIRED**
+**OXFORD EXACT-APPROVED IMPORT COMPLETED — V1.23 GENERATION 000003**
+
+- Exact user import approval was matched to the unchanged READY preflight,
+  approved transcription/canonical and independently verified generation000002.
+  The committed writer appended13 Oxford records atomically once. Receipt:
+  `data/staging/auto-ingestion/receipts/000003.json`.
+- Ordered ledger:2023(12) ->2025(13) ->Oxford2025/26 C Set1(13).
+  Accepted batches3; cumulative additions38; candidate total677.
+  New candidate digest / next parent:
+  `c5c51df58d64349d58bd71469fe67a72cced56e77369126d6fec66bb2fcc955a`.
+  Candidate SQLite SHA:
+  `b7e2247e004cc4c91c339693de4f106edef11bb7067e34b52887547a8006cb01`.
+  Candidate manifest SHA:
+  `febe70a572b82783bf6199679bf1a2024294d98b44b4fbe047a2349a3830a076`.
+  Output: `data/staging/auto-ingestion/candidates/8531b270990b350afbbcdc16eff2fddf63a1f33d7a451402199344eae2447a20/`.
+- Fresh independent verifier24/24 PASS;677unique IDs;639published/selectable1
+  plus38candidate/selectable0; Oxford13 retain source_provided publisher identity.
+  SQLite integrity/FK PASS; rollback contract verified, no live rollback run.
+  Two repeat cycles preserve receipt/candidate bytes and create no duplicates;
+  final processed0/model0. Fresh V1.23/runner/backup focused suite168/168 PASS,
+  V1.18 validator PASS. No code or tests changed for this accepted operation.
+  Evidence: `data/staging/oxford-c1-review-20261014/import-000003/REAL_BATCH_IMPORT_VERIFICATION.json`.
+- Independent read-only operational review: Critical0 / Important0 / Minor0.
+  Exact approvals, ordered parent chain, Oxford identities and candidate status,
+  inherited tables/prior-batch rows and protected hashes checked unchanged.
+  This review did not repeat whole-PDF transcription or independently re-solve
+  mathematics, execute live rollback or establish off-device backup.
+- All576 protected/canonical file identities unchanged, including formalV1.18–22,
+  prior generations, source/approval evidence,2024 and the dirty userAGENTS.
+  Post-append665-file local backup and isolated byte-verified restore PASS:
+  `dist/backups/oxford-c1-accepted-20261014-000003.zip`, SHA
+  `317afa362a7bfcbe5c256b1c611f90b599013b8fcf4f804c8c73685d6a37b149`.
+  Original archives/live paths preserved; off-device backup remains outstanding.
 
 - User authorized direct, reversible implementation while retaining exact
   batch transcription/import approvals. Phase1 is not the long-term approval
@@ -72,14 +104,15 @@ Updated: 2026-10-14 (Asia/Shanghai)
   Exact user transcription approval received and saved unchanged in
   `data/staging/oxford-c1-review-20261014/received-transcription-approval.txt`.
   Real canonical generation and parent-bound preflight completed with the
-  committed implementation `bca7aed`. No real import approval or writer call.
-  Real E2E import acceptance remains incomplete, pending the import human gate.
+  committed implementation `bca7aed`. The later exact import approval has now
+  been consumed once by the successful operation recorded above.
 - Actual preflight: READY, detected13/new13/duplicate0/rejected0/ambiguous0,
   adaptations0/issues0; answers present13, independent explanations missing13.
   Difficulty L2=1/L3=7/L4=3/L5=2; no missing/orphan images. Current fingerprint
   classification is not a global semantic original-question uniqueness claim.
-  Parent remains `9d6b16cf357e7d32268552ab17c74a16a409d502d7873aa6c7a3854f77edebb9`;
-  before664/projected677, not yet written. Preflight SHA:
+  Approval-bound pre-import parent was
+  `9d6b16cf357e7d32268552ab17c74a16a409d502d7873aa6c7a3854f77edebb9`;
+  before664/projected677, subsequently appended as above. Preflight SHA:
   `8531b270990b350afbbcdc16eff2fddf63a1f33d7a451402199344eae2447a20`.
   Canonical manifest SHA:
   `f015d0f334379c7ae524077c80c74f768c831cfcdc0b62f963f0ff07eba96b67`.
@@ -115,9 +148,10 @@ Updated: 2026-10-14 (Asia/Shanghai)
   isolated restore also passed: `dist/backups/oxford-c1-preflight-20261014-000002.zip`;
   SHA `5d724c6b63f081da1484e5f2e2fdcf9c8e0839ce7b1a5d244912f73799a47613`.
   Prior archive is preserved; neither archive is an off-device/Git backup.
-- No periodic task has been configured: requested real authoritative E2E
-  acceptance has not succeeded. Phase2 approval simplification is advisory
-  only in the operations guide, not a change to existing data contracts.
+- No periodic task has been configured. The real Oxford approval/write/replay
+  checkpoint now passes; a bounded daily-cycle proposal is in the operations
+  guide for user confirmation. Phase2 approval simplification remains advisory,
+  not a change to existing data contracts. No further batch is started here.
 - UserAGENTS remains byte-identical to its incoming dirty state, unstaged and
   uncommitted. Runtime journal/candidates/reports are ignored, not carried by Git;
   the separate archive above provides the tested local recovery checkpoint.

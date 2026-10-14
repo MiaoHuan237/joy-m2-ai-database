@@ -153,7 +153,15 @@ The full report/approval statement is in
 `data/staging/oxford-c1-review-20261014/preflight-000001/REAL_BATCH_IMPORT_REVIEW.md`.
 Two identical replay runs processed0/model0 and preserved report/package bytes.
 These are fingerprint classifications, not proof of global original uniqueness.
-No exact import approval has been received and no real Oxford writer has run.
+The user subsequently supplied the exact import approval; the unchanged report
+and parent were revalidated before one atomic append. Receipt:
+`data/staging/auto-ingestion/receipts/000003.json`.
+Generation000003 ledger:2023(12),2025(13),Oxford(13);38 additions,total677.
+Candidate digest / next required parent:
+`c5c51df58d64349d58bd71469fe67a72cced56e77369126d6fec66bb2fcc955a`.
+Independent verifier24/24, integrity/FK,677unique IDs and two unchanged repeat
+runs PASS.639 inherited records remain published;38 additions remain candidate,
+not selectable formal records. Publisher solutions do not become HKDSE official MS.
 
 Resume this real job using the existing runner:
 
@@ -162,12 +170,12 @@ PYTHONDONTWRITEBYTECODE=1 PYTHONPATH=src:. python3 -B scripts/run_auto_ingestion
   --config data/staging/oxford-c1-review-20261014/runner.json
 ```
 
-The transcription approval path now contains the actually received statement;
-the import approval path remains absent. Never create an approval from a report's
-requested statement. No real candidate append before exact import approval.
-Synthetic E2E tests are not real pilot acceptance. Periodic scheduling remains deferred.
+Both approval paths now contain the actually received statements. Never create
+an approval from a report's requested statement. Re-running this job returns the
+verified accepted receipt, not another append. New batches need their own exact
+approvals and current parent. Periodic scheduling is not yet enabled.
 
-The verified original 2023/2025 prefix remains generation000002, additions25,
+The verified original 2023/2025 prefix is preserved as generation000002, additions25,
 total664, digest `9d6b16cf357e7d32268552ab17c74a16a409d502d7873aa6c7a3854f77edebb9`.
 It was replayed read-only, not appended again. HKDSE2024's Q11 local defect,
 human acceptance evidence and unapproved proposal remain unchanged. It is not a
@@ -219,6 +227,27 @@ The later approved-transcription/preflight checkpoint has its own649-file archiv
 Isolated restore PASS; original archive and all live candidates/formal files
 preserved. Its result is in `preflight-000001/BACKUP_RECOVERY_RESULT.json`.
 
+The accepted-generation checkpoint has a new665-file archive:
+`dist/backups/oxford-c1-accepted-20261014-000003.zip`, SHA
+`317afa362a7bfcbe5c256b1c611f90b599013b8fcf4f804c8c73685d6a37b149`.
+Isolated restore and live-original byte comparisons PASS. Evidence is in
+`data/staging/oxford-c1-review-20261014/import-000003/`.
+The rollback manifest's digest-bound unpromoted-tree action is verified, not
+executed. Never delete a live accepted generation/receipt/journal to simulate
+rollback; destructive operational recovery requires its own explicit decision.
+
+## Periodic activation proposal — not enabled
+
+Proposed first schedule: one daily cycle at09:00 Asia/Shanghai, using the existing
+runner/config and repository lock. Unchanged inputs stop without model calls;
+notify only for a new approval request, actionable failure or accepted batch.
+Only explicitly configured supported jobs can advance. Unknown inventory files
+remain discovery/review items, not automatically interpreted mathematics.
+Exact received transcription/import approvals remain required; formal publication
+is absent. Preserve current prefix and unchanged2024 exception. Confirm timing
+before activation and arrange an off-device copy of the independent archives.
+This proposal does not configure a scheduler or remove either human gate.
+
 ## Phase 2 approval simplification — recommendation only
 
 Consider removing manual transcription approval only for a separately approved
@@ -243,6 +272,13 @@ is removed here, and no periodic automation has been configured.
 
 ## Verification checkpoint
 
+- Accepted Oxford operation: fresh focused168/168 PASS, candidate verifier24/24
+  PASS, V1.18 validator PASS. Independent read-only operational review:
+  Critical0/Important0/Minor0; approvals, chain, SQLite rows and protected hashes
+  checked. Two repeat cycles created no duplicate receipt/generation; final
+  processed0/model0. No code/test change for this operation. The full-suite and
+  implementation-review results below belong to the preceding implementation
+  checkpoint, not a new full-suite run for this accepted import.
 - Final full maintained suite:1285/1285 PASS,0failure/ERROR/skip/expectedFailure.
   Focused suite49/49 PASS includes both real SQLite sidecar rejection regressions.
 - Independent final review:Critical0/Important0/Minor0. Reviewer inspected code
