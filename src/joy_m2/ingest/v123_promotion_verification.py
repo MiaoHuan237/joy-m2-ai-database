@@ -71,9 +71,9 @@ _PROMOTION_TABLE_SQL = """CREATE TABLE task13_v123_promotion_v1 (
     baseline_question_count INTEGER NOT NULL CHECK(baseline_question_count=639),
     candidate_digest TEXT NOT NULL CHECK(candidate_digest='c5c51df58d64349d58bd71469fe67a72cced56e77369126d6fec66bb2fcc955a'),
     candidate_database_sha256 TEXT NOT NULL CHECK(candidate_database_sha256='b7e2247e004cc4c91c339693de4f106edef11bb7067e34b52887547a8006cb01'),
-    candidate_database_size INTEGER NOT NULL CHECK(candidate_database_size=10330112),
+    candidate_database_size INTEGER NOT NULL CHECK(candidate_database_size=10764288),
     candidate_manifest_sha256 TEXT NOT NULL CHECK(candidate_manifest_sha256='febe70a572b82783bf6199679bf1a2024294d98b44b4fbe047a2349a3830a076'),
-    candidate_manifest_size INTEGER NOT NULL CHECK(candidate_manifest_size=6851),
+    candidate_manifest_size INTEGER NOT NULL CHECK(candidate_manifest_size=5664),
     accepted_batch_count INTEGER NOT NULL CHECK(accepted_batch_count=3),
     promoted_question_count INTEGER NOT NULL CHECK(promoted_question_count=38),
     formal_question_count INTEGER NOT NULL CHECK(formal_question_count=677)
@@ -212,7 +212,7 @@ def _sqlite_value(value: object) -> object:
 
 
 def _sqlite_semantic_payload(path: Path, formal_view: str) -> dict[str, object]:
-    uri = f"file:{path.resolve()}?mode=ro&immutable=1"
+    uri = path.resolve().as_uri() + "?mode=ro&immutable=1"
     with closing(sqlite3.connect(uri, uri=True)) as database:
         schema = [
             {
@@ -259,6 +259,125 @@ def _sqlite_semantic_payload(path: Path, formal_view: str) -> dict[str, object]:
     }
 
 
+def _reconstructs(value: object, expected: type) -> bool:
+    if type(value) is not expected:
+        return False
+    try:
+        return expected(**{
+            field.name: getattr(value, field.name)
+            for field in fields(expected) if field.init
+        }) == value
+    except (AttributeError, OSError, PipelineError, RuntimeError, TypeError, ValueError):
+        return False
+
+
+def _exact_keys(value: object, keys: tuple[str, ...]) -> bool:
+    return type(value) is dict and tuple(sorted(value)) == tuple(sorted(keys))
+
+
+def _same_json(value: object, expected: object) -> bool:
+    """Compare authority JSON without Python's bool/int/float coercion."""
+    if type(value) is not type(expected):
+        return False
+    if type(expected) is dict:
+        return value.keys() == expected.keys() and all(
+            _same_json(value[key], item) for key, item in expected.items()
+        )
+    if type(expected) is list:
+        return len(value) == len(expected) and all(
+            _same_json(left, right) for left, right in zip(value, expected)
+        )
+    return value == expected
+
+
+def _is_int(value: object, expected: int | None = None) -> bool:
+    return type(value) is int and value >= 0 and (expected is None or value == expected)
+
+
+def _is_digest(value: object, expected: str | None = None) -> bool:
+    return (
+        type(value) is str and _SHA256.fullmatch(value) is not None
+        and (expected is None or value == expected)
+    )
+
+
+def _safe_relative(value: object) -> bool:
+    if type(value) is not str or not value or value == "." or "\x00" in value or "\\" in value:
+        return False
+    path = PurePosixPath(value)
+    return (
+        not path.is_absolute() and path.as_posix() == value
+        and all(part not in {"", ".", ".."} for part in path.parts)
+    )
+
+
+def _has_symlink(path: Path, stop: Path) -> bool:
+    try:
+        current = path
+        while True:
+            if current.is_symlink():
+                return True
+            if current == stop or current.parent == current:
+                return False
+            current = current.parent
+    except (OSError, RuntimeError):
+        return True
+
+
+def _report(states: dict[str, bool]) -> VerificationReport:
+    checks = tuple(
+        VerificationCheck(name, bool(states.get(name)), "PASS" if states.get(name) else "FAIL")
+        for name in CHECK_NAMES
+    )
+    return VerificationReport(
+        "PASS" if all(check.passed for check in checks) else "FAIL", checks
+    )
+
+
+def _read_json(path: Path) -> tuple[bytes, object] | None:
+    if not path.is_file() or path.is_symlink():
+        return None
+    try:
+        raw = path.read_bytes()
+        return raw, json.loads(raw.decode("utf-8"))
+    except (OSError, UnicodeError, RecursionError) as error:
+        raise InputFormatError("promotion JSON cannot establish verification context") from error
+    except ValueError as error:
+        raise InputFormatError("promotion JSON cannot establish verification context") from error
+
+
+def _artifact_valid(value: object, kind: str, *, relative: bool = True) -> bool:
+    keys = ("kind", "relative_path", "sha256", "size_bytes") if relative else (
+        "kind", "sha256", "size_bytes",
+    )
+    return (
+        _exact_keys(value, keys)
+        and value["kind"] == kind
+        and (not relative or _safe_relative(value["relative_path"]))
+        and _is_digest(value["sha256"])
+        and _is_int(value["size_bytes"])
+    )
+
+
+def _database_artifact_valid(value: object) -> bool:
+    return (
+        _exact_keys(
+            value,
+            ("kind", "relative_path", "sha256", "size_bytes", "semantic_sha256"),
+        )
+        and value["kind"] == "sqlite"
+        and _safe_relative(value["relative_path"])
+        and _is_digest(value["sha256"])
+        and _is_int(value["size_bytes"])
+        and _is_digest(value["semantic_sha256"])
+    )
+
+
+def _candidate_manifest(request: V123CandidateVerificationRequest) -> dict[str, object] | None:
+    read = _read_json(request.candidate_dir / request.contract.manifest_filename)
+    return read[1] if read is not None and type(read[1]) is dict else None
+
+
 def _baseline_projection(candidate: dict[str, object]) -> dict[str, object]:
     return {
         "release_version": "V1.22", "question_count": 639,
@@ -282,5 +401,420 @@ def _candidate_projection() -> dict[str, object]:
     }
 
 
-def verify_v123_promotion(request: V123PromotionVerificationRequest, config: PipelineConfig) -> VerificationReport:
-    return None
+def _manifest_valid(
+    value: object,
+    candidate: dict[str, object],
+    contract: V123PromotionContract,
+) -> bool:
+    keys = (
+        "schema_version", "release_version", "release_status", "release_model",
+        "database_schema", "baseline", "candidate", "batch_ledger",
+        "batch_authority_artifacts", "counts", "database", "images",
+        "artifacts", "rollback", "promotion", "verification",
+    )
+    if not _exact_keys(value, keys):
+        return False
+    counts = value["counts"]
+    promotion = value["promotion"]
+    verification = value["verification"]
+    images = value["images"]
+    artifacts = value["artifacts"]
+    database = value["database"]
+    rollback = value["rollback"]
+    database_ref = (
+        {
+            key: database[key]
+            for key in ("relative_path", "sha256", "size_bytes", "kind")
+        }
+        if _database_artifact_valid(database) else None
+    )
+    expected_artifacts = (
+        [database_ref, rollback, *images]
+        if database_ref is not None
+        and _artifact_valid(rollback, "rollback")
+        and type(images) is list
+        and all(_artifact_valid(item, "image") for item in images)
+        and images == sorted(images, key=lambda item: item["relative_path"].encode("utf-8"))
+        else None
+    )
+    return all((
+        value["schema_version"] == contract.release_manifest_schema,
+        value["release_version"] == "V1.23",
+        value["release_status"] == "published",
+        value["release_model"] == "append-only-multi-batch-promotion",
+        value["database_schema"] == contract.formal_database_schema,
+        _same_json(value["baseline"], _baseline_projection(candidate)),
+        _same_json(value["candidate"], _candidate_projection()),
+        _same_json(value["batch_ledger"], candidate.get("batch_ledger")),
+        _same_json(value["batch_authority_artifacts"], candidate.get("batch_authority_artifacts")),
+        _same_json(counts, {"baseline_question_count": 639, "accepted_batch_count": 3,
+                   "promoted_question_count": 38, "formal_question_count": 677}),
+        _database_artifact_valid(database)
+        and database["relative_path"] == contract.database_filename,
+        type(images) is list and all(_artifact_valid(item, "image") for item in images),
+        type(candidate.get("images")) is list and _same_json(images, candidate["images"]),
+        type(artifacts) is list and expected_artifacts is not None
+        and _same_json(artifacts, expected_artifacts),
+        _artifact_valid(rollback, "rollback")
+        and rollback["relative_path"] == contract.rollback_filename,
+        _exact_keys(promotion, ("formal_target", "gate", "release_digest", "required_statement"))
+        and promotion["formal_target"] == "releases/V1.23"
+        and promotion["gate"] == "FINAL"
+        and _is_digest(promotion["release_digest"])
+        and promotion["required_statement"]
+        == f"USER APPROVED RELEASE PROMOTION V1.23 {promotion['release_digest']}",
+        verification == {"authority": "verify_v123_promotion",
+                         "check_names": list(CHECK_NAMES), "required_status": "PASS"},
+    ))
+
+
+def _parse_sums(raw: bytes) -> tuple[tuple[str, str], ...] | None:
+    try:
+        text = raw.decode("utf-8")
+    except UnicodeError:
+        return None
+    if not text.endswith("\n"):
+        return None
+    rows = []
+    for line in text.splitlines():
+        if len(line) < 67 or line[64:66] != "  ":
+            return None
+        digest, relative = line[:64], line[66:]
+        if not _is_digest(digest) or not _safe_relative(relative):
+            return None
+        rows.append((relative, digest))
+    if rows != sorted(rows, key=lambda item: item[0].encode("utf-8")):
+        return None
+    return tuple(rows)
+
+
+def _file_matches(root: Path, value: dict[str, object]) -> bool:
+    try:
+        path = root / value["relative_path"]
+        return (
+            path.is_file() and not path.is_symlink()
+            and path.stat().st_size == value["size_bytes"]
+            and _sha_file(path) == value["sha256"]
+        )
+    except (KeyError, OSError, RuntimeError, TypeError, ValueError):
+        return False
+
+
+def _promotion_payload(
+    contract: V123PromotionContract,
+    manifest: dict[str, object],
+) -> dict[str, object]:
+    return {
+        "schema_version": contract.promotion_identity_schema,
+        "release_version": "V1.23",
+        "contract": {field.name: getattr(contract, field.name) for field in fields(contract)},
+        "baseline": manifest["baseline"], "candidate": manifest["candidate"],
+        "batch_ledger": manifest["batch_ledger"],
+        "batch_authority_artifacts": manifest["batch_authority_artifacts"],
+        "counts": manifest["counts"],
+        "formal_sqlite_sha256": manifest["database"]["sha256"],
+        "formal_sqlite_size_bytes": manifest["database"]["size_bytes"],
+        "formal_sqlite_semantic_sha256": manifest["database"]["semantic_sha256"],
+        "images": manifest["images"],
+        "rollback_action": "remove_release_tree_if_release_digest_matches",
+    }
+
+
+def _schema_map(database: sqlite3.Connection) -> dict[str, tuple[str, str, str | None]]:
+    return {
+        row[1]: (
+            row[0], row[2], None if row[3] is None else _normalize_sql(row[3]),
+        )
+        for row in database.execute(
+            "SELECT type,name,tbl_name,sql FROM sqlite_master "
+            "WHERE name NOT LIKE 'sqlite_%' ORDER BY type,name"
+        )
+    }
+
+
+def _relation_rows(database: sqlite3.Connection, name: str) -> tuple[tuple[object, ...], ...]:
+    info = tuple(database.execute(f"PRAGMA table_info({_quoted(name)})"))
+    if not info:
+        raise sqlite3.DatabaseError(f"missing relation: {name}")
+    columns = tuple(row[1] for row in info)
+    primary = tuple(
+        row[1] for row in sorted(
+            (row for row in info if row[5]), key=lambda row: row[5]
+        )
+    )
+    order_columns = (
+        ("formal_order",) if "formal_order" in columns else primary or columns
+    )
+    order = ",".join(_quoted(column) for column in order_columns)
+    return tuple(
+        database.execute(f"SELECT * FROM {_quoted(name)} ORDER BY {order}")
+    )
+
+
+def _database_states(
+    formal_path: Path,
+    candidate_path: Path,
+    contract: V123PromotionContract,
+) -> dict[str, bool]:
+    result = {
+        name: False for name in (
+            "sqlite_readability", "sqlite_integrity", "sqlite_foreign_keys",
+            "sqlite_schema", "v122_preservation", "batch_ledger_closure",
+            "promotion_projection", "formal_query", "count_closure",
+        )
+    }
+    formal = candidate = None
+    try:
+        formal = sqlite3.connect(formal_path.resolve().as_uri() + "?mode=ro&immutable=1", uri=True)
+        candidate = sqlite3.connect(candidate_path.resolve().as_uri() + "?mode=ro&immutable=1", uri=True)
+        result["sqlite_readability"] = True
+        result["sqlite_integrity"] = formal.execute("PRAGMA integrity_check").fetchone() == ("ok",)
+        result["sqlite_foreign_keys"] = tuple(formal.execute("PRAGMA foreign_key_check")) == ()
+        candidate_schema = _schema_map(candidate)
+        formal_schema = _schema_map(formal)
+        expected_schema = dict(candidate_schema)
+        expected_schema.update({
+            contract.promotion_table: (
+                "table", contract.promotion_table, _normalize_sql(_PROMOTION_TABLE_SQL),
+            ),
+            contract.promoted_table: (
+                "table", contract.promoted_table, _normalize_sql(_PROMOTED_TABLE_SQL),
+            ),
+            contract.formal_view: (
+                "view", contract.formal_view, _normalize_sql(_FORMAL_VIEW_SQL),
+            ),
+        })
+        result["sqlite_schema"] = (
+            formal_schema == expected_schema
+            and formal.execute("PRAGMA user_version").fetchone() == (123,)
+        )
+        v122_formal = tuple(formal.execute("SELECT * FROM formal_complete_questions_v122 ORDER BY formal_order"))
+        v122_candidate = tuple(candidate.execute("SELECT * FROM formal_complete_questions_v122 ORDER BY formal_order"))
+        inherited_relations = tuple(
+            row[0] for row in candidate.execute(
+                "SELECT name FROM sqlite_master WHERE type IN ('table','view') "
+                "AND name NOT LIKE 'sqlite_%' AND name!='release_metadata_v2' "
+                "ORDER BY type,name"
+            )
+        )
+        inherited_preserved = all(
+            _relation_rows(formal, name) == _relation_rows(candidate, name)
+            for name in inherited_relations
+        )
+        candidate_metadata = dict(candidate.execute(
+            "SELECT key,value FROM release_metadata_v2"
+        ))
+        expected_metadata = dict(candidate_metadata)
+        expected_metadata.update(_METADATA_DELTA)
+        formal_metadata = dict(formal.execute(
+            "SELECT key,value FROM release_metadata_v2"
+        ))
+        result["v122_preservation"] = (
+            v122_formal == v122_candidate and len(v122_formal) == 639
+            and inherited_preserved and formal_metadata == expected_metadata
+        )
+        ledger_formal = tuple(formal.execute("SELECT * FROM task13_v123_batch_ledger_v1 ORDER BY batch_ordinal"))
+        ledger_candidate = tuple(candidate.execute("SELECT * FROM task13_v123_batch_ledger_v1 ORDER BY batch_ordinal"))
+        result["batch_ledger_closure"] = (
+            ledger_formal == ledger_candidate and len(ledger_formal) == 3
+            and tuple(row[0] for row in ledger_formal) == (1, 2, 3)
+            and tuple(row[1] for row in ledger_formal) == (
+                "JOY-M2-HKDSE-2023-PP-MS",
+                "JOY-M2-HKDSE-2025-PP-MS",
+                "JOY-M2-STG-MOCK-2025-26-C-SET1-20260903",
+            )
+            and tuple(row[12] for row in ledger_formal) == (12, 13, 13)
+            and ledger_formal[-1][13:15] == (38, 677)
+        )
+        promoted = tuple(formal.execute(
+            "SELECT * FROM task13_v123_promoted_questions_v1 ORDER BY formal_order"
+        ))
+        candidates = tuple(candidate.execute(
+            "SELECT * FROM task13_v123_candidates_v1 ORDER BY aggregate_order"
+        ))
+        expected = tuple((*row[:30], "published", 1) for row in candidates)
+        result["promotion_projection"] = promoted == expected and len(promoted) == 38
+        rows = tuple(formal.execute(
+            "SELECT * FROM formal_complete_questions_v123 ORDER BY formal_order"
+        ))
+        result["formal_query"] = (
+            len(rows) == 677 and tuple(row[0] for row in rows) == tuple(range(1, 678))
+            and rows[:639] == v122_formal
+            and all(row[2] == "task13_v123_promoted" and row[-2:] == ("published", 1) for row in rows[639:])
+        )
+        promotion = tuple(formal.execute("SELECT * FROM task13_v123_promotion_v1"))
+        expected_promotion = ((
+            "V1.23", "task13-v123-formal-v1",
+            "append-only-multi-batch-promotion", "published", "V1.22",
+            BASELINE_SHA256, BASELINE_RELEASE_DIGEST, 639,
+            CANDIDATE_DIGEST, CANDIDATE_SHA256, CANDIDATE_SIZE,
+            CANDIDATE_MANIFEST_SHA256, CANDIDATE_MANIFEST_SIZE,
+            3, 38, 677,
+        ),)
+        result["count_closure"] = (
+            promotion == expected_promotion
+            and len(promoted) == 38 and len(rows) == 677
+        )
+    except (OSError, sqlite3.Error, TypeError, ValueError):
+        return result
+    finally:
+        if formal is not None:
+            formal.close()
+        if candidate is not None:
+            candidate.close()
+    return result
+
+
+def verify_v123_promotion(
+    request: V123PromotionVerificationRequest,
+    config: PipelineConfig,
+) -> VerificationReport:
+    if not _reconstructs(request, V123PromotionVerificationRequest):
+        raise PipelineError("request must be an exact valid V123PromotionVerificationRequest")
+    if not _reconstructs(config, PipelineConfig):
+        raise PipelineError("config must be an exact valid PipelineConfig")
+    root = request.release_dir
+    if not root.exists() and not root.is_symlink():
+        raise InputMissingError("promotion directory does not exist")
+    states = {name: False for name in CHECK_NAMES}
+    try:
+        resolved = root.resolve(strict=True)
+    except (OSError, RuntimeError):
+        return _report(states)
+    if not resolved.is_dir() or root.is_symlink() or _has_symlink(root, config.repo_root):
+        return _report(states)
+    staging = config.staging_root.resolve(strict=False)
+    formal_target = config.releases_root.resolve(strict=False) / "V1.23"
+    boundary = resolved == formal_target or (
+        resolved != staging and resolved.is_relative_to(staging)
+    )
+    states["release_directory"] = True
+    states["publication_boundary"] = boundary
+    states["promotion_contract"] = (
+        type(request.contract) is V123PromotionContract
+        and all(type(getattr(request.contract, key)) is type(value)
+                and getattr(request.contract, key) == value
+                for key, value in _CONTRACT_VALUES.items())
+    )
+    try:
+        candidate_report = verify_v123_candidate(request.candidate, config)
+        states["candidate_verification"] = (
+            candidate_report.status == "PASS" and len(candidate_report.checks) == 24
+            and all(check.passed for check in candidate_report.checks)
+        )
+    except PipelineError:
+        states["candidate_verification"] = False
+    candidate_root = request.candidate.candidate_dir
+    candidate_database = candidate_root / request.candidate.contract.database_filename
+    candidate_manifest_path = candidate_root / request.candidate.contract.manifest_filename
+    candidate_manifest = _candidate_manifest(request.candidate)
+    try:
+        states["candidate_binding"] = (
+            candidate_manifest is not None
+            and candidate_database.is_file() and not candidate_database.is_symlink()
+            and candidate_manifest_path.is_file() and not candidate_manifest_path.is_symlink()
+            and _sha_file(candidate_database) == CANDIDATE_SHA256
+            and candidate_database.stat().st_size == CANDIDATE_SIZE
+            and _sha_file(candidate_manifest_path) == CANDIDATE_MANIFEST_SHA256
+            and candidate_manifest_path.stat().st_size == CANDIDATE_MANIFEST_SIZE
+            and candidate_manifest.get("candidate_digest") == CANDIDATE_DIGEST
+            and len(request.candidate.approved_batches) == 3
+        )
+    except (OSError, RuntimeError, TypeError, ValueError):
+        states["candidate_binding"] = False
+    manifest_read = _read_json(resolved / request.contract.manifest_filename)
+    rollback_read = _read_json(resolved / request.contract.rollback_filename)
+    manifest = manifest_read[1] if manifest_read is not None else None
+    rollback = rollback_read[1] if rollback_read is not None else None
+    states["manifest_contract"] = (
+        candidate_manifest is not None
+        and _manifest_valid(manifest, candidate_manifest, request.contract)
+        and manifest_read is not None
+        and manifest_read[0] == _canonical_json_file_bytes(manifest)
+    )
+    expected_files: set[str] = set()
+    if type(manifest) is dict and type(manifest.get("images")) is list:
+        image_paths = {
+            item["relative_path"]
+            for item in manifest["images"]
+            if type(item) is dict and _safe_relative(item.get("relative_path"))
+        }
+        expected_files = {
+            request.contract.database_filename, request.contract.manifest_filename,
+            request.contract.sha256s_filename, request.contract.rollback_filename,
+            *image_paths,
+        }
+    actual_files = {
+        path.relative_to(resolved).as_posix()
+        for path in resolved.rglob("*") if path.is_file() and not path.is_symlink()
+    }
+    no_unsafe = all(not path.is_symlink() for path in resolved.rglob("*"))
+    states["filesystem_closure"] = expected_files == actual_files and no_unsafe
+    sums_path = resolved / request.contract.sha256s_filename
+    sums = _parse_sums(sums_path.read_bytes()) if sums_path.is_file() and not sums_path.is_symlink() else None
+    expected_sum_paths = sorted(expected_files - {request.contract.sha256s_filename}, key=lambda value: value.encode("utf-8"))
+    states["sha256sums_closure"] = (
+        sums is not None and [row[0] for row in sums] == expected_sum_paths
+        and all(
+            (resolved / relative).is_file()
+            and not (resolved / relative).is_symlink()
+            and _sha_file(resolved / relative) == digest
+            for relative, digest in sums
+        )
+    )
+    if type(manifest) is dict:
+        manifest_images = manifest.get("images")
+        if type(manifest_images) is list:
+            refs = [manifest.get("database"), manifest.get("rollback"), *manifest_images]
+            states["artifact_references"] = all(
+                type(item) is dict and _file_matches(resolved, item) for item in refs
+            )
+    rollback_expected = None
+    if type(manifest) is dict and type(manifest.get("promotion")) is dict:
+        rollback_expected = {
+            "schema_version": request.contract.rollback_schema,
+            "release_version": "V1.23",
+            "release_digest": manifest["promotion"].get("release_digest"),
+            "action": "remove_release_tree_if_release_digest_matches",
+            "protected_baseline": {
+                "release_version": "V1.22", "question_count": 639,
+                "sqlite_sha256": BASELINE_SHA256, "release_digest": BASELINE_RELEASE_DIGEST,
+            },
+            "candidate_digest": CANDIDATE_DIGEST,
+            "release_artifacts": sorted(expected_files, key=lambda value: value.encode("utf-8")),
+        }
+    states["rollback_contract"] = (
+        rollback_expected is not None and _same_json(rollback, rollback_expected)
+        and rollback_read is not None and rollback_read[0] == _canonical_json_file_bytes(rollback)
+    )
+    formal_path = resolved / request.contract.database_filename
+    states.update(_database_states(formal_path, candidate_database, request.contract))
+    if candidate_manifest is not None and type(manifest) is dict:
+        ledger = manifest.get("batch_ledger")
+        states["provenance_closure"] = (
+            type(ledger) is list
+            and all(type(item) is dict for item in ledger)
+            and _same_json(ledger, candidate_manifest.get("batch_ledger"))
+            and _same_json(manifest.get("batch_authority_artifacts"),
+                           candidate_manifest.get("batch_authority_artifacts"))
+            and tuple(item.get("batch_id") for item in ledger)
+            == tuple(item[0] for item in (
+                ("JOY-M2-HKDSE-2023-PP-MS",),
+                ("JOY-M2-HKDSE-2025-PP-MS",),
+                ("JOY-M2-STG-MOCK-2025-26-C-SET1-20260903",),
+            ))
+        )
+    if type(manifest) is dict and states["manifest_contract"] and formal_path.is_file():
+        try:
+            semantic = _sha_bytes(_canonical_json_file_bytes(
+                _sqlite_semantic_payload(formal_path, request.contract.formal_view)
+            ))
+            payload = _promotion_payload(request.contract, manifest)
+            digest = _sha_bytes(_canonical_json_file_bytes(payload))
+            states["deterministic_identity"] = (
+                semantic == manifest["database"]["semantic_sha256"]
+                and digest == manifest["promotion"]["release_digest"]
+            )
+        except (OSError, sqlite3.Error, InputFormatError, KeyError, TypeError, ValueError):
+            states["deterministic_identity"] = False
+    return _report(states)

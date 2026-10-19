@@ -59,9 +59,9 @@ PROMOTION_TABLE_SQL = """CREATE TABLE task13_v123_promotion_v1 (
     baseline_question_count INTEGER NOT NULL CHECK(baseline_question_count=639),
     candidate_digest TEXT NOT NULL CHECK(candidate_digest='c5c51df58d64349d58bd71469fe67a72cced56e77369126d6fec66bb2fcc955a'),
     candidate_database_sha256 TEXT NOT NULL CHECK(candidate_database_sha256='b7e2247e004cc4c91c339693de4f106edef11bb7067e34b52887547a8006cb01'),
-    candidate_database_size INTEGER NOT NULL CHECK(candidate_database_size=10330112),
+    candidate_database_size INTEGER NOT NULL CHECK(candidate_database_size=10764288),
     candidate_manifest_sha256 TEXT NOT NULL CHECK(candidate_manifest_sha256='febe70a572b82783bf6199679bf1a2024294d98b44b4fbe047a2349a3830a076'),
-    candidate_manifest_size INTEGER NOT NULL CHECK(candidate_manifest_size=6851),
+    candidate_manifest_size INTEGER NOT NULL CHECK(candidate_manifest_size=5664),
     accepted_batch_count INTEGER NOT NULL CHECK(accepted_batch_count=3),
     promoted_question_count INTEGER NOT NULL CHECK(promoted_question_count=38),
     formal_question_count INTEGER NOT NULL CHECK(formal_question_count=677)
@@ -208,7 +208,7 @@ def _sqlite_json_value(value: object) -> object:
 
 
 def _sqlite_semantic_payload(path: Path, formal_view: str) -> dict[str, object]:
-    uri = f"file:{path.resolve()}?mode=ro&immutable=1"
+    uri = path.resolve().as_uri() + "?mode=ro&immutable=1"
     with closing(sqlite3.connect(uri, uri=True)) as database:
         schema_objects = [
             {
