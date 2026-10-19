@@ -70,8 +70,9 @@ class V122PromotionPublicContractTests(unittest.TestCase):
     def test_exact_append_only_public_surface(self):
         for name in EXPORTS:
             _public(name)
-        self.assertEqual(ingest.__all__[-27:-18], EXPORTS)
-        self.assertEqual(ingest.__all__[-18:], ("V123BatchImportManifest", "V123AdaptedImportPackage", "V123BatchLedgerEntry", "V123EffectiveState", "V123PreflightRequest", "V123ImportPreflightReport", "V123ImportPreflightResult", "V123ImportApproval", "V123ApprovedBatch", "V123CandidateContract", "V123CandidateBuildRequest", "V123CandidateVerificationRequest", "V123CandidateArtifacts", "load_v123_import_manifest", "preflight_v123_import", "build_v123_candidate", "verify_v123_candidate", "adapt_verified_hkdse_pdf_transcription_v123",))
+        self.assertEqual(ingest.__all__[-36:-27], EXPORTS)
+        self.assertEqual(ingest.__all__[-27:-9], ("V123BatchImportManifest", "V123AdaptedImportPackage", "V123BatchLedgerEntry", "V123EffectiveState", "V123PreflightRequest", "V123ImportPreflightReport", "V123ImportPreflightResult", "V123ImportApproval", "V123ApprovedBatch", "V123CandidateContract", "V123CandidateBuildRequest", "V123CandidateVerificationRequest", "V123CandidateArtifacts", "load_v123_import_manifest", "preflight_v123_import", "build_v123_candidate", "verify_v123_candidate", "adapt_verified_hkdse_pdf_transcription_v123",))
+        self.assertEqual(ingest.__all__[-9:], ("V123PromotionContract", "V123PromotionBuildRequest", "V123PromotionVerificationRequest", "V123ReleasePromotionApproval", "V123PublicationRequest", "V123PromotionArtifacts", "build_v123_promotion", "verify_v123_promotion", "publish_v123_release"))
 
     def test_contract_exact_fields_types_defaults_frozen_and_values(self) -> None:
         cls = _public("V122PromotionContract")

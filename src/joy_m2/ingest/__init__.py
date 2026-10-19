@@ -315,3 +315,16 @@ __all__ += (
     "verify_v123_candidate",
     "adapt_verified_hkdse_pdf_transcription_v123",
 )
+
+from .v123_promotion_models import (
+    V123PromotionContract, V123PromotionBuildRequest, V123PromotionVerificationRequest,
+    V123ReleasePromotionApproval, V123PublicationRequest, V123PromotionArtifacts,
+)
+from .v123_promotion import build_v123_promotion, publish_v123_release
+from .v123_promotion_verification import verify_v123_promotion
+
+__all__ += (
+    "V123PromotionContract", "V123PromotionBuildRequest", "V123PromotionVerificationRequest",
+    "V123ReleasePromotionApproval", "V123PublicationRequest", "V123PromotionArtifacts",
+    "build_v123_promotion", "verify_v123_promotion", "publish_v123_release",
+)
