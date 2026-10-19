@@ -1360,3 +1360,151 @@ class V123IndependentVerifierTests(unittest.TestCase):
                 verify_v123_promotion(None,self.config)
             with self.assertRaises(PipelineError):
                 verify_v123_promotion(request,None)
+
+class V123ReviewBoundaryTests(unittest.TestCase):
+    def test_cleanup_preserves_new_public_occupant_when_restore_conflicts(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            output = root / "output"
+            output.mkdir()
+            (output / "evidence").write_text("owned bytes")
+            owner = promotion_module._directory_identity(output)
+            fingerprint = promotion_module._tree_fingerprint(output)
+            original = promotion_module._tree_fingerprint
+            rename = Path.rename
+            replaced = []
+
+            def replace_after_read(path):
+                result = original(path)
+                if not replaced:
+                    rename(path, root / "original-owned")
+                    shutil.copytree(root / "original-owned", path)
+                    replaced.append(path)
+                return result
+
+            def claim_then_compete(path, target):
+                result = rename(path, target)
+                if path == output:
+                    output.mkdir()
+                    (output / "competitor").write_text("keep competitor")
+                return result
+
+            with mock.patch.object(promotion_module, "_tree_fingerprint", side_effect=replace_after_read), \
+                    mock.patch.object(Path, "rename", claim_then_compete):
+                with self.assertRaisesRegex(PromotionError, "manual recovery"):
+                    promotion_module._cleanup_owned_directory(output, owner, fingerprint)
+            self.assertEqual((output / "competitor").read_text(), "keep competitor")
+            retained = list(root.glob(".output-cleanup-*/owned"))
+            self.assertEqual(len(retained), 1)
+            self.assertEqual(tree(retained[0]), tree(root / "original-owned"))
+
+    def test_replacement_during_cleanup_fingerprint_is_not_deleted(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d)
+            output = root / "output"
+            output.mkdir()
+            (output / "evidence").write_text("owned bytes")
+            owner = promotion_module._directory_identity(output)
+            fingerprint = promotion_module._tree_fingerprint(output)
+            original = promotion_module._tree_fingerprint
+            replaced = []
+
+            def replace_after_read(path):
+                result = original(path)
+                if not replaced:
+                    path.rename(root / "original-owned")
+                    shutil.copytree(root / "original-owned", path)
+                    replaced.append(path)
+                return result
+
+            with mock.patch.object(promotion_module, "_tree_fingerprint", side_effect=replace_after_read):
+                with self.assertRaises(PromotionError):
+                    promotion_module._cleanup_owned_directory(output, owner, fingerprint)
+            self.assertTrue(replaced[0].exists())
+            self.assertEqual(tree(replaced[0]), tree(root / "original-owned"))
+
+    def test_extra_nodes_and_noncanonical_sums_are_rejected(self):
+        import os
+        candidate=selected_candidate()
+        contract=promotion_contract()
+        for kind,check in (("empty-dir","filesystem_closure"),("fifo","filesystem_closure"),
+                           ("crlf","sha256sums_closure"),("unicode-lines","sha256sums_closure")):
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory(dir=STAGING) as d:
+                output=fixture_release(Path(d)/"release",candidate,contract)
+                if kind=="empty-dir":
+                    (output/"rogue").mkdir()
+                elif kind=="fifo":
+                    os.mkfifo(output/"rogue")
+                else:
+                    sums=output/contract.sha256s_filename
+                    sums.write_bytes(sums.read_bytes().replace(b"\n",b"\r\n" if kind=="crlf" else "\u2028".encode()))
+                result=verify_v123_promotion(V123PromotionVerificationRequest(output,candidate,contract),PipelineConfig(ROOT))
+                self.assertFalse(next(c for c in result.checks if c.name==check).passed)
+
+    def test_byte_identical_unowned_replacement_survives_post_rename_failure(self):
+        import joy_m2.ingest.v123_promotion_verification as vm
+        for operation in ("build","publish"):
+            with self.subTest(operation=operation), tempfile.TemporaryDirectory() as d:
+                root=Path(d).resolve()
+                candidate=isolated_candidate(root)
+                contract=promotion_contract()
+                config=PipelineConfig(root)
+                target=root/("data/staging/output" if operation=="build" else "releases/V1.23")
+                if operation=="publish":
+                    dry=root/"data/staging/dry"
+                    built=build_v123_promotion(V123PromotionBuildRequest(candidate,dry,contract),config)
+                    approval=V123ReleasePromotionApproval("V1.23",built.release_digest,
+                        f"USER APPROVED RELEASE PROMOTION V1.23 {built.release_digest}")
+                original=vm.verify_v123_promotion
+                def replace_and_fail(request,config):
+                    if request.release_dir==target:
+                        target.rename(root/"original-owned")
+                        shutil.copytree(root/"original-owned",target)
+                        return VerificationReport("FAIL",(VerificationCheck("forced",False,"forced"),))
+                    return original(request,config)
+                with mock.patch.object(vm,"verify_v123_promotion",side_effect=replace_and_fail):
+                    with self.assertRaises(PromotionError):
+                        if operation=="build":
+                            build_v123_promotion(V123PromotionBuildRequest(candidate,target,contract),config)
+                        else:
+                            publish_v123_release(V123PublicationRequest(dry,candidate,approval,contract),config)
+                self.assertTrue(target.exists(),"must not delete replacement with a different directory identity")
+                self.assertNotEqual(target.stat().st_ino,(root/"original-owned").stat().st_ino)
+                self.assertEqual(tree(target),tree(root/"original-owned"))
+
+    def test_unowned_private_replacement_survives_failure(self):
+        for operation in ("build","publish"):
+            with self.subTest(operation=operation), tempfile.TemporaryDirectory() as d:
+                root=Path(d).resolve()
+                candidate=isolated_candidate(root)
+                contract=promotion_contract()
+                config=PipelineConfig(root)
+                replacement=[]
+                copy=shutil.copytree
+                def replace_private(private):
+                    private.rename(root/"original-private")
+                    copy(root/"original-private",private)
+                    replacement.append(private)
+                    raise PromotionError("injected failure after private directory replacement")
+                if operation=="build":
+                    populate=promotion_module._populate_database
+                    def fail_populate(path,request):
+                        populate(path,request)
+                        replace_private(path.parent)
+                    with mock.patch.object(promotion_module,"_populate_database",side_effect=fail_populate):
+                        with self.assertRaises(PromotionError):
+                            build_v123_promotion(V123PromotionBuildRequest(candidate,root/"data/staging/out",contract),config)
+                else:
+                    dry=root/"data/staging/dry"
+                    built=build_v123_promotion(V123PromotionBuildRequest(candidate,dry,contract),config)
+                    approval=V123ReleasePromotionApproval("V1.23",built.release_digest,
+                        f"USER APPROVED RELEASE PROMOTION V1.23 {built.release_digest}")
+                    def fail_copy(source,destination,**kwargs):
+                        copy(source,destination,**kwargs)
+                        replace_private(Path(destination))
+                    with mock.patch.object(promotion_module.shutil,"copytree",side_effect=fail_copy):
+                        with self.assertRaises(PromotionError):
+                            publish_v123_release(V123PublicationRequest(dry,candidate,approval,contract),config)
+                self.assertEqual(len(replacement),1)
+                self.assertTrue(replacement[0].exists(),"must retain unowned private path")
+                self.assertEqual(tree(replacement[0]),tree(root/"original-private"))

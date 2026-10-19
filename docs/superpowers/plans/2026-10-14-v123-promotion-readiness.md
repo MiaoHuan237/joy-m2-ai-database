@@ -3,9 +3,13 @@
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans
 > for the recommended Native / Inline execution, after human Plan approval and
 > execution authorization. Use a separate reviewer for independent review.
-> Checkboxes are implementation steps, not authority to start them now.
+> Checkboxes record implementation steps, not authority to publish.
 
-**Status:** WRITTEN PLAN — PENDING HUMAN REVIEW. Implementation NOT STARTED.
+**Status:** HUMAN-APPROVED — Native / Inline implementation authorized 2026-10-19.
+Tasks1–7 implemented and verified; final exact release-digest approval remains pending.
+Execution evidence: `docs/reports/V123_PROMOTION_READINESS.md`. The checked steps
+below record completed implementation/readiness work, never received publication approval.
+The historical Plan-preparation handoff below is retained as history, not a new approval gate.
 Prepared: 2026-10-19 (Asia/Shanghai); filename follows the approved Design.
 
 **Goal:** Produce two byte-identical, independently verified non-formal V1.23
@@ -39,8 +43,9 @@ The subsequent Design header records approval only; sections 1–10 are unchange
   squash, merge or new branch/worktree. Ordinary explicit task commit/push only.
 - All behavior must have valid assertion RED before its minimal GREEN. Import,
   syntax, fixture/setup and unavailable dependency errors never count as RED.
-- Real release/SQLite/semantic/manifest identities do not yet exist. Compute them
-  only after authorized real dry-runs; never predict them or create real approval.
+- At Plan preparation real release/SQLite/semantic/manifest identities did not
+  exist. The authorized dry-runs now supply them in the readiness report; never
+  predict identities or create real approval.
 - A busy existing process lock delays input recovery; never invoke `run_cycle`,
   pending-intent recovery, or a writer to obtain read-only promotion inputs.
 
@@ -246,25 +251,25 @@ no defaults, frozen and exact nested types. Public functions:
 `publish_v123_release(request: V123PublicationRequest, config: PipelineConfig)
 -> V123PromotionArtifacts`.
 
-- [ ] Recover Git/Design/Plan authorization; snapshot AGENTS bytes/index and the
+- [x] Recover Git/Design/Plan authorization; snapshot AGENTS bytes/index and the
   immutable input inventory above under the existing `cycle.lock`. A pending
   intent is reported, never recovered by promotion work. Inspect later receipts
   separately; reconstruct only the fixed first three typed approved batches with
   `load_v123_import_manifest`, `preflight_v123_import`, received approval fields
   and `verify_v123_candidate`. Do not use `V123Operations` construction because
   it can recover pending writes. Require exact Design SHA/size/chain and 24 PASS.
-- [ ] Add `V123PromotionModelTests.test_exact_append_only_surface` using dynamic
+- [x] Add `V123PromotionModelTests.test_exact_append_only_surface` using dynamic
   lookups: whole existing `__all__` prefix unchanged and exact nine-name suffix
   from Design §5. Add signature assertions after callable assertions.
-- [ ] Run `"$JOY_PY" -B -m unittest -v tests.unit.test_v123_promotion_models`;
+- [x] Run `"$JOY_PY" -B -m unittest -v tests.unit.test_v123_promotion_models`;
   require missing API assertion FAIL, not ERROR. Then add field/order/type/frozen,
   all 14 literal values, wrong historical carrier, bool user_version, digest,
   exact approval string, ArtifactRef kind/order and defensive tuple-copy tests.
   Establish each remaining model behavior RED with importable placeholders.
-- [ ] Implement only model validation and callable sentinels. Exact carrier
+- [x] Implement only model validation and callable sentinels. Exact carrier
   fields mirror pinned `v122_promotion_models.py`; candidate types become exact
   V123 types. No build, verify or publish logic. Append the approved nine exports.
-- [ ] Align only listed historical export expectations (whole old prefix intact).
+- [x] Align only listed historical export expectations (whole old prefix intact).
   Rerun new model tests and the seven listed historical modules with unittest;
   require PASS, zero skip/expectedFailure. Commit explicit changed paths with
   `feat: add V1.23 promotion contracts and scaffolds` after diff/scope checks.
@@ -277,19 +282,19 @@ no defaults, frozen and exact nested types. Public functions:
 `_sqlite_semantic_payload(path: Path, formal_view: str) -> dict[str, object]`,
 builder/verifier own DDL and identity constants. No additional public exports.
 
-- [ ] Add `V123PromotionPrimitiveTests` cases for exact constants/check inventory,
+- [x] Add `V123PromotionPrimitiveTests` cases for exact constants/check inventory,
   DDL/FK/order bounds, canonical JSON literal bytes and hash, root-independent
   semantic payload, and `test_baseline_schema_literal_oracle`.
   Assert `task12-v122-formal-v1` in BOTH baseline projections, independently of
   production constants; reject `task11-v121-formal-v1` and `task13-v123-formal-v1`.
   New schema is task13; inherited task9–12 names remain untouched. Independently
   author expected literal bytes/digests in tests with standard hashlib/json.
-- [ ] Run `"$JOY_PY" -B -m unittest -v tests.unit.test_v123_promotion_primitives`;
+- [x] Run `"$JOY_PY" -B -m unittest -v tests.unit.test_v123_promotion_primitives`;
   dynamic private-helper existence/behavior assertions must produce valid RED.
-- [ ] Implement only counterpart pure primitives and literal DDL/constants,
+- [x] Implement only counterpart pure primitives and literal DDL/constants,
   applying Design §§4–7 role deltas. Builder/verifier must each own their baseline
   projection and DDL; verifier imports no builder helper, constant or projection.
-- [ ] Rerun primitives plus models to GREEN. Inspect literal assertions and
+- [x] Rerun primitives plus models to GREEN. Inspect literal assertions and
   inherited-name preservation; commit exact files: `feat: add V1.23 promotion primitives`.
 
 ### Task 3: Independently constructed fixture -> formal verifier RED/GREEN
@@ -301,12 +306,12 @@ builder/verifier own DDL and identity constants. No additional public exports.
 contract: V123PromotionContract) -> Path` independently serializes test artifacts.
 Public output is `verify_v123_promotion(...) -> VerificationReport`.
 
-- [ ] Implement test-only helpers using literal Design/counterpart shapes, raw
+- [x] Implement test-only helpers using literal Design/counterpart shapes, raw
   candidate bytes and test-owned SQL/JSON/hash code. Never call/import new builder
   helpers to populate fixture or rebind corrupted fixture hashes. Assert fixture
   integrity, 639 preserved rows, exact 38 projected rows and four-file closure
   before using it as verifier input. A fixture setup failure is not behavior RED.
-- [ ] Add `V123IndependentVerifierTests.test_independent_valid_fixture_reports_21_pass`:
+- [x] Add `V123IndependentVerifierTests.test_independent_valid_fixture_reports_21_pass`:
   sentinel must fail the report-type assertion. Pin exact ordered checks:
   `release_directory, promotion_contract, candidate_verification, candidate_binding,
   manifest_contract, filesystem_closure, sha256sums_closure, artifact_references,
@@ -314,22 +319,22 @@ Public output is `verify_v123_promotion(...) -> VerificationReport`.
   sqlite_schema, v122_preservation, batch_ledger_closure, promotion_projection,
   formal_query, count_closure, provenance_closure, deterministic_identity,
   publication_boundary`.
-- [ ] Add focused corruption tests: missing/extra keys/files; wrong types and
+- [x] Add focused corruption tests: missing/extra keys/files; wrong types and
   bool-as-int; schema/FK/order/count/status corruption; changed baseline row;
   Oxford source/answer mutation; reordered ledger; wrong parent/approval; bad
   candidate SHA/size; unreadable SQLite; hash-consistent forged schema/projection.
   Recompute outer hashes in the test-owned oracle so semantic checks, not only
   checksum mismatch, reject forgeries. Pin specific failing check names and
   unchanged input fingerprints, not merely `status != PASS`.
-- [ ] Add malformed JSON -> `InputFormatError`; parsed-invalid manifest ->
+- [x] Add malformed JSON -> `InputFormatError`; parsed-invalid manifest ->
   21-check structured FAIL; invalid typed request/config -> `PipelineError`;
   missing verification root -> `InputMissingError`. Retain counterpart boundaries
   for missing/corrupt candidate artifacts; no raw sqlite/type exception leakage.
-- [ ] Run `"$JOY_PY" -B -m unittest -v tests.integration.test_v123_promotion.V123IndependentVerifierTests`;
+- [x] Run `"$JOY_PY" -B -m unittest -v tests.integration.test_v123_promotion.V123IndependentVerifierTests`;
   establish valid assertion RED, then implement independent verifier. It uses
   `Path.as_uri()` and read-only connections, no repairs, and requires the exact
   24-check candidate prerequisite and Design input envelope.
-- [ ] Rerun verifier, primitives and model groups to GREEN; inspect that verifier
+- [x] Rerun verifier, primitives and model groups to GREEN; inspect that verifier
   depends only on public carriers, candidate verifier and version-neutral code.
   Commit: `feat: verify V1.23 formal projection independently`.
 
@@ -339,25 +344,25 @@ Public output is `verify_v123_promotion(...) -> VerificationReport`.
 **Interfaces:** GREEN independent verifier from Task 3; produces
 `V123PromotionArtifacts` using Design §§6–7 exact metadata/artifact projection.
 
-- [ ] Add `V123PromotionBuildTests` using the verified fixed candidate:
+- [x] Add `V123PromotionBuildTests` using the verified fixed candidate:
   `test_exact_639_plus_38_projection`, `test_oxford_publisher_solutions_preserved`,
   `test_pdf_locators_not_fake_image_files`, `test_two_builds_byte_identical`,
   `test_wrong_envelope_and_protected_overlap_rejected`, and ownership/race tests.
   Assert record IDs/order 1–677, all published/selectable1, batches12/13/13,
   field-by-field baseline639 and new38 values with ONLY approved projection
   renames/status changes; inherited candidate tables stay identical, not unioned.
-- [ ] Assert exact metadata delta from Design §6 (old task12 metadata unchanged),
+- [x] Assert exact metadata delta from Design §6 (old task12 metadata unchanged),
   user_version123, task13 ledger FK, source-provided Oxford publisher identity,
   existing empty explanations unchanged, PDF/page/region evidence unchanged,
   images empty. Only four exact files; sums bind other three, no self-entry.
-- [ ] Run `"$JOY_PY" -B -m unittest -v tests.integration.test_v123_promotion.V123PromotionBuildTests`;
+- [x] Run `"$JOY_PY" -B -m unittest -v tests.integration.test_v123_promotion.V123PromotionBuildTests`;
   require sentinel/absent output assertion RED with verifier fixture already GREEN.
-- [ ] Implement builder: validate typed exact envelope and protected roots,
+- [x] Implement builder: validate typed exact envelope and protected roots,
   private staging copy, one transaction, exact projection/metadata, canonical
   artifacts, independent verification before and after atomic no-replace rename.
   General output must be a new strict staging descendant without symlink/alias
   or bidirectional overlap with any enumerated input, formal or source root.
-- [ ] Exercise faults before/after rename, existing output, identical competing
+- [x] Exercise faults before/after rename, existing output, identical competing
   output, and altered new tree; remove only owned unchanged output, preserve
   competitor/changed evidence. Rerun Tasks 1–4 groups to GREEN and verify two
   isolated build trees byte-for-byte (including SQLite), relative refs/hash/size,
@@ -369,28 +374,28 @@ Public output is `verify_v123_promotion(...) -> VerificationReport`.
 **Interfaces:** GREEN builder/verifier -> `publish_v123_release(...)`.
 Real literal `APPROVED_V123_RELEASE_DIGEST = None` stays None in this task.
 
-- [ ] Use test-owned temporary repository roots with verified copied input and
+- [x] Use test-owned temporary repository roots with verified copied input and
   valid built dry-run. Add `V123PublicationBoundaryTests` for absent/wrong digest,
   wrong historical approval type/version, exact isolated approval, changed private
   copy, symlink/alias source/release root, existing target, and no-replace race.
   Test-only approvals apply ONLY to isolated roots, never the real repository.
-- [ ] Run `"$JOY_PY" -B -m unittest -v tests.integration.test_v123_promotion.V123PublicationBoundaryTests`;
+- [x] Run `"$JOY_PY" -B -m unittest -v tests.integration.test_v123_promotion.V123PublicationBoundaryTests`;
   confirm expected output or rejection assertions fail against publish sentinel.
   Missing builder artifact is not publication RED.
-- [ ] Implement counterpart exact approval binding, independent source/private
+- [x] Implement counterpart exact approval binding, independent source/private
   byte identity checks, target derived only by `config.new_formal_target("V1.23")`,
   atomic no-replace and final independent verification. Fault tests cover unchanged
   owned cleanup versus changed output retained, including post-publication failure.
   Verify rollback action `remove_release_tree_if_release_digest_matches`, exact
   four-file closure and protected V1.22 identity; never execute live rollback.
-- [ ] In historical replay add explicit lifecycle helper/controls: None -> real
+- [x] In historical replay add explicit lifecycle helper/controls: None -> real
   absence; exact approved literal -> present independently verified matching output;
   malformed/wrong digest or missing approved output -> failure. Isolated tests
   exercise both phases. Manifest/template/environment cannot supply approval.
   Replace only the obsolete export absence assertion and last real absence
   assumption; preserve synthetic candidate-writer formal rejection and all source
   checks. Confirm valid RED for each lifecycle negative control before GREEN.
-- [ ] Rerun full focused tests and historical replay. Require zero skip/errors/
+- [x] Rerun full focused tests and historical replay. Require zero skip/errors/
   expectedFailure, real target absent, AGENTS unchanged. Commit:
   `feat: gate V1.23 publication with exact lifecycle authority`.
 
@@ -400,18 +405,18 @@ Real literal `APPROVED_V123_RELEASE_DIGEST = None` stays None in this task.
 **Interfaces:** selected request from Task 3 -> two `build_v123_promotion` calls
 and independent `verify_v123_promotion` calls. Never call real publisher.
 
-- [ ] Reverify fixed input/approval chain and protected snapshots under the existing
+- [x] Reverify fixed input/approval chain and protected snapshots under the existing
   read lock protocol. Any later operational generation is reported separately.
   Reuse a previously completed exact verified dry-run rather than overwriting it;
   otherwise choose two new distinct roots below
   `data/staging/task13-v123-promotion-readiness/` (e.g. `dry-run-a-000001`,
   `dry-run-b-000001`). Never create any formal target to test readiness.
-- [ ] Build twice independently, verifier 21/21 each, compare bytes of all four
+- [x] Build twice independently, verifier 21/21 each, compare bytes of all four
   files, relative artifact path/kind/hash/size, semantic/release identities. Query
   677 unique formal IDs and all three batches with read-only URI connections;
   Oxford source `OXFORD-M2-2025-26-C-SET1` has IDs Q01–Q13 and publisher solutions
   equal to candidate values. Compare all639/all38 fields, not sample-only checks.
-- [ ] Run focused tests, then serial current maintained discovery below. Do not
+- [x] Run focused tests, then serial current maintained discovery below. Do not
   use an old test count as success criterion or silently skip missing fixtures.
 
 ```bash
@@ -440,7 +445,7 @@ PY
 git diff --check
 ```
 
-- [ ] Record actual discovery/failure/error/skip/expectedFailure counts. Historical
+- [x] Record actual discovery/failure/error/skip/expectedFailure counts. Historical
   replay executes existing formal verifiers (V1.19–V1.22) and candidate replays;
   V1.18 validator separately. Run current selected candidate verifier24/24 anew
   and compare all frozen/source/approval/candidate snapshots. Known separate
@@ -455,12 +460,12 @@ git diff --check
 repair files only; existing ignored backup/evidence destinations.
 **Interfaces:** actual dry-run identities -> reviewed readiness report, NOT approval.
 
-- [ ] A fresh reviewer, separate from implementer, reviews all implementation and
+- [x] A fresh reviewer, separate from implementer, reviews all implementation and
   tests against approved Design/Plan; check oracle independence, false-PASS forgery,
   preserved fields/provenance, path/cleanup ownership and lifecycle boundaries.
   Critical/Important must both be0. Ordinary in-scope repairs require regression
   RED/GREEN and re-review; rerun affected and full gates after final code changes.
-- [ ] Verify existing local archive identity/coverage from Design §10. Use only
+- [x] Verify existing local archive identity/coverage from Design §10. Use only
   existing `scripts/backup_ingestion_checkpoint.py` and its explicit file-list
   interface to checkpoint required immutable inputs and verified dry-run evidence
   into a NEW non-overwriting local archive, verify manifest/member bytes and
@@ -468,23 +473,23 @@ repair files only; existing ignored backup/evidence destinations.
   new tooling or a live restore. Do not copy live state SQLite with sidecars as
   an inconsistent snapshot. No off-device-backup claim and no full restore at
   this earlier docs-only Plan checkpoint.
-- [ ] Synchronize report/state with actual hashes, four-file closure, counts,
+- [x] Synchronize report/state with actual hashes, four-file closure, counts,
   ledger, baseline preservation, tests/review/backup evidence, rollback limits
   and no default-pointer change. Source-provided Oxford answers are publisher
   solutions, not HKEAA MS; PDF locators are not standalone image files.
-- [ ] Explicitly stage only reviewed task files. Commit ordinary engineering/docs
+- [x] Explicitly stage only reviewed task files. Commit ordinary engineering/docs
   checkpoint; inspect names, `git diff-tree --check HEAD^ HEAD`, `git diff --check`
   and untouched AGENTS hash/index. Ordinary push existing branch, compare actual
   remote HEAD and ahead/behind. Network failure is reported, never force/rewrite
   history, reimport or rebuild merely to retry backup.
-- [ ] Confirm real `releases/V1.23/` absent and formal querying still V1.22/639.
+- [x] Confirm real `releases/V1.23/` absent and formal querying still V1.22/639.
   Stop at `USER DECISION REQUIRED — FINAL V1.23 PROMOTION AUTHORIZATION` with
   actual release digest, SQLite/semantic/manifest SHAs, exact four target paths,
   input ledger/counts, both dry-runs, reviewer and backup results. Only now display
   `USER APPROVED RELEASE PROMOTION V1.23 <actual_release_digest>` as a required
   statement, never as received approval. Do not consume it or start ingestion.
 
-## Coverage and current handoff
+## Coverage and historical Plan-preparation handoff
 
 | Approved Design | Executable coverage |
 |---|---|
@@ -496,7 +501,8 @@ repair files only; existing ignored backup/evidence destinations.
 | §9 closed paths | file map; explicit commit/scope checks in every task |
 | §10 review/regression/backup/stop | Tasks6–7; human implementation gate below |
 
-Current checkpoint is docs-only: self-review and separate technical Plan review,
+Historical Plan-preparation checkpoint (superseded by the execution status above)
+was docs-only: self-review and separate technical Plan review,
 then explicit docs commit/push. No checkbox above is completed by writing this
 Plan, and no implementation/dry-run result is claimed. Human next decision:
 `USER DECISION REQUIRED — V1.23 PROMOTION PLAN REVIEW`.

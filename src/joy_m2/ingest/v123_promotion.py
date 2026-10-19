@@ -12,6 +12,7 @@ from pathlib import Path, PurePosixPath
 import re
 import shutil
 import sqlite3
+import stat
 import tempfile
 
 from joy_m2.config import PipelineConfig
@@ -760,6 +761,45 @@ def _has_symlink_component(path: Path) -> bool:
         return True
 
 
+def _directory_identity(path: Path) -> tuple[int, int] | None:
+    info = path.lstat()
+    return (info.st_dev, info.st_ino) if stat.S_ISDIR(info.st_mode) else None
+
+
+def _cleanup_owned_directory(path: Path, owner: tuple[int, int], fingerprint=None) -> None:
+    try:
+        current = _directory_identity(path)
+    except FileNotFoundError:
+        return
+    if current != owner or (fingerprint is not None and _tree_fingerprint(path) != fingerprint):
+        raise PromotionError("failed output cannot be cleaned safely: ownership or bytes changed")
+    # Claim the object into a private, exclusive namespace before deleting it.
+    # A concurrent writer may replace the public path during the fingerprint
+    # read or rename; checking the moved object prevents deleting that writer's
+    # directory. Never overwrite a new occupant when restoring rejected state.
+    quarantine = Path(tempfile.mkdtemp(prefix=f".{path.name}-cleanup-", dir=path.parent))
+    claimed = quarantine / "owned"
+    try:
+        path.rename(claimed)
+        if (_directory_identity(claimed) != owner
+                or (fingerprint is not None and _tree_fingerprint(claimed) != fingerprint)
+                or _directory_identity(claimed) != owner):
+            raise PromotionError("failed output cannot be cleaned safely: ownership or bytes changed")
+        shutil.rmtree(claimed)
+    except Exception:
+        if claimed.exists() or claimed.is_symlink():
+            try:
+                atomic_rename_no_replace(claimed, path)
+            except Exception:
+                # Keep the claimed evidence if another writer now owns path.
+                # This private directory must not be recursively cleaned.
+                raise PromotionError(f"failed output retained for manual recovery: {claimed}")
+        raise
+    finally:
+        if not claimed.exists() and not claimed.is_symlink():
+            quarantine.rmdir()
+
+
 def build_v123_promotion(
     request: V123PromotionBuildRequest,
     config: PipelineConfig,
@@ -767,6 +807,7 @@ def build_v123_promotion(
     output, candidate_database, candidate_manifest = _validate_build_request(request, config)
     output.parent.mkdir(parents=True, exist_ok=True)
     private = Path(tempfile.mkdtemp(prefix=f".{output.name}-", dir=output.parent))
+    owner = _directory_identity(private)
     published_fingerprint = None
     renamed = False
     try:
@@ -783,23 +824,22 @@ def build_v123_promotion(
         if report.status != "PASS" or not all(check.passed for check in report.checks):
             raise PromotionError("staging promotion verification failed")
         published_fingerprint = _tree_fingerprint(private)
+        if _directory_identity(private) != owner:
+            raise PromotionError("private staging ownership changed")
         atomic_rename_no_replace(private, output)
         renamed = True
         report = verify_v123_promotion(
             V123PromotionVerificationRequest(output, request.candidate, request.contract),
             config,
         )
-        if report.status != "PASS" or not all(check.passed for check in report.checks):
+        if (_directory_identity(output) != owner or report.status != "PASS"
+                or not all(check.passed for check in report.checks)):
             raise PromotionError("published staging promotion verification failed")
         return _result(output, request.contract, report)
     except Exception:
-        if private.exists():
-            shutil.rmtree(private)
+        _cleanup_owned_directory(private, owner)
         if renamed and output.exists() and published_fingerprint is not None:
-            if _tree_fingerprint(output) == published_fingerprint:
-                shutil.rmtree(output)
-            else:
-                raise PromotionError("failed staging output cannot be cleaned safely")
+            _cleanup_owned_directory(output, owner, published_fingerprint)
         raise
 
 
@@ -850,6 +890,7 @@ def publish_v123_release(
     target = config.new_formal_target("V1.23")
     target.parent.mkdir(parents=True, exist_ok=True)
     private = Path(tempfile.mkdtemp(prefix=".V1.23-publish-", dir=target.parent))
+    owner = _directory_identity(private)
     source_fingerprint = _tree_fingerprint(source)
     renamed = False
     try:
@@ -858,6 +899,8 @@ def publish_v123_release(
             raise PromotionError("private publication copy is not byte-identical")
         if not _gate_d_binds_root(private, request.approval, request.contract):
             raise PromotionError("Gate D approval does not bind the private snapshot")
+        if _directory_identity(private) != owner:
+            raise PromotionError("private publication ownership changed")
         atomic_rename_no_replace(private, target)
         renamed = True
         final_report = verify_v123_promotion(
@@ -865,27 +908,20 @@ def publish_v123_release(
             config,
         )
         if (
-            final_report.status != "PASS"
+            _directory_identity(target) != owner
+            or final_report.status != "PASS"
             or not all(check.passed for check in final_report.checks)
             or not _gate_d_binds_root(target, request.approval, request.contract)
         ):
-            if _tree_fingerprint(target) == source_fingerprint:
-                shutil.rmtree(target)
             raise PromotionError("formal V1.23 post-publication verification failed")
         result = _result(target, request.contract, final_report)
         if result.release_digest != request.approval.release_digest:
             raise PromotionError("formal V1.23 result is not bound to final approval")
         return result
     except Exception as error:
-        if private.exists():
-            shutil.rmtree(private)
+        _cleanup_owned_directory(private, owner)
         if renamed and target.exists():
-            if _tree_fingerprint(target) == source_fingerprint:
-                shutil.rmtree(target)
-            else:
-                raise PromotionError(
-                    "failed formal publication cannot be cleaned safely"
-                ) from error
+            _cleanup_owned_directory(target, owner, source_fingerprint)
         if isinstance(error, PipelineError):
             raise
         raise PromotionError("formal V1.23 publication failed") from error

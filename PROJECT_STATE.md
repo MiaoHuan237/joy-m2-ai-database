@@ -42,7 +42,7 @@ Updated: 2026-10-19 (Asia/Shanghai)
 
 ## Current task
 
-### V1.23 promotion readiness — approved Design / written Plan (2026-10-19)
+### V1.23 promotion readiness — final human release gate (2026-10-19)
 
 - Human written Design approval binds commit
   `1c66a8e9daaaa991fc72b3ca891d87251051831b`, file
@@ -56,23 +56,48 @@ Updated: 2026-10-19 (Asia/Shanghai)
   candidate trees are covered by the enumerated protection roots. This is Plan
   review only, not implementation certification.
   Human Plan review and Native / Inline implementation authorization received
-  2026-10-19. Implementation is in progress, not publication authority.
-  API/models and primitive checkpoints are committed; independent fixture/verifier
-  checkpoint passed24/24 focused tests. Builder/publication and final acceptance
-  remain in progress; real releases/V1.23 remains absent.
+  2026-10-19. Tasks1–7 implemented and verified under that authorization; no
+  publication authority has been received. Implementation checkpoints:
+  `94cb717`, `6703041`, `ffb5aa5`, `d463de7`, `cfc20e6`, followed by reviewed
+  boundary repairs and the final readiness documentation checkpoint.
 - Fresh read-only recovery reconstructs the exact received approval/preflight
   prefix and verifies each of generations000001–000003:24/24 PASS each. Final
   digest remains `c5c51df58d64349d58bd71469fe67a72cced56e77369126d6fec66bb2fcc955a`;
   three batches2023(12),2025(13),Oxford(13),639+38=677 records, not distinct
   originals. No later runtime receipt was present. Four baseline/candidate
   SQLite/manifest SHA+size identities and six authority file refs matched Design.
-- This checkpoint modifies only Design approval status, Plan and PROJECT_STATE.
-  No production/tests, transcription, candidate write, scheduler or formal change;
-  no full maintained test run or backup restore for this documentation checkpoint.
-  No dry-run or real release digest generated; `releases/V1.23/` remains absent.
-  User AGENTS.md stays unchanged/unstaged.2024 remains excluded and unresolved.
-- Next human gate: `USER DECISION REQUIRED — V1.23 PROMOTION PLAN REVIEW`.
-  This is not final publication approval and does not reactivate ingestion.
+- Two independent non-formal dry-runs are byte-identical across all4 artifacts;
+  independent formal verifier21/21 PASS each. Exact639 baseline and38 promoted
+  projections match,677 unique IDs all published/selectable in the dry-runs only.
+  Oxford13 publisher-source answers remain unchanged and are not HKEAA MS;
+  PDF/page/region locators remain references, not invented image files.
+- Actual readiness release digest:
+  `84ebbd9d9f0d5fbef97f20ae98f8cdfa16c55d56eac7a826cfde3cc47fe9a2fc`.
+  Formal-equivalent SQLite SHA:
+  `28e44bda233b7d6acdb96a4fecf46df4cb75a50730694e0b249e9d38d3a584cd`.
+  Manifest SHA:
+  `54d192436e761c9bfe810510b77a902c5ae659bebdfbc4da8475aac271be8498`.
+  Full identity/file closure and rollback limits:
+  `docs/reports/V123_PROMOTION_READINESS.md`.
+- Fresh repaired serial maintained gate1331/1331 PASS (65modules),0 failures,
+  errors, skips or expectedFailures; focused plus historical replay51/51 PASS;
+  V1.18 independent validator PASS/497. Separate implementation review and
+  targeted re-review: Critical0/Important0/Minor0. Initial ownership-race,
+  filesystem/sums closure and whitespace findings were repaired with effective
+  RED/GREEN; no historical assertions weakened. The earlier full-run failure
+  caused by concurrent staging evidence creation is preserved in the report,
+  not treated as passing; the final accepted full run was serial.
+- All784 protected file identities unchanged. Existing Oxford archive665files
+  verified; new local readiness archive795files and isolated restore verified.
+  Archive SHA `3b14de979d67272b5265ea51b0b2a2a2120fdafbc0f894c25d9ae91745a93fda`.
+  This is local recovery, not off-device backup; Git does not back up ignored data.
+- No real candidate writer or publisher called, no default query pointer,
+  scheduler or source/approval change. Formal querying remains V1.22/639;
+  `releases/V1.23/` remains absent. User AGENTS.md stays unchanged/unstaged;
+  2024 remains excluded and unresolved. No further ingestion starts here.
+- Next human gate: `USER DECISION REQUIRED — FINAL V1.23 PROMOTION AUTHORIZATION`.
+  Only an exact later human approval of the actual release digest can authorize
+  publication; this readiness report and generated statement are not approval.
 
 ### V1.23 promotion readiness — written Design checkpoint (2026-10-14)
 

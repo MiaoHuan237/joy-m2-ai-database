@@ -744,17 +744,25 @@ def verify_v123_promotion(
             request.contract.sha256s_filename, request.contract.rollback_filename,
             *image_paths,
         }
+    entries = tuple(resolved.rglob("*"))
     actual_files = {
         path.relative_to(resolved).as_posix()
-        for path in resolved.rglob("*") if path.is_file() and not path.is_symlink()
+        for path in entries if path.is_file() and not path.is_symlink()
     }
-    no_unsafe = all(not path.is_symlink() for path in resolved.rglob("*"))
-    states["filesystem_closure"] = expected_files == actual_files and no_unsafe
+    expected_dirs = {
+        parent.as_posix() for name in expected_files for parent in PurePosixPath(name).parents
+        if parent.as_posix() != "."
+    }
+    actual_dirs = {path.relative_to(resolved).as_posix() for path in entries if path.is_dir()}
+    no_unsafe = all(not path.is_symlink() and (path.is_file() or path.is_dir()) for path in entries)
+    states["filesystem_closure"] = expected_files == actual_files and expected_dirs == actual_dirs and no_unsafe
     sums_path = resolved / request.contract.sha256s_filename
-    sums = _parse_sums(sums_path.read_bytes()) if sums_path.is_file() and not sums_path.is_symlink() else None
+    sums_raw = sums_path.read_bytes() if sums_path.is_file() and not sums_path.is_symlink() else None
+    sums = _parse_sums(sums_raw) if sums_raw is not None else None
     expected_sum_paths = sorted(expected_files - {request.contract.sha256s_filename}, key=lambda value: value.encode("utf-8"))
     states["sha256sums_closure"] = (
         sums is not None and [row[0] for row in sums] == expected_sum_paths
+        and sums_raw == "".join(f"{digest}  {relative}\n" for relative, digest in sums).encode("utf-8")
         and all(
             (resolved / relative).is_file()
             and not (resolved / relative).is_symlink()
