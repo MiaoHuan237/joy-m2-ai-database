@@ -2,7 +2,12 @@
 
 Date: 2026-10-14 (Asia/Shanghai)
 
-Status: WRITTEN DESIGN — PENDING HUMAN REVIEW. Implementation NOT STARTED.
+Status: WRITTEN DESIGN APPROVED (2026-10-19). Implementation NOT STARTED.
+Human approval binds commit `1c66a8e9daaaa991fc72b3ca891d87251051831b`
+and Design SHA-256
+`dac063c914b2a7003295d1306d39b0390329f408bace59c9f14d0e943e943541`.
+This status-only synchronization does not change the approved technical contract.
+Plan review and implementation authorization remain pending.
 The user authorized preparation of the minimum missing promotion authority,
 not publication. Written Design approval precedes Plan preparation; reviewed,
 committed Plan and implementation authorization precede production changes.

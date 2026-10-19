@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-10-14 (Asia/Shanghai)
+Updated: 2026-10-19 (Asia/Shanghai)
 
 ## Formal data
 
@@ -42,8 +42,39 @@ Updated: 2026-10-14 (Asia/Shanghai)
 
 ## Current task
 
+### V1.23 promotion readiness — approved Design / written Plan (2026-10-19)
+
+- Human written Design approval binds commit
+  `1c66a8e9daaaa991fc72b3ca891d87251051831b`, file
+  `docs/superpowers/specs/2026-10-14-v123-promotion-readiness-design.md`, SHA
+  `dac063c914b2a7003295d1306d39b0390329f408bace59c9f14d0e943e943541`.
+  Only its approval header is synchronized; technical sections1–10 unchanged.
+- Written Plan: `docs/superpowers/plans/2026-10-14-v123-promotion-readiness.md`.
+  Self-review and separate read-only technical Plan review completed. Initial
+  Critical0/Important0/Minor1 (explicit protected-path enumeration) was remediated;
+  targeted independent re-review: Critical0/Important0/Minor0. All16 existing
+  candidate trees are covered by the enumerated protection roots. This is Plan
+  review only, not implementation certification.
+  Human Plan review/execution authorization is still pending. Recommended method:
+  Native / Inline with separate implementation review. Implementation NOT STARTED.
+- Fresh read-only recovery reconstructs the exact received approval/preflight
+  prefix and verifies each of generations000001–000003:24/24 PASS each. Final
+  digest remains `c5c51df58d64349d58bd71469fe67a72cced56e77369126d6fec66bb2fcc955a`;
+  three batches2023(12),2025(13),Oxford(13),639+38=677 records, not distinct
+  originals. No later runtime receipt was present. Four baseline/candidate
+  SQLite/manifest SHA+size identities and six authority file refs matched Design.
+- This checkpoint modifies only Design approval status, Plan and PROJECT_STATE.
+  No production/tests, transcription, candidate write, scheduler or formal change;
+  no full maintained test run or backup restore for this documentation checkpoint.
+  No dry-run or real release digest generated; `releases/V1.23/` remains absent.
+  User AGENTS.md stays unchanged/unstaged.2024 remains excluded and unresolved.
+- Next human gate: `USER DECISION REQUIRED — V1.23 PROMOTION PLAN REVIEW`.
+  This is not final publication approval and does not reactivate ingestion.
+
 ### V1.23 promotion readiness — written Design checkpoint (2026-10-14)
 
+- Historical checkpoint below; its pending Design review is resolved by the
+  2026-10-19 approval above. Original verification evidence remains historical.
 - Current priority is the entire immutable generation000003, not another Oxford
   import. User authorized minimal missing promotion Design/Plan preparation and
   later Native / Inline execution subject to the existing written approval gates.
