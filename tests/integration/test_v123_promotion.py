@@ -978,6 +978,111 @@ class V123PromotionBuildTests(unittest.TestCase):
                 self.assertFalse(output.exists())
 
 
+class V123PublicationBoundaryTests(unittest.TestCase):
+    def test_wrong_approval_is_rejected_before_formal_creation(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d).resolve()
+            candidate = isolated_candidate(root)
+            config = PipelineConfig(root)
+            contract = promotion_contract()
+            output = root/"data/staging/dry"
+            built = build_v123_promotion(V123PromotionBuildRequest(candidate,output,contract),config)
+            self.assertIsNotNone(built)
+            wrong = V123ReleasePromotionApproval("V1.23", "0"*64,
+                f"USER APPROVED RELEASE PROMOTION V1.23 {'0'*64}")
+            with self.assertRaises(PromotionError):
+                publish_v123_release(V123PublicationRequest(output,candidate,wrong,contract),config)
+            self.assertFalse((root/"releases/V1.23").exists())
+
+    def test_atomic_no_replace_and_private_copy_tamper_cleanup(self):
+        with tempfile.TemporaryDirectory() as d:
+            root = Path(d).resolve()
+            candidate = isolated_candidate(root)
+            config = PipelineConfig(root)
+            contract = promotion_contract()
+            output = root/"data/staging/dry"
+            built = build_v123_promotion(V123PromotionBuildRequest(candidate,output,contract),config)
+            self.assertIsNotNone(built)
+            digest = json.loads((output/"manifest.json").read_text())["promotion"]["release_digest"]
+            approval = V123ReleasePromotionApproval("V1.23",digest,
+                f"USER APPROVED RELEASE PROMOTION V1.23 {digest}")
+            request = V123PublicationRequest(output,candidate,approval,contract)
+            before = tree(root)
+            original_copy = shutil.copytree
+            def tamper(source, destination, **kwargs):
+                result = original_copy(source,destination,**kwargs)
+                (Path(destination)/"rogue").write_bytes(b"tamper")
+                return result
+            with mock.patch("joy_m2.ingest.v123_promotion.shutil.copytree",side_effect=tamper):
+                with self.assertRaises(PromotionError):
+                    publish_v123_release(request,config)
+            self.assertEqual(tree(root),before)
+            published = publish_v123_release(request,config)
+            self.assertIsNotNone(published,"publication behavior missing")
+            self.assertEqual(published.release_digest,digest)
+            frozen = tree(root)
+            with self.assertRaises(PipelineError):
+                publish_v123_release(request,config)
+            self.assertEqual(tree(root),frozen)
+            self.assertEqual(tree(output),tree(root/"releases/V1.23"))
+
+
+
+    def test_publication_symlink_and_race_boundaries(self):
+        for case in ("source-link","releases-link","race","post-fail","post-changed"):
+            with self.subTest(case=case), tempfile.TemporaryDirectory() as d:
+                root=Path(d).resolve()
+                candidate=isolated_candidate(root)
+                config=PipelineConfig(root)
+                contract=promotion_contract()
+                output=root/"data/staging/dry"
+                built=build_v123_promotion(V123PromotionBuildRequest(candidate,output,contract),config)
+                self.assertIsNotNone(built)
+                approval=V123ReleasePromotionApproval("V1.23",built.release_digest,
+                    f"USER APPROVED RELEASE PROMOTION V1.23 {built.release_digest}")
+                if case=="source-link":
+                    link=root/"data/staging/link"
+                    link.symlink_to(output,target_is_directory=True)
+                    with self.assertRaises(PipelineError):
+                        publish_v123_release(V123PublicationRequest(link,candidate,approval,contract),config)
+                elif case=="releases-link":
+                    (root/"releases").rename(root/"old-releases")
+                    (root/"releases").symlink_to(root/"old-releases",target_is_directory=True)
+                    with self.assertRaises(PipelineError):
+                        publish_v123_release(V123PublicationRequest(output,candidate,approval,contract),config)
+                elif case=="race":
+                    def winner(private,target):
+                        shutil.copytree(private,target)
+                        raise OutputConflictError("competitor")
+                    with mock.patch("joy_m2.ingest.v123_promotion.atomic_rename_no_replace",side_effect=winner):
+                        with self.assertRaises(PipelineError):
+                            publish_v123_release(V123PublicationRequest(output,candidate,approval,contract),config)
+                    self.assertEqual(tree(output),tree(root/"releases/V1.23"))
+                else:
+                    import joy_m2.ingest.v123_promotion_verification as vm
+                    original=vm.verify_v123_promotion
+                    def fail_final(request,config):
+                        if request.release_dir==root/"releases/V1.23":
+                            if case=="post-changed":
+                                (request.release_dir/"outside-change").write_text("retain")
+                            return VerificationReport("FAIL",(VerificationCheck("forced",False,"forced"),))
+                        return original(request,config)
+                    with mock.patch.object(vm,"verify_v123_promotion",side_effect=fail_final):
+                        with self.assertRaises(PromotionError):
+                            publish_v123_release(V123PublicationRequest(output,candidate,approval,contract),config)
+                    self.assertEqual((root/"releases/V1.23").exists(),case=="post-changed")
+
+    def test_absent_approval_rejected_by_existing_carrier(self):
+        from joy_m2.ingest import V122ReleasePromotionApproval
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d).resolve()
+            candidate=isolated_candidate(root)
+            for wrong in (None,V122ReleasePromotionApproval("V1.22","0"*64,
+                    f"USER APPROVED RELEASE PROMOTION V1.22 {'0'*64}")):
+                with self.subTest(wrong=wrong), self.assertRaises(PipelineError):
+                    V123PublicationRequest(root/"data/staging/dry",candidate,wrong,promotion_contract())
+
+
 class V123IndependentVerifierTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

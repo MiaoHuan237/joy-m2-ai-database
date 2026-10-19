@@ -804,5 +804,88 @@ def build_v123_promotion(
 
 
 
-def publish_v123_release(request: V123PublicationRequest, config: PipelineConfig) -> V123PromotionArtifacts:
-    return None
+def publish_v123_release(
+    request: V123PublicationRequest,
+    config: PipelineConfig,
+) -> V123PromotionArtifacts:
+    if not _reconstructs_exactly(request, V123PublicationRequest):
+        raise PipelineError("request must be an exact valid V123PublicationRequest")
+    if not _reconstructs_exactly(config, PipelineConfig):
+        raise PipelineError("config must be an exact valid PipelineConfig")
+    if not _reconstructs_exactly(request.approval, V123ReleasePromotionApproval):
+        raise PromotionError("Gate D approval carrier is invalid")
+    declared_source = request.dry_run_dir
+    try:
+        if _has_symlink_component(declared_source):
+            raise PromotionError("dry-run promotion root is invalid")
+        resolved_source = declared_source.resolve(strict=False)
+    except (OSError, RuntimeError) as error:
+        raise PromotionError("dry-run promotion root is invalid") from error
+    if declared_source != resolved_source:
+        raise PromotionError("dry-run promotion root is invalid")
+    source = config.require_staging_output(declared_source)
+    if source == config.staging_root or not source.is_dir() or source.is_symlink():
+        raise PromotionError("dry-run promotion root is invalid")
+    from .v123_promotion_verification import verify_v123_promotion
+
+    source_report = verify_v123_promotion(
+        V123PromotionVerificationRequest(source, request.candidate, request.contract),
+        config,
+    )
+    if source_report.status != "PASS" or not all(
+        check.passed for check in source_report.checks
+    ):
+        raise PromotionError("dry-run promotion verification failed")
+    if not _gate_d_binds_root(source, request.approval, request.contract):
+        raise PromotionError("Gate D approval does not bind this release")
+    lexical_releases = config.repo_root / "releases"
+    try:
+        if (
+            _has_symlink_component(lexical_releases)
+            or lexical_releases.resolve(strict=False) != config.releases_root
+        ):
+            raise PromotionError("formal releases root is unsafe")
+    except (OSError, RuntimeError) as error:
+        raise PromotionError("formal releases root is unsafe") from error
+    target = config.new_formal_target("V1.23")
+    target.parent.mkdir(parents=True, exist_ok=True)
+    private = Path(tempfile.mkdtemp(prefix=".V1.23-publish-", dir=target.parent))
+    source_fingerprint = _tree_fingerprint(source)
+    renamed = False
+    try:
+        shutil.copytree(source, private, dirs_exist_ok=True)
+        if _tree_fingerprint(private) != source_fingerprint:
+            raise PromotionError("private publication copy is not byte-identical")
+        if not _gate_d_binds_root(private, request.approval, request.contract):
+            raise PromotionError("Gate D approval does not bind the private snapshot")
+        atomic_rename_no_replace(private, target)
+        renamed = True
+        final_report = verify_v123_promotion(
+            V123PromotionVerificationRequest(target, request.candidate, request.contract),
+            config,
+        )
+        if (
+            final_report.status != "PASS"
+            or not all(check.passed for check in final_report.checks)
+            or not _gate_d_binds_root(target, request.approval, request.contract)
+        ):
+            if _tree_fingerprint(target) == source_fingerprint:
+                shutil.rmtree(target)
+            raise PromotionError("formal V1.23 post-publication verification failed")
+        result = _result(target, request.contract, final_report)
+        if result.release_digest != request.approval.release_digest:
+            raise PromotionError("formal V1.23 result is not bound to final approval")
+        return result
+    except Exception as error:
+        if private.exists():
+            shutil.rmtree(private)
+        if renamed and target.exists():
+            if _tree_fingerprint(target) == source_fingerprint:
+                shutil.rmtree(target)
+            else:
+                raise PromotionError(
+                    "failed formal publication cannot be cleaned safely"
+                ) from error
+        if isinstance(error, PipelineError):
+            raise
+        raise PromotionError("formal V1.23 publication failed") from error

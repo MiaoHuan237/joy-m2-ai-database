@@ -1,6 +1,7 @@
 """Read-only V1.23 historical authority acceptance; never materialize old data."""
 import hashlib
 import json
+import re
 from pathlib import Path
 import sqlite3
 import tempfile
@@ -22,6 +23,25 @@ from tests.integration.test_v123_preflight import _make_package, _contract
 ROOT = Path(__file__).resolve().parents[2]
 FROZEN = OLD_FROZEN + (("V1.22",639,"formal_complete_questions_v122",
     "a474846a5b1d10a0fe48a259522fbb327747319f4a114452bf9f294405d8d9e0"),)
+
+# Trusted human authority only; no real V1.23 promotion has been approved.
+APPROVED_V123_RELEASE_DIGEST = None
+
+
+def assert_v123_lifecycle(root, approved_digest):
+    target=root/"releases/V1.23"
+    if approved_digest is None:
+        assert not target.exists() and not target.is_symlink(), "unapproved V1.23 publication"
+        return
+    assert type(approved_digest) is str and re.fullmatch(r"[0-9a-f]{64}",approved_digest)
+    assert target.is_dir() and not target.is_symlink(), "approved release missing"
+    from tests.integration.test_v123_promotion import selected_candidate, promotion_contract
+    from joy_m2.ingest import V123PromotionVerificationRequest, verify_v123_promotion
+    report=verify_v123_promotion(V123PromotionVerificationRequest(
+        target,selected_candidate(root),promotion_contract()),PipelineConfig(root))
+    assert report.status=="PASS" and len(report.checks)==21 and all(c.passed for c in report.checks)
+    manifest=json.loads((target/"manifest.json").read_text())
+    assert manifest["promotion"]["release_digest"]==approved_digest, "approval identity mismatch"
 
 
 class V123HistoricalReplayTests(unittest.TestCase):
@@ -68,11 +88,30 @@ class V123HistoricalReplayTests(unittest.TestCase):
             "transcription_digest":digest,
             "approval_text":f"USER APPROVED PDF TRANSCRIPTION BATCH JOY-M2-HKDSE-2023-PP-MS {digest}"})
 
-    def test_append_only_public_surface_has_no_new_promotion_authority(self):
+    def test_append_only_public_surface_has_exact_promotion_suffix(self):
         from tests.unit import test_v123_models
         import joy_m2.ingest as ingest
         test_v123_models.V123ApiTests("test_exact_append_only_surface").test_exact_append_only_surface()
-        self.assertFalse(any("v123" in name.lower() and ("promotion" in name.lower() or "publish" in name.lower()) for name in ingest.__all__))
+        self.assertEqual(ingest.__all__[-9:], (
+            "V123PromotionContract","V123PromotionBuildRequest",
+            "V123PromotionVerificationRequest","V123ReleasePromotionApproval",
+            "V123PublicationRequest","V123PromotionArtifacts",
+            "build_v123_promotion","verify_v123_promotion","publish_v123_release"))
+
+    def test_isolated_lifecycle_requires_explicit_exact_approval(self):
+        from tests.integration.test_v123_promotion import isolated_candidate, fixture_release, promotion_contract
+        with tempfile.TemporaryDirectory() as d:
+            root=Path(d).resolve()
+            candidate=isolated_candidate(root)
+            assert_v123_lifecycle(root,None)
+            with self.subTest(case="approved-but-missing"), self.assertRaises(AssertionError):
+                assert_v123_lifecycle(root,"1"*64)
+            target=fixture_release(root/"releases/V1.23",candidate,promotion_contract())
+            digest=json.loads((target/"manifest.json").read_text())["promotion"]["release_digest"]
+            for bad in (None,"0"*64,"",True,[],digest.upper()):
+                with self.subTest(bad=bad), self.assertRaises(AssertionError):
+                    assert_v123_lifecycle(root,bad)
+            assert_v123_lifecycle(root,digest)
 
     def test_synthetic_writer_refuses_formal_output_without_publication(self):
         with tempfile.TemporaryDirectory() as d:
@@ -84,4 +123,4 @@ class V123HistoricalReplayTests(unittest.TestCase):
                 build_v123_candidate(V123CandidateBuildRequest(
                     (approved,),root/"releases/V1.23",_contract()),PipelineConfig(root))
             self.assertFalse((root/"releases/V1.23").exists())
-        self.assertFalse((ROOT/"releases/V1.23").exists())
+        assert_v123_lifecycle(ROOT,APPROVED_V123_RELEASE_DIGEST)
