@@ -771,6 +771,213 @@ def isolated_candidate(root):
     return selected_candidate(root)
 
 
+class V123PromotionBuildTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.config = PipelineConfig(ROOT)
+        cls.candidate = selected_candidate()
+        cls.contract = promotion_contract()
+        cls.candidate_before=tree(cls.candidate.candidate_dir)
+
+    def build(self, output: Path):
+        result = build_v123_promotion(
+            V123PromotionBuildRequest(self.candidate, output, self.contract),
+            self.config,
+        )
+        self.assertIsNotNone(result, 'builder behavior is not implemented')
+        return result
+
+    def test_successful_build_has_exact_tree_and_21_pass_checks(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="task13-promotion-red-", dir=STAGING) as directory:
+            output = Path(directory) / "release"
+            result = self.build(output)
+            self.assertEqual(
+                tuple(path.name for path in sorted(output.iterdir())),
+                ("Joy_M2_Complete_Question_DB_V1_23.sqlite3", "SHA256SUMS.txt", "manifest.json", "rollback.json"),
+            )
+            self.assertEqual(result.verification_report.status, "PASS")
+            self.assertEqual(tuple(check.name for check in result.verification_report.checks), CHECK_NAMES)
+            self.assertTrue(all(check.passed for check in result.verification_report.checks))
+            self.assertEqual(result.release_digest, json.loads((output / "manifest.json").read_text())["promotion"]["release_digest"])
+
+    def test_exact_639_plus_38_projection(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="task13-projection-red-", dir=STAGING) as directory:
+            output = Path(directory) / "release"
+            result = self.build(output)
+            with sqlite3.connect(result.database.path) as database:
+                self.assertEqual(database.execute("SELECT COUNT(*) FROM formal_complete_questions_v123").fetchone()[0], 677)
+                self.assertEqual(database.execute("SELECT COUNT(*) FROM task13_v123_promoted_questions_v1").fetchone()[0], 38)
+                self.assertEqual(database.execute("SELECT COUNT(*) FROM task13_v123_promoted_questions_v1 WHERE record_status='published' AND selectable=1").fetchone()[0], 38)
+                self.assertEqual(database.execute("SELECT COUNT(*) FROM formal_complete_questions_v123 WHERE formal_order<=639").fetchone()[0], 639)
+                self.assertEqual(database.execute("SELECT COUNT(*) FROM task13_v123_candidates_v1 WHERE record_status='candidate'").fetchone()[0], 38)
+
+    def test_two_builds_are_byte_identical(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="task13-determinism-red-", dir=STAGING) as directory:
+            root = Path(directory)
+            first = self.build(root / "a")
+            second = self.build(root / "deep/b")
+            self.assertEqual(tree(first.database.path.parent), tree(second.database.path.parent))
+            self.assertEqual(first.release_digest, second.release_digest)
+
+    def test_older_candidate_is_rejected_before_output(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="task13-old-red-", dir=STAGING) as directory:
+            output = Path(directory) / "release"
+            request = V123PromotionBuildRequest(V123CandidateVerificationRequest(ROOT/"data/staging/task13-v123-hkdse-2025/candidate-generation-000002", self.candidate.approved_batches[:2], self.candidate.contract), output, self.contract)
+            with self.assertRaises(PipelineError):
+                build_v123_promotion(request, self.config)
+            self.assertFalse(output.exists())
+
+    def test_output_conflict_and_candidate_overlap_reject_without_mutation(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="task13-path-red-", dir=STAGING) as directory:
+            root = Path(directory)
+            existing = root / "existing"
+            existing.mkdir()
+            marker = existing / "marker"
+            marker.write_text("keep", encoding="utf-8")
+            with self.assertRaises(OutputConflictError):
+                self.build(existing)
+            self.assertEqual(marker.read_text(encoding="utf-8"), "keep")
+            overlap = self.candidate.candidate_dir / "nested-release"
+            with self.assertRaises(PipelineError):
+                self.build(overlap)
+            self.assertFalse(overlap.exists())
+
+    def test_candidate_bytes_and_ledger_authority_reject_before_output(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="task13-candidate-red-", dir=STAGING) as directory:
+            root = Path(directory)
+            for case in ("database", "order", "parent", "approval", "count"):
+                with self.subTest(case=case):
+                    candidate_root = root / case / "candidate"
+                    shutil.copytree(self.candidate.candidate_dir, candidate_root)
+                    if case == "database":
+                        with (candidate_root / self.candidate.contract.database_filename).open("ab") as stream:
+                            stream.write(b"tamper")
+                    else:
+                        manifest_path = candidate_root / self.candidate.contract.manifest_filename
+                        payload = json.loads(manifest_path.read_text(encoding="utf-8"))
+                        if case == "order":
+                            payload["batch_ledger"].reverse()
+                        elif case == "parent":
+                            payload["batch_ledger"][1]["parent_candidate_digest"] = "0" * 64
+                        elif case == "approval":
+                            payload["batch_ledger"][2]["approval"]["statement"] = "forged"
+                        else:
+                            payload["counts"]["batch_count"] = 4
+                        write_json(manifest_path, payload)
+                    candidate = V123CandidateVerificationRequest(
+                        candidate_root,
+                        self.candidate.approved_batches,
+                        self.candidate.contract,
+                    )
+                    output = root / case / "release"
+                    with self.assertRaises(PromotionError):
+                        build_v123_promotion(
+                            V123PromotionBuildRequest(candidate, output, self.contract),
+                            self.config,
+                        )
+                    self.assertFalse(output.exists())
+
+    def test_builder_rejects_lexical_symlink_output_path(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="task13-symlink-red-", dir=STAGING) as directory:
+            root = Path(directory)
+            real = root / "real"
+            real.mkdir()
+            link = root / "link"
+            link.symlink_to(real, target_is_directory=True)
+            with self.assertRaises(PipelineError):
+                self.build(link / "release")
+            self.assertFalse((real / "release").exists())
+
+    def test_private_build_failure_cleans_owned_output(self) -> None:
+        with tempfile.TemporaryDirectory(prefix="task13-cleanup-red-", dir=STAGING) as directory:
+            output = Path(directory) / "release"
+            with mock.patch(
+                "joy_m2.ingest.v123_promotion_verification.verify_v123_promotion",
+                return_value=VerificationReport("FAIL", (VerificationCheck("forced", False, "forced"),)),
+            ):
+                with self.assertRaises(PipelineError):
+                    self.build(output)
+            self.assertFalse(output.exists())
+
+    def test_no_replace_race_preserves_identical_competing_output(self):
+        with tempfile.TemporaryDirectory(dir=STAGING) as d:
+            output = Path(d) / "release"
+            def competing_writer(private, target):
+                shutil.copytree(private, target)
+                raise OutputConflictError("another writer won")
+            with mock.patch("joy_m2.ingest.v123_promotion.atomic_rename_no_replace",
+                            side_effect=competing_writer):
+                with self.assertRaises(OutputConflictError):
+                    self.build(output)
+            self.assertTrue(output.is_dir(), "must not delete another writer's identical tree")
+            self.assertEqual({p.name for p in output.iterdir()},
+                {"Joy_M2_Complete_Question_DB_V1_23.sqlite3","manifest.json","SHA256SUMS.txt","rollback.json"})
+
+    def test_post_rename_failure_cleans_unchanged_but_retains_changed_output(self) -> None:
+        import joy_m2.ingest.v123_promotion_verification as verifier_module
+
+        real_verify = verifier_module.verify_v123_promotion
+        for changed in (False, True):
+            with self.subTest(changed=changed), tempfile.TemporaryDirectory(prefix="task13-rename-red-", dir=STAGING) as directory:
+                output = Path(directory) / "release"
+                calls = 0
+
+                def fail_second(request, config):
+                    nonlocal calls
+                    calls += 1
+                    if calls == 2:
+                        if changed:
+                            (request.release_dir / "external-change.txt").write_text("retain")
+                        return VerificationReport(
+                            "FAIL", (VerificationCheck("publication_boundary", False, "forced"),),
+                        )
+                    return real_verify(request, config)
+
+                with mock.patch(
+                    "joy_m2.ingest.v123_promotion_verification.verify_v123_promotion",
+                    side_effect=fail_second,
+                ):
+                    if changed:
+                        with self.assertRaisesRegex(PromotionError, "cannot be cleaned safely"):
+                            self.build(output)
+                        self.assertTrue((output / "external-change.txt").is_file())
+                    else:
+                        with self.assertRaises(PromotionError):
+                            self.build(output)
+                        self.assertFalse(output.exists())
+
+    def test_oxford_publisher_solutions_preserved_and_pdf_locators_not_images(self):
+        with tempfile.TemporaryDirectory(dir=STAGING) as d:
+            result=self.build(Path(d)/"release")
+            with sqlite3.connect(result.database.path.as_uri()+"?mode=ro",uri=True) as db, sqlite3.connect((self.candidate.candidate_dir/self.candidate.contract.database_filename).as_uri()+"?mode=ro",uri=True) as source:
+                old=source.execute("SELECT * FROM formal_complete_questions_v122 ORDER BY formal_order").fetchall()
+                actual=db.execute("SELECT * FROM formal_complete_questions_v123 ORDER BY formal_order").fetchall()
+                self.assertEqual(actual[:639],old)
+                self.assertEqual(len(actual),677)
+                self.assertEqual(len({r[1] for r in actual}),677)
+                expected=source.execute("SELECT * FROM task13_v123_candidates_v1 ORDER BY aggregate_order").fetchall()
+                promoted=db.execute("SELECT * FROM task13_v123_promoted_questions_v1 ORDER BY formal_order").fetchall()
+                self.assertEqual(promoted,[(*r[:30],"published",1) for r in expected])
+                oxford=db.execute("SELECT question_id,source_id,solution_original,answer_status FROM task13_v123_promoted_questions_v1 WHERE batch_ordinal=3 ORDER BY formal_order").fetchall()
+                self.assertEqual([r[0] for r in oxford],[f"MOCK-C1-2025-26-Q{i:02d}" for i in range(1,14)])
+                self.assertEqual({r[1] for r in oxford},{"OXFORD-M2-2025-26-C-SET1"})
+                self.assertTrue(all(r[2] and r[3]=="source_provided" for r in oxford))
+                self.assertEqual(db.execute("SELECT batch_ordinal,COUNT(*) FROM task13_v123_promoted_questions_v1 GROUP BY batch_ordinal").fetchall(),[(1,12),(2,13),(3,13)])
+            manifest=json.loads(result.manifest.path.read_text())
+            self.assertEqual(manifest["images"],[])
+            self.assertFalse((result.database.path.parent/"images").exists())
+            self.assertEqual(tree(self.candidate.candidate_dir),self.candidate_before)
+
+    def test_output_must_not_overlap_other_protected_sources(self):
+        for name in ("task10b-hkdse-2024","oxford-c1-review-20261014","task12-v122-hkdse-2022","auto-ingestion/receipts"):
+            with self.subTest(name=name):
+                output=STAGING/name/"not-a-release"
+                self.assertFalse(output.exists())
+                with self.assertRaises(PipelineError):
+                    self.build(output)
+                self.assertFalse(output.exists())
+
+
 class V123IndependentVerifierTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

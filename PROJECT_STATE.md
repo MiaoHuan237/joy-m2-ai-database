@@ -55,8 +55,11 @@ Updated: 2026-10-19 (Asia/Shanghai)
   targeted independent re-review: Critical0/Important0/Minor0. All16 existing
   candidate trees are covered by the enumerated protection roots. This is Plan
   review only, not implementation certification.
-  Human Plan review/execution authorization is still pending. Recommended method:
-  Native / Inline with separate implementation review. Implementation NOT STARTED.
+  Human Plan review and Native / Inline implementation authorization received
+  2026-10-19. Implementation is in progress, not publication authority.
+  API/models and primitive checkpoints are committed; independent fixture/verifier
+  checkpoint passed24/24 focused tests. Builder/publication and final acceptance
+  remain in progress; real releases/V1.23 remains absent.
 - Fresh read-only recovery reconstructs the exact received approval/preflight
   prefix and verifies each of generations000001–000003:24/24 PASS each. Final
   digest remains `c5c51df58d64349d58bd71469fe67a72cced56e77369126d6fec66bb2fcc955a`;
