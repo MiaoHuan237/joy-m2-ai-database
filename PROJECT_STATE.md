@@ -1,17 +1,21 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-10-19 (Asia/Shanghai)
+Updated: 2026-10-20 (Asia/Shanghai)
 
 ## Formal data
 
-- Current formal release: V1.22
-- Formal SQLite: `releases/V1.22/Joy_M2_Complete_Question_DB_V1_22.sqlite3`
-- Formal SQLite SHA-256: `a474846a5b1d10a0fe48a259522fbb327747319f4a114452bf9f294405d8d9e0`
-- Complete-question records: 639 (591 immutable V1.21 records + 48 approved
-  2019–2022 HKDSE PP/MS additions)
+- Current formal release: V1.23
+- Formal SQLite: `releases/V1.23/Joy_M2_Complete_Question_DB_V1_23.sqlite3`
+- Formal SQLite SHA-256: `28e44bda233b7d6acdb96a4fecf46df4cb75a50730694e0b249e9d38d3a584cd`
+- Formal release digest: `84ebbd9d9f0d5fbef97f20ae98f8cdfa16c55d56eac7a826cfde3cc47fe9a2fc`
+- Complete-question records: 677 (639 immutable V1.22 records + 38 approved
+  source records: 2023 HKDSE12, 2025 HKDSE13, Oxford13). This is a record count,
+  not a distinct-original-question count.
+- Formal read-only query view: `formal_complete_questions_v123`; all677 unique
+  IDs are published/selectable. No persistent default-query pointer was changed.
 - V1.17 retained records: 45
 - Task 6 migrated records: 452
-- Answer identity: 534 `source_provided`, 71 `ai_solved_verified`, 34 `missing_from_source`
+- Answer identity: 572 `source_provided`, 71 `ai_solved_verified`, 34 `missing_from_source`
 - P0/P1 audit blockers: 0/0
 - V1.18 remains the frozen, byte-identical 497-question baseline and must not be
   edited in place. Its SQLite SHA-256 remains
@@ -39,10 +43,55 @@ Updated: 2026-10-19 (Asia/Shanghai)
   semantic SHA-256 is
   `0a4e70acb1cc657207dd0fefb1e20581d34baadda804219ae2fbbfb2b5ca817f`.
   V1.18/497, V1.19/502, and V1.20/543 remain immutable historical authority.
+- V1.22 remains immutable at639 records, SQLite SHA
+  `a474846a5b1d10a0fe48a259522fbb327747319f4a114452bf9f294405d8d9e0`,
+  release digest
+  `89a592abf52507cc0325f9c6f30ee2c74d4ec55fdcef988fdae6cb12f5a3073b`.
 
 ## Current task
 
-### V1.23 promotion readiness — final human release gate (2026-10-19)
+### V1.23 exact-approved publication — COMPLETED / PASS (2026-10-20)
+
+- Actual human approval received:
+  `USER APPROVED RELEASE PROMOTION V1.23 84ebbd9d9f0d5fbef97f20ae98f8cdfa16c55d56eac7a826cfde3cc47fe9a2fc`.
+  Freshly verified existing publisher consumed this approval once under
+  `cycle.lock`; no pending intent or newer receipt was present. No candidate
+  writer, transcription, rebuild, live rollback or next-version work occurred.
+- Selected generation000003 remains
+  `c5c51df58d64349d58bd71469fe67a72cced56e77369126d6fec66bb2fcc955a`.
+  Ledger remains2023(12),2025(13),Oxford(13). All3 candidate prefixes24/24 PASS.
+  Formal V1.23 four files exactly match both approved dry-runs byte-for-byte.
+  Fresh independent formal verifier21/21 PASS; all639 baseline and38 promoted
+  records match the approved projection field-for-field.
+- Oxford13 are queryable by batch/source with unchanged publisher solutions,
+  not HKEAA official MS. PDF/page/region figure references remain references;
+  no nonexistent canonical image files or independent explanations are claimed.
+- Fresh post-publication focused/historical gate51/51 PASS (108.271s);
+  maintained65modules1331/1331 PASS (560.267s),0 failures/errors/skips/
+  expectedFailures; V1.18 validator PASS/497. Separate read-only operational
+  review: Critical0/Important0/Minor0. Only the Design §8 lifecycle approval
+  literal/comment changed; historical negative controls remain intact.
+- All784 protected file identities, including formalV1.18–V1.22, old candidates,
+  source/approval evidence,2024 and user AGENTS.md, remain unchanged. AGENTS stays
+  unstaged and excluded from the task commit. Scheduler/config unchanged.
+- Publication receipt and fresh gate evidence:
+  `data/staging/task13-v123-promotion-readiness/publication-20261020-000001/`.
+  Publication audit, exact artifacts and local recovery evidence:
+  `docs/reports/V123_PROMOTION_READINESS.md`.
+  Existing-tool local archive `dist/backups/v123-published-20261020-000001.zip`
+  SHA `46e1b4a738378d72c81a90c27fb624d192e088413e78743b3ff59d4d0fb583c7`;
+  all805 files verified against original and isolated restored bytes. This is
+  local recovery, not off-device backup; no live rollback was performed.
+- Branch `task8b/pipeline-migration`; pre-publication HEAD
+  `92fd257801f8d49bd0fff7c3b772652591f33d84`. The task-only publication checkpoint
+  and actual ordinary-push outcome are reported at delivery; no assumed remote
+  backup. Git does not back up ignored runtime data. Stop after publication
+  verification and checkpoint; no new ingestion or V1.24 is authorized.
+
+### Historical V1.23 readiness — final human release gate (2026-10-19)
+
+The following readiness snapshot predates the exact approval/publication above;
+its pending gate and absent-target statements are historical, not current status.
 
 - Human written Design approval binds commit
   `1c66a8e9daaaa991fc72b3ca891d87251051831b`, file

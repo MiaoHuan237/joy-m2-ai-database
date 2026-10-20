@@ -1,7 +1,11 @@
 # V1.23 Promotion Readiness — generation 000003
 
-Status: READY — FINAL V1.23 PROMOTION AUTHORIZATION REQUIRED.
-Updated: 2026-10-19 (Asia/Shanghai).
+Status: PASS — EXACT-APPROVED V1.23 FORMALLY PUBLISHED.
+Updated: 2026-10-20 (Asia/Shanghai).
+
+The readiness evidence below is historical as of2026-10-19. Its unapproved/
+absent-target statements describe that checkpoint only. The final section records
+the subsequent actual human approval, publication, migration audit and fresh gates.
 
 ## Authority and boundaries
 
@@ -175,7 +179,7 @@ After a future exact human promotion approval, the only formal target is:
 `releases/V1.23/`, containing exactly the four artifact names above.
 Real `releases/V1.23/` is still absent.
 
-## Final human gate
+## Historical final human gate (2026-10-19; now satisfied)
 
 USER DECISION REQUIRED — FINAL V1.23 PROMOTION AUTHORIZATION
 
@@ -197,3 +201,63 @@ are committed normally; the delivery response reports the exact commit and actua
 remote synchronization result. AGENTS.md is excluded from staging and commits.
 Never treat this report, a generated statement or an import approval as received
 release approval. No2024/2025 reimport or V1.24 work is authorized. Stop here.
+
+## Exact-approved formal publication and migration audit — 2026-10-20
+
+The following exact statement was actually received from the human in this
+conversation, separately from the earlier generated request:
+
+```text
+USER APPROVED RELEASE PROMOTION V1.23 84ebbd9d9f0d5fbef97f20ae98f8cdfa16c55d56eac7a826cfde3cc47fe9a2fc
+```
+
+Execution reused the existing publisher, both dry-run trees and original
+generation000003. Under existing `cycle.lock`, no pending intent/newer receipt,
+three candidate prefixes24/24, both dry-run verifiers21/21, approved identity,
+four-file equality and784 protected identities were checked before publication.
+The publisher was called once with the exact typed human approval; its private
+copy and atomic no-replace publication produced `releases/V1.23/`.
+No candidate writer, repeated ingestion or database rebuild was called.
+
+Formal independent verifier21/21 PASS. All four formal files have the identical
+bytes/SHA/sizes listed above and match both dry-runs. The formal view
+`formal_complete_questions_v123` returns677 unique published/selectable IDs.
+All639 baseline records and38 approved promotion projections match field-for-field;
+ledger remains2023(12),2025(13),Oxford(13). Oxford13 publisher solutions are
+queryable and unchanged, not HKEAA official MS. Answers:572 source_provided,
+71 ai_solved_verified,34 missing_from_source. No content/enrichment/figure change.
+No persistent query pointer or scheduler configuration changed.
+
+The Design §8 lifecycle literal now records the actually received digest, not a
+manifest-discovered approval. All unapproved/wrong/missing approval controls and
+candidate-writer formal-root rejection remain. No production code changed.
+Fresh post-publication focused/historical51/51 PASS in108.271s; serial
+maintained65modules1331/1331 PASS in560.267s; failures/errors/skips/expectedFailures
+all0. V1.18 validator PASS/497; historical formal verifiers/replays passed.
+Separate read-only operational reviewer: Critical0/Important0/Minor0, including
+an independently rerun formal verifier and all784 protected hashes/sizes.
+
+Runtime received approval, publication receipt and fresh logs:
+`data/staging/task13-v123-promotion-readiness/publication-20261020-000001/`.
+Pre-publication HEAD:`92fd257801f8d49bd0fff7c3b772652591f33d84`.
+All formalV1.18–V1.22, old candidate generations, sources, approvals,2024 evidence
+and user's unstaged AGENTS.md retain their original identities. Real V1.23 now
+exists as exactly the four declared files; it is no longer merely candidate data.
+
+Rollback remains identity-guarded removal of only this exact release tree.
+No live rollback or persistent query switch was executed. The existing V1.22
+remains a recoverable unchanged formal baseline. Mathematical retranscription
+and live rollback were outside the operational review; no such results are claimed.
+Final Git commit/push results are reported separately at delivery. Do not infer
+ignored-data backup or off-device storage from Git synchronization.
+
+Post-publication local archive:
+`dist/backups/v123-published-20261020-000001.zip`, SHA
+`46e1b4a738378d72c81a90c27fb624d192e088413e78743b3ff59d4d0fb583c7`.
+The existing explicit-list backup CLI archived805 static files: protected input/
+dry-run evidence, formal four-file output, exact received approval, receipt and
+fresh gate logs. No live state SQLite/sidecars or user AGENTS.md were archived.
+All805 original/archive/isolated-restored byte identities matched; restore root
+`tmp/v123-published-restore-20261020-000001`. Mutable status documents are preserved
+by the separate Git checkpoint, not claimed as part of this data snapshot.
+This is local recovery only, not off-device backup.

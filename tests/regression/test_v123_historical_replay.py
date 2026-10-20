@@ -24,8 +24,8 @@ ROOT = Path(__file__).resolve().parents[2]
 FROZEN = OLD_FROZEN + (("V1.22",639,"formal_complete_questions_v122",
     "a474846a5b1d10a0fe48a259522fbb327747319f4a114452bf9f294405d8d9e0"),)
 
-# Trusted human authority only; no real V1.23 promotion has been approved.
-APPROVED_V123_RELEASE_DIGEST = None
+# Exact human release-promotion approval received 2026-10-20; Design section 8.
+APPROVED_V123_RELEASE_DIGEST = "84ebbd9d9f0d5fbef97f20ae98f8cdfa16c55d56eac7a826cfde3cc47fe9a2fc"
 
 
 def assert_v123_lifecycle(root, approved_digest):

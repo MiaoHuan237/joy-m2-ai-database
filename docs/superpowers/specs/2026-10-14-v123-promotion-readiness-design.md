@@ -2,14 +2,18 @@
 
 Date: 2026-10-14 (Asia/Shanghai)
 
-Status: WRITTEN DESIGN APPROVED (2026-10-19). Implementation/readiness verified; final publication approval pending.
+Status: WRITTEN DESIGN APPROVED (2026-10-19). Readiness completed; exact human
+publication approval received and consumed 2026-10-20 under section8.
+Formal release digest: `84ebbd9d9f0d5fbef97f20ae98f8cdfa16c55d56eac7a826cfde3cc47fe9a2fc`.
 Human approval binds commit `1c66a8e9daaaa991fc72b3ca891d87251051831b`
 and Design SHA-256
 `dac063c914b2a7003295d1306d39b0390329f408bace59c9f14d0e943e943541`.
 This status-only synchronization does not change the approved technical contract.
 Plan review and Native / Inline implementation authorization received 2026-10-19.
-The user authorized preparation of the minimum missing promotion authority,
-not publication. Written Design approval precedes Plan preparation; reviewed,
+The original readiness authorization covered preparation, not publication;
+the later separate exact approval and publication are recorded in
+`docs/reports/V123_PROMOTION_READINESS.md`. Sections1–10 retain the approved
+readiness contract unchanged. Written Design approval precedes Plan preparation; reviewed,
 committed Plan and implementation authorization precede production changes.
 Native / Inline is the requested eventual execution mode.
 

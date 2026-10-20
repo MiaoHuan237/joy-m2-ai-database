@@ -6,9 +6,12 @@
 > Checkboxes record implementation steps, not authority to publish.
 
 **Status:** HUMAN-APPROVED — Native / Inline implementation authorized 2026-10-19.
-Tasks1–7 implemented and verified; final exact release-digest approval remains pending.
+Tasks1–7 implemented and verified. Subsequent exact human release-digest approval
+was received and consumed 2026-10-20 under Design section8; formal V1.23 is published.
 Execution evidence: `docs/reports/V123_PROMOTION_READINESS.md`. The checked steps
-below record completed implementation/readiness work, never received publication approval.
+below record the historical readiness phase, not the source of publication
+approval. The report separately records the actual later human statement and
+post-publication verification; no readiness scope or technical contract changed.
 The historical Plan-preparation handoff below is retained as history, not a new approval gate.
 Prepared: 2026-10-19 (Asia/Shanghai); filename follows the approved Design.
 
