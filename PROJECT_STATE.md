@@ -50,6 +50,34 @@ Updated: 2026-10-20 (Asia/Shanghai)
 
 ## Current task
 
+### F6 selected source batch / V1.24 candidate bridge — WRITTEN DESIGN REVIEW (2026-10-20)
+
+- User authorized the minimal school-mock selected-batch mapping and the next
+  candidate lifecycle after published V1.23. This supersedes the historical
+  post-publication "no V1.24 authorized" stopping statement below only for this
+  narrow candidate/source direction, not for promotion or real import approval.
+- Design:
+  `docs/superpowers/specs/2026-10-20-f6-selected-batch-v124-candidate-design.md`.
+  Direction approved; written Design review pending. Plan and implementation
+  NOT STARTED. Existing exact transcription/import/release gates remain intact.
+- F6 source review retained at
+  `data/staging/f6-mock-1516-source-review-20261020-000001/`: 12 original
+  questions / 100 marks; prioritize complete Q1,Q3,Q6,Q8 (4 / 24 marks).
+  Remaining eight retain their original source issues and evidence. No question
+  was removed from the old draft or an approved/preflighted batch.
+- Proposed independent source identity:
+  `HKSYCIA-WTS-M2-MOCK-2015-16` (`school_mock`, not Oxford/HKEAA).
+  First selected batch:
+  `JOY-M2-STG-F6-MOCK-2015-16-0428-20260905-Q01-Q03-Q06-Q08`.
+  Existing review draft is not a consumable approved transcription.
+- Fresh read-only baseline check: formal V1.23 remains677 unique published/
+  selectable records with the identities above. Proposed V1.24 genesis:
+  `797ed06ca5833bac060c1603cada38a6f2aa9eb080a40d9dc892bba9a549773a`;
+  computed from the Design projection, not an existing candidate/release.
+- Current docs-only scope is this state file and the new Design. AGENTS.md stays
+  user-owned/unstaged; production, tests, sources, old candidates, runner and
+  formal artifacts are unchanged. No new canonical/preflight or writer call.
+
 ### V1.23 exact-approved publication — COMPLETED / PASS (2026-10-20)
 
 - Actual human approval received:
