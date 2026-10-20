@@ -2,8 +2,11 @@
 
 Date: 2026-10-20 (Asia/Shanghai)
 
-Status: DIRECTION AUTHORIZED — WRITTEN DESIGN PENDING HUMAN REVIEW.
-Implementation and implementation Plan are NOT STARTED.
+Status: APPROVED — WRITTEN DESIGN (2026-10-20).
+Human approval binds commit b480a608df851dde318719f4fbf88bffb1489658 and file
+SHA-256 7ef92371a9876fc9b0ee100324de4b489f99ba491696ea46f8edf8b4192e13fc.
+Technical sections 1–7 are unchanged. Implementation Plan is written and pending
+human review/execution confirmation; implementation remains NOT STARTED.
 
 ## 1. Outcome and authority
 
@@ -525,9 +528,11 @@ need identity/scope/diff checks, not a full suite or repeated backup restore.
 
 ## 8. Human workload, current stop and non-goals
 
-Current stop: **USER DECISION REQUIRED — F6 / V1.24 WRITTEN DESIGN REVIEW**.
-No Plan, implementation, source approval digest, canonical, authoritative
-preflight, real candidate write or release is created at this checkpoint.
+Written Design review is complete. Current stop:
+**USER DECISION REQUIRED — F6 / V1.24 IMPLEMENTATION PLAN REVIEW**.
+The written Plan is `docs/superpowers/plans/2026-10-20-f6-selected-batch-v124-candidate.md`.
+No implementation, source approval digest, canonical, authoritative preflight,
+real candidate write or release is created at this docs-only checkpoint.
 
 After written Design and Plan gates, ordinary engineering/source checks proceed
 without per-question review. Present the selected four-question transcription

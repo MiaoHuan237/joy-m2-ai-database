@@ -50,7 +50,7 @@ Updated: 2026-10-20 (Asia/Shanghai)
 
 ## Current task
 
-### F6 selected source batch / V1.24 candidate bridge — WRITTEN DESIGN REVIEW (2026-10-20)
+### F6 selected source batch / V1.24 candidate bridge — IMPLEMENTATION PLAN REVIEW (2026-10-20)
 
 - User authorized the minimal school-mock selected-batch mapping and the next
   candidate lifecycle after published V1.23. This supersedes the historical
@@ -58,8 +58,14 @@ Updated: 2026-10-20 (Asia/Shanghai)
   narrow candidate/source direction, not for promotion or real import approval.
 - Design:
   `docs/superpowers/specs/2026-10-20-f6-selected-batch-v124-candidate-design.md`.
-  Direction approved; written Design review pending. Plan and implementation
-  NOT STARTED. Existing exact transcription/import/release gates remain intact.
+  Written Design approved at commit `b480a608df851dde318719f4fbf88bffb1489658`,
+  original file SHA `7ef92371a9876fc9b0ee100324de4b489f99ba491696ea46f8edf8b4192e13fc`.
+  Technical sections1–7 unchanged; approval/checkpoint wording synchronized.
+- Written Plan:
+  `docs/superpowers/plans/2026-10-20-f6-selected-batch-v124-candidate.md`.
+  Author self-review complete; pending human Plan review and execution-method
+  confirmation (Native / Inline recommended). Implementation NOT STARTED.
+  Existing exact transcription/import/release gates remain intact.
 - F6 source review retained at
   `data/staging/f6-mock-1516-source-review-20261020-000001/`: 12 original
   questions / 100 marks; prioritize complete Q1,Q3,Q6,Q8 (4 / 24 marks).
@@ -74,7 +80,7 @@ Updated: 2026-10-20 (Asia/Shanghai)
   selectable records with the identities above. Proposed V1.24 genesis:
   `797ed06ca5833bac060c1603cada38a6f2aa9eb080a40d9dc892bba9a549773a`;
   computed from the Design projection, not an existing candidate/release.
-- Current docs-only scope is this state file and the new Design. AGENTS.md stays
+- Current docs-only scope is this state file, Design status and the new Plan. AGENTS.md stays
   user-owned/unstaged; production, tests, sources, old candidates, runner and
   formal artifacts are unchanged. No new canonical/preflight or writer call.
 
