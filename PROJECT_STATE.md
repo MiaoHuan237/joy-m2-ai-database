@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-10-20 (Asia/Shanghai)
+Updated: 2026-10-23 (Asia/Shanghai)
 
 ## Formal data
 
@@ -50,7 +50,37 @@ Updated: 2026-10-20 (Asia/Shanghai)
 
 ## Current task
 
-### F6 selected source batch / V1.24 candidate bridge — IMPLEMENTATION PLAN REVIEW (2026-10-20)
+### Vector chapter12 dual-package source — WRITTEN DESIGN REVIEW (2026-10-23)
+
+- Current task is Design plus off-database mapping preparation only. User
+  authorized explicit dual-package binding, shared conditions and exact ordered
+  fragments; no source/selection/import/promotion approval or implementation.
+- Design: `docs/superpowers/specs/2026-10-23-vector-ch12-dual-package-source-design.md`.
+  This is separate from the F6 source scope and reuses, rather than replaces,
+  the approved V1.24 version direction. Written Design awaits human review.
+- Reused immutable intake `data/staging/vector-ch12-intake-20261023-000001/`.
+  New ignored review: `data/staging/vector-ch12-design-20261023-000001/`.
+  First selection proposes16 complete questions:12A1/9/10/11,12B3/4/5/6,
+  12C2/3/8/9/10/13/17/18. Full stems/answers and exact source spans are in
+  `FIRST_SELECTION_REVIEW.txt` and `pilot-selection-review.json`.
+- Answer coverage:15 source worked solutions,1 complete judgment key; no
+  independent explanation, estimated difficulty or marks. One necessary original
+  image checked. Controlled tags checked against formal V1.23; no unknown tags.
+- All203 old indexed units retained:16 proposed,163 later,16 requiring content/
+  layout review,8 prerequisite outside this batch. Counts are review dispositions,
+  not final eligible/net-new counts. New12C12 extra-denominator concern is held;
+  examples19/23 missing asks and example3 partial answer remain untouched.
+- New review files are not API proposals; no consumable approval digest,
+  canonical, preflight or candidate created. Formal V1.23 remains677 with the
+  recorded identities; original packages, old review and user AGENTS unchanged.
+- Separate read-only Design/source review: Critical0/Important0/openMinor0.
+  One scope-label omission fixed in new review evidence only. Fresh scoped
+  checks:438 protected files unchanged,16 original records preserved,203 IDs/
+  dispositions closed,0 unknown proposed tags; docs diff/scope checks pass.
+  No full maintained suite is repeated for this docs-only checkpoint.
+- Stop: USER DECISION REQUIRED — VECTOR CH12 SOURCE ADAPTATION DESIGN REVIEW.
+
+### F6 selected source batch / V1.24 candidate bridge — PLAN APPROVED / IMPLEMENTATION NOT STARTED
 
 - User authorized the minimal school-mock selected-batch mapping and the next
   candidate lifecycle after published V1.23. This supersedes the historical
@@ -63,8 +93,10 @@ Updated: 2026-10-20 (Asia/Shanghai)
   Technical sections1–7 unchanged; approval/checkpoint wording synchronized.
 - Written Plan:
   `docs/superpowers/plans/2026-10-20-f6-selected-batch-v124-candidate.md`.
-  Author self-review complete; pending human Plan review and execution-method
-  confirmation (Native / Inline recommended). Implementation NOT STARTED.
+  Human Plan and Native / Inline execution approval received in chat after the
+  committed Plan checkpoint. At this2026-10-23 recovery, the production V1.24
+  modules/F6 adapter are not present; implementation remains NOT STARTED.
+  This task does not resume F6 implementation or consume its real-data approvals.
   Existing exact transcription/import/release gates remain intact.
 - F6 source review retained at
   `data/staging/f6-mock-1516-source-review-20261020-000001/`: 12 original
@@ -80,9 +112,9 @@ Updated: 2026-10-20 (Asia/Shanghai)
   selectable records with the identities above. Proposed V1.24 genesis:
   `797ed06ca5833bac060c1603cada38a6f2aa9eb080a40d9dc892bba9a549773a`;
   computed from the Design projection, not an existing candidate/release.
-- Current docs-only scope is this state file, Design status and the new Plan. AGENTS.md stays
-  user-owned/unstaged; production, tests, sources, old candidates, runner and
-  formal artifacts are unchanged. No new canonical/preflight or writer call.
+- The historical F6 docs checkpoint touched this state file, Design status and
+  its Plan. Current chapter12 scope is described above. AGENTS.md stays
+  user-owned/unstaged; no F6 canonical/preflight or writer call is made here.
 
 ### V1.23 exact-approved publication — COMPLETED / PASS (2026-10-20)
 
