@@ -507,3 +507,168 @@ class V124GenesisPreflightTests(unittest.TestCase):
                     manifest.unlink()
                 with self.assertRaises(PipelineError):
                     self.invoke(request)
+
+
+from joy_m2.ingest.v124_models import V124CandidateBuildRequest, V124CandidateVerificationRequest
+from joy_m2.ingest.v124_preflight import preflight_v124_import
+from tests.integration.test_v120_preflight import _rename_declared_image
+_tree = _fingerprint
+
+class V124ParentPreflightTests(unittest.TestCase):
+
+    def test_parent_taxonomy_participates_and_ledger_is_exact(self):
+        from unittest.mock import patch
+        import joy_m2.ingest.v124_preflight as preflight
+        a, artifacts, parent, package = self.parent_and_b()
+        accepted = a.preflight_result.candidates[0]
+        _rewrite_record(package, {"primary_type": accepted.primary_type, "tags": list(accepted.tags)})
+        original = preflight._formal_indexes
+        with patch.object(preflight, "_formal_indexes",
+                          side_effect=lambda path: (original(path)[0], frozenset(), frozenset())):
+            result = self.preflight_parent(package, parent)
+        self.assertEqual(result.report.status, "READY FOR USER IMPORT APPROVAL")
+        self.assertEqual(result.effective_state.batch_ledger, artifacts.state.batch_ledger)
+        self.assertEqual(result.effective_state.candidate_count, 1)
+
+    def test_retained_formal_ids_still_block_with_parent(self):
+        _, _, parent, package = self.parent_and_b()
+        _rewrite_record(package, {"proposed_question_id": "HKDSE-2022-M2-Q01"})
+        result = self.preflight_parent(package, parent)
+        self.assertEqual(result.report.rejected_count, 1)
+        self.assertIn("collision_candidate_id", {issue.code for issue in result.issues})
+
+    def test_parent_missing_closure_and_wrong_version_are_context_failures(self):
+        _, _, parent, package = self.parent_and_b()
+        self.preflight_parent(package, parent)  # Successful prerequisite, not setup failure.
+        path = parent.candidate_dir / "candidate_manifest.json"
+        original = path.read_bytes()
+        for label, update in (("version", {"release_version": "V1.23"}),
+                              ("genesis-reset", {"candidate_digest": GENESIS}),
+                              ("count", {"counts": {}})):
+            with self.subTest(label=label):
+                payload = json.loads(original)
+                payload.update(update)
+                path.write_text(json.dumps(payload))
+                before = _tree(parent.candidate_dir)
+                with self.assertRaises(PipelineError):
+                    self.preflight_parent(package, parent)
+                self.assertEqual(_tree(parent.candidate_dir), before)
+                path.write_bytes(original)
+        sums = parent.candidate_dir / "SHA256SUMS"
+        sums.unlink()
+        before = _tree(parent.candidate_dir)
+        with self.assertRaises(PipelineError):
+            self.preflight_parent(package, parent)
+        self.assertEqual(_tree(parent.candidate_dir), before)
+
+    def test_parent_request_mismatch_and_stale_supplied_authority_rejected(self):
+        from dataclasses import replace
+        from tests.integration.test_v124_candidate import _approved
+        _, _, parent, package = self.parent_and_b()
+        self.preflight_parent(package, parent)
+        before = _tree(parent.candidate_dir)
+        other = _approved(package, self.config)
+        wrong = replace(parent, approved_batches=(other,))
+        with self.assertRaises(PipelineError):
+            self.preflight_parent(package, wrong)
+        self.assertEqual(_tree(parent.candidate_dir), before)
+
+    def test_parent_changes_during_indexing_are_rejected(self):
+        from unittest.mock import patch
+        from joy_m2.models import VerificationReport
+        import joy_m2.ingest.v124_preflight as preflight
+        _, _, parent, package = self.parent_and_b()
+        self.preflight_parent(package, parent)
+        real = preflight.verify_v124_candidate
+        good = real(parent, self.config)
+        before = _tree(parent.candidate_dir)
+        with patch.object(preflight, "verify_v124_candidate",
+                          side_effect=(good, VerificationReport("FAIL", ()))):
+            with self.assertRaises(PipelineError):
+                self.preflight_parent(package, parent)
+        self.assertEqual(_tree(parent.candidate_dir), before)
+
+    def test_equivalent_verified_parent_roots_produce_identical_preflight(self):
+        from joy_m2.ingest.v124_writer import build_v124_candidate
+        from tests.integration.test_v124_candidate import _make_named_package
+        a, _, parent, package = self.parent_and_b()
+        result = self.preflight_parent(package, parent)
+        twin = self.root / "parent-twin"
+        build_v124_candidate(V124CandidateBuildRequest((a,), twin, _contract()), self.config)
+        other_package = _make_named_package(self.root / "independent", "b")
+        result2 = self.preflight_parent(other_package,
+            V124CandidateVerificationRequest(twin, (a,), _contract()))
+        self.assertEqual(result, result2)
+    def setUp(self):
+        from tests.integration.test_v124_candidate import V124FirstWriterTests
+        V124FirstWriterTests.setUp(self)
+
+    def tearDown(self):
+        self.temporary.cleanup()
+
+    def build(self):
+        from tests.integration.test_v124_candidate import V124FirstWriterTests
+        return V124FirstWriterTests.build(self)
+
+    def _invoke(self, fn, *args):
+        return fn(*args)
+
+    def parent_and_b(self):
+        from tests.integration.test_v124_candidate import _make_named_package
+        from joy_m2.ingest.v124_models import V124CandidateVerificationRequest
+        from joy_m2.ingest.v124_verification import verify_v124_candidate
+        approved, artifacts = self.build()
+        parent = V124CandidateVerificationRequest(artifacts.database.path.parent, (approved,), _contract())
+        self.assertEqual(verify_v124_candidate(parent,self.config).status,"PASS")
+        self.assertEqual(artifacts.state.projected_question_count,678)
+        package = _make_named_package(self.root,"b")
+        return approved, artifacts, parent, package
+
+    def preflight_parent(self,package,parent):
+        from dataclasses import replace
+        try:
+            return preflight_v124_import(replace(_request(package),parent_candidate=parent), self.config)
+        except NotImplementedError:
+            self.fail("verified first-generation prerequisite passed; parent preflight missing")
+
+    def test_verified_parent_binding_counts_and_preservation(self):
+        _, artifacts, parent, package = self.parent_and_b()
+        before=_tree(parent.candidate_dir)
+        result=self.preflight_parent(package,parent)
+        self.assertEqual(result.report.status,"READY FOR USER IMPORT APPROVAL")
+        self.assertEqual(result.report.parent_candidate_digest,artifacts.state.candidate_digest)
+        self.assertNotEqual(result.report.parent_candidate_digest,GENESIS)
+        self.assertEqual((result.report.parent_batch_count,result.report.before_count,
+            result.report.new_candidate_count,result.report.projected_after_count),(1,678,1,679))
+        self.assertEqual(_tree(parent.candidate_dir),before)
+
+
+    def test_duplicate_and_collision_against_verified_parent(self):
+        approved, artifacts, parent, package=self.parent_and_b()
+        first=approved.preflight_result.candidates[0]
+        _rename_declared_image(package,first.image_paths[0])
+        _rewrite_record(package,{"proposed_question_id":first.proposed_question_id,
+            "source_id":first.source_id,"source_question_number":first.source_question_number,
+            "source_section":first.source_section,"source_fragment_hash":first.source_fragment_hash,
+            "question_text_original":first.question_text_original,
+            "image_paths":list(first.image_paths),"image_roles":list(first.image_roles)})
+        before=_tree(parent.candidate_dir)
+        result=self.preflight_parent(package,parent)
+        self.assertEqual((result.report.duplicate_count,result.report.new_candidate_count),(1,0))
+        self.assertIn("duplicate_exact",{i.code for i in result.issues})
+        _rewrite_record(package,{"question_text_original":"Different content retaining the same candidate ID"})
+        result=self.preflight_parent(package,parent)
+        self.assertEqual(result.report.rejected_count,1)
+        self.assertIn("collision_candidate_id",{i.code for i in result.issues})
+        self.assertEqual(_tree(parent.candidate_dir),before)
+
+    def test_corrupt_verified_parent_cannot_be_used(self):
+        _, _, parent, package=self.parent_and_b()
+        manifest=parent.candidate_dir/"candidate_manifest.json"
+        payload=json.loads(manifest.read_text())
+        payload["candidate_digest"]="0"*64
+        manifest.write_text(json.dumps(payload))
+        before=_tree(parent.candidate_dir)
+        with self.assertRaises(PipelineError):
+            self.preflight_parent(package,parent)
+        self.assertEqual(_tree(parent.candidate_dir),before)
