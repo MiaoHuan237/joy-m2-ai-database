@@ -453,7 +453,7 @@ class PublicationSafetyTests(_ProposalCase):
         original = Path.write_bytes
         def write(path, data):
             result = original(path, data)
-            if path.name == 'SOURCE_MAPPING_REVIEW.md':
+            if path.name in ('SOURCE_MAPPING_REVIEW.md', 'import_manifest.json'):
                 original(self.paths[1], b'changed input')
             return result
         with patch.object(Path, 'write_bytes', write):
