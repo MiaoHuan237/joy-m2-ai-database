@@ -2,7 +2,21 @@
 
 2026-10-23; Native / Inline under the approved Design/Plan and the user's whole-chapter execution adjustment. Data approvals remain separate.
 
-## Current operational checkpoint — S01 accepted, S02 awaiting import approval
+## Current operational checkpoint — S02 accepted, S03 awaiting import approval
+
+Exact S02 user approval bound preflight `8389cf5357106b8f41cfa4402ade8fd43b6e88b05a0868b3b62dc16c08f4b023` to verified parent `3d3ae1ffe579ae637e8c1a527fb22aa5bf3c6bd21078a43101301594ebac65b3`. Under existing cycle.lock, the full ordered prefix, source approvals/ZIPs/canonical bytes and saved preflight were freshly reconstructed. Existing writer ran once, atomically creating generation000002. Operation root: `data/staging/vector-ch12-v124-S02-20261023-000001/`; immutable receipt and exact received approval accompany candidate-generation-000002.
+
+Ledger S01(16),S02(14),30 candidate/selectable=0 plus677 published baseline =707 effective records. Candidate digest `a3e5c2cdd63be212361abeeb680ec38d55919a70348134f3ae08b6e497b0f988`; SQLite SHA `da3225e2befb467fc2cfe8439141ac9a6f8064640d436d8c061c4e9c9ceb21b2`; manifest physical SHA `26308e7ddb11316c55bd5f21cec707f6bbea9cb2d18af988220d74ab3639a053`. Post-write independent verifier24/24 PASS. Instrumented approval replay0 writer calls, all11 output files/7 parent files/receipt byte-identical.3 focused multi-batch/stale-parent/failure-preservation tests PASS in10.590s. No production/test changes; no repeated1530 suite.
+
+S03 now READY against this exact generation000002, preflight `fddfefb888bc7ef69ebc2206f713ac2769f6da4fb71742887681bb2455f82dfb`:4 detected/new,0 duplicate/rejected/ambiguous/adaptations/issues,707 before,711 projected. Two complete preflight results equal.4 worked source solutions,1 original staged image,0 missing answers/images,4 missing independent explanations/difficulties. No changed source/mapping/canonical or estimated marks. First operational scan encountered a concurrently running synthetic test's temporary candidate and stopped conservatively; after tests completed and their own cleanup finished, serial replay succeeded with unchanged checks. No manual cleanup/rebuild or source mutation.
+
+Existing backup utility archived90 explicit files including both generations/receipts, exact source/import approvals, canonical packages, raw ZIPs and formalV1.23; isolated restore90/90 byte/size/SHA checks PASS. Local archive `dist/backups/vector-ch12-s02-accepted-20261023-000001.zip`, SHA `9b5aa509c4de53ec5caeafb72374c1563695a16d379d10175af416a9a403000e`. Not off-device; Git does not back up ignored data. No live rollback.
+
+438 protected identities, generation000001 and original AGENTS edit unchanged. FormalV1.23 remains677; no releases/V1.24 or promotion.203 dispositions remain34 mapped (30 accepted,4 awaiting import),34 held,127 later unreviewed,8 prerequisite. Current gate: **USER DECISION REQUIRED — REAL BATCH IMPORT** for S03 only. Earlier preflight/parent states below are historical.
+
+Separate read-only review `/root/vector_ch12_implementation_review`: **Critical0 / Important0 / Minor0**. Independently ran generation000002 verifier twice24/24 and S03 preflight twice, full saved-result equality; verified both generations/438 protected identities unchanged and actual generation set after synthetic tests exited. Did not invoke main/writer, repeat backup recovery or re-review mathematics. Replay0-writer evidence was inspected, not independently executed by reviewer.
+
+## Previous operational checkpoint — S01 accepted, S02 awaiting import approval
 
 S01 exact user import approval bound preflight `e4a206de3c4b37d073f2f2c63bccf03811af201c02f73e48b31a76f082e1bf9c` and genesis `797ed06ca5833bac060c1603cada38a6f2aa9eb080a40d9dc892bba9a549773a`. Under existing cycle.lock, fresh recovery found no V1.24 parent/pending write. Source approval, original package hashes, canonical file closure and full saved preflight equality were rechecked before the existing atomic writer ran once.
 

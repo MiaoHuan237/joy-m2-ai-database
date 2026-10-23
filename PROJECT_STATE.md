@@ -50,7 +50,39 @@ Updated: 2026-10-23 (Asia/Shanghai)
 
 ## Current task
 
-### Vector chapter12 dual-package source — S01 ACCEPTED; S02 IMPORT APPROVAL REQUIRED (2026-10-23)
+### Vector chapter12 dual-package source — S01/S02 ACCEPTED; S03 IMPORT APPROVAL REQUIRED (2026-10-23)
+
+- Latest actual generation000002: exact S02 approval consumed after fresh parent,
+  source mapping/canonical and complete preflight equality verification. Ledger
+  order S01(16),S02(14);30 appended candidate/selectable=0 records,677+30=707.
+  Operation root: `data/staging/vector-ch12-v124-S02-20261023-000001/`;
+  candidate in `candidate-generation-000002/`, exact received approval and
+  `REAL_BATCH_IMPORT_RECEIPT.json` retained in the operation root.
+  Current candidate digest/next parent:
+  `a3e5c2cdd63be212361abeeb680ec38d55919a70348134f3ae08b6e497b0f988`.
+  SQLite SHA `da3225e2befb467fc2cfe8439141ac9a6f8064640d436d8c061c4e9c9ceb21b2`;
+  manifest SHA `26308e7ddb11316c55bd5f21cec707f6bbea9cb2d18af988220d74ab3639a053`.
+- Fresh independent verifier24/24 PASS; instrumented exact approval replay0
+  writer calls;11 generation000002 files,7 parent files and original receipt
+  unchanged.3 focused multi-batch/stale-approval/failure-preservation tests PASS
+  in10.590s. No production/test changes or repeated full maintained suite.
+- S03 re-preflighted twice on verified generation000002: READY,4 detected/new,
+  duplicate/rejected/ambiguous/adaptations/issues0;707 before,711 projected.
+  Preflight SHA `fddfefb888bc7ef69ebc2206f713ac2769f6da4fb71742887681bb2455f82dfb`.
+  Its source approval/canonical unchanged; no S03 import approval or writer.
+  First attempt conservatively stopped on a concurrent synthetic-test candidate;
+  serial retry after test cleanup passed, without altering recovery checks/data.
+- Local archive `dist/backups/vector-ch12-s02-accepted-20261023-000001.zip`,
+  SHA `9b5aa509c4de53ec5caeafb72374c1563695a16d379d10175af416a9a403000e`:
+  90 explicit files, both generations/receipts and source/approval/canonical
+  evidence included;90/90 isolated-restored files byte-identical. Not off-device.
+  438 protected identities and generation000001 unchanged. FormalV1.23 remains677;
+  no releases/V1.24, promotion or scheduler edits. User AGENTS change preserved.
+- Separate read-only operational review C0/I0/M0: independent verifier twice24/24,
+  S03 preflight twice with complete saved-result equality, both generations and
+  protected bytes unchanged. Reviewer did not invoke writer/main or rerun backup.
+
+The S01 and earlier checkpoints below are retained history, not the latest parent.
 
 - S01 exact import approval received and freshly matched to unchanged source
   approvals, canonical, READY preflight and frozen V1.24 genesis. Existing writer
