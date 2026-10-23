@@ -2,6 +2,24 @@
 
 2026-10-23; Native / Inline under the approved Design/Plan and the user's whole-chapter execution adjustment. Data approvals remain separate.
 
+## Current operational checkpoint — S01 accepted, S02 awaiting import approval
+
+S01 exact user import approval bound preflight `e4a206de3c4b37d073f2f2c63bccf03811af201c02f73e48b31a76f082e1bf9c` and genesis `797ed06ca5833bac060c1603cada38a6f2aa9eb080a40d9dc892bba9a549773a`. Under existing cycle.lock, fresh recovery found no V1.24 parent/pending write. Source approval, original package hashes, canonical file closure and full saved preflight equality were rechecked before the existing atomic writer ran once.
+
+Actual generation000001 has one ledger entry, `JOY-M2-OSM-M2B12-VECTOR-20261023-001-S01`,16 appended candidate/selectable=0 records. Effective count677+16=693, not693 published records. Candidate digest `3d3ae1ffe579ae637e8c1a527fb22aa5bf3c6bd21078a43101301594ebac65b3`; SQLite SHA `c214481bbde0b7fde78754737bd5244bb8a13ea1ea80ea6030d3de7843e0158d`; manifest physical SHA `1998a91bc8fbc2ef8f7a6720a1ba7992dacfde0854db9da54b78daec3a43734e`. Receipt, artifacts, exact received approval and checks are in `data/staging/vector-ch12-v124-S01-20261023-000001/`.
+
+Fresh post-build independent verifier24/24 PASS. The receipt script initially asserted candidate-only counts on the existing UNION effective-state view; SQL correctly returned677 published plus16 candidate. Only that operational assertion was corrected, and the already-built candidate was independently verified and its receipt recovered. No second writer call or candidate rebuild. Instrumented exact approval replay made0 writer calls,7 candidate files and receipt byte-identical.7 focused first/second-generation, stale approval, no-replace and failure-cleanup tests PASS in10.537s; no production/test edits or repeated full1530 gate.
+
+S02 canonical/source approval unchanged. New parent-bound preflight ran twice with identical complete results: READY,14 detected/new,0 duplicate/rejected/ambiguous/adaptations/issues,693 before and707 projected. Parent is the new candidate digest above; preflight SHA `8389cf5357106b8f41cfa4402ade8fd43b6e88b05a0868b3b62dc16c08f4b023`.14 worked source solutions,0 missing answers,14 missing independent explanations/difficulties;2 original image files,0 missing/orphan. Full IDs/tags and evidence: `S02-APPROVAL-SUMMARY.json` and `S02-parent000001-preflight.json`. No S02 exact import approval received or writer called. S03 old genesis preflight is historical, not valid for the advanced current state.
+
+Existing local backup/restore utility archived66 explicit files and independently checked all66 restored bytes against original hashes/sizes. Archive `dist/backups/vector-ch12-s01-accepted-20261023-000001.zip`, SHA `2b9e47239481fe455c99768d4c100a925c9ab318a905d934eafdcc50daf4ded4`. Includes accepted candidate/receipt, exact approvals, all three canonical packages/mappings, raw ZIPs and formalV1.23 artifacts. This is local, not off-device backup; Git does not contain ignored data. No live rollback performed; rollback metadata is limited to the exact unpromoted staging generation and is not deletion authorization.
+
+438 protected identities unchanged, including original user AGENTS edit, formalV1.18–V1.23, raw sources and previous evidence. FormalV1.23 remains677; no releases/V1.24, promotion or scheduler changes. Whole-chapter disposition still203:34 mapped (16 now accepted,18 awaiting later import),34 held,127 later unreviewed,8 prerequisites. Not all203 are eligible or net-new. Current human gate: **USER DECISION REQUIRED — REAL BATCH IMPORT** for S02 only.
+
+Separate read-only reviewer `/root/vector_ch12_implementation_review` independently ran S01 verifier twice24/24 and S02 preflight twice, matching the complete saved result and preserving7 candidate files/canonical/438 protected bytes. **Critical0 / Important0 / Minor0**. Reviewer inspected instrumentation evidence and recovery branch but did not invoke writer/main or repeat backup restoration. No new mathematics or full-suite review claimed. Detailed scope is in the operation root's `INDEPENDENT_OPERATIONAL_REVIEW.md`.
+
+The sections below retain earlier checkpoints; their no-import/genesis wording is historical, not current authority.
+
 ## Implemented and verified
 
 - A: exact dual-package inventory/identity, explicit shared and noncontiguous spans, physical coverage, qualified image ownership, deterministic rendering, proposal and exact mapping approval verification.

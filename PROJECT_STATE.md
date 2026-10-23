@@ -50,7 +50,42 @@ Updated: 2026-10-23 (Asia/Shanghai)
 
 ## Current task
 
-### Vector chapter12 dual-package source — S01 REAL BATCH IMPORT APPROVAL REQUIRED (2026-10-23)
+### Vector chapter12 dual-package source — S01 ACCEPTED; S02 IMPORT APPROVAL REQUIRED (2026-10-23)
+
+- S01 exact import approval received and freshly matched to unchanged source
+  approvals, canonical, READY preflight and frozen V1.24 genesis. Existing writer
+  atomically created generation000001 under
+  `data/staging/vector-ch12-v124-S01-20261023-000001/candidate-generation-000001/`.
+  Actual receipt: `REAL_BATCH_IMPORT_RECEIPT.json` in that operation root.
+  Ledger: S01 only,16 candidate/selectable=0 records;677 baseline +16 =693.
+  Candidate digest/current next parent:
+  `3d3ae1ffe579ae637e8c1a527fb22aa5bf3c6bd21078a43101301594ebac65b3`.
+  SQLite SHA `c214481bbde0b7fde78754737bd5244bb8a13ea1ea80ea6030d3de7843e0158d`;
+  manifest file SHA `1998a91bc8fbc2ef8f7a6720a1ba7992dacfde0854db9da54b78daec3a43734e`.
+- Post-write independent verifier24/24 PASS; exact approval replay with writer
+  instrumented to reject any call made0 writer calls and preserved all7 artifact
+  files and original receipt bytes.7 relevant writer/parent/failure tests PASS
+  in10.537s. No production/test edits or redundant full maintained-suite run.
+  The one-off receipt SQL initially assumed the effective view was candidate-only;
+  actual DDL includes677 formal +16 candidate. Corrected only the operational
+  assertion; recovered the existing verified output without a second build.
+- S02 re-preflight on verified generation000001 is READY:14 detected/new,
+  duplicate/rejected/ambiguous/adaptations/issues0;693 before,707 projected.
+  New preflight SHA `8389cf5357106b8f41cfa4402ade8fd43b6e88b05a0868b3b62dc16c08f4b023`.
+  Source approval/canonical unchanged; no S02 import approval/writer. S03 remains
+  source-approved/canonical-ready but its old genesis preflight is not current.
+- Local backup `dist/backups/vector-ch12-s01-accepted-20261023-000001.zip`,
+  SHA `2b9e47239481fe455c99768d4c100a925c9ab318a905d934eafdcc50daf4ded4`:
+  66 explicit files including candidate, receipt, approvals, canonical, raw ZIPs
+  and formalV1.23; isolated restore66/66 byte-identical. Not off-device/Git data
+  backup.438 protected identities unchanged; formalV1.23 remains677. AGENTS
+  user edit preserved; no releases/V1.24, scheduler changes or promotion.
+- Separate read-only operational review C0/I0/M0: reviewer independently ran
+  S01 verifier twice24/24 and S02 parent-bound preflight twice, matching complete
+  saved results and confirming unchanged candidate/canonical/protected bytes.
+  Reviewer did not execute writer or repeat the local backup restore.
+
+The checkpoints below are retained historical evidence, not the current parent.
 
 - Latest checkpoint: all three exact source mapping approvals received and
   verified; actual S01/S02/S03 canonical and V1.24 preflight completed under
