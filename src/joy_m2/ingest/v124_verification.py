@@ -1219,8 +1219,6 @@ def verify_v124_candidate(
         raise PipelineError("verification request carrier is invalid")
     if not _reconstructs_exactly(config, PipelineConfig):
         raise PipelineError("config must be an exact PipelineConfig")
-    if len(request.approved_batches) != 1:
-        raise NotImplementedError("multi-batch verifier awaits verified-parent preflight GREEN")
     raw_root = request.candidate_dir
     if not isinstance(raw_root, Path):
         raise PipelineError("candidate_dir must be a Path")

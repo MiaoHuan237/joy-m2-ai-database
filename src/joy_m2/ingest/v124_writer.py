@@ -707,8 +707,6 @@ def build_v124_candidate(
         or first.preflight_result.report.parent_candidate_digest != genesis
         or first.preflight_result.effective_state.candidate_digest != genesis):
         raise ImportApprovalError("first batch must bind independently reconstructed genesis")
-    if len(batches) != 1:
-        raise NotImplementedError("multi-batch writer awaits verified-parent preflight GREEN")
     physical_images = _image_plan(batches, request.contract.image_root)
     baseline = batches[0].preflight_result.effective_state.baseline_database
     try:
