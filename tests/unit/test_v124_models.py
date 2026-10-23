@@ -3,6 +3,154 @@ import importlib
 import importlib.util
 import inspect
 import unittest
+"""Test-first contracts for the fixed V1.24 candidate boundary."""
+import unittest
+class V124ManifestTests(unittest.TestCase):
+    def snapshot(self):
+        return tuple((p.relative_to(self.root).as_posix(), p.read_bytes())
+                     for p in sorted(self.root.rglob("*")) if p.is_file())
+
+    def reject_unchanged(self):
+        before = self.snapshot()
+        with self.assertRaises(PipelineError):
+            self.load()
+        self.assertEqual(self.snapshot(), before)
+
+    def test_malformed_utf8(self):
+        self.path.write_bytes(b"\xff")
+        self.reject_unchanged()
+
+    def test_malformed_json(self):
+        self.path.write_text("{")
+        self.reject_unchanged()
+
+    def test_nonfinite_json(self):
+        original = self.path.read_text()
+        for value in ("NaN", "Infinity", "-Infinity"):
+            with self.subTest(value=value):
+                self.path.write_text(original.replace('"chapter": "Algebra"', '"chapter": ' + value))
+                # Fixture chapter need not be Algebra; replace via its actual JSON value.
+                import json
+                text = original.replace(json.dumps(self.payload["chapter"]), value, 1)
+                self.path.write_text(text)
+                self.reject_unchanged()
+
+    def test_wrong_schema(self):
+        self.payload["schema_version"] = "task13-v123-import-manifest-v1"
+        self.write()
+        self.reject_unchanged()
+
+    def test_wrong_target(self):
+        self.payload["target_release_version"] = "V1.23"
+        self.write()
+        self.reject_unchanged()
+
+    def test_nested_duplicate_keys(self):
+        self.path.write_text(self.path.read_text().replace('"relative_path":', '"sha256": "forged", "relative_path":', 1))
+        self.reject_unchanged()
+
+    def test_bool_size(self):
+        self.payload["candidate_records"][0]["size_bytes"] = True
+        self.write()
+        self.reject_unchanged()
+
+    def test_unsafe_paths(self):
+        for value in ("/tmp/escape", "../escape", "a\\b", "a/./b"):
+            with self.subTest(value=value):
+                self.payload["candidate_records"][0]["relative_path"] = value
+                self.write()
+                self.reject_unchanged()
+
+    def test_duplicate_member(self):
+        self.payload["candidate_records"].append(self.payload["candidate_records"][0].copy())
+        self.write()
+        self.reject_unchanged()
+
+    def test_missing_inventory(self):
+        (self.root / self.payload["candidate_records"][0]["relative_path"]).unlink()
+        self.reject_unchanged()
+
+    def test_bad_size(self):
+        self.payload["candidate_records"][0]["size_bytes"] += 1
+        self.write()
+        self.reject_unchanged()
+
+    def test_nested_entry_order(self):
+        entry = self.payload["candidate_records"][0]
+        entry["relative_path"] = entry.pop("relative_path")
+        self.write()
+        self.reject_unchanged()
+
+    def setUp(self):
+        import tempfile, shutil, json
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name) / "package"
+        shutil.copytree(Path(__file__).resolve().parents[2] / "tests/fixtures/task10a/v120-batch-a", self.root)
+        self.path = self.root / "import_manifest.json"
+        self.payload = json.loads(self.path.read_text())
+        self.payload["schema_version"] = "task14-v124-import-manifest-v1"
+        self.payload["target_release_version"] = "V1.24"
+        self.write()
+
+    def write(self):
+        import json
+        self.path.write_text(json.dumps(self.payload, ensure_ascii=False) + "\n", encoding="utf-8")
+
+    def load(self):
+        from joy_m2.ingest.v124_manifest import load_v124_import_manifest
+        try:
+            return load_v124_import_manifest(self.path)
+        except NotImplementedError:
+            self.fail("strict V1.24 loader behavior missing")
+
+    def test_valid_exact_manifest(self):
+        result = self.load()
+        self.assertEqual(result.target_release_version, "V1.24")
+        self.assertEqual(tuple(x.relative_path for x in result.candidate_records),
+                         tuple(x["relative_path"] for x in self.payload["candidate_records"]))
+        self.assertEqual(len(fields(result)), 18)
+
+    def test_duplicate_json_key_rejected(self):
+        self.path.write_text(self.path.read_text().replace('{"schema_version":', '{"batch_id":"forged","schema_version":', 1))
+        with self.assertRaises(PipelineError):
+            self.load()
+
+    def test_missing_extra_wrong_type_and_group_rejected(self):
+        import copy
+        original = copy.deepcopy(self.payload)
+        for mutation in ("missing", "extra", "wrong_type", "group_type", "kind", "escape", "order", "digest"):
+            with self.subTest(mutation=mutation):
+                self.payload = copy.deepcopy(original)
+                if mutation == "missing":
+                    del self.payload["batch_id"]
+                elif mutation == "extra":
+                    self.payload["unapproved"] = 1
+                elif mutation == "wrong_type":
+                    self.payload["batch_id"] = True
+                elif mutation == "group_type":
+                    self.payload["candidate_records"] = {}
+                elif mutation == "kind":
+                    self.payload["candidate_records"][0]["kind"] = "image"
+                elif mutation == "escape":
+                    self.payload["candidate_records"][0]["relative_path"] = "../outside.json"
+                elif mutation == "order":
+                    self.payload["schema_version"] = self.payload.pop("schema_version")
+                else:
+                    self.payload["candidate_records"][0]["sha256"] = "0" * 64
+                self.write()
+                with self.assertRaises(PipelineError):
+                    self.load()
+
+    def test_inventory_closure_and_symlinks_rejected(self):
+        rogue = self.root / "rogue.txt"
+        rogue.write_text("rogue")
+        with self.assertRaises(PipelineError):
+            self.load()
+        rogue.unlink()
+        rogue.symlink_to(self.path)
+        with self.assertRaises(PipelineError):
+            self.load()
 
 
 class V124ApiTests(unittest.TestCase):
@@ -26,6 +174,32 @@ class V124ApiTests(unittest.TestCase):
         self.assertEqual(tuple(inspect.signature(v124_writer_profiles._genesis_digest).parameters), ())
         self.assertEqual(package.__all__, before)
         self.assertFalse(any('v124' in name.lower() for name in package.__all__))
+
+
+class V124PrimitiveTests(unittest.TestCase):
+    def test_independent_literal_genesis_and_ddl_namespace(self):
+        import hashlib, json
+        from joy_m2.ingest import v124_writer_profiles as p
+        projection = dict(baseline_database_sha256='28e44bda233b7d6acdb96a4fecf46df4cb75a50730694e0b249e9d38d3a584cd',
+            baseline_question_count=677,
+            baseline_release_digest='84ebbd9d9f0d5fbef97f20ae98f8cdfa16c55d56eac7a826cfde3cc47fe9a2fc',
+            baseline_release_version='V1.23', candidate_count=0,
+            schema='task14-v124-genesis-v1', target_release_version='V1.24')
+        expected = hashlib.sha256((json.dumps(projection, ensure_ascii=False,
+            sort_keys=True, separators=(',', ':'), allow_nan=False) + '\n').encode()).hexdigest()
+        self.assertEqual(expected, '797ed06ca5833bac060c1603cada38a6f2aa9eb080a40d9dc892bba9a549773a')
+        try: actual = p._genesis_digest()
+        except NotImplementedError: self.fail('genesis reconstruction missing')
+        self.assertEqual(actual, expected)
+        self.assertTrue(hasattr(p, 'TASK14_SCHEMA_SQL'), 'DDL declarations missing')
+        ddl = '\n'.join(p.TASK14_SCHEMA_SQL)
+        for fragment in ('task14_v124_batch_ledger_v1', 'task14_v124_candidates_v1',
+                'task14_v124_images_v1', 'task14_v124_taxonomy_v1', 'task14_candidate_questions_v124',
+                'aggregate_order >= 678', 'formal_complete_questions_v123'):
+            self.assertIn(fragment, ddl)
+        self.assertEqual(len(p.CHECK_NAMES), 24)
+        self.assertIn('v123_preservation', p.CHECK_NAMES)
+        self.assertNotIn('v122_preservation', p.CHECK_NAMES)
 
 from dataclasses import fields, replace
 import importlib
