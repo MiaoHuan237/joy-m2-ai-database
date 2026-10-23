@@ -8,6 +8,8 @@ import tempfile
 import unittest
 import warnings
 import json
+import shutil
+import sqlite3
 import zipfile
 from unittest.mock import patch
 
@@ -70,6 +72,24 @@ class DualInventoryTests(unittest.TestCase):
             ('answers', 'images/shared.png'): b'answers'})
         self.assertEqual([p.read_bytes() for p in self.paths], before)
         self.assertEqual(set(p.name for p in self.root.iterdir()), {'textbook.zip', 'answers.zip'})
+
+    def test_archive_snapshot_read_is_bounded_even_after_stat(self):
+        original_open = Path.open
+        sizes = []
+        class ReadWitness:
+            def __init__(self, stream): self.stream = stream
+            def __enter__(self): return self
+            def __exit__(self, *args): self.stream.close()
+            def read(self, size=-1):
+                sizes.append(size)
+                return self.stream.read(size)
+        def opened(path, *args, **kwargs):
+            stream = original_open(path, *args, **kwargs)
+            return ReadWitness(stream) if path in self.paths else stream
+        with patch.object(Path, 'open', opened):
+            self.assertEqual(len(self.read()), 4)
+        self.assertTrue(sizes)
+        self.assertTrue(all(0 < size <= archive._ARCHIVE_LIMIT + 1 for size in sizes), sizes)
 
     def test_identity_changes_and_swapped_packages_rejected(self):
         self.paths.reverse()
@@ -165,6 +185,9 @@ class _ProposalCase(unittest.TestCase):
         self.root = Path(self.temp.name)
         self.config = PipelineConfig(self.root)
         self.config.staging_root.mkdir(parents=True)
+        formal = self.config.releases_root/'V1.23/Joy_M2_Complete_Question_DB_V1_23.sqlite3'
+        formal.parent.mkdir(parents=True)
+        shutil.copyfile(Path(__file__).resolve().parents[2]/'releases/V1.23'/formal.name, formal)
         self.mapping, self.members = fixture()
         self.paths = [self.root/'textbook.zip', self.root/'answers.zip']
         for role, path, declared in zip(('textbook', 'answers'), self.paths, self.mapping['packages']):
@@ -184,6 +207,17 @@ class _ProposalCase(unittest.TestCase):
 
 
 class ProposalTests(_ProposalCase):
+    def test_vocabulary_comes_from_configured_readonly_formal_database(self):
+        uris = []
+        original = sqlite3.connect
+        def witnessed(database, *args, **kwargs):
+            uris.append(database)
+            return original(database, *args, **kwargs)
+        with patch.object(profile.sqlite3, 'connect', side_effect=witnessed):
+            self.propose()
+        expected = (self.config.releases_root/'V1.23/Joy_M2_Complete_Question_DB_V1_23.sqlite3').as_uri()
+        self.assertEqual(uris, [expected + '?mode=ro'])
+
     def test_exact_files_json_hashes_and_readable_source_paths(self):
         result = self.propose()
         self.assertIsInstance(result, profile.VectorCh12Proposal)
@@ -257,8 +291,37 @@ class PublicationSafetyTests(_ProposalCase):
         self.assertFalse(self.output.exists())
         self.assertEqual(list(self.config.staging_root.iterdir()), [])
 
+    def test_cleanup_does_not_remove_replaced_private_directory(self):
+        foreign = []
+        def replaced(source, destination):
+            source.rename(source.with_name(source.name + '-moved'))
+            source.mkdir(); (source/'sentinel').write_bytes(b'foreign')
+            foreign.append(source)
+            raise OSError('private directory replaced')
+        with patch.object(profile, 'atomic_rename_no_replace', side_effect=replaced):
+            with self.assertRaises(OSError): self.propose()
+        self.assertTrue((foreign[0]/'sentinel').exists(), 'must never delete a different owner')
+        self.assertEqual((foreign[0]/'sentinel').read_bytes(), b'foreign')
+
 
 class DiagnosticTests(_ProposalCase):
+    def test_inspectable_question_errors_are_collected_before_publication(self):
+        self.mapping['questions'][0]['metadata']['tags'] = ['not-controlled']
+        self.mapping['questions'][1]['metadata']['primary_type'] = 'not-controlled'
+        self.save()
+        with self.assertRaises(MmdAdapterBlockedError) as raised: self.propose()
+        self.assertEqual(len(raised.exception.issues), 2)
+        self.assertEqual({i.proposed_question_id for i in raised.exception.issues},
+                         {q['question_id'] for q in self.mapping['questions']})
+        self.assertFalse(self.output.exists())
+
+    def test_invalid_span_structure_uses_parse_diagnostic(self):
+        span = self.mapping['questions'][0]['question_pieces'][1]['span']
+        span['start_byte'] = True
+        self.save()
+        with self.assertRaises(MmdAdapterBlockedError) as raised: self.propose()
+        self.assertEqual(raised.exception.issues[0].code, 'mmd_parse_failed')
+
     def test_frozen_codes_for_content_selection_and_count(self):
         from copy import deepcopy
         original = deepcopy(self.mapping)

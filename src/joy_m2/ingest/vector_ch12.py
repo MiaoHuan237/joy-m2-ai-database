@@ -1,7 +1,7 @@
 """Explicit chapter 12 dual-package source profile; no real writer."""
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from contextlib import ExitStack, closing
 import hashlib
 import io
@@ -10,6 +10,7 @@ from pathlib import Path, PurePosixPath
 import re
 import math
 import sqlite3
+import stat
 import shutil
 import tempfile
 from typing import TYPE_CHECKING
@@ -17,7 +18,8 @@ import zipfile
 import zlib
 
 from joy_m2.config import PipelineConfig
-from joy_m2.errors import PipelineError, ConfigurationError, OutputConflictError
+from joy_m2.errors import (PipelineError, ConfigurationError, OutputConflictError,
+                           InputMissingError, InputFormatError)
 from joy_m2.ingest.source_mapping import SourceMappingApproval
 from joy_m2.ingest import archive
 from joy_m2.ingest.adapter_models import MmdAdapterBlockedError
@@ -65,7 +67,7 @@ def propose_vector_ch12_mapping(textbook_path: Path, answers_path: Path,
     mapping = _decode_object(raw)
     _validate_shape(mapping)
     members = _read_packages(textbook_path, answers_path, mapping)
-    _validate_mapping(mapping, members)
+    _validate_mapping(mapping, members, config)
     _validate_images(mapping, members)
     mapping_bytes = _canonical(mapping)
     binding = _sha(_canonical({'profile': mapping['profile'], 'packages': mapping['packages']}))
@@ -112,11 +114,7 @@ def _read_packages(textbook_path: Path, answers_path: Path, mapping: dict
     with ExitStack() as stack:
         for role, path, declared in zip(('textbook', 'answers'),
                                         (textbook_path, answers_path), mapping['packages']):
-            if path.is_file() and path.stat().st_size > archive._ARCHIVE_LIMIT:
-                raise MmdAdapterBlockedError((archive._archive_issue('archive_size'),))
-            raw = _read_input(path, role)
-            if len(raw) > archive._ARCHIVE_LIMIT:
-                raise MmdAdapterBlockedError((archive._archive_issue('archive_size'),))
+            raw = _read_archive_snapshot(path, role)
             if (declared['role'] != role or len(raw) != declared['zip_size_bytes']
                     or hashlib.sha256(raw).hexdigest() != declared['zip_sha256']):
                 raise MmdAdapterBlockedError((archive._issue('source_contract_mismatch',
@@ -219,7 +217,8 @@ def adapt_vector_ch12_from_mapping(textbook_path: Path, answers_path: Path,
     raise NotImplementedError("chapter12 canonical bridge not implemented")
 
 
-def _validate_mapping(mapping: dict, members: dict[tuple[str, str], bytes]) -> None:
+def _validate_mapping(mapping: dict, members: dict[tuple[str, str], bytes],
+                      config: PipelineConfig | None = None) -> None:
     _keys(mapping, 'schema_version profile batch_id source_id answer_source_id chapter packages '
           'shared_conditions questions unit_dispositions unselected_spans unselected_image_members')
     for field, expected in [('schema_version', 'vector-ch12-dual-source-mapping-v1'),
@@ -276,71 +275,79 @@ def _validate_mapping(mapping: dict, members: dict[tuple[str, str], bytes]) -> N
     ids = []
     occurrences = []
     bound_images = set()
-    tags = _controlled_tags()
+    tags = _controlled_tags(config)
+    question_issues = []
     for order, q in enumerate(mapping['questions'], 1):
-        _keys(q, 'semantic_order question_id source_section source_question_number question_pieces '
-              'solution_spans explanation_spans image_bindings answer_evidence metadata')
-        if type(q['semantic_order']) is not int or q['semantic_order'] != order:
-            _fail('semantic_order', 'noncontiguous')
-        for field in ('question_id', 'source_section', 'source_question_number'):
-            _string(q[field], field)
-        if not re.fullmatch(r'[1-9][0-9]*', q['source_question_number']):
-            _fail('source_question_number', 'not_complete_number')
-        expected_id = f"{mapping['source_id']}-{q['source_section']}-Q{int(q['source_question_number']):02}"
-        if q['question_id'] != expected_id or q['question_id'] in ids:
-            _fail('question_id', 'unstable_or_duplicate_identity', 'selection_not_unique')
-        ids.append(q['question_id'])
-        for field in ('question_pieces', 'solution_spans', 'explanation_spans', 'image_bindings'):
-            if type(q[field]) is not list:
-                _fail(field, 'expected_array')
-        direct = []
-        for piece in q['question_pieces']:
-            if type(piece) is not dict:
-                _fail('question_pieces', 'expected_object')
-            if piece.get('kind') == 'shared':
-                _keys(piece, 'kind condition_id')
-                cid = piece['condition_id']
-                if type(cid) is not str or cid not in conditions or q['question_id'] in used[cid]:
-                    _fail('question_pieces', 'unknown_or_repeated_shared')
-                used[cid].append(q['question_id'])
-            elif piece.get('kind') == 'source':
-                _keys(piece, 'kind span'); span = piece['span']; own(span)
-                if span['package_role'] != 'textbook':
-                    _fail('question_pieces', 'question_from_answer')
-                direct.append(span)
-            else:
-                _fail('question_pieces', 'unknown_piece_kind')
-        if not direct:
-            _fail('question_pieces', 'missing_ask')
-        occurrences.append(direct[0]['start_byte'])
-        for field in ('solution_spans', 'explanation_spans'):
-            for span in q[field]:
-                own(span)
-        expanded = _expand_question_pieces(q['question_pieces'], mapping['shared_conditions'])
-        text = _render_spans([p['span'] for p in expanded], members)
-        _render_spans(q['solution_spans'], members)
-        _render_spans(q['explanation_spans'], members)
-        _validate_answer_evidence(q, text)
-        metadata = q['metadata']
-        _keys(metadata, 'primary_type tags difficulty_level marks question_language answer_language')
-        if metadata['primary_type'] != '向量':
-            _fail('metadata', 'controlled_primary_type')
-        _strings(metadata['tags'], 'tags')
-        if not set(metadata['tags']) <= tags:
-            _fail('tags', 'unknown_controlled_tag')
-        if metadata['difficulty_level'] is not None:
-            _integer(metadata['difficulty_level'], 1, 5)
-        if metadata['marks'] is not None:
-            value = metadata['marks']
-            if type(value) not in (int, float) or not math.isfinite(value) or value <= 0:
-                _fail('marks', 'invalid_marks')
-        for field in ('question_language', 'answer_language'):
-            _string(metadata[field], field)
-        for binding in q['image_bindings']:
-            # Exact token ownership is validated by the image phase.
-            if type(binding) is not dict or type(binding.get('image_package_role')) is not str or type(binding.get('image_member')) is not str:
-                _fail('image_bindings', 'invalid_binding', 'image_binding_invalid')
-            bound_images.add((binding['image_package_role'], binding['image_member']))
+        try:
+            _keys(q, 'semantic_order question_id source_section source_question_number question_pieces '
+                  'solution_spans explanation_spans image_bindings answer_evidence metadata')
+            if type(q['semantic_order']) is not int or q['semantic_order'] != order:
+                _fail('semantic_order', 'noncontiguous')
+            for field in ('question_id', 'source_section', 'source_question_number'):
+                _string(q[field], field)
+            if not re.fullmatch(r'[1-9][0-9]*', q['source_question_number']):
+                _fail('source_question_number', 'not_complete_number')
+            expected_id = f"{mapping['source_id']}-{q['source_section']}-Q{int(q['source_question_number']):02}"
+            if q['question_id'] != expected_id or q['question_id'] in ids:
+                _fail('question_id', 'unstable_or_duplicate_identity', 'selection_not_unique')
+            ids.append(q['question_id'])
+            for field in ('question_pieces', 'solution_spans', 'explanation_spans', 'image_bindings'):
+                if type(q[field]) is not list:
+                    _fail(field, 'expected_array')
+            direct = []
+            for piece in q['question_pieces']:
+                if type(piece) is not dict:
+                    _fail('question_pieces', 'expected_object')
+                if piece.get('kind') == 'shared':
+                    _keys(piece, 'kind condition_id')
+                    cid = piece['condition_id']
+                    if type(cid) is not str or cid not in conditions or q['question_id'] in used[cid]:
+                        _fail('question_pieces', 'unknown_or_repeated_shared')
+                    used[cid].append(q['question_id'])
+                elif piece.get('kind') == 'source':
+                    _keys(piece, 'kind span'); span = piece['span']; own(span)
+                    if span['package_role'] != 'textbook':
+                        _fail('question_pieces', 'question_from_answer')
+                    direct.append(span)
+                else:
+                    _fail('question_pieces', 'unknown_piece_kind')
+            if not direct:
+                _fail('question_pieces', 'missing_ask')
+            occurrences.append(direct[0]['start_byte'])
+            for field in ('solution_spans', 'explanation_spans'):
+                for span in q[field]:
+                    own(span)
+            expanded = _expand_question_pieces(q['question_pieces'], mapping['shared_conditions'])
+            text = _render_spans([p['span'] for p in expanded], members)
+            _render_spans(q['solution_spans'], members)
+            _render_spans(q['explanation_spans'], members)
+            _validate_answer_evidence(q, text)
+            metadata = q['metadata']
+            _keys(metadata, 'primary_type tags difficulty_level marks question_language answer_language')
+            if metadata['primary_type'] != '向量':
+                _fail('metadata', 'controlled_primary_type')
+            _strings(metadata['tags'], 'tags')
+            if not set(metadata['tags']) <= tags:
+                _fail('tags', 'unknown_controlled_tag')
+            if metadata['difficulty_level'] is not None:
+                _integer(metadata['difficulty_level'], 1, 5)
+            if metadata['marks'] is not None:
+                value = metadata['marks']
+                if type(value) not in (int, float) or not math.isfinite(value) or value <= 0:
+                    _fail('marks', 'invalid_marks')
+            for field in ('question_language', 'answer_language'):
+                _string(metadata[field], field)
+            for binding in q['image_bindings']:
+                # Exact token ownership is validated by the image phase.
+                if type(binding) is not dict or type(binding.get('image_package_role')) is not str or type(binding.get('image_member')) is not str:
+                    _fail('image_bindings', 'invalid_binding', 'image_binding_invalid')
+                bound_images.add((binding['image_package_role'], binding['image_member']))
+        except MmdAdapterBlockedError as exc:
+            qid = q.get('question_id') if type(q) is dict else None
+            qid = qid if type(qid) is str and qid else None
+            question_issues.extend(replace(issue, proposed_question_id=qid) for issue in exc.issues)
+    if question_issues:
+        raise MmdAdapterBlockedError(tuple(question_issues))
     if occurrences != sorted(set(occurrences)):
         _fail('questions', 'source_occurrence_order')
     for cid, condition in conditions.items():
@@ -552,9 +559,24 @@ def _validate_shape(mapping):
             _fail('packages', 'selected_format', 'unsupported_source_format')
 
 
+def _read_archive_snapshot(path, role):
+    if not path.exists():
+        raise InputMissingError(f'{role} source missing')
+    if not path.is_file():
+        raise InputFormatError(f'{role} source is not a regular file')
+    try:
+        with path.open('rb') as stream:
+            raw = stream.read(archive._ARCHIVE_LIMIT + 1)
+    except OSError as exc:
+        raise InputFormatError(f'{role} source cannot be read') from exc
+    if len(raw) > archive._ARCHIVE_LIMIT:
+        raise MmdAdapterBlockedError((archive._archive_issue('archive_size'),))
+    return raw
+
+
 def _recheck_inputs(inputs, draft_raw, mapping):
     for path, p in zip(inputs[:2], mapping['packages']):
-        raw = _read_input(path, p['role'])
+        raw = _read_archive_snapshot(path, p['role'])
         if len(raw) != p['zip_size_bytes'] or _sha(raw) != p['zip_sha256']:
             _fail('packages', 'input_changed_before_publication')
     if _read_input(inputs[2], 'mapping') != draft_raw:
@@ -565,6 +587,7 @@ def _publish_files(output, config, files, recheck):
     _preflight_destination(output, config)
     output.parent.mkdir(parents=True, exist_ok=True)
     temporary = Path(tempfile.mkdtemp(prefix=f'.{output.name}-', dir=output.parent))
+    owned = temporary.stat()
     try:
         for name, content in files.items():
             target = temporary/name
@@ -577,8 +600,17 @@ def _publish_files(output, config, files, recheck):
         except FileExistsError as exc:
             raise OutputConflictError('output path already exists') from exc
     finally:
-        if temporary.exists():
-            shutil.rmtree(temporary)
+        # A concurrent actor may rename our directory and replace its old path.
+        # Remove only the inode allocated by this invocation, never that replacement.
+        for candidate in output.parent.iterdir():
+            if candidate == output:
+                continue
+            try:
+                current = candidate.lstat()
+                if (current.st_dev, current.st_ino) == (owned.st_dev, owned.st_ino) and stat.S_ISDIR(current.st_mode):
+                    shutil.rmtree(candidate)
+            except FileNotFoundError:
+                pass
 
 
 def _image_tokens(raw: bytes) -> list[tuple[int, int, str]]:
@@ -626,12 +658,17 @@ def _hash(value):
 
 
 def _span_bytes(span, members):
-    _keys(span, 'package_role member start_byte end_byte raw_sha256')
-    _string(span['package_role'], 'package_role'); _string(span['member'], 'member')
+    if type(span) is not dict or set(span) != set('package_role member start_byte end_byte raw_sha256'.split()):
+        _fail('span', 'exact_keys', 'mmd_parse_failed')
+    if (type(span['package_role']) is not str or type(span['member']) is not str
+            or not span['package_role'] or not span['member']):
+        _fail('span', 'invalid_locator', 'mmd_parse_failed')
     key = (span['package_role'], span['member'])
     if key not in members:
         _fail('span', 'unknown_member')
-    _integer(span['start_byte'], 0); _integer(span['end_byte'], span['start_byte'] + 1, len(members[key]))
+    if (type(span['start_byte']) is not int or type(span['end_byte']) is not int
+            or not 0 <= span['start_byte'] < span['end_byte'] <= len(members[key])):
+        _fail('span', 'invalid_range_or_type', 'mmd_parse_failed')
     _hash(span['raw_sha256'])
     raw = members[key][span['start_byte']:span['end_byte']]
     if _sha(raw) != span['raw_sha256']:
@@ -643,9 +680,11 @@ def _span_bytes(span, members):
     return raw
 
 
-def _controlled_tags():
+def _controlled_tags(config=None):
     # Read the existing controlled vocabulary, not question-body tag guesses.
-    path = Path(__file__).resolve().parents[3]/'releases/V1.23/Joy_M2_Complete_Question_DB_V1_23.sqlite3'
+    if config is None:
+        config = PipelineConfig(Path(__file__).resolve().parents[3])
+    path = config.releases_root/'V1.23/Joy_M2_Complete_Question_DB_V1_23.sqlite3'
     with closing(sqlite3.connect(path.as_uri() + '?mode=ro', uri=True)) as connection:
         return frozenset(row[0] for row in connection.execute(
             "SELECT value FROM complete_question_taxonomy_v2 WHERE taxonomy_kind='tag'"))
