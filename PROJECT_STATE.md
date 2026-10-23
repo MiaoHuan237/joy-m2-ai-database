@@ -50,7 +50,7 @@ Updated: 2026-10-23 (Asia/Shanghai)
 
 ## Current task
 
-### Vector chapter12 dual-package source — ENGINEERING GREEN / SOURCE PREPARATION (2026-10-23)
+### Vector chapter12 dual-package source — SOURCE MAPPING APPROVAL REQUIRED (2026-10-23)
 
 - User authorized Native / Inline engineering execution after local verification
   of the committed Plan and independent written review. Written Design approved
@@ -100,6 +100,19 @@ Updated: 2026-10-23 (Asia/Shanghai)
   are preparation counts, not approved/net-new records. No real canonical,
   preflight or candidate created. Formal V1.23 remains677 with the
   recorded identities; original packages, old review and user AGENTS unchanged.
+- Actual proposal API published three unapproved roots under
+  data/staging/vector-ch12-mapping/proposal-S01-000001/ through S03-000001/.
+  S01:16, SHA5885c21a7cb9db0274772e5e43d909c17f075bf5217608df3b4da35b545ab347;
+  S02:14, SHAa479e2232aeeb7f9cfdd0c6bbf0e07b9c430aced480a924495dea72b5d32fdf8;
+  S03:4, SHA18d7ebb380338cecafac23574b42b05fe7eb8f6182adb709c1cf6f9e17bac1e2.
+  These are mapping digests, not preflight/import authority. Exact source
+  approvals received0. Independent selected-content review C0/I0/openMinor0;
+  proposal hashes/member identities/203 destinations/438 protected files and
+  read-only formal677 unique IDs checked PASS. Consolidated review is
+  data/staging/vector-ch12-mapping/preparation-000001/REVIEW_SUMMARY.md.
+  Three scoped source approvals are required before real canonical/preflight;
+  real candidate writes remain0. Engineering ordinary push through14d517c
+  succeeded; ignored real proposals are not included in Git backup.
 - Prior separate read-only Design/source review: Critical0/Important0/openMinor0.
   One scope-label omission fixed in new review evidence only. That Design
   checkpoint's scoped checks:438 protected files unchanged,16 records preserved,203 IDs/
