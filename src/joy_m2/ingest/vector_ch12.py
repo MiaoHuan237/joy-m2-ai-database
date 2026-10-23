@@ -407,6 +407,59 @@ def _check_boundaries(raw: bytes, start: int, end: int) -> None:
         _fail('span', 'cut_inside_token_or_formula', 'mmd_parse_failed')
 
 
+def _validate_images(mapping: dict, members: dict[tuple[str, str], bytes]) -> None:
+    for q in mapping['questions']:
+        content = {'question': [p['span'] for p in _expand_question_pieces(
+            q['question_pieces'], mapping['shared_conditions'])],
+            'solution': q['solution_spans'], 'explanation': q['explanation_spans']}
+        expected = []
+        for role, spans in content.items():
+            for span in spans:
+                raw = _span_bytes(span, members)
+                for start, end, target in _image_tokens(raw):
+                    expected.append((role, span['package_role'], span['member'],
+                                     start + span['start_byte'], end + span['start_byte'], target))
+        actual = []
+        for order, b in enumerate(q['image_bindings'], 1):
+            _keys(b, 'semantic_order content_role token_span raw_target image_package_role image_member '
+                  'image_sha256 canonical_path')
+            if type(b['semantic_order']) is not int or b['semantic_order'] != order:
+                _fail('image_bindings', 'semantic_order', 'image_binding_invalid')
+            for field in ('content_role', 'raw_target', 'image_package_role', 'image_member', 'canonical_path'):
+                _string(b[field], field)
+            token = b['token_span']; raw = _span_bytes(token, members)
+            parsed = _image_tokens(raw)
+            if parsed != [(0, len(raw), b['raw_target'])]:
+                _fail('image_bindings', 'token_identity', 'image_binding_invalid')
+            actual.append((b['content_role'], token['package_role'], token['member'],
+                           token['start_byte'], token['end_byte'], b['raw_target']))
+            target = b['raw_target'][2:] if b['raw_target'].startswith('./') else b['raw_target']
+            # No URL, absolute path, traversal, Unicode alias or cross-role fallback.
+            name, reason = archive._safe_member_name(target, directory=False)
+            if reason or name != target or ':' in target or PurePosixPath(target).suffix not in archive._IMAGE_SUFFIXES:
+                _fail('image_bindings', 'unsafe_target', 'image_binding_invalid')
+            resolved = (PurePosixPath(token['member']).parent / target).as_posix()
+            key = (token['package_role'], resolved)
+            if (b['image_package_role'] != key[0] or b['image_member'] != key[1]
+                    or key not in members or _sha(members[key]) != b['image_sha256']
+                    or b['canonical_path'] != f'images/{key[0]}/{key[1]}'):
+                _fail('image_bindings', 'binding_identity', 'image_binding_invalid')
+        if actual != expected or len(set(actual)) != len(actual):
+            _fail('image_bindings', 'token_ownership_or_order', 'image_binding_invalid')
+
+
+def _image_projection(question: dict) -> tuple[list[str], list[str]]:
+    pairs = list(dict.fromkeys((b['canonical_path'], b['content_role'])
+                              for b in question['image_bindings']))
+    return [p for p, _ in pairs], [r for _, r in pairs]
+
+
+def _image_tokens(raw: bytes) -> list[tuple[int, int, str]]:
+    pattern = rb'!\[[^\]\r\n]*\]\(([^\r\n]*?)\)|\\includegraphics(?:\[[^\]\r\n]*\])?\{([^}\r\n]*)\}'
+    return [(m.start(), m.end(), (m.group(1) if m.group(1) is not None else m.group(2)).decode('utf-8'))
+            for m in re.finditer(pattern, raw)]
+
+
 def _fail(field, reason, code='source_contract_mismatch'):
     raise MmdAdapterBlockedError((archive._issue(code, field, {'reason': reason}),))
 

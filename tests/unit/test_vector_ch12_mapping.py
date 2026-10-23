@@ -198,3 +198,64 @@ class RenderingTests(unittest.TestCase):
         raw = br'\end{itemize} $\frac{a}{b}$ \item[(a)] Find $x$.'
         self.assertEqual(profile._render_spans([self.span(raw)],
             {('textbook', 'source.mmd'): raw}).encode(), raw)
+
+
+class ImageTests(unittest.TestCase):
+    def setUp(self):
+        self.mapping, self.members = fixture()
+        token = b'![](./images/shared.png)'
+        self.members = {('textbook', 'source.mmd'): token + b'\n' + token + b'\n' + token,
+                        ('answers', 'source.mmd'): token,
+                        ('textbook', 'images/shared.png'): b'picture T',
+                        ('answers', 'images/shared.png'): b'picture A'}
+        self.mapping['shared_conditions'] = []
+        self.mapping['questions'] = self.mapping['questions'][:1]
+        q = self.mapping['questions'][0]
+        def span(role, start, end):
+            return dict(package_role=role, member='source.mmd', start_byte=start, end_byte=end,
+                raw_sha256=hashlib.sha256(self.members[(role, 'source.mmd')][start:end]).hexdigest())
+        n = len(token)
+        q['question_pieces'] = [dict(kind='source', span=span('textbook', 0, 2*n+1))]
+        q['solution_spans'] = [span('textbook', 2*n+2, 3*n+2), span('answers', 0, n)]
+        q['image_bindings'] = []
+        for i, (role, start, kind) in enumerate([('textbook', 0, 'question'),
+                ('textbook', n+1, 'question'), ('textbook', 2*n+2, 'solution'),
+                ('answers', 0, 'solution')], 1):
+            q['image_bindings'].append(dict(semantic_order=i, content_role=kind,
+                token_span=span(role, start, start+n), raw_target='./images/shared.png',
+                image_package_role=role, image_member='images/shared.png',
+                image_sha256=hashlib.sha256(self.members[(role, 'images/shared.png')]).hexdigest(),
+                canonical_path=f'images/{role}/images/shared.png'))
+
+    def test_four_tokens_two_files_three_content_pairs(self):
+        self.assertIsNone(profile._validate_images(self.mapping, self.members))
+        q = self.mapping['questions'][0]
+        paths, roles = profile._image_projection(q)
+        self.assertEqual(paths, ['images/textbook/images/shared.png',
+                                'images/textbook/images/shared.png', 'images/answers/images/shared.png'])
+        self.assertEqual(roles, ['question', 'solution', 'solution'])
+        self.assertEqual(len(q['image_bindings']), 4)
+        self.assertEqual(len(set(paths)), 2)
+
+    def test_bad_target_role_hash_namespace_and_ownership(self):
+        for field, value in [('raw_target', './images/wrong.png'), ('content_role', 'explanation'),
+                ('image_package_role', 'answers'), ('image_member', '../shared.png'),
+                ('image_sha256', '0'*64), ('canonical_path', 'images/shared.png'),
+                ('semantic_order', True)]:
+            original = copy.deepcopy(self.mapping)
+            self.mapping['questions'][0]['image_bindings'][0][field] = value
+            with self.subTest(field=field), self.assertRaises(MmdAdapterBlockedError):
+                profile._validate_images(self.mapping, self.members)
+            self.mapping = original
+
+    def test_missing_or_unbound_token_and_duplicate_binding(self):
+        for mode in ['missing', 'unbound', 'duplicate', 'outside']:
+            original = copy.deepcopy(self.mapping); members = dict(self.members)
+            bindings = self.mapping['questions'][0]['image_bindings']
+            if mode == 'missing': self.members.pop(('textbook', 'images/shared.png'))
+            elif mode == 'unbound': bindings.pop()
+            elif mode == 'duplicate': bindings.append(copy.deepcopy(bindings[0]))
+            else: self.mapping['questions'][0]['solution_spans'].pop()
+            with self.subTest(mode=mode), self.assertRaises(MmdAdapterBlockedError):
+                profile._validate_images(self.mapping, self.members)
+            self.mapping, self.members = original, members
