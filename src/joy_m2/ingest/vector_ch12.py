@@ -5,20 +5,24 @@ from dataclasses import dataclass
 from contextlib import ExitStack, closing
 import hashlib
 import io
+import json
 from pathlib import Path, PurePosixPath
 import re
 import math
 import sqlite3
+import shutil
+import tempfile
 from typing import TYPE_CHECKING
 import zipfile
 import zlib
 
 from joy_m2.config import PipelineConfig
-from joy_m2.errors import PipelineError
+from joy_m2.errors import PipelineError, ConfigurationError, OutputConflictError
 from joy_m2.ingest.source_mapping import SourceMappingApproval
 from joy_m2.ingest import archive
 from joy_m2.ingest.adapter_models import MmdAdapterBlockedError
-from joy_m2.ingest.source_mapping import _read_input
+from joy_m2.ingest.source_mapping import _read_input, _decode_object, _preflight_destination
+from joy_m2.ingest.writer_profiles import atomic_rename_no_replace
 
 if TYPE_CHECKING:
     from joy_m2.ingest.v124_models import V124AdaptedImportPackage
@@ -55,7 +59,43 @@ class VectorCh12Proposal:
 def propose_vector_ch12_mapping(textbook_path: Path, answers_path: Path,
                                draft_path: Path, proposal_dir: Path,
                                config: PipelineConfig) -> VectorCh12Proposal:
-    raise NotImplementedError("chapter12 proposal not implemented")
+    inputs = (textbook_path, answers_path, draft_path)
+    _check_arguments(inputs, proposal_dir, config)
+    raw = _read_input(draft_path, 'source mapping draft')
+    mapping = _decode_object(raw)
+    _validate_shape(mapping)
+    members = _read_packages(textbook_path, answers_path, mapping)
+    _validate_mapping(mapping, members)
+    _validate_images(mapping, members)
+    mapping_bytes = _canonical(mapping)
+    binding = _sha(_canonical({'profile': mapping['profile'], 'packages': mapping['packages']}))
+    digest = _sha(mapping_bytes)
+    lines = ['# Vector chapter12 source mapping review', '', 'UNAPPROVED — source mapping approval required.',
+             f"Batch: {mapping['batch_id']}", f"Source: {mapping['source_id']}",
+             f'Mapping SHA256: {digest}', f'Input binding SHA256: {binding}',
+             f'Textbook: {textbook_path.resolve()}', f'Answers: {answers_path.resolve()}',
+             f"Complete mapped units: {len(mapping['questions'])}",
+             'This count is not an authoritative net-new classification.', '']
+    for q in mapping['questions']:
+        pieces = _expand_question_pieces(q['question_pieces'], mapping['shared_conditions'])
+        lines += [f"## {q['semantic_order']}. {q['question_id']}",
+                  f"Original: {q['source_section']} / {q['source_question_number']}",
+                  'Answer coverage: ' + _canonical(q['answer_evidence']).decode(),
+                  'Metadata: ' + _canonical(q['metadata']).decode(), '', '### Source question',
+                  _render_spans([p['span'] for p in pieces], members), '', '### Source answer',
+                  _render_spans(q['solution_spans'], members), '', '### Independent explanation',
+                  _render_spans(q['explanation_spans'], members) or 'MISSING — no independent source evidence',
+                  '', '### Image evidence', _canonical(q['image_bindings']).decode(), '']
+    lines += ['## Preserved unit dispositions',
+              *[f"{r['question_id']} — {r['disposition']}: {r['reason']}" for r in mapping['unit_dispositions']],
+              '', 'Approval required (not received):',
+              f"USER APPROVED SOURCE MAPPING {mapping['source_id']} {digest}", '']
+    files = {'source_mapping.json': mapping_bytes, 'SOURCE_MAPPING_REVIEW.md': '\n'.join(lines).encode('utf-8')}
+    def recheck():
+        _recheck_inputs(inputs, raw, mapping)
+    _publish_files(proposal_dir, config, files, recheck)
+    return VectorCh12Proposal(proposal_dir, proposal_dir/'source_mapping.json',
+        proposal_dir/'SOURCE_MAPPING_REVIEW.md', mapping['source_id'], binding, digest, len(mapping['questions']))
 
 
 def _read_packages(textbook_path: Path, answers_path: Path, mapping: dict
@@ -248,7 +288,7 @@ def _validate_mapping(mapping: dict, members: dict[tuple[str, str], bytes]) -> N
             _fail('source_question_number', 'not_complete_number')
         expected_id = f"{mapping['source_id']}-{q['source_section']}-Q{int(q['source_question_number']):02}"
         if q['question_id'] != expected_id or q['question_id'] in ids:
-            _fail('question_id', 'unstable_or_duplicate_identity')
+            _fail('question_id', 'unstable_or_duplicate_identity', 'selection_not_unique')
         ids.append(q['question_id'])
         for field in ('question_pieces', 'solution_spans', 'explanation_spans', 'image_bindings'):
             if type(q[field]) is not list:
@@ -321,7 +361,7 @@ def _validate_mapping(mapping: dict, members: dict[tuple[str, str], bytes]) -> N
         if row['disposition'] == 'proposed_selection':
             selected_ids.append(row['question_id'])
     if selected_ids != ids:
-        _fail('unit_dispositions', 'selection_or_order_mismatch')
+        _fail('unit_dispositions', 'selection_or_order_mismatch', 'candidate_count_mismatch')
     for item in mapping['unselected_spans']:
         _keys(item, 'span reason'); _string(item['reason'], 'reason'); own(item['span'])
     for key, intervals in owners.items():
@@ -454,6 +494,93 @@ def _image_projection(question: dict) -> tuple[list[str], list[str]]:
     return [p for p, _ in pairs], [r for _, r in pairs]
 
 
+def _validate_approval(mapping: dict, approval: SourceMappingApproval) -> None:
+    if type(approval) is not SourceMappingApproval:
+        raise TypeError('approval must be an exact SourceMappingApproval')
+    digest = _sha(_canonical(mapping))
+    if (approval.source_id != mapping['source_id'] or approval.mapping_sha256 != digest
+            or approval.approval_text != f"USER APPROVED SOURCE MAPPING {mapping['source_id']} {digest}"):
+        _fail('approval', 'exact_source_mapping_identity')
+
+
+def _canonical(value) -> bytes:
+    return json.dumps(value, ensure_ascii=False, sort_keys=True,
+                      separators=(',', ':'), allow_nan=False).encode('utf-8')
+
+
+def _check_arguments(inputs, output, config):
+    if any(not isinstance(path, Path) for path in (*inputs, output)):
+        raise TypeError('all input/output paths must be pathlib.Path')
+    if type(config) is not PipelineConfig:
+        raise TypeError('config must be an exact PipelineConfig')
+    _preflight_destination(output, config)
+    target = output.resolve()
+    for path in inputs:
+        source = path.resolve()
+        if source == target or source.is_relative_to(target) or target.is_relative_to(source):
+            raise ConfigurationError('output overlaps input evidence')
+        if path.name in ('source_mapping.json', 'SOURCE_MAPPING_REVIEW.md') and target.is_relative_to(source.parent):
+            raise ConfigurationError('output overlaps proposal evidence root')
+
+
+def _validate_shape(mapping):
+    # Fail schema/identity declarations before touching either archive.
+    _keys(mapping, 'schema_version profile batch_id source_id answer_source_id chapter packages '
+          'shared_conditions questions unit_dispositions unselected_spans unselected_image_members')
+    for field, expected in [('schema_version', 'vector-ch12-dual-source-mapping-v1'),
+            ('profile', 'OSM-M2B12-C-E'), ('source_id', 'OSM-M2B12-C'),
+            ('answer_source_id', 'OSM-M2B12-E-ANSWERS'), ('chapter', 12)]:
+        if type(mapping[field]) is not type(expected) or mapping[field] != expected:
+            _fail(field, 'profile_identity')
+    _string(mapping['batch_id'], 'batch_id')
+    for field in ('packages', 'shared_conditions', 'questions', 'unit_dispositions',
+                  'unselected_spans', 'unselected_image_members'):
+        if type(mapping[field]) is not list:
+            _fail(field, 'expected_array')
+    if len(mapping['packages']) != 2:
+        _fail('packages', 'two_roles_required')
+    for role, p in zip(('textbook', 'answers'), mapping['packages']):
+        _keys(p, 'role zip_sha256 zip_size_bytes selected_member member_sha256 member_size_bytes')
+        if p['role'] != role: _fail('packages', 'role_order')
+        _hash(p['zip_sha256']); _hash(p['member_sha256'])
+        _integer(p['zip_size_bytes'], 1); _integer(p['member_size_bytes'], 1)
+        _string(p['selected_member'], 'selected_member')
+        name, reason = archive._safe_member_name(p['selected_member'], directory=False)
+        if reason or name != p['selected_member'] or archive._is_allowed_metadata(name):
+            _fail('packages', 'selected_member_invalid')
+        if not name.endswith('.mmd'):
+            _fail('packages', 'selected_format', 'unsupported_source_format')
+
+
+def _recheck_inputs(inputs, draft_raw, mapping):
+    for path, p in zip(inputs[:2], mapping['packages']):
+        raw = _read_input(path, p['role'])
+        if len(raw) != p['zip_size_bytes'] or _sha(raw) != p['zip_sha256']:
+            _fail('packages', 'input_changed_before_publication')
+    if _read_input(inputs[2], 'mapping') != draft_raw:
+        _fail('mapping', 'input_changed_before_publication')
+
+
+def _publish_files(output, config, files, recheck):
+    _preflight_destination(output, config)
+    output.parent.mkdir(parents=True, exist_ok=True)
+    temporary = Path(tempfile.mkdtemp(prefix=f'.{output.name}-', dir=output.parent))
+    try:
+        for name, content in files.items():
+            target = temporary/name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            target.write_bytes(content)
+        recheck()
+        _preflight_destination(output, config)
+        try:
+            atomic_rename_no_replace(temporary, output)
+        except FileExistsError as exc:
+            raise OutputConflictError('output path already exists') from exc
+    finally:
+        if temporary.exists():
+            shutil.rmtree(temporary)
+
+
 def _image_tokens(raw: bytes) -> list[tuple[int, int, str]]:
     pattern = rb'!\[[^\]\r\n]*\]\(([^\r\n]*?)\)|\\includegraphics(?:\[[^\]\r\n]*\])?\{([^}\r\n]*)\}'
     return [(m.start(), m.end(), (m.group(1) if m.group(1) is not None else m.group(2)).decode('utf-8'))
@@ -461,6 +588,8 @@ def _image_tokens(raw: bytes) -> list[tuple[int, int, str]]:
 
 
 def _fail(field, reason, code='source_contract_mismatch'):
+    if code == 'source_contract_mismatch' and field in ('shared_conditions', 'question_pieces', 'coverage', 'answer_evidence'):
+        code = 'mmd_parse_failed'
     raise MmdAdapterBlockedError((archive._issue(code, field, {'reason': reason}),))
 
 

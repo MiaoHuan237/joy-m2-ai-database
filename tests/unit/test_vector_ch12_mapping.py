@@ -8,6 +8,8 @@ from joy_m2.ingest.adapter_models import MmdAdapterBlockedError
 from tests.fixtures.vector_ch12.mapping_fixture import fixture
 import copy
 import hashlib
+import json
+from joy_m2.ingest.source_mapping import SourceMappingApproval
 
 
 class CarrierTests(unittest.TestCase):
@@ -259,3 +261,29 @@ class ImageTests(unittest.TestCase):
             with self.subTest(mode=mode), self.assertRaises(MmdAdapterBlockedError):
                 profile._validate_images(self.mapping, self.members)
             self.mapping, self.members = original, members
+
+
+class ApprovalTests(unittest.TestCase):
+    def test_exact_approval_binds_all_fields_not_only_source_id(self):
+        mapping, _ = fixture()
+        digest = hashlib.sha256(json.dumps(mapping, ensure_ascii=False, sort_keys=True,
+            separators=(',', ':'), allow_nan=False).encode()).hexdigest()
+        approval = SourceMappingApproval(mapping['source_id'], digest,
+            f"USER APPROVED SOURCE MAPPING {mapping['source_id']} {digest}")
+        self.assertIsNone(profile._validate_approval(mapping, approval))
+        changes = [lambda m: m.update(batch_id='other'),
+                   lambda m: m['packages'][1].update(zip_sha256='b'*64),
+                   lambda m: m['questions'][0]['metadata'].update(tags=[]),
+                   lambda m: m['unit_dispositions'][0].update(reason='changed'),
+                   lambda m: m['questions'][0]['answer_evidence'].update(level='worked_solution')]
+        for change in changes:
+            changed = copy.deepcopy(mapping); change(changed)
+            with self.assertRaises(MmdAdapterBlockedError):
+                profile._validate_approval(changed, approval)
+
+    def test_no_approval_and_different_source_rejected(self):
+        mapping, _ = fixture()
+        with self.assertRaises(TypeError): profile._validate_approval(mapping, None)
+        approval = SourceMappingApproval('other', 'a'*64,
+            'USER APPROVED SOURCE MAPPING other ' + 'a'*64)
+        with self.assertRaises(MmdAdapterBlockedError): profile._validate_approval(mapping, approval)

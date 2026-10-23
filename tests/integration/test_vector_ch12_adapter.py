@@ -7,11 +7,16 @@ import struct
 import tempfile
 import unittest
 import warnings
+import json
 import zipfile
 from unittest.mock import patch
 
 from joy_m2.ingest import archive, vector_ch12 as profile
 from joy_m2.ingest.adapter_models import MmdAdapterBlockedError
+from joy_m2.config import PipelineConfig
+from joy_m2.errors import ConfigurationError, OutputConflictError, InputMissingError
+from joy_m2.ingest.writer_profiles import atomic_rename_no_replace
+from tests.fixtures.vector_ch12.mapping_fixture import fixture
 
 
 def sha(data):
@@ -152,3 +157,139 @@ class DualInventoryTests(unittest.TestCase):
                 self.assertEqual(len(self.read()), 4)
             with self.subTest(over=constant), patch.object(archive, constant, exact - 1):
                 self.blocked('archive_integrity_invalid')
+
+
+class _ProposalCase(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(); self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.config = PipelineConfig(self.root)
+        self.config.staging_root.mkdir(parents=True)
+        self.mapping, self.members = fixture()
+        self.paths = [self.root/'textbook.zip', self.root/'answers.zip']
+        for role, path, declared in zip(('textbook', 'answers'), self.paths, self.mapping['packages']):
+            data = zip_bytes([('source.mmd', self.members[(role, 'source.mmd')])])
+            path.write_bytes(data)
+            declared.update(zip_sha256=sha(data), zip_size_bytes=len(data))
+        self.draft = self.root/'draft.json'; self.save()
+        self.output = self.config.staging_root/'proposal'
+
+    def save(self):
+        self.raw = json.dumps(self.mapping, ensure_ascii=False, sort_keys=True,
+                              separators=(',', ':'), allow_nan=False).encode()
+        self.draft.write_bytes(self.raw)
+
+    def propose(self):
+        return profile.propose_vector_ch12_mapping(*self.paths, self.draft, self.output, self.config)
+
+
+class ProposalTests(_ProposalCase):
+    def test_exact_files_json_hashes_and_readable_source_paths(self):
+        result = self.propose()
+        self.assertIsInstance(result, profile.VectorCh12Proposal)
+        self.assertEqual(set(p.name for p in self.output.iterdir()),
+                         {'source_mapping.json', 'SOURCE_MAPPING_REVIEW.md'})
+        self.assertEqual(result.mapping_path.read_bytes(), self.raw)
+        self.assertEqual(result.mapping_sha256, sha(self.raw))
+        expected = json.dumps(dict(profile='OSM-M2B12-C-E', packages=self.mapping['packages']),
+            ensure_ascii=False, sort_keys=True, separators=(',', ':'), allow_nan=False).encode()
+        self.assertEqual(result.input_binding_sha256, sha(expected))
+        self.assertEqual(result.candidate_count, 2)
+        review = result.review_path.read_text()
+        for p in self.paths:
+            self.assertIn(str(p), review); self.assertNotIn(str(p).encode(), self.raw)
+        self.assertIn(result.mapping_sha256, review)
+        self.assertIn('final_answers_only', review)
+
+    def test_double_run_different_roots_exact_mapping(self):
+        first = self.propose()
+        self.output = self.config.staging_root/'second'
+        second = self.propose()
+        self.assertIsInstance(first, profile.VectorCh12Proposal)
+        self.assertEqual(first.mapping_sha256, second.mapping_sha256)
+        self.assertEqual(first.review_path.read_bytes(), second.review_path.read_bytes())
+
+
+class PublicationSafetyTests(_ProposalCase):
+    def test_root_formal_and_existing_destinations(self):
+        for dest in [self.config.staging_root, self.config.releases_root/'no']:
+            self.output = dest
+            with self.assertRaises(ConfigurationError): self.propose()
+        self.output = self.config.staging_root/'proposal'; self.output.mkdir()
+        (self.output/'sentinel').write_bytes(b'keep')
+        with self.assertRaises(OutputConflictError): self.propose()
+        self.assertEqual((self.output/'sentinel').read_bytes(), b'keep')
+
+    def test_argument_missing_input_and_symlink_boundaries(self):
+        with self.assertRaises(TypeError):
+            profile.propose_vector_ch12_mapping(str(self.paths[0]), self.paths[1], self.draft,
+                                                self.output, self.config)
+        self.output.symlink_to(self.root/'not-created')
+        with self.assertRaises((OutputConflictError, ConfigurationError)): self.propose()
+        self.output = self.config.staging_root/'another'
+        self.paths[0] = self.root/'absent.zip'
+        with self.assertRaises(InputMissingError): self.propose()
+
+    def test_io_failure_and_destination_race_leave_no_own_temp(self):
+        before = {p: p.read_bytes() for p in [*self.paths, self.draft]}
+        with patch.object(profile, 'atomic_rename_no_replace', side_effect=OSError('injected')):
+            with self.assertRaises(OSError): self.propose()
+        self.assertFalse(self.output.exists())
+        self.assertEqual(list(self.config.staging_root.iterdir()), [])
+        def racing(source, dest):
+            dest.mkdir(); (dest/'sentinel').write_bytes(b'other actor')
+            atomic_rename_no_replace(source, dest)
+        with patch.object(profile, 'atomic_rename_no_replace', side_effect=racing):
+            with self.assertRaises(OutputConflictError): self.propose()
+        self.assertEqual((self.output/'sentinel').read_bytes(), b'other actor')
+        self.assertEqual(list(self.config.staging_root.iterdir()), [self.output])
+        self.assertEqual({p: p.read_bytes() for p in before}, before)
+
+    def test_input_change_during_temp_write_prevents_publication(self):
+        original = Path.write_bytes
+        def write(path, data):
+            result = original(path, data)
+            if path.name == 'SOURCE_MAPPING_REVIEW.md':
+                original(self.paths[1], b'changed input')
+            return result
+        with patch.object(Path, 'write_bytes', write):
+            with self.assertRaises(MmdAdapterBlockedError): self.propose()
+        self.assertFalse(self.output.exists())
+        self.assertEqual(list(self.config.staging_root.iterdir()), [])
+
+
+class DiagnosticTests(_ProposalCase):
+    def test_frozen_codes_for_content_selection_and_count(self):
+        from copy import deepcopy
+        original = deepcopy(self.mapping)
+        mutations = [
+            ('selection_not_unique', lambda m: m['questions'][1].update(question_id=m['questions'][0]['question_id'])),
+            ('candidate_count_mismatch', lambda m: m['unit_dispositions'][0].update(disposition='proposed_selection')),
+            ('mmd_parse_failed', lambda m: m['shared_conditions'][0]['applies_to'].pop()),
+            ('mmd_parse_failed', lambda m: m['questions'][0]['answer_evidence'].update(covered_subparts=[])),
+        ]
+        for expected, change in mutations:
+            self.mapping = deepcopy(original); change(self.mapping); self.save()
+            with self.subTest(expected=expected), self.assertRaises(MmdAdapterBlockedError) as raised:
+                self.propose()
+            self.assertEqual(raised.exception.issues[0].code, expected)
+            self.assertNotIn(str(self.root), raised.exception.issues[0].evidence)
+
+    def test_archive_limit_short_circuits_content_defect(self):
+        self.mapping['questions'][0]['question_pieces'][1]['span']['raw_sha256'] = '0'*64
+        self.save()
+        with patch.object(archive, '_MEMBER_COUNT_LIMIT', 1):
+            with self.assertRaises(MmdAdapterBlockedError) as raised: self.propose()
+        self.assertEqual({i.code for i in raised.exception.issues}, {'archive_integrity_invalid'})
+        self.assertFalse(self.output.exists())
+
+    def test_bad_image_and_malformed_json_never_publish(self):
+        self.mapping['unselected_image_members'] = [dict(package_role='textbook', member='absent.png',
+            sha256='a'*64, reason='missing')]; self.save()
+        with self.assertRaises(MmdAdapterBlockedError) as raised: self.propose()
+        self.assertEqual(raised.exception.issues[0].code, 'image_binding_invalid')
+        for raw in [b'{', b'\xff', b'\xef\xbb\xbf{}', b'{"x":1,"x":2}', b'{"x":NaN}']:
+            self.draft.write_bytes(raw)
+            with self.assertRaises(MmdAdapterBlockedError) as raised: self.propose()
+            self.assertEqual(raised.exception.issues[0].code, 'source_contract_mismatch')
+        self.assertFalse(self.output.exists())
