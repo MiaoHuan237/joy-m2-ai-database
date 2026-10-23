@@ -371,7 +371,6 @@ def _validate_mapping(mapping: dict, members: dict[tuple[str, str], bytes],
     ids = []
     occurrences = []
     bound_images = set()
-    tags = _controlled_tags(config)
     question_issues = []
     for order, q in enumerate(mapping['questions'], 1):
         try:
@@ -418,26 +417,6 @@ def _validate_mapping(mapping: dict, members: dict[tuple[str, str], bytes],
             _render_spans(q['solution_spans'], members)
             _render_spans(q['explanation_spans'], members)
             _validate_answer_evidence(q, text)
-            metadata = q['metadata']
-            _keys(metadata, 'primary_type tags difficulty_level marks question_language answer_language')
-            if metadata['primary_type'] != '向量':
-                _fail('metadata', 'controlled_primary_type')
-            _strings(metadata['tags'], 'tags')
-            if not set(metadata['tags']) <= tags:
-                _fail('tags', 'unknown_controlled_tag')
-            if metadata['difficulty_level'] is not None:
-                _integer(metadata['difficulty_level'], 1, 5)
-            if metadata['marks'] is not None:
-                value = metadata['marks']
-                if type(value) not in (int, float) or not math.isfinite(value) or value <= 0:
-                    _fail('marks', 'invalid_marks')
-            for field in ('question_language', 'answer_language'):
-                _string(metadata[field], field)
-            for binding in q['image_bindings']:
-                # Exact token ownership is validated by the image phase.
-                if type(binding) is not dict or type(binding.get('image_package_role')) is not str or type(binding.get('image_member')) is not str:
-                    _fail('image_bindings', 'invalid_binding', 'image_binding_invalid')
-                bound_images.add((binding['image_package_role'], binding['image_member']))
         except MmdAdapterBlockedError as exc:
             qid = q.get('question_id') if type(q) is dict else None
             qid = qid if type(qid) is str and qid else None
@@ -478,6 +457,35 @@ def _validate_mapping(mapping: dict, members: dict[tuple[str, str], bytes],
             previous = end
         if raw[previous:].decode('utf-8').strip():
             _fail('coverage', 'unowned_nonwhitespace')
+    # Stage 5 must not hide a prior span/coverage defect. Collect inspectable
+    # semantic issues only after structural ownership has closed.
+    tags = _controlled_tags(config)
+    semantic_issues = []
+    for q in mapping['questions']:
+        try:
+            metadata = q['metadata']
+            _keys(metadata, 'primary_type tags difficulty_level marks question_language answer_language')
+            if metadata['primary_type'] != '向量':
+                _fail('metadata', 'controlled_primary_type')
+            _strings(metadata['tags'], 'tags')
+            if not set(metadata['tags']) <= tags:
+                _fail('tags', 'unknown_controlled_tag')
+            if metadata['difficulty_level'] is not None:
+                _fail('difficulty_level', 'profile_requires_missing_difficulty')
+            if metadata['marks'] is not None:
+                value = metadata['marks']
+                if type(value) not in (int, float) or not math.isfinite(value) or value <= 0:
+                    _fail('marks', 'invalid_marks')
+            if metadata['question_language'] != 'zh-Hant' or metadata['answer_language'] not in ('en', 'zh-Hant'):
+                _fail('metadata', 'unsupported_language_roles', 'language_mapping_ambiguous')
+            for binding in q['image_bindings']:
+                if type(binding) is not dict or type(binding.get('image_package_role')) is not str or type(binding.get('image_member')) is not str:
+                    _fail('image_bindings', 'invalid_binding', 'image_binding_invalid')
+                bound_images.add((binding['image_package_role'], binding['image_member']))
+        except MmdAdapterBlockedError as exc:
+            semantic_issues.extend(replace(issue, proposed_question_id=q['question_id']) for issue in exc.issues)
+    if semantic_issues:
+        raise MmdAdapterBlockedError(tuple(semantic_issues))
     ignored_images = set()
     for row in mapping['unselected_image_members']:
         _keys(row, 'package_role member sha256 reason')
@@ -518,6 +526,39 @@ def _expand_question_pieces(pieces: list[dict], shared: list[dict]) -> list[dict
 def _check_boundaries(raw: bytes, start: int, end: int) -> None:
     """Only protect lexical atoms; never discover questions or repair source."""
     protected = []
+    # An unmatched math opener still protects its remainder. Never use a
+    # missing closer as permission to discard part of the expression.
+    opening = None
+    closers = {b'$': b'$', b'$$': b'$$', br'\(': br'\)', br'\[': br'\]'}
+    for token in re.finditer(rb'(?<!\\)(?:\$\$|\$)|\\[()[\]]', raw):
+        value = token.group()
+        if opening is None and value in closers:
+            opening = (token.start(), closers[value])
+        elif opening is not None and value == opening[1]:
+            protected.append((opening[0], token.end())); opening = None
+    if opening is not None:
+        protected.append((opening[0], len(raw)))
+    for env in re.finditer(rb'\\begin\{(align\*?|equation\*?|gather\*?|displaymath)\}', raw):
+        closer = b'\\end{' + env.group(1) + b'}'
+        finish = raw.find(closer, env.end())
+        protected.append((env.start(), len(raw) if finish < 0 else finish + len(closer)))
+    # Protect a base together with a literal TeX script, including nested
+    # braced arguments. This does not evaluate or repair the mathematics.
+    for script in re.finditer(rb'(?<!\\)[_^]', raw):
+        left = max(0, script.start() - 1)
+        cursor = script.end()
+        while cursor < len(raw) and raw[cursor] in b' \t': cursor += 1
+        if cursor < len(raw) and raw[cursor] == ord('{'):
+            depth = 1; cursor += 1
+            while cursor < len(raw) and depth:
+                if raw[cursor] == ord('\\'): cursor += 2; continue
+                if raw[cursor] == ord('{'): depth += 1
+                elif raw[cursor] == ord('}'): depth -= 1
+                cursor += 1
+        else:
+            atom = re.match(rb'\\[A-Za-z]+|[^\s]', raw[cursor:])
+            cursor += atom.end() if atom else 0
+        protected.append((left, cursor))
     for pattern in (rb'!\[[^\]\r\n]*\]\([^\r\n]*?\)',
                     rb'\\\[[\s\S]*?\\\]', rb'\\\([\s\S]*?\\\)',
                     rb'(?<!\\)\$\$[\s\S]*?(?<!\\)\$\$',
@@ -546,11 +587,50 @@ def _check_boundaries(raw: bytes, start: int, end: int) -> None:
                 finish = len(raw); break
             finish = cursor
         protected.append((match.start(), finish))
+        protected.append((match.start(), _tex_argument_end(raw, match.start())))
     if any(left < boundary < right for boundary in (start, end) for left, right in protected):
         _fail('span', 'cut_inside_token_or_formula', 'mmd_parse_failed')
 
 
+def _tex_argument_end(raw, cursor):
+    """Finite lexical arities only; no mathematical interpretation or repair."""
+    while cursor < len(raw) and raw[cursor] in b' \t\r\n': cursor += 1
+    if cursor == len(raw): return cursor
+    if raw[cursor] == ord('{'):
+        depth = 1; cursor += 1
+        while cursor < len(raw) and depth:
+            if raw[cursor] == ord('\\'): cursor += 2; continue
+            if raw[cursor] == ord('{'): depth += 1
+            elif raw[cursor] == ord('}'): depth -= 1
+            cursor += 1
+        return min(cursor, len(raw))
+    command = re.match(rb'\\[A-Za-z]+\*?', raw[cursor:])
+    if not command: return cursor + 1
+    cursor += command.end()
+    arity = (2 if command.group() in (br'\frac', br'\dfrac', br'\tfrac', br'\binom',
+                                      br'\dbinom', br'\tbinom', br'\overset', br'\underset')
+             else 1 if command.group() in (br'\vec', br'\hat', br'\bar', br'\dot', br'\ddot',
+                br'\overline', br'\underline', br'\sqrt', br'\mathbf', br'\mathrm',
+                br'\mathit', br'\overrightarrow', br'\text') else 0)
+    if command.group() == br'\sqrt':
+        optional = re.match(rb'\s*\[[^\]]*\]', raw[cursor:])
+        if optional: cursor += optional.end()
+    for _ in range(arity): cursor = _tex_argument_end(raw, cursor)
+    return cursor
+
+
 def _validate_images(mapping: dict, members: dict[tuple[str, str], bytes]) -> None:
+    issues = []
+    for q in mapping['questions']:
+        try:
+            _validate_image_rows(dict(mapping, questions=[q]), members)
+        except MmdAdapterBlockedError as exc:
+            issues.extend(replace(issue, proposed_question_id=q['question_id']) for issue in exc.issues)
+    if issues:
+        raise MmdAdapterBlockedError(tuple(issues))
+
+
+def _validate_image_rows(mapping: dict, members: dict[tuple[str, str], bytes]) -> None:
     for q in mapping['questions']:
         content = {'question': [p['span'] for p in _expand_question_pieces(
             q['question_pieces'], mapping['shared_conditions'])],
@@ -693,6 +773,18 @@ def _publish_files(output, config, files, recheck, validate=None):
             validate(temporary)
         recheck()
         _preflight_destination(output, config)
+        current = temporary.lstat()
+        if ((current.st_dev, current.st_ino) != (owned.st_dev, owned.st_ino)
+                or not stat.S_ISDIR(current.st_mode)):
+            _fail('output', 'private_snapshot_owner_changed')
+        actual = {}
+        for path in temporary.rglob('*'):
+            if path.is_symlink():
+                _fail('output', 'private_snapshot_symlink')
+            if path.is_file():
+                actual[path.relative_to(temporary).as_posix()] = path.read_bytes()
+        if actual != files:
+            _fail('output', 'private_snapshot_bytes_changed')
         try:
             atomic_rename_no_replace(temporary, output)
         except FileExistsError as exc:
@@ -798,8 +890,10 @@ def _validate_answer_evidence(q, text):
     _strings(covered, 'covered_subparts'); _strings(missing, 'missing_subparts')
     if type(evidence['limitation']) is not str:
         _fail('answer_evidence', 'limitation_type')
-    # Literal list/line labels only: no inference from mathematics or answer text.
-    asks = list(dict.fromkeys(re.findall(r'(?:\\item\[|(?m:^)[ \t]*)([（(](?:[a-z]|[ivx]+)[）)])', text))) or ['whole']
+    # Literal labels, including same-line asks, not mathematical inference.
+    # Formula regions do not turn function arguments into subpart labels.
+    prose = re.sub(r'\\\[[\s\S]*?\\\]|\\\([\s\S]*?\\\)|\$\$[\s\S]*?\$\$|\$[^$]*\$', '', text)
+    asks = list(dict.fromkeys(re.findall(r'(?:\\item\[|(?<!\w))([（(](?:[a-z]|[ivx]+)[）)])', prose))) or ['whole']
     if set(covered) & set(missing) or set(covered + missing) != set(asks):
         _fail('answer_evidence', 'ask_coverage')
     if covered != [x for x in asks if x in covered] or missing != [x for x in asks if x in missing]:

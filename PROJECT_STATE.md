@@ -50,7 +50,7 @@ Updated: 2026-10-23 (Asia/Shanghai)
 
 ## Current task
 
-### Vector chapter12 dual-package source — INLINE IMPLEMENTATION IN PROGRESS (2026-10-23)
+### Vector chapter12 dual-package source — ENGINEERING GREEN / SOURCE PREPARATION (2026-10-23)
 
 - User authorized Native / Inline engineering execution after local verification
   of the committed Plan and independent written review. Written Design approved
@@ -70,13 +70,14 @@ Updated: 2026-10-23 (Asia/Shanghai)
   The six V1.24 shared modules are implemented under the existing F6/V1.24 Plan;
   no second engine. Focused124 PASS and separate review C0/I0/openMinor0 are
   recorded in docs/reports/F6_V124_CANDIDATE_VERIFICATION.md. Combined maintained
-  gate remains at chapter integration exit. F6 source/real import is not a prerequisite.
-- Tasks1–6 implemented locally: carriers, dual inventory, exact mapping/coverage,
-  deterministic fragments, image ownership and atomic proposal publication.
-  Fresh focused tests47 PASS (including inherited test-class cases); behavioral
-  RED/GREEN logs retained under the ignored chapter Plan execution ledger.
-  Current code checkpoint e4c0529. Canonical bridge, full regression and separate
-  implementation review remain pending; no real proposal/canonical/import yet.
+  gate now1530 PASS/72 modules,0 skip/expected failure; V1.18 validator PASS.
+  F6 source/real import is not a prerequisite.
+- Tasks1–8 implemented/verified: dual inventory, exact mapping/coverage,
+  deterministic fragments, images, atomic proposal and real V1.24 canonical
+  loader/preflight integration using synthetic inputs only. Chapter75 PASS;
+  chapter/historical MMD417 PASS. Separate implementation review C0/I0/openM0.
+  Behavioral RED/GREEN logs retained under ignored Plan ledgers. See
+  docs/reports/VECTOR_CH12_SOURCE_ADAPTATION.md. No real canonical/import yet.
 - Whole eligible chapter is the goal. Pilot16 is not a batch limit: after the
   technical gate reuse the profile for163 later-processing units by natural groups.
   Held16 and prerequisite8 remain preserved, not claimed eligible.
@@ -92,8 +93,12 @@ Updated: 2026-10-23 (Asia/Shanghai)
   layout review,8 prerequisite outside this batch. Counts are review dispositions,
   not final eligible/net-new counts. New12C12 extra-denominator concern is held;
   examples19/23 missing asks and example3 partial answer remain untouched.
-- New review files are not API proposals; no consumable approval digest,
-  canonical, preflight or candidate created. Formal V1.23 remains677 with the
+- New preparation root data/staging/vector-ch12-mapping/preparation-000001/
+  retains all163 later units by section, proposes14 additional12C questions and4
+  checkpoint questions, and separates18 newly identified local review issues.
+  Aggregate34 proposed,34 held,127 unreviewed later,8 prerequisite=203; these
+  are preparation counts, not approved/net-new records. No real canonical,
+  preflight or candidate created. Formal V1.23 remains677 with the
   recorded identities; original packages, old review and user AGENTS unchanged.
 - Prior separate read-only Design/source review: Critical0/Important0/openMinor0.
   One scope-label omission fixed in new review evidence only. That Design
@@ -107,9 +112,10 @@ Updated: 2026-10-23 (Asia/Shanghai)
   new-Plan whitespace checks pass; user AGENTS and existing intake/selection
   review identities unchanged. No implementation/full-suite tests run here;
   Those were written-review results, not implementation verification.
-- Next: implement/verify the authorized V1.24 shared dependency, then integrate
-  the chapter bridge, run the prescribed regression/review and prepare actual
-  source-mapping approval material. Do not stop for another Plan approval.
+- Next: finish independent content comparison, publish true source-mapping
+  proposals and consolidate the exact data-approval requests. No further
+  engineering approval is needed; real canonical/preflight still requires
+  exact mapping approval and independently verified current V1.24 parent.
 
 ### F6 selected source batch / V1.24 candidate bridge — PLAN APPROVED / IMPLEMENTATION NOT STARTED
 

@@ -123,6 +123,15 @@ class MappingTests(unittest.TestCase):
 
 
 class AnswerCoverageTests(MappingTests):
+    def test_explicit_inline_asks_cannot_claim_whole(self):
+        q = self.mapping['questions'][0]
+        for text in ('5. (a) Find x. (b) Prove y.',
+                     '5. （a）求 x。 （b）證明 y。'):
+            with self.subTest(text=text), self.assertRaises(MmdAdapterBlockedError):
+                profile._validate_answer_evidence(q, text)
+        q['answer_evidence']['covered_subparts'] = ['(a)', '(b)']
+        profile._validate_answer_evidence(q, '5. (a) Find x. (b) Prove y.')
+
     def test_partial_preserves_all_subparts_and_limitation(self):
         self.mapping['questions'] = self.mapping['questions'][:1]
         q = self.mapping['questions'][0]
@@ -188,6 +197,11 @@ class RenderingTests(unittest.TestCase):
 
     def test_cuts_inside_protected_tokens_are_rejected_not_repaired(self):
         examples = [('中文'.encode(), 1), (b'![](images/a.png)', 8),
+                    (b'x^{2} next', 1), (br'\vec a next', 4),
+                    (b'$x+y next', 2), (br'\(x+y next', 4),
+                    (br'\frac a b tail', 5), (br'\frac a b tail', 7),
+                    (br'\binom n k tail', 6),
+                    (br'\begin{equation}x+y', 16),
                     (b'$a+b$ tail', 3), (br'\frac{1}{x+1} tail', 9),
                     (br'\includegraphics[width=2cm]{images/a.png}', 18),
                     (b'123.45 + 6', 2), (br'\sqrt{x}', 3),
@@ -238,6 +252,17 @@ class ImageTests(unittest.TestCase):
         self.assertEqual(roles, ['question', 'solution', 'solution'])
         self.assertEqual(len(q['image_bindings']), 4)
         self.assertEqual(len(set(paths)), 2)
+
+    def test_image_errors_are_collected_for_each_question(self):
+        second = copy.deepcopy(self.mapping['questions'][0])
+        second['question_id'] = 'OSM-M2B12-C-EX12A-Q06'
+        self.mapping['questions'].append(second)
+        for q in self.mapping['questions']: q['image_bindings'][0]['image_sha256'] = '0'*64
+        with self.assertRaises(MmdAdapterBlockedError) as raised:
+            profile._validate_images(self.mapping, self.members)
+        self.assertEqual(len(raised.exception.issues), 2)
+        self.assertEqual({i.proposed_question_id for i in raised.exception.issues},
+                         {q['question_id'] for q in self.mapping['questions']})
 
     def test_bad_target_role_hash_namespace_and_ownership(self):
         for field, value in [('raw_target', './images/wrong.png'), ('content_role', 'explanation'),

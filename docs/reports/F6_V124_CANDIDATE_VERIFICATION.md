@@ -32,8 +32,10 @@ Ran124 tests in105.975s — OK; no skip or expected failure.
 The historical replay module checks frozen releases, actual historical V1.23
 receipt verification and no-publication boundary read-only. Genuine first and
 verified-parent preflight/writer/verifier are available for chapter C synthetic
-integration. Full maintained regression is intentionally deferred to the single
-combined chapter engineering exit, not represented by this focused result.
+integration. The combined chapter engineering exit subsequently ran1530 tests
+in673.181s across72 maintained modules: all PASS,0 skip/expected failure. The
+V1.18 validator also passed. Exact shared-layer coverage and historical replay
+remain included; this does not claim completion of the deferred F6 source tasks.
 
 ## Independent implementation review
 
@@ -53,8 +55,8 @@ and derived image SHA field) were corrected in tests, not by weakening contracts
 
 Reviewer declined whole-task/full-suite certification, complete historical TDD
 replay, Chapter/F6 source authority and real receipt/lock operations. Main ruling:
-these are not claimed by this report; combined regression and chapter review
-remain mandatory before real chapter proposal delivery. No actual writer use,
+these are not claimed by this focused review; combined regression and separate
+chapter review subsequently passed as recorded in VECTOR_CH12_SOURCE_ADAPTATION.md. No actual writer use,
 F6 import, source approval, promotion or scheduler change is authorized here.
 
 User AGENTS bytes remain SHA256

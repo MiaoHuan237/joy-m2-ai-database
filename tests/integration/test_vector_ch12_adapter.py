@@ -415,6 +415,26 @@ class ProposalTests(_ProposalCase):
 
 
 class PublicationSafetyTests(_ProposalCase):
+    def test_replaced_or_changed_snapshot_cannot_be_published(self):
+        original = profile._recheck_inputs
+        for mode in ('replacement', 'bytes'):
+            self.output = self.config.staging_root/mode
+            foreign = []
+            def race(*args):
+                original(*args)
+                private = next(self.output.parent.glob('.' + self.output.name + '-*'))
+                if mode == 'replacement':
+                    private.rename(private.with_name(private.name + '-moved'))
+                    private.mkdir(); (private/'sentinel').write_bytes(b'foreign')
+                    foreign.append(private)
+                else:
+                    next(p for p in private.rglob('*') if p.is_file()).write_bytes(b'changed')
+            with self.subTest(mode=mode), patch.object(profile, '_recheck_inputs', race):
+                with self.assertRaises(MmdAdapterBlockedError): self.propose()
+            self.assertFalse(self.output.exists())
+            if foreign:
+                self.assertEqual((foreign[0]/'sentinel').read_bytes(), b'foreign')
+
     def test_root_formal_and_existing_destinations(self):
         for dest in [self.config.staging_root, self.config.releases_root/'no']:
             self.output = dest
@@ -502,6 +522,26 @@ class AdaptationSafetyTests(PublicationSafetyTests):
 
 
 class DiagnosticTests(_ProposalCase):
+    def test_profile_language_and_null_difficulty_are_enforced(self):
+        for field, value, code in [('question_language', 'en', 'language_mapping_ambiguous'),
+                ('answer_language', 'not-a-language', 'language_mapping_ambiguous'),
+                ('difficulty_level', 3, 'source_contract_mismatch')]:
+            original = self.mapping['questions'][0]['metadata'][field]
+            self.mapping['questions'][0]['metadata'][field] = value; self.save()
+            with self.subTest(field=field), self.assertRaises(MmdAdapterBlockedError) as raised:
+                self.adapt()
+            self.assertEqual(raised.exception.issues[0].code, code)
+            self.assertFalse(self.output.exists())
+            self.mapping['questions'][0]['metadata'][field] = original
+
+    def test_coverage_precedes_semantic_metadata(self):
+        span = self.mapping['questions'][0]['question_pieces'][1]['span']
+        span.update(end_byte=8, raw_sha256=sha(b'5. '))
+        self.mapping['questions'][1]['metadata']['tags'] = ['not-controlled']; self.save()
+        with self.assertRaises(MmdAdapterBlockedError) as raised: self.propose()
+        self.assertEqual(raised.exception.issues[0].code, 'mmd_parse_failed')
+        self.assertEqual(raised.exception.issues[0].field, 'coverage')
+
     def test_inspectable_question_errors_are_collected_before_publication(self):
         self.mapping['questions'][0]['metadata']['tags'] = ['not-controlled']
         self.mapping['questions'][1]['metadata']['primary_type'] = 'not-controlled'
