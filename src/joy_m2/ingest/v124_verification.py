@@ -979,12 +979,25 @@ def _actual_collision_free(
             "source_fragment_hash,normalized_text_sha256,image_paths_json,image_sha256s_json,"
             "image_roles_json FROM task14_v124_candidates_v1 ORDER BY aggregate_order"
         ))
+        vocabulary_rows = tuple(database.execute(
+            "SELECT primary_type,tags_json FROM formal_complete_questions_v123"
+        ))
+        primary_types = {r[0] for r in vocabulary_rows} | {'代数'}
+        tags = {tag for r in vocabulary_rows for tag in json.loads(r[1])} | {'一元一次方程'}
+        # Validate each prefix before allowing its vocabulary into the next batch.
+        for batch in approved_batches:
+            if any(c.primary_type not in primary_types or not set(c.tags) <= tags
+                   for c in batch.preflight_result.candidates):
+                return False
+            primary_types.update(c.primary_type for c in batch.preflight_result.candidates)
+            tags.update(t for c in batch.preflight_result.candidates for t in c.tags)
         references = list(baseline_rows)
         ids: set[str] = set()
-        locators: dict[tuple[str, str, str], tuple[str, bool, str]] = {}
-        fragments: dict[str, tuple[str, bool, str]] = {}
+        locators: dict[tuple[str, str, str], set[tuple[str, bool, str]]] = {}
+        fragments: dict[str, set[tuple[str, bool, str]]] = {}
         normalized: set[str] = set()
         image_claims: dict[tuple[str, str], str] = {}
+        image_owners: dict[tuple[str, str], set[str]] = {}
         expected_adaptations: dict[int, list[ImportAdaptation]] = {
             ordinal: []
             for ordinal in range(1, len(approved_batches) + 1)
@@ -992,9 +1005,9 @@ def _actual_collision_free(
         for row in references:
             normalized_value = row[5] or _normalized_text_sha256(row[6])
             ids.add(row[0])
-            locators[(row[1], row[2], row[3])] = (row[0], True, normalized_value)
+            locators.setdefault((row[1], row[2], row[3]), set()).add((row[0], True, normalized_value))
             if row[4]:
-                fragments[row[4]] = (row[0], True, normalized_value)
+                fragments.setdefault(row[4], set()).add((row[0], True, normalized_value))
             normalized.add(normalized_value)
             paths = () if row[7] is None else json.loads(row[7])
             digests = () if row[8] is None else json.loads(row[8])
@@ -1017,13 +1030,26 @@ def _actual_collision_free(
                 return False
             for path, digest, role in image_values:
                 image_claims[(path, role)] = digest
+                image_owners.setdefault((path, role), set()).add(row[0])
+        prior_image_owners = {}
+        previous_ordinal = None
         for row in candidate_rows:
             ordinal = row[0]
             if type(ordinal) is not int or ordinal not in expected_adaptations:
                 return False
+            if ordinal != previous_ordinal:
+                prior_image_owners = {key: set(values) for key, values in image_owners.items()}
+                previous_ordinal = ordinal
             locator = (row[2], row[3], row[4])
-            locator_reference = locators.get(locator)
-            fragment_reference = fragments.get(row[5])
+            locator_matches = locators.get(locator, set())
+            fragment_matches = fragments.get(row[5], set())
+            matching_ids = {r[0] for r in locator_matches | fragment_matches}
+            for path, role in zip(json.loads(row[7]), json.loads(row[9]), strict=True):
+                matching_ids.update(prior_image_owners.get((path, role), set()))
+            if len(matching_ids) > 1:
+                return False
+            locator_reference = next(iter(locator_matches), None)
+            fragment_reference = next(iter(fragment_matches), None)
             allowed_adaptation = (
                 locator_reference is not None
                 and locator_reference == fragment_reference
@@ -1056,9 +1082,10 @@ def _actual_collision_free(
                 if prior is not None and prior != digest:
                     return False
                 image_claims[(path, role)] = digest
+                image_owners.setdefault((path, role), set()).add(row[1])
             ids.add(row[1])
-            locators[locator] = (row[1], False, row[6])
-            fragments[row[5]] = (row[1], False, row[6])
+            locators.setdefault(locator, set()).add((row[1], False, row[6]))
+            fragments.setdefault(row[5], set()).add((row[1], False, row[6]))
             normalized.add(row[6])
         return all(
             tuple(sorted(expected_adaptations[ordinal], key=lambda item: (

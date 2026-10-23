@@ -67,8 +67,10 @@ Updated: 2026-10-23 (Asia/Shanghai)
   verified against commit22f33a2 and the working copy.
   A: independent source profile; B: externally delivered existing V1.24 shared
   layer; C: genuine loader/preflight bridge only after B is implemented/verified.
-  The six V1.24 modules are the next authorized dependency under the existing
-  F6/V1.24 Plan; no second engine. F6 source/real import is not a prerequisite.
+  The six V1.24 shared modules are implemented under the existing F6/V1.24 Plan;
+  no second engine. Focused124 PASS and separate review C0/I0/openMinor0 are
+  recorded in docs/reports/F6_V124_CANDIDATE_VERIFICATION.md. Combined maintained
+  gate remains at chapter integration exit. F6 source/real import is not a prerequisite.
 - Tasks1–6 implemented locally: carriers, dual inventory, exact mapping/coverage,
   deterministic fragments, image ownership and atomic proposal publication.
   Fresh focused tests47 PASS (including inherited test-class cases); behavioral

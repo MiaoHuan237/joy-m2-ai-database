@@ -883,6 +883,42 @@ class V124FirstWriterTests(unittest.TestCase):
         self.assertEqual(tuple(output.parent.iterdir()), ())
         self.assertEqual(_tree(self.package), source)
 
+    def test_post_verification_source_and_private_artifact_changes_rejected(self):
+        import joy_m2.ingest.v124_writer as writer
+        from unittest.mock import patch
+        original_verify = writer.verify_v124_candidate
+        for defect in ('source', 'private'):
+            package = _make_package(self.root / defect)
+            approved = _approved(package, self.config)
+            output = self.root/'data/staging'/defect
+            def changed(request, config):
+                result = original_verify(request, config)
+                self.assertEqual(result.status, 'PASS')
+                target = (package/approved.preflight_result.manifest.source_files[0].relative_path) if defect == 'source' else (
+                    request.candidate_dir/'candidate_manifest.json')
+                target.write_bytes(target.read_bytes() + b' ')
+                return result
+            with patch.object(writer, 'verify_v124_candidate', side_effect=changed):
+                with self.assertRaises(PipelineError):
+                    writer.build_v124_candidate(V124CandidateBuildRequest((approved,), output, _contract()), self.config)
+            self.assertFalse(output.exists())
+            self.assertEqual(tuple(output.parent.iterdir()), ())
+
+    def test_late_destination_race_preserves_other_owner(self):
+        import joy_m2.ingest.v124_writer as writer
+        from unittest.mock import patch
+        approved = _approved(self.package, self.config)
+        output = self.root/'data/staging/race'
+        rename = writer.atomic_rename_no_replace
+        def racing(source, target):
+            target.mkdir(); (target/'sentinel').write_bytes(b'other owner')
+            return rename(source, target)
+        with patch.object(writer, 'atomic_rename_no_replace', side_effect=racing):
+            with self.assertRaises(OutputConflictError):
+                writer.build_v124_candidate(V124CandidateBuildRequest((approved,), output, _contract()), self.config)
+        self.assertEqual((output/'sentinel').read_bytes(), b'other owner')
+        self.assertEqual(tuple(output.parent.iterdir()), (output,))
+
 
     def test_forged_matching_first_parent_values_rejected_by_both_boundaries(self):
         build_v124_candidate, verify_v124_candidate = self._build, self._verify
@@ -1012,6 +1048,104 @@ class V124FirstWriterTests(unittest.TestCase):
         approval = replace(approved.approval, preflight_sha256=digest,
             statement=f"USER APPROVED IMPORT BATCH {report.batch_id} {digest} V1.24 PARENT {GENESIS}")
         return V124ApprovedBatch(result, approved.package_root, approval)
+
+    def _forged_blocked_source(self, defect):
+        from dataclasses import replace
+        from types import SimpleNamespace
+        from joy_m2.ingest.models import ImportAdaptation
+        from joy_m2.ingest.v124_preflight import _formal_indexes
+        from joy_m2.ingest.v124_verification import _preflight_payload
+        from joy_m2.ingest.v124_writer_profiles import canonical_json_file_bytes
+        adaptations = ()
+        if defect == 'ambiguous':
+            ref = _formal_indexes(BASELINE)[0]['references']['M2QD-BT-TRAIN-Q4']
+            _rewrite_record(self.package, dict(source_id=ref['locator'][0],
+                source_question_number=ref['locator'][1], source_section=ref['locator'][2],
+                source_fragment_hash=ref['fragment']))
+        else:
+            _rewrite_record(self.package, dict(primary_type='REVIEW-UNCONTROLLED-TYPE',
+                                              tags=['REVIEW-UNCONTROLLED-TAG']))
+        result = preflight_v124_import(_request(self.package), self.config)
+        expected = {'duplicate_ambiguous'} if defect == 'ambiguous' else {'unknown_primary_type', 'unknown_tag'}
+        self.assertTrue(expected <= {i.code for i in result.issues})
+        if defect == 'ambiguous':
+            c = result.candidates[0]
+            adaptations = (ImportAdaptation(c.proposed_question_id, ref['question_id'], 'adapted',
+                f"matched=source_locator+source_fragment_hash;candidate_normalized_text_sha256={c.normalized_text_sha256};reference_normalized_text_sha256={ref['normalized']}",
+                'stable_source_identity_matches_with_transformed_text'),)
+        report = replace(result.report, status='READY FOR USER IMPORT APPROVAL',
+            new_candidate_count=1, rejected_count=0, ambiguous_count=0,
+            projected_after_count=678, ambiguous_splits=(), blocking_errors=(), adaptations=adaptations)
+        result = replace(result, report=report, issues=())
+        digest = hashlib.sha256(canonical_json_file_bytes(_preflight_payload(
+            SimpleNamespace(preflight_result=result)))).hexdigest()
+        result = replace(result, report=replace(report, preflight_sha256=digest))
+        self.assertEqual(report.batch_id, 'TASK10-A')  # Synthetic only, never a real source approval.
+        approval = V124ImportApproval('TASK10-A', digest, 'V1.24', GENESIS,
+            f'USER APPROVED IMPORT BATCH TASK10-A {digest} V1.24 PARENT {GENESIS}')
+        return V124ApprovedBatch(result, self.package, approval)
+
+    def test_writer_rejects_forged_ready_with_multi_reference_identity(self):
+        forged = self._forged_blocked_source('ambiguous')
+        with self.assertRaises(PipelineError):
+            self._build(V124CandidateBuildRequest((forged,), self.root/'bad', _contract()), self.config)
+
+    def test_same_batch_three_records_may_share_one_identical_image(self):
+        manifest_path = self.package/'import_manifest.json'
+        manifest = json.loads(manifest_path.read_bytes())
+        item = manifest['candidate_records'][0]
+        path = self.package/item['relative_path']
+        original = json.loads(path.read_bytes())[0]
+        rows = []
+        for n in range(3):
+            row = dict(original, proposed_question_id=f'TASK10-A-SHARED-{n}',
+                source_question_number=str(n + 1), source_fragment_hash=hashlib.sha256(f'shared-{n}'.encode()).hexdigest(),
+                question_text_original=f'Synthetic distinct image question {n}')
+            rows.append(row)
+        path.write_bytes(_json(rows))
+        item.update(sha256=_hash(path.read_bytes()), size_bytes=path.stat().st_size)
+        manifest_path.write_text(json.dumps(manifest, ensure_ascii=False) + '\n')
+        approved = _approved(self.package, self.config)
+        self.assertEqual(approved.preflight_result.report.new_candidate_count, 3)
+        oracle = self.root/'shared-oracle'
+        _independent_candidate(oracle, (approved,), _contract())
+        self.assertEqual(self._verify(V124CandidateVerificationRequest(oracle, (approved,), _contract()), self.config).status, 'PASS')
+        built = self._build(V124CandidateBuildRequest((approved,), self.root/'shared-built', _contract()), self.config)
+        self.assertEqual(built.verification_report.status, 'PASS')
+        # The next batch sees all three accepted owners, unlike the same-batch case.
+        from tests.integration.test_v120_preflight import _replace_declared_image_bytes
+        second = _make_named_package(self.root/'next', 'B')
+        image = approved.preflight_result.candidates[0]
+        _rename_declared_image(second, image.image_paths[0])
+        _replace_declared_image_bytes(second, (self.package/image.image_paths[0]).read_bytes())
+        _rewrite_record(second, dict(image_paths=list(image.image_paths), image_roles=list(image.image_roles)))
+        parent = V124CandidateVerificationRequest(built.database.path.parent, (approved,), _contract())
+        request = V124PreflightRequest(load_v124_import_manifest(second/'import_manifest.json'),
+            second, ArtifactRef(BASELINE, BASELINE_SHA, BASELINE_SIZE, 'sqlite'), parent, _contract())
+        blocked = preflight_v124_import(request, self.config)
+        self.assertIn('duplicate_ambiguous', {i.code for i in blocked.issues})
+
+    def test_independent_verifier_rejects_multi_reference_identity(self):
+        from joy_m2.ingest.v124_verification import verify_v124_candidate
+        forged = self._forged_blocked_source('ambiguous')
+        root = self.root/'independent-bad'
+        _independent_candidate(root, (forged,), _contract())
+        result = verify_v124_candidate(V124CandidateVerificationRequest(root, (forged,), _contract()), self.config)
+        self.assertEqual(result.status, 'FAIL')
+        self.assertFalse(next(c.passed for c in result.checks if c.name == 'effective_collision_closure'))
+
+    def test_writer_rejects_forged_ready_with_unknown_taxonomy(self):
+        forged = self._forged_blocked_source('taxonomy')
+        with self.assertRaises(PipelineError):
+            self._build(V124CandidateBuildRequest((forged,), self.root/'bad', _contract()), self.config)
+
+    def test_independent_verifier_rejects_unknown_taxonomy(self):
+        from joy_m2.ingest.v124_verification import verify_v124_candidate
+        forged = self._forged_blocked_source('taxonomy')
+        root = self.root/'independent-bad'
+        _independent_candidate(root, (forged,), _contract())
+        result = verify_v124_candidate(V124CandidateVerificationRequest(root, (forged,), _contract()), self.config)
+        self.assertEqual(result.status, 'FAIL')
 
     def test_writer_reconstructs_candidates_from_canonical_bytes(self):
         self.build()  # First-generation behavior must exist before hostile-carrier setup.

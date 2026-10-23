@@ -263,17 +263,23 @@ def _collision_authority_valid(
                 "source_image_paths_json,source_image_sha256s_json,source_image_roles_json "
                 "FROM formal_complete_questions_v123 ORDER BY formal_order"
             ))
+            vocabulary_rows = tuple(database.execute(
+                "SELECT primary_type,tags_json FROM formal_complete_questions_v123"
+            ))
+        primary_types = {row[0] for row in vocabulary_rows} | {'代数'}
+        tags = {tag for row in vocabulary_rows for tag in json.loads(row[1])} | {'一元一次方程'}
         ids: set[str] = set()
-        locators: dict[tuple[str, str, str], tuple[str, bool]] = {}
-        fragments: dict[str, tuple[str, bool]] = {}
+        locators: dict[tuple[str, str, str], set[tuple[str, bool]]] = {}
+        fragments: dict[str, set[tuple[str, bool]]] = {}
         normalized: set[str] = set()
         image_claims: dict[tuple[str, str], str] = {}
+        image_owners: dict[tuple[str, str], set[str]] = {}
         for row in rows:
             reference_id = row[0]
             ids.add(reference_id)
-            locators[(row[1], row[2], row[3])] = (reference_id, True)
+            locators.setdefault((row[1], row[2], row[3]), set()).add((reference_id, True))
             if row[4]:
-                fragments[row[4]] = (reference_id, True)
+                fragments.setdefault(row[4], set()).add((reference_id, True))
             normalized.add(row[5] or _normalized_text_sha256(row[6]))
             paths = () if row[7] is None else json.loads(row[7])
             digests = () if row[8] is None else json.loads(row[8])
@@ -296,17 +302,28 @@ def _collision_authority_valid(
                 return False
             for path, digest, role in image_values:
                 image_claims[(path, role)] = digest
+                image_owners.setdefault((path, role), set()).add(reference_id)
 
         for approved in batches:
             expected_adaptations: list[ImportAdaptation] = []
+            prior_image_owners = {key: set(values) for key, values in image_owners.items()}
             for candidate in approved.preflight_result.candidates:
+                if candidate.primary_type not in primary_types or not set(candidate.tags) <= tags:
+                    return False
                 locator = (
                     candidate.source_id,
                     candidate.source_question_number,
                     candidate.source_section,
                 )
-                locator_reference = locators.get(locator)
-                fragment_reference = fragments.get(candidate.source_fragment_hash)
+                locator_matches = locators.get(locator, set())
+                fragment_matches = fragments.get(candidate.source_fragment_hash, set())
+                matching_ids = {r[0] for r in locator_matches | fragment_matches}
+                for path, role in zip(candidate.image_paths, candidate.image_roles, strict=True):
+                    matching_ids.update(prior_image_owners.get((path, role), set()))
+                if len(matching_ids) > 1:
+                    return False
+                locator_reference = next(iter(locator_matches), None)
+                fragment_reference = next(iter(fragment_matches), None)
                 allowed_adaptation = (
                     locator_reference is not None
                     and locator_reference == fragment_reference
@@ -341,12 +358,10 @@ def _collision_authority_valid(
                     if prior is not None and prior != digest:
                         return False
                     image_claims[(path, role)] = digest
+                    image_owners.setdefault((path, role), set()).add(candidate.proposed_question_id)
                 ids.add(candidate.proposed_question_id)
-                locators[locator] = (candidate.proposed_question_id, False)
-                fragments[candidate.source_fragment_hash] = (
-                    candidate.proposed_question_id,
-                    False,
-                )
+                locators.setdefault(locator, set()).add((candidate.proposed_question_id, False))
+                fragments.setdefault(candidate.source_fragment_hash, set()).add((candidate.proposed_question_id, False))
                 normalized.add(candidate.normalized_text_sha256)
             if tuple(sorted(expected_adaptations, key=lambda item: (
                 item.candidate_id,
@@ -356,6 +371,8 @@ def _collision_authority_valid(
                 item.reason,
             ))) != approved.preflight_result.report.adaptations:
                 return False
+            primary_types.update(c.primary_type for c in approved.preflight_result.candidates)
+            tags.update(t for c in approved.preflight_result.candidates for t in c.tags)
         return True
     except (json.JSONDecodeError, OSError, PipelineError, sqlite3.Error, TypeError, ValueError):
         return False
