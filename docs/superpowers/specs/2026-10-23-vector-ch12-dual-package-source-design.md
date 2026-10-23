@@ -2,7 +2,12 @@
 
 Date: 2026-10-23 (Asia/Shanghai)
 
-Status: **WRITTEN DESIGN FOR HUMAN REVIEW — NOT APPROVED**.
+Status: **WRITTEN DESIGN APPROVED — IMPLEMENTATION PLAN REVIEW PENDING**.
+Human approval binds commit `934290f45c2acc9e84adc8f9ee86c9dd120e3514` and
+original Design SHA256
+`d20b7e29ebf6ef2f39bfdaf0831ea3acc34298e64c3a0a1086253b4254072879`.
+This follow-up synchronizes approval/checkpoint wording only; technical
+contracts in sections1–7 remain unchanged.
 This document is not an implementation Plan, source-mapping approval, import
 approval or promotion approval. No production/test change, authoritative
 proposal digest, canonical package or preflight is produced at this checkpoint.
@@ -518,7 +523,7 @@ boundaries. Stable issue ordering uses the existing approved five-field key.
 
 ## 8. Human gates and exit
 
-This chapter's Design approval is still required. Then create/review the
+This chapter's written Design is human-approved. Create/review the
 implementation Plan and obtain execution approval; do not consume the F6 Plan
 approval as chapter implementation permission. Independent Design review is
 separate from later independent implementation review and from human approval.
@@ -538,6 +543,6 @@ remain outside this vector pilot. Unresolved source corrections need evidence
 and a newly bound mapping, not a silent mathematical rewrite.
 
 Current stop:
-**USER DECISION REQUIRED — VECTOR CH12 SOURCE ADAPTATION DESIGN REVIEW**.
-No Plan, implementation, canonical/preflight, writer, worksheet or promotion
-is authorized by creation or commitment of this document.
+**USER DECISION REQUIRED — VECTOR CH12 IMPLEMENTATION PLAN REVIEW**.
+Plan preparation is now authorized. Implementation, canonical/preflight,
+writer, worksheet or promotion is not authorized by this Design approval.

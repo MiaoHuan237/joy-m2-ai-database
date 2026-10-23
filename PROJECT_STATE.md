@@ -50,14 +50,22 @@ Updated: 2026-10-23 (Asia/Shanghai)
 
 ## Current task
 
-### Vector chapter12 dual-package source — WRITTEN DESIGN REVIEW (2026-10-23)
+### Vector chapter12 dual-package source — IMPLEMENTATION PLAN REVIEW (2026-10-23)
 
-- Current task is Design plus off-database mapping preparation only. User
-  authorized explicit dual-package binding, shared conditions and exact ordered
-  fragments; no source/selection/import/promotion approval or implementation.
+- Current task is Plan and related documentation only. Written Design approved
+  at `934290f45c2acc9e84adc8f9ee86c9dd120e3514`, original file SHA256
+  `d20b7e29ebf6ef2f39bfdaf0831ea3acc34298e64c3a0a1086253b4254072879`.
+  No source/selection/import/promotion approval or chapter implementation.
 - Design: `docs/superpowers/specs/2026-10-23-vector-ch12-dual-package-source-design.md`.
   This is separate from the F6 source scope and reuses, rather than replaces,
-  the approved V1.24 version direction. Written Design awaits human review.
+  the approved V1.24 version direction. Only approval/status wording changed;
+  technical sections1–7 remain unchanged.
+- Plan: `docs/superpowers/plans/2026-10-23-vector-ch12-dual-package-source.md`.
+  Proposed execution is Native / Inline; implementation authorization pending.
+  A: independent source profile; B: externally delivered existing V1.24 shared
+  layer; C: genuine loader/preflight bridge only after B is implemented/verified.
+  The six V1.24 modules and its verification report are still absent. F6 source
+  bridge/real import is not a textbook prerequisite; its Plan is not enlarged.
 - Reused immutable intake `data/staging/vector-ch12-intake-20261023-000001/`.
   New ignored review: `data/staging/vector-ch12-design-20261023-000001/`.
   First selection proposes16 complete questions:12A1/9/10/11,12B3/4/5/6,
@@ -73,12 +81,19 @@ Updated: 2026-10-23 (Asia/Shanghai)
 - New review files are not API proposals; no consumable approval digest,
   canonical, preflight or candidate created. Formal V1.23 remains677 with the
   recorded identities; original packages, old review and user AGENTS unchanged.
-- Separate read-only Design/source review: Critical0/Important0/openMinor0.
-  One scope-label omission fixed in new review evidence only. Fresh scoped
-  checks:438 protected files unchanged,16 original records preserved,203 IDs/
+- Prior separate read-only Design/source review: Critical0/Important0/openMinor0.
+  One scope-label omission fixed in new review evidence only. That Design
+  checkpoint's scoped checks:438 protected files unchanged,16 records preserved,203 IDs/
   dispositions closed,0 unknown proposed tags; docs diff/scope checks pass.
   No full maintained suite is repeated for this docs-only checkpoint.
-- Stop: USER DECISION REQUIRED — VECTOR CH12 SOURCE ADAPTATION DESIGN REVIEW.
+- Plan independent read-only technical review completed by a separate reviewer:
+  Critical0/Important0/openMinor0. Two Minor API-wording findings corrected and
+  re-reviewed (taxonomy location; approval carrier rather than file input).
+  Fresh docs checks: approved Design sections1–7 byte-identical; diff/scope and
+  new-Plan whitespace checks pass; user AGENTS and existing intake/selection
+  review identities unchanged. No implementation/full-suite tests run here;
+  chapter implementation and actual source mapping approval remain NOT STARTED.
+- Stop: USER DECISION REQUIRED — VECTOR CH12 IMPLEMENTATION PLAN REVIEW.
 
 ### F6 selected source batch / V1.24 candidate bridge — PLAN APPROVED / IMPLEMENTATION NOT STARTED
 
