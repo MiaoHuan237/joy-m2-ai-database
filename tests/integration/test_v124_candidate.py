@@ -357,7 +357,8 @@ def _independent_candidate(root, approved_batches, contract):
     # Explicit columns/projections; do not ask the implementation for expected rows.
     with sqlite3.connect(database) as con:
         con.execute("PRAGMA foreign_keys=ON")
-        for sql in ORACLE_SQL:
+        con.execute("BEGIN IMMEDIATE")
+        for sql in ORACLE_SQL[:-1]:
             con.execute(sql)
         row = (1, approval["batch_id"], "V1.24", "task14-v124-candidate-v1", GENESIS,
                approval["preflight_sha256"], result.report.manifest_sha256, approval["statement"],
@@ -392,6 +393,7 @@ def _independent_candidate(root, approved_batches, contract):
             for order, value in enumerate(values, 1):
                 con.execute("INSERT INTO task14_v124_taxonomy_v1 VALUES (?,?,?,?,?,?)",
                             (1, approval["batch_id"], kind, value, order, "candidate"))
+        con.execute(ORACLE_SQL[-1])
         con.execute("PRAGMA user_version=124")
         assert con.execute("PRAGMA integrity_check").fetchall() == [("ok",)]
         assert con.execute("PRAGMA foreign_key_check").fetchall() == []
@@ -582,3 +584,602 @@ class V124FirstVerifierTests(unittest.TestCase):
         (self.target / "candidate_manifest.json").write_bytes(b"{")
         with self.assertRaises(InputFormatError):
             self.verify()
+class V124FirstWriterTests(unittest.TestCase):
+    def setUp(self) -> None:
+        sandbox = ROOT / "data/staging/task14-v124-synthetic"
+        sandbox.mkdir(parents=True, exist_ok=True)
+        self.temporary = tempfile.TemporaryDirectory(prefix="synthetic-", dir=sandbox)
+        self.root = Path(self.temporary.name)
+        self.package = _make_package(self.root)
+        for folder in ("data/staging", "data/baselines", "releases"):
+            (self.root / folder).mkdir(parents=True)
+        self.config = PipelineConfig(ROOT)
+
+    def tearDown(self) -> None:
+        self.temporary.cleanup()
+
+    def _invoke(self, fn, *args):
+        try:
+            return fn(*args)
+        except NotImplementedError:
+            self.fail("V1.24 writer/verifier behavior missing")
+
+    def _build(self, *args):
+        from joy_m2.ingest.v124_writer import build_v124_candidate
+        return self._invoke(build_v124_candidate, *args)
+
+    def _verify(self, *args):
+        from joy_m2.ingest.v124_verification import verify_v124_candidate
+        return self._invoke(verify_v124_candidate, *args)
+
+    def build(self, output: Path | None = None):
+        from joy_m2.ingest.v124_writer import build_v124_candidate as _build
+        build_v124_candidate = lambda *args: self._invoke(_build, *args)
+
+        approved = _approved(self.package, self.config)
+        target = output or (self.root / "data/staging/candidate")
+        return approved, build_v124_candidate(
+            V124CandidateBuildRequest((approved,), target, _contract()),
+            self.config,
+        )
+
+    def test_first_batch_builds_verified_append_only_candidate(self):
+        baseline_before = hashlib.sha256(BASELINE.read_bytes()).hexdigest()
+        approved, artifacts = self.build()
+        self.assertEqual(artifacts.verification_report.status, "PASS")
+        self.assertEqual(artifacts.state.candidate_count, 1)
+        self.assertEqual(artifacts.state.projected_question_count, 678)
+        self.assertEqual(artifacts.state.batch_ledger[0].parent_candidate_digest, GENESIS)
+        self.assertTrue(artifacts.database.path.is_file())
+        with sqlite3.connect(artifacts.database.path) as connection:
+            self.assertEqual(
+                connection.execute(
+                    "SELECT COUNT(*) FROM task14_candidate_questions_v124"
+                ).fetchone()[0],
+                678,
+            )
+        self.assertEqual(hashlib.sha256(BASELINE.read_bytes()).hexdigest(), baseline_before)
+        self.assertEqual(approved.approval.parent_candidate_digest, GENESIS)
+
+    def test_independent_verifier_passes_and_does_not_mutate(self):
+        from joy_m2.ingest.v124_verification import verify_v124_candidate as _verify
+        verify_v124_candidate = lambda *args: self._invoke(_verify, *args)
+
+        approved, artifacts = self.build()
+        root = artifacts.database.path.parent
+        before = _tree(root)
+        report = verify_v124_candidate(
+            V124CandidateVerificationRequest(root, (approved,), _contract()),
+            self.config,
+        )
+        self.assertEqual(report.status, "PASS")
+        self.assertEqual(tuple(check.name for check in report.checks), CHECK_NAMES)
+        self.assertTrue(all(check.passed for check in report.checks))
+        self.assertEqual(_tree(root), before)
+
+    def test_manifest_tamper_returns_structured_fail_without_repair(self):
+        from joy_m2.ingest.v124_verification import verify_v124_candidate as _verify
+        verify_v124_candidate = lambda *args: self._invoke(_verify, *args)
+
+        approved, artifacts = self.build()
+        root = artifacts.database.path.parent
+        manifest = root / "candidate_manifest.json"
+        manifest.write_bytes(manifest.read_bytes().replace(b'"candidate"', b'"tampered"', 1))
+        before = _tree(root)
+        report = verify_v124_candidate(
+            V124CandidateVerificationRequest(root, (approved,), _contract()),
+            self.config,
+        )
+        self.assertEqual(report.status, "FAIL")
+        self.assertEqual(_tree(root), before)
+
+    def test_missing_root_and_malformed_json_keep_exact_error_boundary(self):
+        from joy_m2.ingest.v124_verification import verify_v124_candidate as _verify
+        verify_v124_candidate = lambda *args: self._invoke(_verify, *args)
+
+        approved = _approved(self.package, self.config)
+        missing = self.root / "missing"
+        with self.assertRaises(InputMissingError):
+            verify_v124_candidate(
+                V124CandidateVerificationRequest(missing, (approved,), _contract()),
+                self.config,
+            )
+
+        _, artifacts = self.build()
+        root = artifacts.database.path.parent
+        (root / "candidate_manifest.json").write_bytes(b"{")
+        with self.assertRaises(InputFormatError):
+            verify_v124_candidate(
+                V124CandidateVerificationRequest(root, (approved,), _contract()),
+                self.config,
+            )
+
+    def test_missing_extra_and_tampered_artifacts_are_structured_failures(self):
+        from joy_m2.ingest.v124_verification import verify_v124_candidate as _verify
+        verify_v124_candidate = lambda *args: self._invoke(_verify, *args)
+
+        for case in ("missing", "extra", "tampered-db"):
+            with self.subTest(case=case):
+                case_package = _make_package(self.root / f"source-{case}")
+                approved = _approved(case_package, self.config)
+                candidate_root = self.root / f"candidate-{case}"
+                from joy_m2.ingest.v124_writer import build_v124_candidate as _build
+                build_v124_candidate = lambda *args: self._invoke(_build, *args)
+
+                artifacts = build_v124_candidate(
+                    V124CandidateBuildRequest(
+                        (approved,), candidate_root, _contract()
+                    ),
+                    self.config,
+                )
+                if case == "missing":
+                    (candidate_root / "rollback.json").unlink()
+                elif case == "extra":
+                    (candidate_root / "rogue.txt").write_text("rogue", encoding="utf-8")
+                else:
+                    with artifacts.database.path.open("ab") as handle:
+                        handle.write(b"tamper")
+                before = _tree(candidate_root)
+                report = verify_v124_candidate(
+                    V124CandidateVerificationRequest(
+                        candidate_root, (approved,), _contract()
+                    ),
+                    self.config,
+                )
+                self.assertEqual(report.status, "FAIL")
+                self.assertEqual(_tree(candidate_root), before)
+
+    def test_existing_output_is_not_replaced(self):
+        approved, artifacts = self.build()
+        before = _tree(artifacts.database.path.parent)
+        from joy_m2.ingest.v124_writer import build_v124_candidate as _build
+        build_v124_candidate = lambda *args: self._invoke(_build, *args)
+
+        with self.assertRaises(OutputConflictError):
+            build_v124_candidate(
+                V124CandidateBuildRequest(
+                    (approved,), artifacts.database.path.parent, _contract()
+                ),
+                self.config,
+            )
+        self.assertEqual(_tree(artifacts.database.path.parent), before)
+
+    def test_writer_rejects_existing_artifact_ancestors_without_mutation(self):
+        approved = _approved(self.package, self.config)
+        for marker in ("candidate_manifest.json", "import_manifest.json"):
+            for kind in ("file", "dangling-symlink"):
+                with self.subTest(marker=marker, kind=kind):
+                    protected = self.root / f"protected-{marker}-{kind}"
+                    protected.mkdir()
+                    path = protected / marker
+                    if kind == "file":
+                        path.write_text('{"release_version":"V1.23"}\n')
+                    else:
+                        path.symlink_to(protected / "missing-marker-target")
+                    before = _tree(protected)
+                    output = protected / "new-child"
+                    with self.assertRaises(PipelineError):
+                        self._build(V124CandidateBuildRequest(
+                            (approved,), output, _contract()), self.config)
+                    self.assertFalse(output.exists())
+                    self.assertEqual(_tree(protected), before)
+                    self.assertEqual(path.is_symlink(), kind == "dangling-symlink")
+
+    def test_verifier_rejects_candidate_nested_in_existing_artifact_root(self):
+        approved, artifacts = self.build()
+        self.assertEqual(artifacts.verification_report.status, "PASS")
+        for marker in ("candidate_manifest.json", "import_manifest.json"):
+            with self.subTest(marker=marker):
+                protected = self.root / f"verify-protected-{marker}"
+                protected.mkdir()
+                (protected / marker).write_text('{"release_version":"V1.23"}\n')
+                nested = protected / "nested"
+                shutil.copytree(artifacts.database.path.parent, nested)
+                before = _tree(protected)
+                report = self._verify(V124CandidateVerificationRequest(
+                    nested, (approved,), _contract()), self.config)
+                self.assertEqual(report.status, "FAIL")
+                self.assertFalse(next(c.passed for c in report.checks
+                                      if c.name == "formal_boundary"))
+                self.assertEqual(_tree(protected), before)
+
+    def test_wrong_parent_approval_is_rejected(self):
+        approved = _approved(self.package, self.config)
+        forged = object.__new__(V124ImportApproval)
+        for name, value in approved.approval.__dict__.items():
+            object.__setattr__(forged, name, value)
+        object.__setattr__(forged, "parent_candidate_digest", "f" * 64)
+        bad = object.__new__(V124ApprovedBatch)
+        object.__setattr__(bad, "preflight_result", approved.preflight_result)
+        object.__setattr__(bad, "package_root", approved.package_root)
+        object.__setattr__(bad, "approval", forged)
+        from joy_m2.ingest.v124_writer import build_v124_candidate as _build
+        build_v124_candidate = lambda *args: self._invoke(_build, *args)
+
+        output = self.root / "data/staging/bad-candidate"
+        with self.assertRaises(ImportApprovalError):
+            build_v124_candidate(
+                V124CandidateBuildRequest((bad,), output, _contract()), self.config
+            )
+        self.assertFalse(output.exists())
+
+    def test_equivalent_roots_build_byte_identical_candidates(self):
+        first_package = self.package
+        second_package = _make_package(self.root / "second-source")
+        from joy_m2.ingest.v124_writer import build_v124_candidate as _build
+        build_v124_candidate = lambda *args: self._invoke(_build, *args)
+
+        first = _approved(first_package, self.config)
+        second = _approved(second_package, self.config)
+        first_root = self.root / "candidate-one"
+        second_root = self.root / "candidate-two"
+        build_v124_candidate(
+            V124CandidateBuildRequest((first,), first_root, _contract()), self.config
+        )
+        build_v124_candidate(
+            V124CandidateBuildRequest((second,), second_root, _contract()), self.config
+        )
+        self.assertEqual(_tree(first_root), _tree(second_root))
+
+
+    def test_private_genesis_oracle_reconstructs_fixed_projection(self):
+        import importlib
+        self.assertIsNotNone(importlib.util.find_spec("joy_m2.ingest.v124_writer_profiles"))
+        p = importlib.import_module("joy_m2.ingest.v124_writer_profiles")
+        self.assertTrue(callable(getattr(p, "_genesis_digest", None)))
+        self.assertEqual(p._genesis_digest(), GENESIS)
+        from unittest import mock
+        with mock.patch.object(p, "BASELINE_RELEASE_DIGEST", "0" * 64):
+            with self.assertRaises(InputFormatError):
+                p._genesis_digest()
+
+    def test_writer_independently_calls_genesis_boundary(self):
+        import joy_m2.ingest.v124_writer as writer
+        self.assertTrue(callable(getattr(writer, "_genesis_digest", None)))
+        from unittest import mock
+        approved = _approved(self.package, self.config)
+        with mock.patch.object(writer, "_genesis_digest", return_value="0" * 64) as call:
+            with self.assertRaises(ImportApprovalError):
+                writer.build_v124_candidate(V124CandidateBuildRequest((approved,),
+                    self.root / "data/staging/wrong-genesis", _contract()), self.config)
+            self.assertGreaterEqual(call.call_count, 1)
+
+    def test_verifier_independently_calls_genesis_boundary(self):
+        approved, artifacts = self.build()
+        import joy_m2.ingest.v124_verification as verifier
+        self.assertTrue(callable(getattr(verifier, "_genesis_digest", None)))
+        from unittest import mock
+        with mock.patch.object(verifier, "_genesis_digest", side_effect=[GENESIS, "0" * 64]) as call:
+            result = verifier.verify_v124_candidate(V124CandidateVerificationRequest(
+                artifacts.database.path.parent, (approved,), _contract()), self.config)
+            self.assertEqual(result.status, "FAIL")
+            self.assertFalse(next(x.passed for x in result.checks if x.name == "parent_chain"))
+            self.assertEqual(call.call_count, 2)
+
+    def test_baseline_schema_rows_metadata_remain_exactly_preserved(self):
+        approved, artifacts = self.build()
+        with sqlite3.connect(f"{BASELINE.as_uri()}?mode=ro", uri=True) as baseline, sqlite3.connect(artifacts.database.path) as candidate:
+            rows = baseline.execute("SELECT type,name,tbl_name,sql FROM sqlite_master ORDER BY name").fetchall()
+            for row in rows:
+                self.assertEqual(candidate.execute("SELECT type,name,tbl_name,sql FROM sqlite_master WHERE name=?", (row[1],)).fetchone(), row)
+                if row[0] == "table":
+                    quoted = '"' + row[1].replace('"','""') + '"'
+                    self.assertEqual(candidate.execute("SELECT * FROM " + quoted).fetchall(),
+                                     baseline.execute("SELECT * FROM " + quoted).fetchall())
+            self.assertEqual(candidate.execute("PRAGMA user_version").fetchone(), (124,))
+            self.assertEqual(candidate.execute("SELECT aggregate_order,record_status,selectable FROM task14_v124_candidates_v1").fetchall(), [(678,"candidate",0)])
+
+    def test_publication_fault_cleans_only_owned_temporary_output(self):
+        import joy_m2.ingest.v124_writer as writer
+        self.assertTrue(hasattr(writer, "atomic_rename_no_replace"))
+        from unittest import mock
+        approved = _approved(self.package, self.config)
+        output = self.root / "data/staging/fault"
+        source = _tree(self.package)
+        with mock.patch.object(writer, "atomic_rename_no_replace", side_effect=OSError("injected")):
+            with self.assertRaises(PipelineError):
+                writer.build_v124_candidate(V124CandidateBuildRequest((approved,), output, _contract()), self.config)
+        self.assertFalse(output.exists())
+        self.assertEqual(tuple(output.parent.iterdir()), ())
+        self.assertEqual(_tree(self.package), source)
+
+
+    def test_forged_matching_first_parent_values_rejected_by_both_boundaries(self):
+        build_v124_candidate, verify_v124_candidate = self._build, self._verify
+        approved, artifacts = self.build()
+        root = artifacts.database.path.parent
+        before = _tree(root)
+        def clone(value, **changes):
+            result = object.__new__(type(value))
+            for k, v in vars(value).items():
+                object.__setattr__(result, k, changes.get(k, v))
+            return result
+        projection = {"baseline_database_sha256":BASELINE_SHA,"baseline_question_count":678,
+            "baseline_release_digest":_contract().baseline_release_digest,
+            "baseline_release_version":"V1.23","candidate_count":0,
+            "schema":"task14-v124-genesis-v1","target_release_version":"V1.24"}
+        changed = hashlib.sha256((json.dumps(projection,sort_keys=True,separators=(",",":"))+"\n").encode()).hexdigest()
+        for wrong in (None,"","331192032f184a44ed383e6dacc2f06fbacb60ad94414298fcb935ff56cb5906",
+            "4ff624aca875b0191fe8a617516d2919c6d700ce69c5a3b5d236adcf7ecc59f1","a"*64,changed):
+            with self.subTest(parent=wrong):
+                report = clone(approved.preflight_result.report,parent_candidate_digest=wrong)
+                state = clone(approved.preflight_result.effective_state,candidate_digest=wrong)
+                result = clone(approved.preflight_result,report=report,effective_state=state)
+                approval = clone(approved.approval,parent_candidate_digest=wrong,
+                    statement=f"USER APPROVED IMPORT BATCH {report.batch_id} {report.preflight_sha256} V1.24 PARENT {wrong}")
+                bad = clone(approved,preflight_result=result,approval=approval)
+                output = self.root / "data/staging/forged"
+                with self.assertRaises(ImportApprovalError):
+                    build_v124_candidate(V124CandidateBuildRequest((bad,),output,_contract()), self.config)
+                verification = verify_v124_candidate(V124CandidateVerificationRequest(root,(bad,),_contract()),self.config)
+                self.assertEqual(verification.status,"FAIL")
+                self.assertFalse(output.exists())
+                self.assertEqual(_tree(root),before)
+
+    def test_independent_corruption_controls_are_structured_and_read_only(self):
+        verify_v124_candidate = self._verify
+        approved, artifacts = self.build()
+        original = artifacts.database.path.parent
+        cases = {
+            "manifest": "deterministic_identity", "sums": "sha256sums_closure",
+            "rollback": "rollback_contract", "image": "image_projection",
+            "unreadable": "sqlite_readability", "schema": "sqlite_schema",
+            "integrity": "sqlite_integrity",
+            "foreign_key": "sqlite_foreign_keys", "ledger": "batch_ledger",
+            "count": "count_closure", "digest": "candidate_digest",
+            "artifact_ref": "artifact_references",
+        }
+        for case, expected in cases.items():
+            with self.subTest(case=case):
+                target = self.root / "data/staging" / case
+                shutil.copytree(original,target)
+                db = target / _contract().database_filename
+                manifest = target / "candidate_manifest.json"
+                if case in ("manifest","digest","artifact_ref"):
+                    payload=json.loads(manifest.read_text())
+                    if case=="manifest": payload["release_status"]="published"
+                    if case=="digest": payload["candidate_digest"]="0"*64
+                    if case=="artifact_ref": payload["database"]["size_bytes"]+=1
+                    manifest.write_text(json.dumps(payload))
+                elif case=="sums": (target/"SHA256SUMS").write_bytes(b"bad\n")
+                elif case=="rollback": (target/"rollback.json").write_bytes(b"{}\n")
+                elif case=="image": next((target/"images").rglob("*.svg")).write_bytes(b"bad")
+                elif case=="unreadable": db.write_bytes(b"not sqlite")
+                elif case=="integrity":
+                    with sqlite3.connect(db.as_uri() + "?mode=ro", uri=True) as check:
+                        page = check.execute("SELECT rootpage FROM sqlite_master WHERE name='task14_v124_candidates_v1'").fetchone()[0]
+                        size = check.execute("PRAGMA page_size").fetchone()[0]
+                    content = bytearray(db.read_bytes())
+                    content[(page - 1) * size] = 0  # Invalid data b-tree page type.
+                    db.write_bytes(content)
+                else:
+                    with sqlite3.connect(db) as con:
+                        con.execute("PRAGMA foreign_keys=OFF")
+                        if case=="schema": con.execute("CREATE TABLE rogue(x)")
+                        if case=="foreign_key": con.execute("UPDATE task14_v124_images_v1 SET batch_id='missing'")
+                        if case=="ledger": con.execute("UPDATE task14_v124_batch_ledger_v1 SET manifest_sha256=?",("0"*64,))
+                        if case=="count": con.execute("DELETE FROM task14_v124_candidates_v1")
+                before=_tree(target)
+                report=verify_v124_candidate(V124CandidateVerificationRequest(target,(approved,),_contract()),self.config)
+                self.assertEqual(report.status,"FAIL")
+                self.assertFalse(next(x.passed for x in report.checks if x.name==expected))
+                self.assertEqual(_tree(target),before)
+
+    def test_forged_empty_or_missing_nested_authority_rejected_without_crash(self):
+        build_v124_candidate = self._build
+        approved = _approved(self.package, self.config)
+        def clone(value, **changes):
+            result = object.__new__(type(value))
+            for key, item in vars(value).items():
+                object.__setattr__(result, key, changes.get(key, item))
+            return result
+        output = self.root / "forged-carrier"
+        valid = V124CandidateBuildRequest((approved,), output, _contract())
+        for batches in ((), (clone(approved, approval=None),)):
+            with self.subTest(batches=len(batches)):
+                forged = clone(valid, approved_batches=batches)
+                try:
+                    build_v124_candidate(forged, self.config)
+                except PipelineError:
+                    pass
+                except Exception as error:
+                    self.fail(f"writer leaked {type(error).__name__}: {error}")
+                else:
+                    self.fail("writer accepted a forged carrier")
+                self.assertFalse(output.exists())
+
+    def _forged_candidates(self, approved, candidates):
+        import joy_m2.ingest.v124_verification as m
+        self.assertTrue(callable(getattr(m, "_preflight_payload", None)), "verifier payload reconstruction missing")
+        from dataclasses import replace
+        from joy_m2.ingest.v124_verification import _preflight_payload
+        from joy_m2.ingest.v124_writer_profiles import canonical_json_file_bytes
+        result = replace(approved.preflight_result, candidates=candidates)
+        report = replace(
+            result.report,
+            proposed_ids=tuple(c.proposed_question_id for c in candidates),
+            level_counts=tuple(
+                (level, sum(c.difficulty_level == level for c in candidates))
+                for level in range(1, 6) if any(c.difficulty_level == level for c in candidates)
+            ),
+        )
+        result = replace(result, report=report)
+        intermediate = object.__new__(V124ApprovedBatch)
+        for key, value in vars(approved).items():
+            object.__setattr__(intermediate, key, result if key == "preflight_result" else value)
+        digest = hashlib.sha256(canonical_json_file_bytes(_preflight_payload(intermediate))).hexdigest()
+        result = replace(result, report=replace(report, preflight_sha256=digest))
+        approval = replace(approved.approval, preflight_sha256=digest,
+            statement=f"USER APPROVED IMPORT BATCH {report.batch_id} {digest} V1.24 PARENT {GENESIS}")
+        return V124ApprovedBatch(result, approved.package_root, approval)
+
+    def test_writer_reconstructs_candidates_from_canonical_bytes(self):
+        self.build()  # First-generation behavior must exist before hostile-carrier setup.
+        from dataclasses import replace
+        build_v124_candidate = self._build
+        from joy_m2.ingest.v124_preflight import _formal_indexes
+        from joy_m2.ingest.v124_verification import _normalized_text_sha256
+        approved = _approved(self.package, self.config)
+        source = approved.preflight_result.candidates[0]
+        primary = next(x for x in sorted(_formal_indexes(BASELINE)[1]) if x != source.primary_type)
+        changes = (
+            {"solution_original": "not the canonical answer"},
+            {"question_text_original": "Not the canonical question",
+             "normalized_text_sha256": _normalized_text_sha256("Not the canonical question")},
+            {"primary_type": primary},
+            {"source_question_number": "forged-source-number"},
+            {"translation_evidence": "source:source/source.txt#forged-fragment"},
+            {"difficulty_level": 2},
+        )
+        before = _tree(self.package)
+        for index, change in enumerate(changes):
+            with self.subTest(change=change):
+                forged = self._forged_candidates(approved, (replace(source, **change),))
+                output = self.root / f"forged-record-{index}"
+                with self.assertRaises(ImportApprovalError):
+                    build_v124_candidate(V124CandidateBuildRequest((forged,), output, _contract()), self.config)
+                self.assertFalse(output.exists())
+                self.assertEqual(_tree(self.package), before)
+
+    def test_writer_rejects_reordered_canonical_candidates(self):
+        build_v124_candidate = self._build
+        records_path = self.package / "records/candidates.json"
+        records = json.loads(records_path.read_text(encoding="utf-8"))
+        records.append(dict(
+            records[0], proposed_question_id="TASK13-ORDER-002",
+            source_question_number="A2", source_fragment_hash="b" * 64,
+            question_text_original="Solve 7y + 2 = 37.",
+        ))
+        raw = (json.dumps(records, ensure_ascii=False) + "\n").encode("utf-8")
+        records_path.write_bytes(raw)
+        manifest_path = self.package / "import_manifest.json"
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest["candidate_records"][0].update(
+            sha256=hashlib.sha256(raw).hexdigest(), size_bytes=len(raw))
+        manifest_path.write_text(json.dumps(manifest) + "\n", encoding="utf-8")
+        approved = _approved(self.package, self.config)
+        self.assertEqual(approved.preflight_result.report.new_candidate_count, 2)
+        forged = self._forged_candidates(approved, approved.preflight_result.candidates[::-1])
+        before = _tree(self.package)
+        output = self.root / "forged-order"
+        with self.assertRaises(ImportApprovalError):
+            build_v124_candidate(V124CandidateBuildRequest((forged,), output, _contract()), self.config)
+        self.assertFalse(output.exists())
+        self.assertEqual(_tree(self.package), before)
+
+    def test_verifier_independently_reconstructs_canonical_record_authority(self):
+        from dataclasses import replace
+        from unittest import mock
+        build_v124_candidate, verify_v124_candidate = self._build, self._verify
+        approved = _approved(self.package, self.config)
+        forged = self._forged_candidates(approved, (
+            replace(approved.preflight_result.candidates[0], solution_original="not canonical"),))
+        output = self.root / "forged-persisted"
+        # Construct hostile synthetic artifacts while bypassing only the writer's
+        # package binding; the later independent verifier has no patched checks.
+        with mock.patch("joy_m2.ingest.v124_verification._package_evidence_valid", return_value=True):
+            build_v124_candidate(V124CandidateBuildRequest((forged,), output, _contract()), self.config)
+        before = _tree(output)
+        report = verify_v124_candidate(V124CandidateVerificationRequest(output, (forged,), _contract()), self.config)
+        self.assertEqual(report.status, "FAIL")
+        self.assertFalse(next(c.passed for c in report.checks if c.name == "batch_authority_artifacts"))
+        self.assertEqual(_tree(output), before)
+
+    def _invalid_manifest_envelopes(self):
+        original = (self.package / "import_manifest.json").read_text(encoding="utf-8")
+        parsed = json.loads(original)
+        return (
+            ("duplicate-key", original.replace("{", '{"target_release_version":"V1.23",', 1)),
+            ("reordered-fields", json.dumps(dict(reversed(tuple(parsed.items())))) + "\n"),
+        )
+
+    def test_writer_rejects_stale_noncanonical_manifest_envelope(self):
+        build_v124_candidate = self._build
+        approved = _approved(self.package, self.config)
+        manifest_path = self.package / "import_manifest.json"
+        cases = self._invalid_manifest_envelopes()
+        for name, raw in cases:
+            with self.subTest(name=name):
+                manifest_path.write_text(raw, encoding="utf-8")
+                with self.assertRaises(PipelineError):
+                    load_v124_import_manifest(manifest_path)
+                before = _tree(self.package)
+                output = self.root / name
+                with self.assertRaises(ImportApprovalError):
+                    build_v124_candidate(V124CandidateBuildRequest((approved,), output, _contract()), self.config)
+                self.assertFalse(output.exists())
+                self.assertEqual(_tree(self.package), before)
+
+    def test_verifier_rejects_stale_noncanonical_manifest_envelope(self):
+        verify_v124_candidate = self._verify
+        approved, artifacts = self.build()
+        manifest_path = self.package / "import_manifest.json"
+        cases = self._invalid_manifest_envelopes()
+        for name, raw in cases:
+            with self.subTest(name=name):
+                manifest_path.write_text(raw, encoding="utf-8")
+                with self.assertRaises(PipelineError):
+                    load_v124_import_manifest(manifest_path)
+                before = _tree(self.root)
+                report = verify_v124_candidate(V124CandidateVerificationRequest(
+                    artifacts.database.path.parent, (approved,), _contract()), self.config)
+                self.assertEqual(report.status, "FAIL")
+                self.assertFalse(next(c.passed for c in report.checks if c.name == "batch_authority_artifacts"))
+                self.assertEqual(_tree(self.root), before)
+
+    def test_uri_reserved_output_names_are_read_only_and_cleanup_safe(self):
+        from unittest import mock
+        build_v124_candidate, verify_v124_candidate = self._build, self._verify
+        approved = _approved(self.package, self.config)
+        for marker in ("#", "?"):
+            with self.subTest(marker=marker):
+                output = self.root / f"candidate{marker}1"
+                try:
+                    artifacts = build_v124_candidate(V124CandidateBuildRequest((approved,), output, _contract()), self.config)
+                except PipelineError as error:
+                    self.fail(f"valid path failed and may create stray files: {error}")
+                before = _tree(self.root)
+                report = verify_v124_candidate(V124CandidateVerificationRequest(output, (approved,), _contract()), self.config)
+                self.assertEqual(report.status, "PASS")
+                self.assertEqual(_tree(self.root), before)
+                target = self.root / f"fault{marker}2"
+                with mock.patch("joy_m2.ingest.v124_writer.atomic_rename_no_replace", side_effect=OSError("injected")):
+                    with self.assertRaises(PipelineError):
+                        build_v124_candidate(V124CandidateBuildRequest((approved,), target, _contract()), self.config)
+                self.assertEqual(_tree(self.root), before)
+
+    def test_unsafe_output_targets_and_read_only_baseline_connection(self):
+        self.build(self.root / "control")  # Separate successful prerequisite.
+        build_v124_candidate = self._build
+        from unittest import mock
+        import joy_m2.ingest.v124_writer as writer
+        approved=_approved(self.package,self.config)
+        link=self.root/"data/staging/link"
+        link.symlink_to(self.package,target_is_directory=True)
+        for output in (self.package/"nested", link/"nested", BASELINE.parent/"forbidden", ROOT/"tmp/pdfs/task14-v124-synthetic/not-staging"):
+            with self.subTest(output=output),self.assertRaises(PipelineError):
+                build_v124_candidate(V124CandidateBuildRequest((approved,),output,_contract()),self.config)
+            self.assertFalse(output.exists())
+        connect=sqlite3.connect
+        calls=[]
+        def audited_connect(*args,**kwargs):
+            if str(BASELINE) in str(args[0]) or BASELINE.as_uri() in str(args[0]):
+                calls.append(args[0])
+                self.assertIn("mode=ro",str(args[0]))
+                self.assertTrue(kwargs.get("uri"))
+            return connect(*args,**kwargs)
+        with mock.patch.object(writer.sqlite3,"connect",side_effect=audited_connect):
+            self.build()
+        self.assertTrue(calls)
+
+
+
+    def test_writer_matches_independent_oracle_records_and_authority(self):
+        approved, artifacts = self.build()
+        oracle = self.root / "oracle"
+        digest = _independent_candidate(oracle, (approved,), _contract())
+        self.assertEqual(artifacts.state.candidate_digest, digest)
+        for relative, _, _ in _tree(oracle):
+            # Fixture and writer use distinct SQLite insertion code; require all bytes too.
+            self.assertEqual((oracle / relative).read_bytes(),
+                             (artifacts.database.path.parent / relative).read_bytes(), relative)
