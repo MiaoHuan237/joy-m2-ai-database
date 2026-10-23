@@ -54,3 +54,24 @@ Consolidated human review: `data/staging/vector-ch12-mapping/preparation-000001/
 Fresh read-only verify_proposals.py checks exact proposal bytes/hashes, original member hashes, disjoint selections, aggregate dispositions,438 protected identities, read-only formal view677 unique IDs, AGENTS identity and absent releases/V1.24. PASS. Real canonical count0; real candidate writes0. Current stop: **USER DECISION REQUIRED — SOURCE MAPPING APPROVAL**. Subsequent preflight/import must bind the then-current V1.24 parent; no net-new count predicted.
 
 Ordinary engineering push through14d517c succeeded. Ignored proposals are local outputs, not part of that Git backup; no offsite backup claim. Scope adjustment for later natural groups is the user's explicit whole-chapter authorization, not an implicit change to source/import approval contracts.
+
+## Source approvals received; actual canonical/preflight — 2026-10-23
+
+User subsequently supplied all three exact mapping approval statements above.
+Immutable received records are in `data/staging/vector-ch12-approved-20261023-000001/S01-SOURCE_MAPPING_APPROVAL_RECEIVED.json` and corresponding S02/S03 files. Their literal strings bind unchanged mappings, both input ZIPs, selected member bytes and scoped batch IDs. No actual import approval has been received.
+
+Actual chapter adapter generated S01/S02/S03-canonical under that root. Independent byte checks cover raw source members, expanded shared fragments, all34 original question/solution fields, answer coverage,4 original images, source-map and complete7/8/7-file manifest closure. Existing MMD formatting artefacts and source identities remain unchanged. No generated solution or taxonomy/difficulty substitution.
+
+Recovered state: no realV1.24 candidate manifest/receipt or pending-write; formalV1.23 remains677. Independently reconstructed frozen genesis `797ed06ca5833bac060c1603cada38a6f2aa9eb080a40d9dc892bba9a549773a` is the parent for each report. No candidate verifier PASS is claimed in the absence of a candidate.
+
+| Batch suffix | Preflight SHA256 | Detected/new | Duplicate/rejected/ambiguous/adaptations/issues | Projected after, independently from677 |
+|---|---|---|---|---:|
+|S01|e4a206de3c4b37d073f2f2c63bccf03811af201c02f73e48b31a76f082e1bf9c|16/16|0/0/0/0/0|693|
+|S02|6e6e19c7fd52d5737ab426b0ff6bce23a05b6311d7448264e99beff0b9dd52d4|14/14|0/0/0/0/0|691|
+|S03|9ecd686eff3d1956bc48162ccb69642af74a049c97900ee23e5631867c81215d|4/4|0/0/0/0/0|681|
+
+All status READY FOR USER IMPORT APPROVAL. Missing answers0; missing independent explanations16/14/4; missing difficulty16/14/4; incomplete enrichment16/14/4.33 worked source solutions and1 final-answer key remain distinguished in coverage. Image files1/2/1, missing/orphan0. Full tags, per-file byte SHA/size and both raw manifest SHA versus frozen canonical-projection SHA are in BATCH_APPROVAL_REPORT.md, PREFLIGHT_SUMMARY.json and the canonical-files lists. The one-off verification initially conflated these two manifest hash domains; corrected from the frozen projection+LF contract, with no production or canonical mutation.
+
+Fresh checks: deterministic double preflight equality, independent source-to-canonical byte verification PASS;7 focused approval/bridge/actualV124 integration tests PASS in1.630s. No production/test changes, so the1530 engineering gate was not redundantly repeated. Separate operational reviewer independently reran all3 preflights and confirmed full saved-result equality, Critical0/Important0/Minor0.438 protected identities, source packages, historical formal/candidate evidence and original AGENTS unchanged.
+
+Current gate: **USER DECISION REQUIRED — REAL BATCH IMPORT** for S01 only. After accepting S01, re-preflight S02 and later S03 against the then-current verified parent. Do not add these independent projected counts or consume all three genesis reports sequentially. Source approvals remain valid while mapping/packages are unchanged. Real candidate writes0; no releases/V1.24; no promotion. Local ignored data are not included in Git synchronization.

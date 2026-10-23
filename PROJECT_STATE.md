@@ -50,13 +50,34 @@ Updated: 2026-10-23 (Asia/Shanghai)
 
 ## Current task
 
-### Vector chapter12 dual-package source — SOURCE MAPPING APPROVAL REQUIRED (2026-10-23)
+### Vector chapter12 dual-package source — S01 REAL BATCH IMPORT APPROVAL REQUIRED (2026-10-23)
+
+- Latest checkpoint: all three exact source mapping approvals received and
+  verified; actual S01/S02/S03 canonical and V1.24 preflight completed under
+  data/staging/vector-ch12-approved-20261023-000001/. All READY; detected/new
+  16/16,14/14,4/4; duplicate/rejected/ambiguous/adaptations/issues all0.
+  Current actualV1.24 parent is genesis
+  `797ed06ca5833bac060c1603cada38a6f2aa9eb080a40d9dc892bba9a549773a`:
+  no realV1.24 candidate or pending-write found. Each report independently starts
+  from677; projected693/691/681 are NOT cumulative or additive.
+- First request only: S01 batch `JOY-M2-OSM-M2B12-VECTOR-20261023-001-S01`,
+  preflight `e4a206de3c4b37d073f2f2c63bccf03811af201c02f73e48b31a76f082e1bf9c`.
+  After exact import approval and verified append, S02/S03 must be re-preflighted
+  on newparent before their respective import approvals. No realwriter called.
+  Source mapping approvals do not need repetition while unchanged.
+- Fresh operational gates: source/canonical bytes and all files7/8/7 close;
+  double preflight deterministic;7 focused tests PASS; separate readonly reviewer
+  C0/I0/M0 independently replayed all3 results.438 protected identities unchanged.
+  FormalV1.23 remains677; AGENTS original change preserved; no releases/V1.24.
+  See BATCH_APPROVAL_REPORT.md in the ignored operational root and the following
+  committed report. Prior engineering/proposal checkpoints below are historical.
 
 - User authorized Native / Inline engineering execution after local verification
   of the committed Plan and independent written review. Written Design approved
   at `934290f45c2acc9e84adc8f9ee86c9dd120e3514`, original file SHA256
   `d20b7e29ebf6ef2f39bfdaf0831ea3acc34298e64c3a0a1086253b4254072879`.
-  No source/selection/import/promotion approval is implied.
+  Engineering authorization alone did not grant source/import/promotion approval;
+  the subsequent three exact source approvals are recorded above.
 - Design: `docs/superpowers/specs/2026-10-23-vector-ch12-dual-package-source-design.md`.
   This is separate from the F6 source scope and reuses, rather than replaces,
   the approved V1.24 version direction. Only approval/status wording changed;
@@ -77,7 +98,7 @@ Updated: 2026-10-23 (Asia/Shanghai)
   loader/preflight integration using synthetic inputs only. Chapter75 PASS;
   chapter/historical MMD417 PASS. Separate implementation review C0/I0/openM0.
   Behavioral RED/GREEN logs retained under ignored Plan ledgers. See
-  docs/reports/VECTOR_CH12_SOURCE_ADAPTATION.md. No real canonical/import yet.
+  docs/reports/VECTOR_CH12_SOURCE_ADAPTATION.md. At engineering exit there was no real canonical/import.
 - Whole eligible chapter is the goal. Pilot16 is not a batch limit: after the
   technical gate reuse the profile for163 later-processing units by natural groups.
   Held16 and prerequisite8 remain preserved, not claimed eligible.
@@ -106,7 +127,7 @@ Updated: 2026-10-23 (Asia/Shanghai)
   S02:14, SHAa479e2232aeeb7f9cfdd0c6bbf0e07b9c430aced480a924495dea72b5d32fdf8;
   S03:4, SHA18d7ebb380338cecafac23574b42b05fe7eb8f6182adb709c1cf6f9e17bac1e2.
   These are mapping digests, not preflight/import authority. Exact source
-  approvals received0. Independent selected-content review C0/I0/openMinor0;
+  approvals received0 at that earlier proposal checkpoint. Independent selected-content review C0/I0/openMinor0;
   proposal hashes/member identities/203 destinations/438 protected files and
   read-only formal677 unique IDs checked PASS. Consolidated review is
   data/staging/vector-ch12-mapping/preparation-000001/REVIEW_SUMMARY.md.
