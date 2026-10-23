@@ -1,0 +1,154 @@
+"""Independent small ZIP fixtures; no production-generated expected bytes."""
+import hashlib
+import io
+from pathlib import Path
+import stat
+import struct
+import tempfile
+import unittest
+import warnings
+import zipfile
+from unittest.mock import patch
+
+from joy_m2.ingest import archive, vector_ch12 as profile
+from joy_m2.ingest.adapter_models import MmdAdapterBlockedError
+
+
+def sha(data):
+    return hashlib.sha256(data).hexdigest()
+
+
+def zip_bytes(entries, compression=zipfile.ZIP_STORED):
+    stream = io.BytesIO()
+    with warnings.catch_warnings():
+        warnings.simplefilter('ignore', UserWarning)
+        with zipfile.ZipFile(stream, 'w', compression=compression) as z:
+            for name, content in entries:
+                z.writestr(name, content)
+    return stream.getvalue()
+
+
+class DualInventoryTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        self.paths = [self.root/'textbook.zip', self.root/'answers.zip']
+        self.contents = [b'1. question\r\n', b'1. answer\n']
+        self.mapping = {'packages': []}
+        for role, path, content in zip(('textbook', 'answers'), self.paths, self.contents):
+            data = zip_bytes([('source.mmd', content), ('images/shared.png', role.encode())])
+            path.write_bytes(data)
+            self.mapping['packages'].append(dict(role=role, zip_sha256=sha(data),
+                zip_size_bytes=len(data), selected_member='source.mmd',
+                member_sha256=sha(content), member_size_bytes=len(content)))
+
+    def replace(self, entries, compression=zipfile.ZIP_STORED):
+        data = zip_bytes(entries, compression)
+        self.paths[0].write_bytes(data)
+        self.mapping['packages'][0].update(zip_sha256=sha(data), zip_size_bytes=len(data))
+
+    def read(self):
+        return profile._read_packages(*self.paths, self.mapping)
+
+    def blocked(self, code=None):
+        with self.assertRaises(MmdAdapterBlockedError) as raised:
+            self.read()
+        if code:
+            self.assertIn(code, [x.code for x in raised.exception.issues])
+
+    def test_distinct_roles_preserve_same_named_members_and_sources(self):
+        before = [p.read_bytes() for p in self.paths]
+        self.assertEqual(self.read(), {('textbook', 'source.mmd'): self.contents[0],
+            ('answers', 'source.mmd'): self.contents[1],
+            ('textbook', 'images/shared.png'): b'textbook',
+            ('answers', 'images/shared.png'): b'answers'})
+        self.assertEqual([p.read_bytes() for p in self.paths], before)
+        self.assertEqual(set(p.name for p in self.root.iterdir()), {'textbook.zip', 'answers.zip'})
+
+    def test_identity_changes_and_swapped_packages_rejected(self):
+        self.paths.reverse()
+        self.blocked('source_contract_mismatch')
+        self.paths.reverse()
+        for key, bad in [('zip_sha256', '0'*64), ('zip_size_bytes', 1),
+                         ('member_sha256', '0'*64), ('member_size_bytes', 1)]:
+            with self.subTest(key=key):
+                old = self.mapping['packages'][0][key]
+                self.mapping['packages'][0][key] = bad
+                self.blocked('source_contract_mismatch')
+                self.mapping['packages'][0][key] = old
+
+    def test_missing_or_extra_mmd(self):
+        self.replace([('images/x.png', b'x')])
+        self.blocked('selection_not_unique')
+        self.replace([('source.mmd', self.contents[0]), ('extra.mmd', b'x')])
+        self.blocked('archive_member_unsafe')
+
+    def test_unsafe_paths_types_and_hidden_files(self):
+        for name in ['../x', '/x', 'C:/x', 'a\\b', 'a//b', '.secret', 'x.zip']:
+            with self.subTest(name=name):
+                self.replace([('source.mmd', self.contents[0]), (name, b'x')])
+                self.blocked('archive_member_unsafe')
+        for mode in [stat.S_IFLNK | 0o777, stat.S_IFIFO | 0o600, stat.S_IFREG | 0o755]:
+            info = zipfile.ZipInfo('unsafe'); info.create_system = 3
+            info.external_attr = mode << 16
+            self.replace([('source.mmd', self.contents[0]), (info, b'x')])
+            self.blocked('archive_member_unsafe')
+
+    def test_duplicate_nfc_and_casefold_collisions(self):
+        for names in [('a.png', 'a.png'), ('é.png', 'e\u0301.png'), ('A.png', 'a.png')]:
+            with self.subTest(names=names):
+                self.replace([('source.mmd', self.contents[0]), *[(n, b'x') for n in names]])
+                self.blocked('archive_member_unsafe')
+
+    def test_metadata_is_ignored_but_validated(self):
+        self.replace([('source.mmd', self.contents[0]), ('.DS_Store', b'x'),
+                      ('__MACOSX/._source.mmd', b'x')])
+        self.assertEqual(self.read()[('textbook', 'source.mmd')], self.contents[0])
+        self.assertNotIn(('textbook', '.DS_Store'), self.read())
+        self.replace([('source.mmd', self.contents[0]), ('__MACOSX/../escape', b'x')])
+        self.blocked('archive_member_unsafe')
+
+    def test_crc_encryption_compression_and_invalid_zip(self):
+        original = self.paths[0].read_bytes()
+        for kind in ['crc', 'encryption', 'structure']:
+            data = bytearray(original)
+            if kind == 'crc':
+                start = 30 + len('source.mmd')
+                data[start] ^= 1
+            elif kind == 'encryption':
+                struct.pack_into('<H', data, 6, 1)
+                offset = data.index(b'PK\x01\x02')
+                struct.pack_into('<H', data, offset + 8, 1)
+            else:
+                data = bytearray(b'not a zip')
+            self.paths[0].write_bytes(data)
+            self.mapping['packages'][0].update(zip_sha256=sha(data), zip_size_bytes=len(data))
+            self.blocked('archive_integrity_invalid')
+        self.replace([('source.mmd', self.contents[0])], zipfile.ZIP_BZIP2)
+        self.blocked('archive_integrity_invalid')
+
+    def test_mmd_encoding(self):
+        for content in [b'\xff', b'\xef\xbb\xbf1. text']:
+            self.replace([('source.mmd', content)])
+            self.mapping['packages'][0].update(member_sha256=sha(content), member_size_bytes=len(content))
+            self.blocked('source_contract_mismatch')
+
+    def test_combined_count_limit_and_inventory_precedes_reads(self):
+        # Scaled limits exercise exact boundary without 100 MiB test allocations.
+        with patch.object(archive, '_MEMBER_COUNT_LIMIT', 4):
+            self.assertEqual(len(self.read()), 4)
+        with patch.object(archive, '_MEMBER_COUNT_LIMIT', 3), \
+             patch.object(archive, '_read_member', side_effect=AssertionError('read too early')):
+            self.blocked('archive_integrity_invalid')
+
+    def test_size_and_ratio_boundaries(self):
+        total = sum(len(c) for c in self.contents) + len(b'textbookanswers')
+        for constant, exact in [('_TOTAL_LIMIT', total),
+                                ('_ARCHIVE_LIMIT', max(p.stat().st_size for p in self.paths)),
+                                ('_MMD_LIMIT', len(self.contents[0])), ('_IMAGE_LIMIT', 8),
+                                ('_RATIO_LIMIT', 1)]:
+            with self.subTest(constant=constant), patch.object(archive, constant, exact):
+                self.assertEqual(len(self.read()), 4)
+            with self.subTest(over=constant), patch.object(archive, constant, exact - 1):
+                self.blocked('archive_integrity_invalid')
