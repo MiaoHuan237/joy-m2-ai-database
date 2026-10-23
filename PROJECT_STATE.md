@@ -50,22 +50,34 @@ Updated: 2026-10-23 (Asia/Shanghai)
 
 ## Current task
 
-### Vector chapter12 dual-package source — IMPLEMENTATION PLAN REVIEW (2026-10-23)
+### Vector chapter12 dual-package source — INLINE IMPLEMENTATION IN PROGRESS (2026-10-23)
 
-- Current task is Plan and related documentation only. Written Design approved
+- User authorized Native / Inline engineering execution after local verification
+  of the committed Plan and independent written review. Written Design approved
   at `934290f45c2acc9e84adc8f9ee86c9dd120e3514`, original file SHA256
   `d20b7e29ebf6ef2f39bfdaf0831ea3acc34298e64c3a0a1086253b4254072879`.
-  No source/selection/import/promotion approval or chapter implementation.
+  No source/selection/import/promotion approval is implied.
 - Design: `docs/superpowers/specs/2026-10-23-vector-ch12-dual-package-source-design.md`.
   This is separate from the F6 source scope and reuses, rather than replaces,
   the approved V1.24 version direction. Only approval/status wording changed;
   technical sections1–7 remain unchanged.
 - Plan: `docs/superpowers/plans/2026-10-23-vector-ch12-dual-package-source.md`.
-  Proposed execution is Native / Inline; implementation authorization pending.
+  Execution authorization received; Plan SHA256
+  `837e344cc1a0b6aea330d747eb45524f816b862d864355c63c07cd1b79eca6cd`
+  verified against commit22f33a2 and the working copy.
   A: independent source profile; B: externally delivered existing V1.24 shared
   layer; C: genuine loader/preflight bridge only after B is implemented/verified.
-  The six V1.24 modules and its verification report are still absent. F6 source
-  bridge/real import is not a textbook prerequisite; its Plan is not enlarged.
+  The six V1.24 modules are the next authorized dependency under the existing
+  F6/V1.24 Plan; no second engine. F6 source/real import is not a prerequisite.
+- Tasks1–6 implemented locally: carriers, dual inventory, exact mapping/coverage,
+  deterministic fragments, image ownership and atomic proposal publication.
+  Fresh focused tests47 PASS (including inherited test-class cases); behavioral
+  RED/GREEN logs retained under the ignored chapter Plan execution ledger.
+  Current code checkpoint e4c0529. Canonical bridge, full regression and separate
+  implementation review remain pending; no real proposal/canonical/import yet.
+- Whole eligible chapter is the goal. Pilot16 is not a batch limit: after the
+  technical gate reuse the profile for163 later-processing units by natural groups.
+  Held16 and prerequisite8 remain preserved, not claimed eligible.
 - Reused immutable intake `data/staging/vector-ch12-intake-20261023-000001/`.
   New ignored review: `data/staging/vector-ch12-design-20261023-000001/`.
   First selection proposes16 complete questions:12A1/9/10/11,12B3/4/5/6,
@@ -92,8 +104,10 @@ Updated: 2026-10-23 (Asia/Shanghai)
   Fresh docs checks: approved Design sections1–7 byte-identical; diff/scope and
   new-Plan whitespace checks pass; user AGENTS and existing intake/selection
   review identities unchanged. No implementation/full-suite tests run here;
-  chapter implementation and actual source mapping approval remain NOT STARTED.
-- Stop: USER DECISION REQUIRED — VECTOR CH12 IMPLEMENTATION PLAN REVIEW.
+  Those were written-review results, not implementation verification.
+- Next: implement/verify the authorized V1.24 shared dependency, then integrate
+  the chapter bridge, run the prescribed regression/review and prepare actual
+  source-mapping approval material. Do not stop for another Plan approval.
 
 ### F6 selected source batch / V1.24 candidate bridge — PLAN APPROVED / IMPLEMENTATION NOT STARTED
 
@@ -111,7 +125,8 @@ Updated: 2026-10-23 (Asia/Shanghai)
   Human Plan and Native / Inline execution approval received in chat after the
   committed Plan checkpoint. At this2026-10-23 recovery, the production V1.24
   modules/F6 adapter are not present; implementation remains NOT STARTED.
-  This task does not resume F6 implementation or consume its real-data approvals.
+  Current chapter execution now consumes the already-authorized shared V1.24
+  version tasks only; F6 source tasks and real-data approvals are not consumed.
   Existing exact transcription/import/release gates remain intact.
 - F6 source review retained at
   `data/staging/f6-mock-1516-source-review-20261020-000001/`: 12 original
