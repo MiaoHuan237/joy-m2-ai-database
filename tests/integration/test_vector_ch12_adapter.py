@@ -19,6 +19,8 @@ from joy_m2.config import PipelineConfig
 from joy_m2.errors import ConfigurationError, OutputConflictError, InputMissingError
 from joy_m2.ingest.writer_profiles import atomic_rename_no_replace
 from tests.fixtures.vector_ch12.mapping_fixture import fixture
+from tests.fixtures.vector_ch12.canonical_oracle import expected_files
+from joy_m2.ingest.source_mapping import SourceMappingApproval
 
 
 def sha(data):
@@ -202,8 +204,176 @@ class _ProposalCase(unittest.TestCase):
                               separators=(',', ':'), allow_nan=False).encode()
         self.draft.write_bytes(self.raw)
 
+    def rewrite_packages(self, compression=zipfile.ZIP_STORED):
+        for path, package in zip(self.paths, self.mapping['packages']):
+            role = package['role']
+            data = zip_bytes([(name, raw) for (r, name), raw in self.members.items() if r == role], compression)
+            path.write_bytes(data)
+            content = self.members[(role, package['selected_member'])]
+            package.update(zip_sha256=sha(data), zip_size_bytes=len(data),
+                           member_sha256=sha(content), member_size_bytes=len(content))
+        self.save()
+
+    def output_bytes(self):
+        return {p.relative_to(self.output).as_posix(): p.read_bytes()
+                for p in self.output.rglob('*') if p.is_file()}
+
     def propose(self):
         return profile.propose_vector_ch12_mapping(*self.paths, self.draft, self.output, self.config)
+
+    def approval(self):
+        self.assertTrue(self.mapping['batch_id'].startswith('SYNTHETIC-'))
+        digest = sha(self.raw)
+        return SourceMappingApproval('OSM-M2B12-C', digest,
+            f'USER APPROVED SOURCE MAPPING OSM-M2B12-C {digest}')
+
+    def adapt(self, approval=None):
+        try:
+            return profile.adapt_vector_ch12_from_mapping(*self.paths, self.draft,
+                approval or self.approval(), self.output, self.config)
+        except NotImplementedError:
+            self.fail('chapter bridge behavior is missing after verified V1.24 dependency')
+
+
+class CanonicalBridgeTests(_ProposalCase):
+    def test_exact_independent_bytes_and_genuine_carrier(self):
+        from joy_m2.ingest.v124_models import V124AdaptedImportPackage
+        expected = expected_files(self.mapping)
+        result = self.adapt()
+        self.assertIs(type(result), V124AdaptedImportPackage)
+        actual = {p.relative_to(self.output).as_posix(): p.read_bytes()
+                  for p in self.output.rglob('*') if p.is_file()}
+        self.assertEqual(actual, expected)
+        self.assertEqual(result.manifest.target_release_version, 'V1.24')
+        self.assertEqual(len(json.loads(actual['records/candidates.json'])[0]), 23)
+
+    def test_same_named_images_preserve_tokens_roles_and_stage_once(self):
+        token = b'![](./images/shared.png)'
+        self.members = {('textbook', 'source.mmd'): b'5. '+token+b' '+token+b'\n'+token,
+            ('answers', 'source.mmd'): b'Answer '+token,
+            ('textbook', 'images/shared.png'): b'synthetic textbook image',
+            ('answers', 'images/shared.png'): b'synthetic answer image'}
+        def span(role, start, end):
+            return dict(package_role=role, member='source.mmd', start_byte=start, end_byte=end,
+                raw_sha256=sha(self.members[(role, 'source.mmd')][start:end]))
+        n = len(token)
+        self.mapping['shared_conditions'] = []
+        self.mapping['questions'] = self.mapping['questions'][:1]
+        self.mapping['unit_dispositions'][5]['disposition'] = 'later_processing'
+        q = self.mapping['questions'][0]
+        q['question_pieces'] = [dict(kind='source', span=span('textbook', 0, 4+2*n))]
+        q['solution_spans'] = [span('textbook', 5+2*n, 5+3*n), span('answers', 0, 7+n)]
+        q['image_bindings'] = [dict(semantic_order=i, content_role=kind,
+            token_span=span(role, start, start+n), raw_target='./images/shared.png',
+            image_package_role=role, image_member='images/shared.png',
+            image_sha256=sha(self.members[(role, 'images/shared.png')]),
+            canonical_path=f'images/{role}/images/shared.png') for i, (role, start, kind) in enumerate([
+                ('textbook', 3, 'question'), ('textbook', 4+n, 'question'),
+                ('textbook', 5+2*n, 'solution'), ('answers', 7, 'solution')], 1)]
+        self.rewrite_packages(); result = self.adapt()
+        files = self.output_bytes()
+        record = json.loads(files['records/candidates.json'])[0]
+        self.assertEqual(record['image_paths'], ['images/textbook/images/shared.png']*2 + ['images/answers/images/shared.png'])
+        self.assertEqual(record['image_roles'], ['question', 'solution', 'solution'])
+        self.assertEqual(len(result.manifest.image_files), 2)
+        self.assertEqual(files['images/textbook/images/shared.png'], b'synthetic textbook image')
+        self.assertEqual(files['images/answers/images/shared.png'], b'synthetic answer image')
+        self.assertEqual(record['question_text_original'].encode(), self.members[('textbook','source.mmd')][:4+2*n])
+        source_map = json.loads(files['source/source-map.json'])
+        self.assertEqual([m['canonical_path'] for m in source_map['members']],
+            ['source/original.mmd.txt', 'answers/answer.mmd.txt', 'images/textbook/images/shared.png', 'images/answers/images/shared.png'])
+        self.assertEqual(len(source_map['questions'][0]['image_bindings']), 4)
+
+    def test_missing_and_partial_answers_do_not_become_worked_explanation(self):
+        q = self.mapping['questions'][0]
+        self.mapping['unselected_spans'] = [dict(span=s, reason='No selected source answer') for s in q['solution_spans']]
+        q['solution_spans'] = []
+        q['answer_evidence'].update(level='missing', covered_subparts=[], missing_subparts=['whole'])
+        self.save(); self.adapt()
+        record = json.loads((self.output/'records/candidates.json').read_bytes())[0]
+        self.assertEqual((record['answer_status'], record['solution_original'], record['solution_verified']),
+                         ('missing_from_source', '', ''))
+        self.assertEqual((record['explanation_text'], record['explanation_status']), ('', 'missing'))
+        text = b'5. vector question\n(a) first ask\n(b) second ask'
+        self.members[('textbook', 'source.mmd')] = text
+        self.mapping['questions'] = [q]; self.mapping['shared_conditions'] = []
+        self.mapping['unit_dispositions'][5]['disposition'] = 'later_processing'
+        q['question_pieces'] = [dict(kind='source', span=dict(package_role='textbook', member='source.mmd',
+            start_byte=0, end_byte=len(text), raw_sha256=sha(text)))]
+        q['solution_spans'] = [self.mapping['unselected_spans'][0]['span']]
+        self.mapping['unselected_spans'] = [dict(span=dict(package_role='answers', member='source.mmd',
+            start_byte=7, end_byte=12, raw_sha256=sha(b'6. no')), reason='Other answer')]
+        q['answer_evidence'].update(level='partial', covered_subparts=['(a)'], missing_subparts=['(b)'],
+                                    limitation='Source does not give the second ask.')
+        self.rewrite_packages(); self.output = self.config.staging_root/'partial'; self.adapt()
+        record = json.loads((self.output/'records/candidates.json').read_bytes())[0]
+        self.assertEqual((record['answer_status'], record['solution_original']), ('source_provided', '5. yes'))
+        self.assertEqual(record['explanation_status'], 'missing')
+        coverage = json.loads((self.output/'teacher_notes/source-coverage.json').read_bytes())
+        self.assertEqual(coverage['questions'][0]['answer_evidence'], q['answer_evidence'])
+
+
+class CanonicalDeterminismTests(_ProposalCase):
+    def test_independent_roots_and_recompressed_zip_equal_all_canonical_bytes(self):
+        old = self.approval(); self.adapt(old); first = self.output_bytes()
+        self.output = self.config.staging_root/'second'
+        self.adapt(old); self.assertEqual(self.output_bytes(), first)
+        self.output = self.config.staging_root/'recompressed'
+        self.rewrite_packages(zipfile.ZIP_DEFLATED)
+        with self.assertRaises(MmdAdapterBlockedError): self.adapt(old)
+        self.assertFalse(self.output.exists())
+        self.adapt(); self.assertEqual(self.output_bytes(), first)
+
+    def test_ignored_review_reason_excluded_but_unselected_raw_bytes_retained(self):
+        self.adapt(); first = self.output_bytes()
+        self.mapping['unit_dispositions'][0]['reason'] = 'Different unselected review wording'
+        self.save(); self.output = self.config.staging_root/'reason'; self.adapt()
+        self.assertEqual(self.output_bytes(), first)
+        raw = self.members[('textbook', 'source.mmd')]
+        self.members[('textbook', 'source.mmd')] = raw + b'\nUnselected theory'
+        self.mapping['unselected_spans'] = [dict(span=dict(package_role='textbook', member='source.mmd',
+            start_byte=len(raw), end_byte=len(raw)+18, raw_sha256=sha(b'\nUnselected theory')), reason='Unselected theory')]
+        self.rewrite_packages(); self.output = self.config.staging_root/'raw'; self.adapt()
+        changed = self.output_bytes()
+        self.assertNotEqual(changed, first)
+        self.assertEqual(changed['records/candidates.json'], first['records/candidates.json'])
+
+
+class V124IntegrationTests(_ProposalCase):
+    def test_real_loader_and_genesis_preflight(self):
+        from tests.integration.test_v124_preflight import _request
+        from joy_m2.ingest.v124_preflight import preflight_v124_import
+        self.adapt()
+        result = preflight_v124_import(_request(self.output), self.config)
+        self.assertEqual(result.report.status, 'READY FOR USER IMPORT APPROVAL')
+        self.assertEqual(result.report.parent_candidate_digest,
+            '797ed06ca5833bac060c1603cada38a6f2aa9eb080a40d9dc892bba9a549773a')
+        self.assertEqual((result.report.detected_count, result.report.new_candidate_count,
+                          result.report.projected_after_count), (2, 2, 679))
+        self.assertEqual(len(result.report.missing_explanations), 2)
+        self.assertEqual(len(result.report.incomplete_enrichments), 2)
+
+    def test_real_verified_parent_preflight(self):
+        from tests.integration.test_v124_candidate import _make_package, _approved, _contract
+        from tests.integration.test_v124_preflight import _request, ROOT
+        from joy_m2.ingest.v124_writer import build_v124_candidate
+        from joy_m2.ingest.v124_models import V124CandidateBuildRequest, V124CandidateVerificationRequest
+        from joy_m2.ingest.v124_preflight import preflight_v124_import
+        # Temporary root inside actual staging, genuine B writer/verifier, synthetic approval only.
+        sandbox = ROOT/'data/staging/vector-ch12-synthetic'
+        sandbox.mkdir(parents=True, exist_ok=True)
+        with tempfile.TemporaryDirectory(dir=sandbox) as temporary:
+            parent_root = Path(temporary)
+            approved = _approved(_make_package(parent_root), PipelineConfig(ROOT))
+            artifacts = build_v124_candidate(V124CandidateBuildRequest((approved,),
+                parent_root/'parent', _contract()), PipelineConfig(ROOT))
+            self.assertEqual(artifacts.verification_report.status, 'PASS')
+            self.adapt()
+            parent = V124CandidateVerificationRequest(parent_root/'parent', (approved,), _contract())
+            result = preflight_v124_import(_request(self.output, parent), PipelineConfig(ROOT))
+            self.assertEqual(result.report.status, 'READY FOR USER IMPORT APPROVAL')
+            self.assertEqual(result.report.parent_candidate_digest, artifacts.state.candidate_digest)
+            self.assertEqual(result.report.projected_after_count, 680)
 
 
 class ProposalTests(_ProposalCase):
@@ -302,6 +472,33 @@ class PublicationSafetyTests(_ProposalCase):
             with self.assertRaises(OSError): self.propose()
         self.assertTrue((foreign[0]/'sentinel').exists(), 'must never delete a different owner')
         self.assertEqual((foreign[0]/'sentinel').read_bytes(), b'foreign')
+
+
+class AdaptationSafetyTests(PublicationSafetyTests):
+    def propose(self):
+        return self.adapt()
+
+    def test_wrong_mapping_approval_and_mutated_mapping_never_publish(self):
+        wrong = SourceMappingApproval('OSM-M2B12-C', '0'*64,
+            'USER APPROVED SOURCE MAPPING OSM-M2B12-C ' + '0'*64)
+        with self.assertRaises(MmdAdapterBlockedError): self.adapt(wrong)
+        self.assertFalse(self.output.exists())
+        old = self.approval()
+        self.mapping['questions'][0]['metadata']['tags'] = []
+        self.save()
+        with self.assertRaises(MmdAdapterBlockedError): self.adapt(old)
+        self.assertFalse(self.output.exists())
+
+    def test_mapping_change_after_private_validation_prevents_publish(self):
+        write = Path.write_bytes
+        def changed(path, content):
+            result = write(path, content)
+            if path.name == 'import_manifest.json': write(self.draft, self.raw+b' ')
+            return result
+        with patch.object(Path, 'write_bytes', changed):
+            with self.assertRaises(MmdAdapterBlockedError): self.adapt()
+        self.assertFalse(self.output.exists())
+        self.assertEqual(list(self.config.staging_root.iterdir()), [])
 
 
 class DiagnosticTests(_ProposalCase):

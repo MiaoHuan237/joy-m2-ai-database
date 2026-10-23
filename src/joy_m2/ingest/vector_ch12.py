@@ -214,7 +214,103 @@ def adapt_vector_ch12_from_mapping(textbook_path: Path, answers_path: Path,
                                   mapping_path: Path, approval: SourceMappingApproval,
                                   output_dir: Path, config: PipelineConfig
                                   ) -> V124AdaptedImportPackage:
-    raise NotImplementedError("chapter12 canonical bridge not implemented")
+    from .v124_models import V124AdaptedImportPackage
+    from .v124_manifest import load_v124_import_manifest
+    inputs = (textbook_path, answers_path, mapping_path)
+    _check_arguments(inputs, output_dir, config)
+    raw = _read_input(mapping_path, 'source mapping')
+    mapping = _decode_object(raw)
+    _validate_shape(mapping)
+    members = _read_packages(textbook_path, answers_path, mapping)
+    _validate_mapping(mapping, members, config)
+    _validate_images(mapping, members)
+    _validate_approval(mapping, approval)
+    files = _canonical_files(mapping, members)
+    validated = []
+    def validate(root):
+        validated.append(load_v124_import_manifest(root/'import_manifest.json'))
+    def recheck():
+        _recheck_inputs(inputs, raw, mapping)
+        _validate_approval(mapping, approval)
+    _publish_files(output_dir, config, files, recheck, validate)
+    return V124AdaptedImportPackage(output_dir, output_dir/'import_manifest.json', validated[0])
+
+
+@dataclass(frozen=True)
+class _CompositeContent:
+    question_pieces: tuple[dict, ...]
+    question_text: str
+    solution_text: str
+    explanation_text: str
+
+
+def _canonical_files(mapping, members):
+    """Project only approved source semantics; no transport or review identity."""
+    member_rows, files, questions, records = [], {}, [], []
+    for package, path in zip(mapping['packages'], ('source/original.mmd.txt', 'answers/answer.mmd.txt')):
+        key = (package['role'], package['selected_member'])
+        raw = members[key]; files[path] = raw
+        member_rows.append(dict(package_role=key[0], member=key[1], sha256=_sha(raw),
+                                size_bytes=len(raw), canonical_path=path))
+    staged_images = set()
+    for q in mapping['questions']:
+        pieces = tuple(_expand_question_pieces(q['question_pieces'], mapping['shared_conditions']))
+        content = _CompositeContent(pieces, _render_spans([p['span'] for p in pieces], members),
+            _render_spans(q['solution_spans'], members), _render_spans(q['explanation_spans'], members))
+        questions.append(dict(q, question_pieces=list(pieces),
+            rendered_question_sha256=_sha(content.question_text.encode()),
+            rendered_solution_sha256=_sha(content.solution_text.encode()),
+            rendered_explanation_sha256=_sha(content.explanation_text.encode())))
+        for binding in q['image_bindings']:
+            key = (binding['image_package_role'], binding['image_member'])
+            if key not in staged_images:
+                staged_images.add(key)
+                raw = members[key]; path = binding['canonical_path']; files[path] = raw
+                member_rows.append(dict(package_role=key[0], member=key[1], sha256=_sha(raw),
+                                        size_bytes=len(raw), canonical_path=path))
+        metadata = q['metadata']
+        image_paths, image_roles = _image_projection(q)
+        evidence = f"source:source/source-map.json#{q['question_id']}"
+        records.append(dict(proposed_question_id=q['question_id'], source_id=mapping['source_id'],
+            source_section=q['source_section'], source_question_number=q['source_question_number'],
+            source_fragment_hash=_sha(content.question_text.encode()),
+            question_text_original=content.question_text, question_text_zh=content.question_text,
+            translation_status='source_present', translation_evidence=evidence,
+            solution_original=content.solution_text, solution_verified='',
+            answer_status='missing_from_source' if q['answer_evidence']['level'] == 'missing' else 'source_provided',
+            explanation_text=content.explanation_text,
+            explanation_status='source_present' if q['explanation_spans'] else 'missing',
+            explanation_evidence=evidence if q['explanation_spans'] else None,
+            image_paths=image_paths, image_roles=image_roles, primary_type=metadata['primary_type'],
+            tags=metadata['tags'], tag_status='proposed' if metadata['tags'] else 'missing',
+            difficulty_level=metadata['difficulty_level'],
+            difficulty_status='proposed' if metadata['difficulty_level'] is not None else 'missing',
+            enrichment_status='complete' if q['explanation_spans'] and metadata['tags']
+                and metadata['difficulty_level'] is not None else 'incomplete'))
+    source_map = dict(schema_version='vector-ch12-canonical-source-map-v1',
+        **{k: mapping[k] for k in ('profile', 'source_id', 'answer_source_id', 'chapter')},
+        members=member_rows, questions=questions)
+    files['source/source-map.json'] = _canonical(source_map)
+    files['records/candidates.json'] = _canonical(records) + b'\n'
+    files['teacher_notes/source-coverage.json'] = _canonical(dict(
+        schema_version='vector-ch12-source-coverage-v1', questions=[
+            dict(question_id=q['question_id'], answer_evidence=q['answer_evidence']) for q in mapping['questions']]))
+    def evidence(path, kind):
+        return dict(relative_path=path, sha256=_sha(files[path]), size_bytes=len(files[path]), kind=kind)
+    manifest = dict(schema_version='task14-v124-import-manifest-v1', batch_id=mapping['batch_id'],
+        project='Joy M2 AI Database', module='M2', chapter=str(mapping['chapter']), target_release_version='V1.24',
+        candidate_records=[evidence('records/candidates.json', 'candidate_json')],
+        source_files=[evidence('source/original.mmd.txt', 'source'), evidence('source/source-map.json', 'source')],
+        answer_files=[evidence('answers/answer.mmd.txt', 'answer')],
+        image_files=[evidence(r['canonical_path'], 'image') for r in member_rows[2:]],
+        teacher_notes_files=[evidence('teacher_notes/source-coverage.json', 'teacher_notes')], common_errors_files=[],
+        language_policy='preserve_source_and_store_reviewed_chinese_separately',
+        split_policy='one_complete_question_per_record', difficulty_policy='joy_level_1_5',
+        tag_policy='controlled_primary_type_and_tags', answer_policy='preserve_source_answer_identity',
+        explanation_policy='source_or_independently_verified_with_identity')
+    files['import_manifest.json'] = json.dumps(manifest, ensure_ascii=False,
+        separators=(',', ':'), allow_nan=False).encode() + b'\n'
+    return files
 
 
 def _validate_mapping(mapping: dict, members: dict[tuple[str, str], bytes],
@@ -583,7 +679,7 @@ def _recheck_inputs(inputs, draft_raw, mapping):
         _fail('mapping', 'input_changed_before_publication')
 
 
-def _publish_files(output, config, files, recheck):
+def _publish_files(output, config, files, recheck, validate=None):
     _preflight_destination(output, config)
     output.parent.mkdir(parents=True, exist_ok=True)
     temporary = Path(tempfile.mkdtemp(prefix=f'.{output.name}-', dir=output.parent))
@@ -593,6 +689,8 @@ def _publish_files(output, config, files, recheck):
             target = temporary/name
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_bytes(content)
+        if validate is not None:
+            validate(temporary)
         recheck()
         _preflight_destination(output, config)
         try:
