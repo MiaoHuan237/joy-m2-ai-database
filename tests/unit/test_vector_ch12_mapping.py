@@ -158,3 +158,43 @@ class AnswerCoverageTests(MappingTests):
             self.mapping, self.members = fixture()
             self.mapping['questions'][0]['answer_evidence'].update(change)
             with self.subTest(change=change): self.reject()
+
+
+class RenderingTests(unittest.TestCase):
+    def span(self, raw, start=0, end=None):
+        end = len(raw) if end is None else end
+        return dict(package_role='textbook', member='source.mmd', start_byte=start, end_byte=end,
+                    raw_sha256=hashlib.sha256(raw[start:end]).hexdigest())
+
+    def test_shared_expansion_exact_newlines_and_raw_hashes(self):
+        mapping, members = fixture()
+        q = mapping['questions'][0]
+        pieces = profile._expand_question_pieces(q['question_pieces'], mapping['shared_conditions'])
+        expected = [dict(kind='source', span=s) for s in mapping['shared_conditions'][0]['spans']] + [q['question_pieces'][1]]
+        self.assertEqual(pieces, expected)
+        text = profile._render_spans([p['span'] for p in pieces], members)
+        self.assertEqual(text.encode(), b'S\n\nC\n\n5. a')
+        self.assertNotEqual(hashlib.sha256(text.encode()).hexdigest(), pieces[0]['span']['raw_sha256'])
+
+    def test_only_newlines_normalized_order_not_sorted(self):
+        raw = ' A\r\nB\r中 '.encode()
+        members = {('textbook', 'source.mmd'): raw}
+        first, second = self.span(raw, 0, 4), self.span(raw, 4)
+        self.assertEqual(profile._render_spans([first, second], members), ' A\n\nB\n中 ')
+        self.assertEqual(profile._render_spans([second, first], members), 'B\n中 \n A\n')
+        self.assertEqual(profile._render_spans([], members), '')
+
+    def test_cuts_inside_protected_tokens_are_rejected_not_repaired(self):
+        examples = [('中文'.encode(), 1), (b'![](images/a.png)', 8),
+                    (b'$a+b$ tail', 3), (br'\frac{1}{x+1} tail', 9),
+                    (br'\includegraphics[width=2cm]{images/a.png}', 18),
+                    (b'123.45 + 6', 2), (br'\sqrt{x}', 3),
+                    (br'\(x+y\) text', 4)]
+        for raw, end in examples:
+            with self.subTest(raw=raw), self.assertRaises(MmdAdapterBlockedError):
+                profile._render_spans([self.span(raw, 0, end)], {('textbook', 'source.mmd'): raw})
+
+    def test_intact_math_and_page_wrappers_preserved(self):
+        raw = br'\end{itemize} $\frac{a}{b}$ \item[(a)] Find $x$.'
+        self.assertEqual(profile._render_spans([self.span(raw)],
+            {('textbook', 'source.mmd'): raw}).encode(), raw)

@@ -254,7 +254,6 @@ def _validate_mapping(mapping: dict, members: dict[tuple[str, str], bytes]) -> N
             if type(q[field]) is not list:
                 _fail(field, 'expected_array')
         direct = []
-        rendered = []
         for piece in q['question_pieces']:
             if type(piece) is not dict:
                 _fail('question_pieces', 'expected_object')
@@ -264,12 +263,11 @@ def _validate_mapping(mapping: dict, members: dict[tuple[str, str], bytes]) -> N
                 if type(cid) is not str or cid not in conditions or q['question_id'] in used[cid]:
                     _fail('question_pieces', 'unknown_or_repeated_shared')
                 used[cid].append(q['question_id'])
-                rendered.extend(_span_bytes(s, members) for s in conditions[cid]['spans'])
             elif piece.get('kind') == 'source':
                 _keys(piece, 'kind span'); span = piece['span']; own(span)
                 if span['package_role'] != 'textbook':
                     _fail('question_pieces', 'question_from_answer')
-                direct.append(span); rendered.append(_span_bytes(span, members))
+                direct.append(span)
             else:
                 _fail('question_pieces', 'unknown_piece_kind')
         if not direct:
@@ -278,7 +276,10 @@ def _validate_mapping(mapping: dict, members: dict[tuple[str, str], bytes]) -> N
         for field in ('solution_spans', 'explanation_spans'):
             for span in q[field]:
                 own(span)
-        text = b'\n'.join(rendered).decode('utf-8')
+        expanded = _expand_question_pieces(q['question_pieces'], mapping['shared_conditions'])
+        text = _render_spans([p['span'] for p in expanded], members)
+        _render_spans(q['solution_spans'], members)
+        _render_spans(q['explanation_spans'], members)
         _validate_answer_evidence(q, text)
         metadata = q['metadata']
         _keys(metadata, 'primary_type tags difficulty_level marks question_language answer_language')
@@ -345,6 +346,65 @@ def _validate_mapping(mapping: dict, members: dict[tuple[str, str], bytes]) -> N
     images = {key for key in members if PurePosixPath(key[1]).suffix in archive._IMAGE_SUFFIXES}
     if images != ignored_images | bound_images:
         _fail('image_bindings', 'unaccounted_image', 'image_binding_invalid')
+
+
+def _render_spans(spans: list[dict], members: dict[tuple[str, str], bytes]) -> str:
+    parts = []
+    for span in spans:
+        raw = _span_bytes(span, members)
+        _check_boundaries(members[(span['package_role'], span['member'])],
+                          span['start_byte'], span['end_byte'])
+        parts.append(raw.decode('utf-8').replace('\r\n', '\n').replace('\r', '\n'))
+    return '\n'.join(parts)
+
+
+def _expand_question_pieces(pieces: list[dict], shared: list[dict]) -> list[dict]:
+    conditions = {c['condition_id']: c['spans'] for c in shared}
+    expanded = []
+    for piece in pieces:
+        if piece['kind'] == 'shared':
+            if piece['condition_id'] not in conditions:
+                _fail('question_pieces', 'unknown_shared')
+            expanded.extend({'kind': 'source', 'span': dict(span)}
+                            for span in conditions[piece['condition_id']])
+        else:
+            expanded.append({'kind': 'source', 'span': dict(piece['span'])})
+    return expanded
+
+
+def _check_boundaries(raw: bytes, start: int, end: int) -> None:
+    """Only protect lexical atoms; never discover questions or repair source."""
+    protected = []
+    for pattern in (rb'!\[[^\]\r\n]*\]\([^\r\n]*?\)',
+                    rb'\\\[[\s\S]*?\\\]', rb'\\\([\s\S]*?\\\)',
+                    rb'(?<!\\)\$\$[\s\S]*?(?<!\\)\$\$',
+                    rb'(?<![\\$])\$(?!\$)[\s\S]*?(?<!\\)\$(?!\$)',
+                    rb'\\(?:begin)\{(?:align\*?|equation\*?|gather\*?|displaymath)\}[\s\S]*?'
+                    rb'\\end\{(?:align\*?|equation\*?|gather\*?|displaymath)\}',
+                    rb'[A-Za-z0-9_]+(?:\.[0-9]+)?'):
+        protected.extend((m.start(), m.end()) for m in re.finditer(pattern, raw))
+    for match in re.finditer(rb'\\[A-Za-z]+\*?', raw):
+        finish = match.end()
+        # Consecutive optional/mandatory command arguments belong to the atom.
+        cursor = finish
+        while cursor < len(raw):
+            while cursor < len(raw) and raw[cursor] in b' \t': cursor += 1
+            if cursor >= len(raw) or raw[cursor] not in b'[{': break
+            opening = raw[cursor]; closing_byte = ord(']') if opening == ord('[') else ord('}')
+            depth = 1; cursor += 1
+            while cursor < len(raw) and depth:
+                if raw[cursor] == ord('\\'):
+                    cursor += 2; continue
+                if raw[cursor] == opening: depth += 1
+                elif raw[cursor] == closing_byte: depth -= 1
+                cursor += 1
+            if depth:
+                # Do not permit a boundary in an unterminated command argument.
+                finish = len(raw); break
+            finish = cursor
+        protected.append((match.start(), finish))
+    if any(left < boundary < right for boundary in (start, end) for left, right in protected):
+        _fail('span', 'cut_inside_token_or_formula', 'mmd_parse_failed')
 
 
 def _fail(field, reason, code='source_contract_mismatch'):
