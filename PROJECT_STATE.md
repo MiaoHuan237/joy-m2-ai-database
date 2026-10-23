@@ -1,6 +1,6 @@
 # Joy M2 AI Database — Project State
 
-Updated: 2026-10-23 (Asia/Shanghai)
+Updated: 2026-10-24 (Asia/Shanghai)
 
 ## Formal data
 
@@ -50,7 +50,38 @@ Updated: 2026-10-23 (Asia/Shanghai)
 
 ## Current task
 
-### Vector chapter12 dual-package source — S01/S02 ACCEPTED; S03 IMPORT APPROVAL REQUIRED (2026-10-23)
+### Vector chapter12 dual-package source — S01/S02/S03 ACCEPTED (2026-10-24)
+
+- S03 exact import approval matched unchanged mapping/canonical and fresh complete
+  preflight against verified generation000002. Existing atomic writer created
+  generation000003; ledger S01(16),S02(14),S03(4),34 candidate/selectable=0 rows,
+  effective total677+34=711. FormalV1.23 remains677 published/selectable records.
+  Actual root `data/staging/vector-ch12-v124-S03-20261024-000001/`, receipt
+  `REAL_BATCH_IMPORT_RECEIPT.json`, candidate `candidate-generation-000003/`.
+  Current candidate digest/next parent:
+  `d3bd832e98b3f23e91e21820bf90435a67165090275f384978e7fc2cde33c40b`.
+  SQLite SHA `e5ec4f5431867eaaa4d69ce25b4dbb94e0f97c5ac84a6f614a94ae13728f6b64`;
+  manifest SHA `1245bc54694f47cd03b2e56112741e3d47cbc44f11f70391c7eb90b528d25421`.
+- Fresh independent verifier24/24 PASS; exact approval replay0 writer calls;
+  generation files7/11/14 and original receipt byte-identical.3 focused complete-
+  prefix/stale-approval/failure-preservation tests PASS in12.379s. Operational
+  recovery and tests ran serially; no production/test edits or full-suite repeat.
+- Local backup `dist/backups/vector-ch12-s03-accepted-20261024-000001.zip`, SHA
+  `321d5f7b4faf0da3a4ef38a892361a883fc331e88454cd8f7df72e2a2aaa514c`:
+  115 explicit files including all three generations/receipts, original ZIPs,
+  mappings/approvals/canonical and formalV1.23;115/115 restored bytes match.
+  Local only, not off-device/Git data backup; no live rollback.
+-438 protected identities and prior generations unchanged; original AGENTS edit
+  preserved; no releases/V1.24, promotion or scheduler modifications. All34
+  source-approved mapped questions are now accepted candidates, not published.
+  Remaining chapter dispositions:127 later unreviewed,34 held,8 prerequisites.
+  Next content work reuses the same profile for natural groups; no new Design,
+  but each new actual selection still requires exact mapping/import approval.
+- Separate read-only review C0/I0/M0: verifier independently rerun twice24/24;
+  exact approvals, three ledger prefixes,711 unique IDs and frozen identities
+  verified. Reviewer did not invoke writer/main or rerun the backup restore.
+
+S02 and earlier checkpoints below are historical; their pending gates are closed.
 
 - Latest actual generation000002: exact S02 approval consumed after fresh parent,
   source mapping/canonical and complete preflight equality verification. Ledger

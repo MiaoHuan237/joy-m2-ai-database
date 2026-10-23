@@ -2,7 +2,21 @@
 
 2026-10-23; Native / Inline under the approved Design/Plan and the user's whole-chapter execution adjustment. Data approvals remain separate.
 
-## Current operational checkpoint — S02 accepted, S03 awaiting import approval
+## Current operational checkpoint — S03 accepted (2026-10-24)
+
+Exact S03 import approval binds preflight `fddfefb888bc7ef69ebc2206f713ac2769f6da4fb71742887681bb2455f82dfb` to verified parent `a3e5c2cdd63be212361abeeb680ec38d55919a70348134f3ae08b6e497b0f988`. Under existing cycle.lock, latest generation set, whole ordered approved prefix, raw source/mapping/canonical and full fresh preflight equality were checked. Existing writer ran once and atomically published staging generation000003, not a formal release.
+
+Operation root `data/staging/vector-ch12-v124-S03-20261024-000001/` contains received approval, actual receipt and candidate-generation-000003. Ledger S01(16),S02(14),S03(4),34 candidate/selectable=0 plus677 formal =711 effective unique IDs. Candidate digest `d3bd832e98b3f23e91e21820bf90435a67165090275f384978e7fc2cde33c40b`; SQLite SHA `e5ec4f5431867eaaa4d69ce25b4dbb94e0f97c5ac84a6f614a94ae13728f6b64`; manifest physical SHA `1245bc54694f47cd03b2e56112741e3d47cbc44f11f70391c7eb90b528d25421`. S03 added4, not34; this is stored-record accumulation, not a claim of distinct original questions or newly published records.
+
+Post-write independent verifier24/24 PASS. Instrumented exact approval replay0 writer calls, receipt and generation000001/2/3 files7/11/14 byte-identical.3 relevant complete-prefix/stale-approval/failure-preservation tests PASS in12.379s; serial operation/test sequencing avoids synthetic-root interference. No production/test changes or repeated full maintained suite.438 protected identities, all prior generations, raw packages, source approvals and original user AGENTS modification unchanged.
+
+Existing backup utility archived115 explicit files including three generations/receipts, exact approvals, raw ZIPs, all three mappings/canonical packages and formalV1.23. Isolated restoration checked115/115 SHA/size/bytes against originals. Local archive `dist/backups/vector-ch12-s03-accepted-20261024-000001.zip`, SHA `321d5f7b4faf0da3a4ef38a892361a883fc331e88454cd8f7df72e2a2aaa514c`; not off-device and not Git data backup. No live rollback.
+
+All34 approved mapped records are accepted candidates (33 source worked solutions and1 final-answer key; no invented difficulty/marks/independent explanation). Whole-chapter work remains incomplete:127 later unreviewed,34 held,8 prerequisites retained. Subsequent natural groups reuse the existing profile and exact source/import gates. No releases/V1.24, promotion, F6 operations, new adapter, scheduler edit or historical cleanup.
+
+Separate read-only reviewer `/root/vector_ch12_implementation_review`: **Critical0 / Important0 / Minor0**. Independently reran verifier twice24/24, checked exact approvals/source/canonical/parent and all ledger prefixes;711 unique records, all three generations/438 protected identities/AGENTS unchanged. Inspected replay/backup evidence but did not call main/writer or rerun backup restoration; no fresh mathematical or full-suite review claimed. Full scoped review record is in the current operation root.
+
+## Previous operational checkpoint — S02 accepted, S03 awaiting import approval
 
 Exact S02 user approval bound preflight `8389cf5357106b8f41cfa4402ade8fd43b6e88b05a0868b3b62dc16c08f4b023` to verified parent `3d3ae1ffe579ae637e8c1a527fb22aa5bf3c6bd21078a43101301594ebac65b3`. Under existing cycle.lock, the full ordered prefix, source approvals/ZIPs/canonical bytes and saved preflight were freshly reconstructed. Existing writer ran once, atomically creating generation000002. Operation root: `data/staging/vector-ch12-v124-S02-20261023-000001/`; immutable receipt and exact received approval accompany candidate-generation-000002.
 
