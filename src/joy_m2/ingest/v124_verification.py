@@ -51,6 +51,8 @@ from .v124_writer_profiles import (
 
 
 __all__ = ("verify_v124_candidate",)
+from . import vector_ch12_delegated_models as chapter
+from .v124_writer_profiles import chapter_schema_sql
 
 _BASELINE = {
     "release_version": "V1.23",
@@ -132,6 +134,8 @@ def _reconstructs_exactly(value: object, expected_type: type) -> bool:
 
 
 def _nested_authority_valid(batch: object) -> bool:
+    if type(batch) is chapter.ChapterApprovedBatch:
+        return chapter.nested_valid(batch)
     try:
         if not _reconstructs_exactly(batch, V124ApprovedBatch):
             return False
@@ -546,7 +550,7 @@ def _candidate_identity(
             "parent_candidate_digest": approval.parent_candidate_digest,
             "preflight_sha256": approval.preflight_sha256,
             "manifest_sha256": result.report.manifest_sha256,
-            "approval": {
+            "approval": _plain(approval) if type(approval) is chapter.ChapterImportDecision else {
                 "batch_id": approval.batch_id,
                 "preflight_sha256": approval.preflight_sha256,
                 "target_release_version": approval.target_release_version,
@@ -602,7 +606,7 @@ def _candidate_identity(
         "projected_question_count": 677 + cumulative,
     }
     payload = {
-        "schema": "task14-v124-candidate-identity-v1",
+        "schema": "task14-v124-ch12-candidate-identity-v1" if chapter.uses_delegation(approved_batches) else "task14-v124-candidate-identity-v1",
         "baseline": _BASELINE,
         "target_release_version": "V1.24",
         "batch_ledger": ledger,
@@ -615,6 +619,7 @@ def _candidate_identity(
 
 def _authority_expectations(
     approved_batches: tuple[V124ApprovedBatch, ...],
+    *, config=None, live=False,
 ) -> tuple[dict[str, bool], dict[str, bytes], dict[str, object] | None]:
     valid = {
         "parent": True,
@@ -641,6 +646,16 @@ def _authority_expectations(
                 f"USER APPROVED IMPORT BATCH {approval.batch_id} "
                 f"{approval.preflight_sha256} V1.24 PARENT {approval.parent_candidate_digest}"
             )
+            delegated=type(approved) is chapter.ChapterApprovedBatch
+            if delegated:
+                from .vector_ch12_delegation import validate_chapter_import,load_chapter_grant,validate_selection,_json
+                if config is None:
+                    raise ValueError('external chapter authority context required')
+                validate_chapter_import(approval,result,approved.package_root,config,live=live)
+                grant=load_chapter_grant(config.repo_root,live=live)
+                prior_ids=tuple(c.proposed_question_id for b in approved_batches[:ordinal-1] for c in b.preflight_result.candidates)
+                validate_selection(grant,_json(approval.source_decision_json)['mapping'],prior_ids)
+                expected_statement=approval.statement
             valid["approval"] &= (
                 approval.batch_id == result.manifest.batch_id
                 and approval.preflight_sha256 == result.report.preflight_sha256
@@ -684,6 +699,9 @@ def _authority_expectations(
                 "payload": payload,
             })
             authority[f"{directory}/approval.json"] = canonical_json_file_bytes({
+                'schema_version':'task14-v124-ch12-delegated-import-v1',
+                **_plain(approval),
+            } if delegated else {
                 "schema_version": "task14-v124-import-approval-v1",
                 "batch_id": approval.batch_id,
                 "preflight_sha256": approval.preflight_sha256,
@@ -699,7 +717,7 @@ def _authority_expectations(
             ]
             prior_count += len(result.candidates)
             prefix = {
-                "schema": "task14-v124-candidate-identity-v1",
+                "schema": "task14-v124-ch12-candidate-identity-v1" if chapter.uses_delegation(approved_batches[:ordinal]) else "task14-v124-candidate-identity-v1",
                 "baseline": _BASELINE,
                 "target_release_version": "V1.24",
                 "batch_ledger": prior_ledger,
@@ -911,7 +929,7 @@ def _sqlite_expected(
         approval = approved.approval
         cumulative += len(result.candidates)
         ledgers.append((
-            ordinal, approval.batch_id, "V1.24", "task14-v124-candidate-v1",
+            ordinal, approval.batch_id, "V1.24", ("task14-v124-ch12-candidate-v1" if chapter.uses_delegation(approved_batches) else "task14-v124-candidate-v1"),
             approval.parent_candidate_digest, approval.preflight_sha256,
             result.report.manifest_sha256, approval.statement, "V1.23",
             BASELINE_SHA256, BASELINE_RELEASE_DIGEST, 677, len(result.candidates),
@@ -1142,7 +1160,7 @@ def _sqlite_checks(
         baseline_master = _master(baseline)
         candidate_master = _master(candidate)
         expected_task14 = {}
-        for sql in TASK14_SCHEMA_SQL:
+        for sql in (chapter_schema_sql() if type(request) is chapter.ChapterVerificationRequest else TASK14_SCHEMA_SQL):
             words = sql.split()
             kind = words[1].lower()
             name = words[2]
@@ -1235,14 +1253,29 @@ def _report(checks: dict[str, bool]) -> VerificationReport:
     )
 
 
+def verify_chapter_candidate(request, config):
+    if type(request) is not chapter.ChapterVerificationRequest:
+        raise PipelineError('exact chapter verification request required')
+    return _verify_candidate(request,config,chapter_mode=True)
+
+
 def verify_v124_candidate(
     request: V124CandidateVerificationRequest,
     config: PipelineConfig,
 ) -> VerificationReport:
     """Verify one V1.24 staging generation without mutating any input."""
     if type(request) is not V124CandidateVerificationRequest:
+        raise PipelineError('exact manual V124CandidateVerificationRequest required')
+    return _verify_candidate(request,config)
+
+
+def _verify_candidate(request,config,*,chapter_mode=False):
+    request_type=chapter.ChapterVerificationRequest if chapter_mode else V124CandidateVerificationRequest
+    contract_type=chapter.ChapterContract if chapter_mode else V124CandidateContract
+    expected_contract=dict(_CONTRACT,**chapter.CHAPTER_VALUES) if chapter_mode else _CONTRACT
+    if type(request) is not request_type:
         raise PipelineError("request must be an exact V124CandidateVerificationRequest")
-    if not _reconstructs_exactly(request, V124CandidateVerificationRequest):
+    if not _reconstructs_exactly(request, request_type):
         raise PipelineError("verification request carrier is invalid")
     if not _reconstructs_exactly(config, PipelineConfig):
         raise PipelineError("config must be an exact PipelineConfig")
@@ -1268,16 +1301,16 @@ def verify_v124_candidate(
     checks = {name: False for name in CHECK_NAMES}
     checks["candidate_directory"] = True
     checks["candidate_contract"] = (
-        type(request.contract) is V124CandidateContract
+        type(request.contract) is contract_type
         and all(
             type(getattr(request.contract, name, None)) is type(expected)
             and getattr(request.contract, name) == expected
-            for name, expected in _CONTRACT.items()
+            for name, expected in expected_contract.items()
         )
     )
 
     authority_valid, authority_bytes, identity = _authority_expectations(
-        request.approved_batches
+        request.approved_batches,config=config
     )
     try:
         genesis = _genesis_digest()
@@ -1373,7 +1406,7 @@ def verify_v124_candidate(
         and rollback_read[0] == canonical_json_file_bytes(rollback_read[1])
     )
     expected_manifest = {
-        "schema_version": "task14-v124-candidate-manifest-v1",
+        "schema_version": request.contract.candidate_manifest_schema,
         "release_version": "V1.24",
         "release_status": "candidate",
         "release_model": "append-only-multi-batch-candidate",
@@ -1386,7 +1419,7 @@ def verify_v124_candidate(
         "batch_authority_artifacts": authority_artifacts_sorted,
         "rollback": rollback_artifact,
         "verification": {
-            "authority": "verify_v124_candidate",
+            "authority": "verify_chapter_candidate" if chapter_mode else "verify_v124_candidate",
             "check_names": list(CHECK_NAMES),
             "required_status": "PASS",
         },

@@ -1,7 +1,9 @@
 """Deterministic Task 13 V1.24 aggregate candidate writer."""
 
 from dataclasses import fields
+from contextlib import contextmanager
 import errno
+import fcntl
 import json
 from pathlib import Path
 import shutil
@@ -62,6 +64,131 @@ from .writer_profiles import atomic_rename_no_replace
 
 
 __all__ = ("build_v124_candidate",)
+from . import vector_ch12_delegated_models as chapter
+from .v124_writer_profiles import chapter_schema_sql
+
+
+def resume_chapter_checkpoint(request, receipt_path, config):
+    """Verify and return a received checkpoint, with zero candidate writes.
+
+    Missing/conflicting receipts require recovery, never an implicit rebuild.
+    Historical replay remains possible after live delegation is revoked.
+    """
+    from .vector_ch12_delegation import _json
+    if not _reconstructs_exactly(request,chapter.ChapterVerificationRequest):
+        raise PipelineError('exact chapter verification request required')
+    with _chapter_cycle(config):
+        root=config.repo_root/'data/staging'
+        if (not isinstance(receipt_path,Path) or not receipt_path.is_relative_to(root)
+                or _has_symlink_component(receipt_path,config.repo_root)):
+            raise PipelineError('unsafe receipt path')
+        try:
+            raw=receipt_path.read_bytes();receipt=_json(raw)
+            manifest=_json((request.candidate_dir/request.contract.manifest_filename).read_bytes())
+            last=request.approved_batches[-1].approval
+            expected=dict(candidate_dir=str(request.candidate_dir),target_release_version='V1.24',
+                generation=f'{len(request.approved_batches):06d}',batch_id=last.batch_id,
+                candidate_digest=manifest['candidate_digest'],batch_ledger=manifest['batch_ledger'],
+                counts=manifest['counts'],approval=_independent_verification._plain(last))
+            if any(receipt.get(k)!=v for k,v in expected.items()):
+                raise PipelineError('receipt does not bind exact candidate request')
+            report=_independent_verification.verify_chapter_candidate(request,config)
+            if report.status!='PASS' or not all(c.passed for c in report.checks):
+                raise PipelineError('existing candidate failed independent verification')
+            closure={str(p.relative_to(request.candidate_dir)):dict(sha256=sha256_file(p),size_bytes=p.stat().st_size)
+                for p in request.candidate_dir.rglob('*') if p.is_file()}
+            if closure!=receipt.get('artifacts') or receipt_path.read_bytes()!=raw:
+                raise PipelineError('receipt or existing candidate file closure changed')
+            return receipt
+        except (OSError,KeyError,ValueError,TypeError,AttributeError) as error:
+            raise PipelineError('existing receipt cannot be resumed') from error
+
+
+@contextmanager
+def _chapter_cycle(config):
+    if not _reconstructs_exactly(config,PipelineConfig):
+        raise PipelineError('exact configuration required')
+    runtime=config.repo_root/'data/staging/auto-ingestion'
+    if _has_symlink_component(runtime/'cycle.lock',config.repo_root):
+        raise PipelineError('unsafe cycle lock path')
+    runtime.mkdir(parents=True,exist_ok=True)
+    with (runtime/'cycle.lock').open('a') as lock:
+        try:
+            fcntl.flock(lock,fcntl.LOCK_EX|fcntl.LOCK_NB)
+        except BlockingIOError as error:
+            raise PipelineError('candidate cycle lock is busy') from error
+        yield
+
+
+def build_chapter_candidate(request, config):
+    """Explicit chapter-delegated writer, not an alternate manual approval."""
+    if type(request) is not chapter.ChapterBuildRequest:
+        raise ImportApprovalError('exact chapter build request required')
+    with _chapter_cycle(config):
+        _chapter_current_parent(request,config)
+        return _build_candidate(request,config,chapter_mode=True)
+
+
+def _chapter_current_parent(request,config,*,private_root=None):
+    """Read existing local prefixes under the same operational mutex.
+
+    No registry or self-asserted receipt can replace independent verification.
+    Even an unknown/incomplete newer prefix fails closed for explicit recovery.
+    """
+    from .vector_ch12_delegation import load_chapter_grant, _json
+    load_chapter_grant(config.repo_root,live=True)
+    runtime=config.repo_root/'data/staging/auto-ingestion'
+    if (runtime/'pending-write.json').exists() or (runtime/'pending-write.json').is_symlink():
+        raise PipelineError('existing pending write requires recovery')
+    batches=request.approved_batches
+    expected_parent=batches[-1].approval.parent_candidate_digest
+    seen={}
+    staging=config.repo_root/'data/staging'
+    for path in staging.rglob('candidate_manifest.json'):
+        if private_root is not None and path.is_relative_to(private_root):
+            continue
+        if _has_symlink_component(path,config.repo_root):
+            raise PipelineError('symlinked candidate evidence')
+        try:
+            manifest=_json(path.read_bytes())
+            if type(manifest) is not dict:
+                raise ValueError('manifest object required')
+            if manifest.get('release_version')!='V1.24':
+                continue
+            count=manifest['counts']['batch_count']
+            if type(count) is not int or count<1 or count>=len(batches):
+                raise PipelineError('stale parent or external candidate requires recovery')
+            digest=manifest['candidate_digest']
+            if digest!=batches[count].approval.parent_candidate_digest or count in seen:
+                raise PipelineError('conflicting or duplicated candidate prefix')
+            prefix=batches[:count]
+            delegated=chapter.uses_delegation(prefix)
+            cls=chapter.ChapterVerificationRequest if delegated else V124CandidateVerificationRequest
+            contract=chapter.chapter_contract() if delegated else V124CandidateContract(
+                **chapter.manual._CONTRACT_VALUES,
+                required_candidate_tables=chapter.manual._CANDIDATE_TABLES,
+                required_candidate_views=chapter.manual._CANDIDATE_VIEWS)
+            verify=(_independent_verification.verify_chapter_candidate if delegated
+                    else _independent_verification.verify_v124_candidate)
+            report=verify(cls(path.parent,prefix,contract),config)
+            if report.status!='PASS' or not all(c.passed for c in report.checks):
+                raise PipelineError('actual parent prefix failed independent verification')
+            seen[count]=digest
+        except (KeyError,TypeError,ValueError,OSError) as error:
+            raise PipelineError('candidate checkpoint cannot be recovered') from error
+    if set(seen)!=set(range(1,len(batches))):
+        raise PipelineError('actual candidate prefix is missing')
+    if (seen.get(len(batches)-1,_genesis_digest())!=expected_parent):
+        raise PipelineError('latest parent differs from bound decision')
+    for path in staging.rglob('REAL_BATCH_IMPORT_RECEIPT.json'):
+        if _has_symlink_component(path,config.repo_root):
+            raise PipelineError('symlinked receipt evidence')
+        try:
+            receipt=_json(path.read_bytes())
+            if receipt.get('target_release_version')=='V1.24' and receipt.get('candidate_digest') not in seen.values():
+                raise PipelineError('external receipt conflicts with verified parent')
+        except (ValueError,TypeError,AttributeError,OSError) as error:
+            raise PipelineError('receipt checkpoint cannot be recovered') from error
 
 
 _BASELINE = {
@@ -104,6 +231,8 @@ def _reconstructs_exactly(value: object, expected_type: type) -> bool:
 
 
 def _nested_authority_valid(batch: object) -> bool:
+    if type(batch) is chapter.ChapterApprovedBatch:
+        return chapter.nested_valid(batch)
     try:
         if not _reconstructs_exactly(batch, V124ApprovedBatch):
             return False
@@ -434,14 +563,18 @@ def _has_candidate_ancestor(
 def _validate_request(
     request: V124CandidateBuildRequest,
     config: PipelineConfig,
+    *, chapter_mode=False,
 ) -> tuple[Path, tuple[V124ApprovedBatch, ...], dict[str, bytes], dict[str, object]]:
-    if type(request) is not V124CandidateBuildRequest:
+    request_type=chapter.ChapterBuildRequest if chapter_mode else V124CandidateBuildRequest
+    contract_type=chapter.ChapterContract if chapter_mode else V124CandidateContract
+    verification_type=chapter.ChapterVerificationRequest if chapter_mode else V124CandidateVerificationRequest
+    if type(request) is not request_type:
         raise PipelineError("request must be an exact V124CandidateBuildRequest")
     if type(config) is not PipelineConfig or not _reconstructs_exactly(config, PipelineConfig):
         raise PipelineError("config must be an exact PipelineConfig")
-    if not _reconstructs_exactly(request.contract, V124CandidateContract):
+    if not _reconstructs_exactly(request.contract, contract_type):
         raise PipelineError("contract carrier does not match the fixed V1.24 authority")
-    if not _reconstructs_exactly(request, V124CandidateBuildRequest):
+    if not _reconstructs_exactly(request, request_type):
         raise PipelineError("build request carrier is invalid")
     batches = request.approved_batches
     if not batches or any(
@@ -451,7 +584,7 @@ def _validate_request(
     ):
         raise ImportApprovalError("approved batch authority carrier is invalid")
 
-    validity, authority, identity = _authority_expectations(batches)
+    validity, authority, identity = _authority_expectations(batches,config=config,live=chapter_mode)
     if identity is None or not all(validity.values()):
         raise ImportApprovalError("approved batch prefix does not reconstruct exactly")
 
@@ -490,7 +623,7 @@ def _validate_request(
     if not output.parent.is_dir() or _has_symlink_component(output.parent, config.repo_root):
         raise PipelineError("candidate output parent must be an existing symlink-free directory")
 
-    verification_request = V124CandidateVerificationRequest(output, batches, request.contract)
+    verification_request = verification_type(output, batches, request.contract)
     if not _formal_baseline_valid(verification_request, output, config):
         raise InputFormatError("formal V1.23 baseline authority is invalid")
     baseline_path = batches[0].preflight_result.effective_state.baseline_database.path
@@ -563,7 +696,7 @@ def _populate_database(
     try:
         connection.execute("PRAGMA foreign_keys=ON")
         connection.execute("BEGIN IMMEDIATE")
-        for statement in TASK14_SCHEMA_SQL[:-1]:
+        for statement in (chapter_schema_sql() if chapter.uses_delegation(batches) else TASK14_SCHEMA_SQL)[:-1]:
             connection.execute(statement)
         cumulative = 0
         for ordinal, batch in enumerate(batches, start=1):
@@ -576,7 +709,7 @@ def _populate_database(
                     ordinal,
                     approval.batch_id,
                     "V1.24",
-                    "task14-v124-candidate-v1",
+                    "task14-v124-ch12-candidate-v1" if chapter.uses_delegation(batches) else "task14-v124-candidate-v1",
                     approval.parent_candidate_digest,
                     approval.preflight_sha256,
                     result.report.manifest_sha256,
@@ -687,7 +820,8 @@ def _ledger_entries(
     result = []
     for ordinal, batch in enumerate(batches, start=1):
         cumulative += len(batch.preflight_result.candidates)
-        result.append(V124BatchLedgerEntry(
+        entry_type=chapter.ChapterLedgerEntry if type(batch) is chapter.ChapterApprovedBatch else V124BatchLedgerEntry
+        result.append(entry_type(
             ordinal,
             batch.approval.batch_id,
             batch.approval.parent_candidate_digest,
@@ -715,7 +849,17 @@ def build_v124_candidate(
     config: PipelineConfig,
 ) -> V124CandidateArtifacts:
     """Build, independently verify, and atomically publish a V1.24 prefix."""
-    output, batches, authority_bytes, identity = _validate_request(request, config)
+    if type(request) is not V124CandidateBuildRequest:
+        raise PipelineError('exact manual V124CandidateBuildRequest required')
+    return _build_candidate(request,config)
+
+
+def _build_candidate(request,config,*,chapter_mode=False):
+    output, batches, authority_bytes, identity = _validate_request(request, config,chapter_mode=chapter_mode)
+    state_type=chapter.ChapterEffectiveState if chapter_mode else V124EffectiveState
+    verification_type=chapter.ChapterVerificationRequest if chapter_mode else V124CandidateVerificationRequest
+    artifacts_type=chapter.ChapterArtifacts if chapter_mode else V124CandidateArtifacts
+    verify=(_independent_verification.verify_chapter_candidate if chapter_mode else verify_v124_candidate)
     genesis = _genesis_digest()
     if genesis != "797ed06ca5833bac060c1603cada38a6f2aa9eb080a40d9dc892bba9a549773a":
         raise ImportApprovalError("V1.24 reconstructed genesis is not the frozen authority")
@@ -763,7 +907,7 @@ def build_v124_candidate(
 
         digest = sha256_bytes(canonical_json_file_bytes(identity))
         ledger = _ledger_entries(batches)
-        state = V124EffectiveState(
+        state = state_type(
             baseline,
             digest,
             ledger,
@@ -807,7 +951,7 @@ def build_v124_candidate(
             ],
             "rollback": _artifact_projection(rollback, temporary),
             "verification": {
-                "authority": "verify_v124_candidate",
+                "authority": "verify_chapter_candidate" if chapter_mode else "verify_v124_candidate",
                 "check_names": list(CHECK_NAMES),
                 "required_status": "PASS",
             },
@@ -829,10 +973,10 @@ def build_v124_candidate(
         )
         sha256sums = _artifact(sums_path, "sha256sums")
 
-        verification_request = V124CandidateVerificationRequest(
+        verification_request = verification_type(
             temporary, batches, request.contract,
         )
-        verification = verify_v124_candidate(verification_request, config)
+        verification = verify(verification_request, config)
         if (
             type(verification) is not VerificationReport
             or verification.status != "PASS"
@@ -841,7 +985,7 @@ def build_v124_candidate(
         ):
             raise PipelineError("private candidate verification did not pass")
         final_validity, final_authority, final_identity = _authority_expectations(
-            batches
+            batches,config=config,live=chapter_mode
         )
         if (
             final_identity is None
@@ -852,9 +996,9 @@ def build_v124_candidate(
             raise InputFormatError(
                 "approved canonical package changed before publication"
             )
-        final_verification = _independent_verification.verify_v124_candidate(
-            verification_request, config,
-        )
+        independent_verify=(_independent_verification.verify_chapter_candidate if chapter_mode
+                            else _independent_verification.verify_v124_candidate)
+        final_verification = independent_verify(verification_request, config)
         if (
             type(final_verification) is not VerificationReport
             or final_verification.status != "PASS"
@@ -865,7 +1009,7 @@ def build_v124_candidate(
                 "private candidate changed after its first verification"
             )
 
-        result = V124CandidateArtifacts(
+        result = artifacts_type(
             _final(database, temporary, output),
             _final(manifest, temporary, output),
             _final(sha256sums, temporary, output),
@@ -875,6 +1019,11 @@ def build_v124_candidate(
             state,
             final_verification,
         )
+        if chapter_mode:
+            _chapter_current_parent(request,config,private_root=temporary)
+            validity, final_authority, final_identity = _authority_expectations(batches,config=config,live=True)
+            if not all(validity.values()) or final_authority!=authority_bytes or final_identity!=identity:
+                raise ImportApprovalError('delegated authority changed at publication boundary')
         try:
             atomic_rename_no_replace(temporary, output)
         except OSError as error:

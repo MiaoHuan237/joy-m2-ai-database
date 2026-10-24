@@ -23,6 +23,24 @@ CHECK_NAMES = (
     "candidate_digest", "deterministic_identity", "formal_boundary",
 )
 
+
+def chapter_schema_sql():
+    """Explicit chapter branch; the historical DDL tuple is never modified."""
+    old="""CHECK(approval_statement =
+              'USER APPROVED IMPORT BATCH ' || batch_id || ' ' ||
+              preflight_sha256 || ' V1.24 PARENT ' ||
+              parent_candidate_digest)"""
+    # Exact structured decision validation additionally occurs in both engines.
+    new="""CHECK(approval_statement =
+              'USER APPROVED IMPORT BATCH ' || batch_id || ' ' ||
+              preflight_sha256 || ' V1.24 PARENT ' || parent_candidate_digest
+          OR approval_statement GLOB
+              'CHAPTER DELEGATED IMPORT BATCH ' || batch_id || ' ' ||
+              preflight_sha256 || ' V1.24 PARENT ' || parent_candidate_digest ||
+              ' GRANT ' || '""" + '?'*64 + """' || ' SOURCE ' || '""" + '?'*64 + """')"""
+    first=TASK14_SCHEMA_SQL[0].replace("'task14-v124-candidate-v1'","'task14-v124-ch12-candidate-v1'").replace(old,new)
+    return (first,*TASK14_SCHEMA_SQL[1:])
+
 TASK14_SCHEMA_SQL = (
     """CREATE TABLE task14_v124_batch_ledger_v1 (
     batch_ordinal INTEGER PRIMARY KEY CHECK(batch_ordinal >= 1),

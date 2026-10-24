@@ -291,14 +291,14 @@ def decide_chapter_import(source_decision, preflight, package_root, config, acce
 def validate_chapter_import(decision, preflight, package_root, config, *, live):
     from dataclasses import fields
     from types import SimpleNamespace
-    from .vector_ch12_delegated_models import ChapterImportDecision,ChapterSourceDecision
+    from .vector_ch12_delegated_models import ChapterImportDecision,ChapterSourceDecision,ChapterPreflightResult
     from .v124_models import V124ImportPreflightResult
     from .v124_verification import _preflight_payload,_manifest_projection
     from .v124_manifest import load_v124_import_manifest
-    if type(decision) is not ChapterImportDecision or type(preflight) is not V124ImportPreflightResult:
+    if type(decision) is not ChapterImportDecision or type(preflight) not in (V124ImportPreflightResult,ChapterPreflightResult):
         _reject('exact delegated decision/preflight carriers required')
     ChapterImportDecision(**{f.name:getattr(decision,f.name) for f in fields(decision)})
-    V124ImportPreflightResult(**{f.name:getattr(preflight,f.name) for f in fields(preflight)})
+    type(preflight)(**{f.name:getattr(preflight,f.name) for f in fields(preflight)})
     source=ChapterSourceDecision(decision.source_decision_json.encode())
     closure=validate_chapter_canonical(source,package_root,config,live=live)
     mapping=_json(source.payload)['mapping'];report=preflight.report

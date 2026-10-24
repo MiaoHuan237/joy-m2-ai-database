@@ -50,7 +50,28 @@ Updated: 2026-10-24 (Asia/Shanghai)
 
 ## Current task
 
-### Vector chapter12 — S04 REVISED14 SOURCE MAPPING APPROVAL PENDING (2026-10-24)
+### Vector chapter12 — limited delegation engineering verified (2026-10-24)
+
+- Human exact revisedS04 mapping approval received for digest
+  `66dad5f4b6e905eb5877b2a63c06ba24ab1feef9b8ecdf118443f5e987a00065`.
+  Fixed chapter delegation covers those14 plus103 later IDs;44 held and8
+  prerequisites excluded. Grant evidence is in ignored
+  `data/staging/vector-ch12-delegation-20261024-000001/`; no fake human import
+  statement is used. Manual APIs/digests remain unchanged.
+- Native/Inline Tasks1–3 implemented: pinned grant, independent source decisions,
+  mixed manual/delegated candidate lifecycle, current-parent/revocation checks,
+  independent verifier and zero-write existing-receipt recovery.
+  Fresh maintained gate1566/1566 PASS (74 modules,703.196s), no skipped/expected
+  failures. Independent reviewer `/root/chapter_delegation_scope_review` final
+  Critical0/Important0/Minor0 after two RED/GREEN review repairs.
+- S04 canonical reused,14new/0duplicate/0rejected/0ambiguous/0issues;
+  preflight `d3a52c3a3444147390a8b584794c535be3399d541e85389a30e2e6bfbea45b74`
+  binds verifiedgen3 parent `d3bd832e98b3f23e91e21820bf90435a67165090275f384978e7fc2cde33c40b`.
+  At this engineering checkpoint no delegated real writer called. Next: S04
+  atomic append/verify/local backup, then natural groups under fixed authority.
+  FormalV1.23/677 and user's AGENTS edit preserved; no promotion/scheduler edit.
+
+### Previous S04 revised14 checkpoint — source approval was pending
 
 - The user's conditional15-question approval was NOT consumed. Focused Q4
   evidence check found the depicted boundaryABCDEF (noEA edge) conflicts with

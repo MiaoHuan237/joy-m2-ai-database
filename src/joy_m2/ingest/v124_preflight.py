@@ -29,6 +29,7 @@ from .v124_models import (
 )
 from .v124_writer_profiles import _genesis_digest
 from .v124_verification import verify_v124_candidate
+from . import vector_ch12_delegated_models as chapter
 
 
 __all__ = ("preflight_v124_import",)
@@ -151,12 +152,15 @@ def _reconstructs_exactly(value: object, expected_type: type) -> bool:
 def _validate_authority(
     request: V124PreflightRequest,
     config: PipelineConfig,
+    *, chapter_mode: bool = False,
 ) -> None:
-    if not _reconstructs_exactly(request, V124PreflightRequest):
+    request_type = chapter.ChapterPreflightRequest if chapter_mode else V124PreflightRequest
+    contract_type = chapter.ChapterContract if chapter_mode else V124CandidateContract
+    if not _reconstructs_exactly(request, request_type):
         raise PipelineError("request must be an exact V124PreflightRequest")
     if not _reconstructs_exactly(config, PipelineConfig):
         raise PipelineError("config must be an exact PipelineConfig")
-    if not _reconstructs_exactly(request.contract, V124CandidateContract):
+    if not _reconstructs_exactly(request.contract, contract_type):
         raise PipelineError("contract carrier is invalid")
     if not _reconstructs_exactly(request.manifest, V124BatchImportManifest):
         raise PipelineError("manifest carrier is invalid")
@@ -176,7 +180,7 @@ def _validate_authority(
         for item in group
     ):
         raise PipelineError("manifest evidence carrier is invalid")
-    for name, expected in _FIXED_CONTRACT.items():
+    for name, expected in (chapter.CHAPTER_VALUES if chapter_mode else _FIXED_CONTRACT).items():
         if type(getattr(request.contract, name)) is not type(expected) or getattr(request.contract, name) != expected:
             raise PipelineError("contract does not match fixed V1.24 authority")
     for name, expected in _FIXED_MANIFEST.items():
@@ -202,6 +206,7 @@ def _validate_authority(
         raise PipelineError("baseline sibling manifest does not match fixed V1.23 authority")
     if (
         request.parent_candidate is not None
+        and not chapter_mode
         and request.parent_candidate.contract != request.contract
     ):
         raise PipelineError("parent candidate contract does not match preflight authority")
@@ -674,7 +679,8 @@ def _ledger_entry(
 ) -> V124BatchLedgerEntry:
     result = approved.preflight_result
     approval = approved.approval
-    return V124BatchLedgerEntry(
+    entry_type = chapter.ChapterLedgerEntry if type(approved) is chapter.ChapterApprovedBatch else V124BatchLedgerEntry
+    return entry_type(
         ordinal,
         approval.batch_id,
         approval.parent_candidate_digest,
@@ -693,18 +699,23 @@ def _parent_context(
     indexes: dict[str, object],
     primary_types: frozenset[str],
     tags: frozenset[str],
+    *, chapter_mode: bool = False,
 ) -> tuple[V124EffectiveState, dict[str, object], frozenset[str], frozenset[str]]:
     parent = request.parent_candidate
+    state_type = chapter.ChapterEffectiveState if chapter_mode else V124EffectiveState
     if parent is None:
         return (
-            V124EffectiveState(request.baseline_database, _genesis_digest(), (), 0, 677),
+            state_type(request.baseline_database, _genesis_digest(), (), 0, 677),
             indexes,
             primary_types,
             tags,
         )
-    if type(parent) is not V124CandidateVerificationRequest:
+    allowed = (V124CandidateVerificationRequest, chapter.ChapterVerificationRequest) if chapter_mode else (V124CandidateVerificationRequest,)
+    if type(parent) not in allowed:
         raise PipelineError("parent candidate authority is invalid")
-    verification = verify_v124_candidate(parent, config)
+    from .v124_verification import verify_chapter_candidate
+    verify = verify_chapter_candidate if type(parent) is chapter.ChapterVerificationRequest else verify_v124_candidate
+    verification = verify(parent, config)
     if (
         type(verification) is not VerificationReport
         or verification.status != "PASS"
@@ -856,14 +867,14 @@ def _parent_context(
         combined_primary_types.add(row[10])
         combined_tags.update(_parse_array(row[11], "candidate tags"))
 
-    confirmation = verify_v124_candidate(parent, config)
+    confirmation = verify(parent, config)
     if (
         type(confirmation) is not VerificationReport
         or confirmation.status != "PASS"
         or not all(check.passed for check in confirmation.checks)
     ):
         raise PipelineError("parent candidate changed while deriving effective state")
-    state = V124EffectiveState(
+    state = state_type(
         request.baseline_database,
         candidate_digest,
         tuple(ledger),
@@ -1282,14 +1293,26 @@ def _preflight_payload(
     }
 
 
+def preflight_chapter_import(request,config):
+    from .vector_ch12_delegation import load_chapter_grant
+    if not _reconstructs_exactly(config,PipelineConfig):
+        raise PipelineError('exact configuration required')
+    load_chapter_grant(config.repo_root,live=True)
+    return _preflight_import(request, config, chapter_mode=True)
+
+
 def preflight_v124_import(
     request: V124PreflightRequest,
     config: PipelineConfig,
 ) -> V124ImportPreflightResult:
     """Validate one canonical package against formal V1.23 without writing."""
+    return _preflight_import(request, config)
+
+
+def _preflight_import(request, config, *, chapter_mode=False):
     if type(config) is not PipelineConfig:
         raise PipelineError("config must be an exact PipelineConfig")
-    _validate_authority(request, config)
+    _validate_authority(request, config, chapter_mode=chapter_mode)
     content, files, package_issues, untrusted_paths = _load_package(
         request.manifest, request.package_root,
     )
@@ -1298,7 +1321,7 @@ def preflight_v124_import(
     )
     indexes, _primary_types, _tags = _formal_indexes(request.baseline_database.path)
     state, indexes, _primary_types, _tags = _parent_context(
-        request, config, indexes, _primary_types, _tags,
+        request, config, indexes, _primary_types, _tags, chapter_mode=chapter_mode,
     )
     issues, adaptations, classifications = _classify(
         candidates, indexes, candidate_issues, _primary_types, _tags,
@@ -1314,4 +1337,5 @@ def preflight_v124_import(
     report = V124ImportPreflightReport(
         preflight_sha256=_sha(_canonical(payload) + b"\n"), **report_values,
     )
-    return V124ImportPreflightResult(request.manifest, state, candidates, issues, report)
+    result_type = chapter.ChapterPreflightResult if chapter_mode else V124ImportPreflightResult
+    return result_type(request.manifest, state, candidates, issues, report)
