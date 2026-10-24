@@ -293,7 +293,8 @@ def validate_chapter_import(decision, preflight, package_root, config, *, live):
     from types import SimpleNamespace
     from .vector_ch12_delegated_models import ChapterImportDecision,ChapterSourceDecision
     from .v124_models import V124ImportPreflightResult
-    from .v124_verification import _preflight_payload
+    from .v124_verification import _preflight_payload,_manifest_projection
+    from .v124_manifest import load_v124_import_manifest
     if type(decision) is not ChapterImportDecision or type(preflight) is not V124ImportPreflightResult:
         _reject('exact delegated decision/preflight carriers required')
     ChapterImportDecision(**{f.name:getattr(decision,f.name) for f in fields(decision)})
@@ -305,7 +306,8 @@ def validate_chapter_import(decision, preflight, package_root, config, *, live):
             or decision.batch_id!=report.batch_id or decision.batch_id!=mapping['batch_id']
             or decision.preflight_sha256!=report.preflight_sha256
             or decision.parent_candidate_digest!=report.parent_candidate_digest
-            or report.manifest_sha256!=closure['import_manifest.json']['sha256']
+            or preflight.manifest!=load_v124_import_manifest(package_root/'import_manifest.json')
+            or report.manifest_sha256!=sha256(_canonical(_manifest_projection(preflight.manifest))+b'\n').hexdigest()
             or _canonical(closure).decode()!=decision.canonical_closure_json
             or tuple(q['question_id'] for q in mapping['questions'])!=tuple(c.proposed_question_id for c in preflight.candidates)):
         _reject('delegated import does not bind source/canonical/READY preflight')

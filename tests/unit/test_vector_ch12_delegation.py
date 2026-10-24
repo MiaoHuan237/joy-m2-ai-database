@@ -308,6 +308,7 @@ class SourceDecisionIntegrationTests(unittest.TestCase):
         result=preflight_v124_import(V124PreflightRequest(package.manifest,package.package_root,
             ArtifactRef(formal,BASELINE_SHA,BASELINE_SIZE,'sqlite'),None,_contract()),self.config)
         self.assertEqual(result.report.status,'READY FOR USER IMPORT APPROVAL')
+        self.assertNotEqual(result.report.manifest_sha256,digest((package.package_root/'import_manifest.json').read_bytes()))
         decision=subject.decide_chapter_import(source,result,package.package_root,self.config,())
         self.assertEqual(decision.preflight_sha256,result.report.preflight_sha256)
         self.assertEqual(decision.parent_candidate_digest,'797ed06ca5833bac060c1603cada38a6f2aa9eb080a40d9dc892bba9a549773a')
