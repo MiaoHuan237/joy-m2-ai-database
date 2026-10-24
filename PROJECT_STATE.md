@@ -50,7 +50,47 @@ Updated: 2026-10-24 (Asia/Shanghai)
 
 ## Current task
 
-### Vector chapter12 dual-package source — S01/S02/S03 ACCEPTED (2026-10-24)
+### Vector chapter12 — S04 SOURCE MAPPING APPROVAL PENDING (2026-10-24)
+
+- Reused the retained EX12A remainder rather than re-indexing the chapter:
+  all24 remaining units reviewed;15 complete questions proposed in source order:
+  3,4,5,6,13,14,16,17,18,19,21,23,25,26,27. Batch
+  `JOY-M2-OSM-M2B12-VECTOR-20261023-001-S04`; mapping
+  `data/staging/vector-ch12-mapping/proposal-S04-000001/source_mapping.json`, SHA
+  `2f18584f0a6fecbb96a82bea93f6bfb6952ed62f238c921eaa5b1650333c4bec`.
+  This is an unapproved proposal, not canonical/preflight or accepted records.
+- 15 source worked solutions;19 original images (13 question,6 solution) have
+  exact ownership. Original notation/layout limitations are explicit, including
+  Q4's polygon-description conflict and image-disambiguated notation in
+  Q17/18/19/21/25/26. No source correction or generated answer. Unknown marks/
+  difficulty stay null; controlled tags pass; no independent explanation claimed.
+- Q13/Q27 following section headings explicitly unselected. Q27's complete
+  embedded(b) is mapped as an adjacent raw fragment: all original content bytes
+  retained, only the contracted LF inserted. Initial ask-coverage rejection and
+  original draft retained; no validator weakened or production/test changed.
+- 9 newly held EX12A units:2,7,8,12,15,20,22,24,28. Exact issues are in the new
+  preparation root `data/staging/vector-ch12-mapping/preparation-S04-20261024-000001/`.
+  Its `chapter-progress.json` supersedes older progress summaries without
+  modifying them:34 accepted candidate +15 proposed +103 later +43 held +8
+  prerequisites =203 unique original units. Old34 hold reasons remain unchanged.
+- Fresh current candidate verifier24/24 PASS; generation000003/parent remains
+  `d3bd832e98b3f23e91e21820bf90435a67165090275f384978e7fc2cde33c40b`,
+  ledger S01(16),S02(14),S03(4), effective711; formalV1.23 remains677.
+  Two independent S04 proposal roots have both files byte-identical. Scoped
+  source/span/image/taxonomy/disposition checks PASS;438 protected identities,
+  all three generations and user AGENTS bytes unchanged. No full-suite rerun,
+  new canonical/preflight/writer, scheduler edit or releases/V1.24.
+- Separate content/mapping review: Critical0 / Important0. Local backup
+  `dist/backups/vector-ch12-s04-proposal-20261024-000001.zip` contains53 explicit
+  files; isolated restoration53/53 byte-identical. Archive SHA
+  `a5c031278f521c483428baf50f13ba1048a171bb76329a54610e0f6be27b8f56`.
+  Previous three-generation archive115-file closure also verified. Local only,
+  not off-device or Git data backup; no live rollback.
+- Next gate: exact S04 source mapping approval. Only after it is received may
+  unchanged input be adapted and preflighted against the then-current verified
+  V1.24 parent; source approval does not authorize import or promotion.
+
+### Previous checkpoint — S01/S02/S03 ACCEPTED (2026-10-24)
 
 - S03 exact import approval matched unchanged mapping/canonical and fresh complete
   preflight against verified generation000002. Existing atomic writer created

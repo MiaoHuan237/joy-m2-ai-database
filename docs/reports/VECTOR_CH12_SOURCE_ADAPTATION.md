@@ -2,7 +2,76 @@
 
 2026-10-23; Native / Inline under the approved Design/Plan and the user's whole-chapter execution adjustment. Data approvals remain separate.
 
-## Current operational checkpoint — S03 accepted (2026-10-24)
+## Current content checkpoint — S04 awaits source mapping approval (2026-10-24)
+
+The entire retained EX12A remainder (24 units) was read with its source answers
+and required original images; no re-OCR, chapter re-index or new adapter.
+S04 proposes15 complete questions:3,4,5,6,13,14,16,17,18,19,21,23,25,26,27.
+This size follows the natural group and actual content checks, not a fixed
+4/16-question limit. Source ID remains `OSM-M2B12-C`, answer source
+`OSM-M2B12-E-ANSWERS`; original section-qualified IDs and source order retained.
+
+Actual proposal: `data/staging/vector-ch12-mapping/proposal-S04-000001/`.
+Mapping SHA `2f18584f0a6fecbb96a82bea93f6bfb6952ed62f238c921eaa5b1650333c4bec`;
+batch `JOY-M2-OSM-M2B12-VECTOR-20261023-001-S04`.15 source worked solutions,
+19 exact original image bindings (13 question/6 solution), no independent
+explanation, marks/difficulty null and controlled tags verified. No canonical
+images/package, new preflight, approval evidence or candidate writer created.
+
+Limitations stay approval-bound: Q4's text says pentagon while the actual image
+has six labelled vertices; the proof identity does not depend on polygon type.
+Q17/18/25/26 vector identities are explicit in the supplied figures despite
+textual circle/dot/arrow notation artefacts; Q19 punctuation and Q21 a/alpha
+discrepancy also remain verbatim. They are not described as corrected print
+source or perfectly standardized notation. All mathematical source steps are
+retained; independent review calculations are not substituted as source answers.
+
+Q13/Q27 following section headings are explicitly unselected. The initial Q27
+draft failed literal ask coverage because `解釋題（b）` has no prose boundary.
+The v2 mapping uses adjacent exact source spans at the label, retaining every
+original byte and inserting only the contracted join LF. Both(a)/(b) remain
+one complete question. Initial failed draft/diagnostic preserved; no production
+change, weakened check or false implementation RED claim.
+
+New holds: EX12A2/7/8/12/15/20/22/24/28. Problems are precisely located in
+`preparation-S04-20261024-000001/content-review-v2.json`: missing vector notation,
+extra/empty denominator, the requested method not supplied, incompatible
+displayed values, wrong side in a cosine formula, radical mismatch, illegible
+root symbol and inconsistent vector operation. This does not establish errors
+in an unseen original print edition. Existing34 holds are unchanged.
+
+New operational progress file preserves all203 IDs/order with disjoint current
+destinations:34 accepted candidate,15 proposed,103 later,43 held,8 prerequisite.
+The mapping's frozen four-value disposition vocabulary is unchanged: previous
+accepted units are explicitly excluded with receipt/batch reasons, not silently
+queued for reimport. `chapter-progress.json` separately records accepted status.
+
+Fresh independent current candidate verifier24/24 PASS, unchanged generation3
+parent `d3bd832e98b3f23e91e21820bf90435a67165090275f384978e7fc2cde33c40b`;
+ledger16/14/4 and effective711. Actual public proposal API passed twice;
+both complete output files byte-identical across independent roots. Separate
+stdlib span/content/coverage/hash/image checks and read-only controlled-taxonomy
+queries PASS;438 protected identities, three candidates and formalV1.23/677
+unchanged. No redundant maintained-suite run for this data-only preparation.
+
+Separate read-only reviewer `/root/s04_content_review`: **Critical0 / Important0**.
+Read all24 question/answer pairs and viewed28 source images; independently
+checked final mapping/package/image validators, exact spans, all203 dispositions
+and prior receipt hashes. Scope and limitations recorded in
+`preparation-S04-20261024-000001/INDEPENDENT_CONTENT_REVIEW.txt`.
+
+Existing backup utility archived53 explicit input/proposal/evidence files;
+isolated recovery53/53 byte-identical. Archive
+`dist/backups/vector-ch12-s04-proposal-20261024-000001.zip`, SHA
+`a5c031278f521c483428baf50f13ba1048a171bb76329a54610e0f6be27b8f56`.
+The previous S03 archive's115-file closure was also verified. This is local
+backup, not off-device or Git backup of ignored data; no live rollback.
+
+Stop at **USER DECISION REQUIRED — SOURCE MAPPING APPROVAL**. No net-new count
+predicted. Approved mapping must subsequently use the actual verified parent
+for authoritative preflight and its separate exact import approval.
+
+## Previous operational checkpoint — S03 accepted (2026-10-24)
 
 Exact S03 import approval binds preflight `fddfefb888bc7ef69ebc2206f713ac2769f6da4fb71742887681bb2455f82dfb` to verified parent `a3e5c2cdd63be212361abeeb680ec38d55919a70348134f3ae08b6e497b0f988`. Under existing cycle.lock, latest generation set, whole ordered approved prefix, raw source/mapping/canonical and full fresh preflight equality were checked. Existing writer ran once and atomically published staging generation000003, not a formal release.
 
