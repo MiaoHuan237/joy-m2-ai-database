@@ -1,5 +1,85 @@
 # V1.24 Promotion Readiness — generation000008
 
+## 正式发布验收补记 — 2026-10-24
+
+**本地正式发布完成。** 本节为收到真实用户批准后的新验收；下方原始
+readiness正文、76文件清单及历史待批表述保留为发布前证据，不代表当前状态。
+
+实际收到的用户批准（不是模型生成的逐批批准）：
+
+```text
+USER APPROVED RELEASE PROMOTION V1.24 52f0fb8b88ad9abdf64968336b9244da11d67904fcd46c7929e5139d74fc6273
+```
+
+发布前重新核验固定generation000008、8批批准链与parent链，candidate24/24
+PASS；dry-run22/22 PASS，76文件与原READINESS闭包及第二份dry-run完全一致。
+正式目录原先不存在；现有publisher只执行一次private-copy/atomic no-replace
+publication。未重建候选、未重导114条、未续期委托、未处理81待核实单元。
+
+- 正式根：`releases/V1.24/`；76文件全部与批准输出byte-identical。
+- Release digest：`52f0fb8b88ad9abdf64968336b9244da11d67904fcd46c7929e5139d74fc6273`
+- SQLite SHA：`c43479ea211ac4e93b7a325c80042816858f0b585b6a7be763f758e62a1c8da6`
+- Manifest SHA：`b59b69a86a8c8a59feff51af4b15f52c5bdb86113b3415015dff6f6ce088009b`
+- 独立formal verifier从正式根22/22 PASS。677基线逐字段不变，114新增
+  逐字段等于批准candidate，仅合同允许的发布状态/投影改变。
+- 正式view791唯一ID、全部published/selectable；S01–S08查询分别
+  16/14/4/14/11/32/20/3。保留3批人工精确入库批准与5批委托执行的真实区别。
+- 72张原图833787bytes：question54、solution18，正式路径内全部解码及SHA
+  通过；独立verifier检查有序角色/引用/文件闭合。不是只验证旧staging路径。
+- 来源coverage110worked_solution/4final_answers_only保持；114独立解释missing、
+  难度NULL未升级。总答案状态686source_provided/71ai_solved_verified/34missing。
+-943保护文件身份不变，包括V1.18–V1.23、原双包、旧candidate及审批证据。
+  AGENTS用户改动SHA不变，未暂存。没有持久化current pointer或默认查询入口调整。
+
+### 发布后只读检索
+
+范围为正式view的新增114条（formal_order>677），以下为可复现检索条件，
+不是互斥教学分类或重新完成数学逐题审校。所有标签保持原样。
+
+| 检索条件 | 实际命中 | 已读取的示例 |
+|---|---:|---|
+| 题干明确向量加减公式模式 | 48 | OSM-M2B12-C-EX12A-Q03、EX12C-Q09 |
+| 题干含“位置向量” | 15 | OSM-M2B12-C-EX12B-Q03、EX12B-Q04 |
+| 题干向量模长竖线模式 | 15 | OSM-M2B12-C-EX12C-Q13、EX12A-Q14 |
+| exact tag `unit-vector` | 11 | OSM-M2B12-C-EX12C-Q08、EX12C-Q13 |
+| exact tag `collinear` | 8 | OSM-M2B12-C-EX12C-Q18、EX12A-Q27 |
+| exact tag `section-formula` | 47 | OSM-M2B12-C-EX12B-Q03、EX12B-Q04 |
+| exact tag `parallel` | 20 | OSM-M2B12-C-EX12C-Q17、EX12C-Q04 |
+
+正文加减文字关键词检索0条、大小/長度/模長/模數2条，不能据此判定没有
+加减/模长内容；数学公式模式另见`TEXT_QUERY_CRITERIA.json`的精确regex及全部ID。
+EX12C-Q08题干为单位向量，来源解答含模长计算，未因promotion重打标签。
+完整题文、小问、共享条件及对应答案抽查见`QUERY_ACCEPTANCE.json`。
+
+可直接运行（已实际执行；`-readonly`不会意外创建错误数据库）：
+
+```bash
+sqlite3 -readonly /Users/miaohuanjoy/Desktop/joy-m2-ai-database-current/.worktrees/task8b-pipeline-migration/releases/V1.24/Joy_M2_Complete_Question_DB_V1_24.sqlite3 "SELECT question_id, primary_type, answer_status FROM formal_complete_questions_v124 WHERE formal_order > 677 ORDER BY formal_order LIMIT 3;"
+```
+
+### 发布后测试、恢复与关闭边界
+
+- 本轮新鲜运行30promotion专项+4历史回放=**34/34 PASS**，69.149s；
+  包含批准前禁止发布、精确批准后身份匹配、no-replace及清理竞态等隔离测试。
+  历史回放实际调用旧formal verifiers，V1.18validator另PASS。
+- 发布前维护1596/1596PASS、独立复审C0/I0/M0已完成，本轮生产代码/tests
+  没有修改，不把旧整套测试冒称本轮重跑。既有Task8B归因模块9PASS/2knownFAIL
+  仍单列于原报告；未隐去、放宽或改冻结hash。本轮34项无失败或跳过。
+- 新正式产物、真实批准回执、查询证据及既有输入证据归档链纳入
+  `dist/backups/v124-publication-20261024-000001.zip`，86明确文件，SHA
+  `f54b5dff0f7f44076d51ce7119536411f9d0e3f416258d3243fca41f42d3aae1`。
+  全部归档字节恢复校验；76正式文件一致，72图解码，恢复副本formal22/22PASS；
+  内嵌上轮21文件证据归档SHA闭合。不是异地备份，也未声称历史绝对审批路径
+  完成离线重定位。最终文档/Git记录另纳入小型附加证据归档。
+- rollback仍只允许精确release digest匹配的目标树，保护V1.23；本轮不执行
+  rollback。正式发布、备份恢复和Git远端同步是分别验收的状态。
+- 起始HEAD：`19db4c85e325466e83814ac53b3d9de31a26224e`。发布提交与实际远端
+  读回记录于`data/staging/v124-publication-20261024-000001/GIT_SYNC.json`；
+  未取得远端一致证据前不宣称同步。网络失败不影响已完成本地正式发布。
+- 原始发布回执：同目录`PUBLICATION_RECEIPT.json`；本轮结束，不启动下一任务。
+
+---
+
 2026-10-24。状态：**技术准备完成，等待最终精确 promotion 批准**。
 尚未正式发布；当前正式库仍是V1.23/677。本次未调用真实candidate writer、
 未续期入库委托、未处理81个待核实或8个前置复习单元。

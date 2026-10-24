@@ -4,18 +4,18 @@ Updated: 2026-10-24 (Asia/Shanghai)
 
 ## Formal data
 
-- Current formal release: V1.23
-- Formal SQLite: `releases/V1.23/Joy_M2_Complete_Question_DB_V1_23.sqlite3`
-- Formal SQLite SHA-256: `28e44bda233b7d6acdb96a4fecf46df4cb75a50730694e0b249e9d38d3a584cd`
-- Formal release digest: `84ebbd9d9f0d5fbef97f20ae98f8cdfa16c55d56eac7a826cfde3cc47fe9a2fc`
-- Complete-question records: 677 (639 immutable V1.22 records + 38 approved
-  source records: 2023 HKDSE12, 2025 HKDSE13, Oxford13). This is a record count,
+- Current formal release: V1.24
+- Formal SQLite: `releases/V1.24/Joy_M2_Complete_Question_DB_V1_24.sqlite3`
+- Formal SQLite SHA-256: `c43479ea211ac4e93b7a325c80042816858f0b585b6a7be763f758e62a1c8da6`
+- Formal release digest: `52f0fb8b88ad9abdf64968336b9244da11d67904fcd46c7929e5139d74fc6273`
+- Complete-question records: 791 (677 immutable V1.23 records + 114 approved
+  vector chapter12 source records, S01–S08). This is a record count,
   not a distinct-original-question count.
-- Formal read-only query view: `formal_complete_questions_v123`; all677 unique
+- Formal read-only query view: `formal_complete_questions_v124`; all791 unique
   IDs are published/selectable. No persistent default-query pointer was changed.
 - V1.17 retained records: 45
 - Task 6 migrated records: 452
-- Answer identity: 572 `source_provided`, 71 `ai_solved_verified`, 34 `missing_from_source`
+- Answer identity: 686 `source_provided`, 71 `ai_solved_verified`, 34 `missing_from_source`
 - P0/P1 audit blockers: 0/0
 - V1.18 remains the frozen, byte-identical 497-question baseline and must not be
   edited in place. Its SQLite SHA-256 remains
@@ -50,7 +50,37 @@ Updated: 2026-10-24 (Asia/Shanghai)
 
 ## Current task
 
-### V1.24 generation000008 promotion readiness — awaiting final human approval
+### V1.24 exact-approved formal publication — completed locally
+
+- User supplied the exact promotion statement for release digest
+  `52f0fb8b88ad9abdf64968336b9244da11d67904fcd46c7929e5139d74fc6273`.
+  Existing publisher executed one atomic no-replace publication; no rebuild,
+  candidate writer, new delegation decision or grant renewal.
+- Formal `releases/V1.24/` now contains the approved76 files, including72 original
+  JPEGs (54question/18solution). Every file is byte-identical to approved dry-run.
+  Independent formal verifier22/22 PASS from formal root and restored copy;
+  historical candidate24/24 PASS. Baseline677 and new114 are field-exact;
+  view791 unique published/selectable records. S01–S08:16/14/4/14/11/32/20/3.
+- Fresh post-publication gates:34/34 PASS (30promotion +4historical replay),
+  V118 validatorPASS,943 protected inputs unchanged. User AGENTS unchanged,
+  unstaged. Earlier full maintained1596PASS and separately attributed legacy
+  9PASS/2knownFAIL remain readiness evidence, not claimed as rerun this turn.
+- Actual publication receipt, query evidence, fresh test log and backup report:
+  `data/staging/v124-publication-20261024-000001/`.
+  New local archive86files, SHA
+  `f54b5dff0f7f44076d51ce7119536411f9d0e3f416258d3243fca41f42d3aae1`;
+  isolated restore76formal files/72images verified. Not off-device backup;
+  historical verifier still resolves authority at original absolute paths.
+- Publication began at HEAD19db4c85e325466e83814ac53b3d9de31a26224e on
+  task8b/pipeline-migration. Final commit/remote evidence is recorded in the
+  publication runtime checkpoint; no remote success presumed.
+- No persistent query-default pointer or scheduler changes.81held/8prerequisite
+  units unchanged. No V1.25 or further work; this publication request closes here.
+
+### Archived checkpoint: V1.24 generation000008 promotion readiness
+
+The following records the pre-approval state; the publication above supersedes
+its pending gate and absent-formal-directory statements without rewriting evidence.
 
 - Fixed eight-batch candidate digest
   `3f14589da452207d0088cd44689aded7ffbadea0768a85d808a67ae526a5f3ab`;
@@ -77,7 +107,7 @@ Updated: 2026-10-24 (Asia/Shanghai)
 - Stop: FINAL V1.24 PROMOTION AUTHORIZATION for actual release digest above.
   No real promotion, noV1.25, no81held/8prerequisite intake or daily-task change.
 
-### Vector chapter12 — authorized natural groups accepted (2026-10-24)
+### Archived checkpoint: vector chapter12 authorized natural groups accepted (2026-10-24)
 
 - Actual generation000008, ledger S01(16)→S02(14)→S03(4)→S04(14)→S05(11)
   →S06(32)→S07(20)→S08(3). This continuation added80; accumulated114 candidate
