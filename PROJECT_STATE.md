@@ -50,7 +50,36 @@ Updated: 2026-10-24 (Asia/Shanghai)
 
 ## Current task
 
-### Vector chapter12 — S04 SOURCE MAPPING APPROVAL PENDING (2026-10-24)
+### Vector chapter12 — S04 REVISED14 SOURCE MAPPING APPROVAL PENDING (2026-10-24)
+
+- The user's conditional15-question approval was NOT consumed. Focused Q4
+  evidence check found the depicted boundaryABCDEF (noEA edge) conflicts with
+  the textual pentagonABCDE premise. Both expressions equallingAD establishes
+  the identity, not consistency of that premise. Under the user's explicit
+  pre-approval fallback, Q4 is held without modifying its source or old proposal.
+- New proposal `data/staging/vector-ch12-mapping/proposal-S04-000002/`, mapping
+  SHA `66dad5f4b6e905eb5877b2a63c06ba24ab1feef9b8ecdf118443f5e987a00065`:
+  EX12A3,5,6,13,14,16,17,18,19,21,23,25,26,27 (14 complete questions).
+  Remaining question objects unchanged except order;14 source worked solutions,
+  18 original images (12 question/6 solution), existing limitations retained.
+  Both actual proposal runs byte-identical. No source approval/adaptation,
+  S04 preflight or writer invoked; no production/test changes.
+- New evidence/progress root `data/staging/vector-ch12-mapping/preparation-S04-20261024-000002/`:
+  34 accepted +14 proposed +103 later +44 held +8 prerequisites =203.
+  Old43 held entries, old proposal/evidence, originals and AGENTS unchanged.
+  Actual S04 not accepted; independent current verifier24/24 PASS; generation3
+  and parent `d3bd832e98b3f23e91e21820bf90435a67165090275f384978e7fc2cde33c40b`
+  unchanged. Effective711 and formalV1.23/677 unchanged; no releases/V1.24.
+- Separate scoped revision review: Critical0 / Important0; original Q4 image,
+  mapping diff, existing validators, determinism and prior73 evidence hashes
+  independently checked. Local archive
+  `dist/backups/vector-ch12-s04-revised14-20261024-000001.zip`, SHA
+  `b37028efed74018129d2153e04edc3df6ae17792299fc4771fc62d88e066fb93`;
+  isolated recovery27/27 byte-identical. Not off-device or Git data backup.
+- Next gate: NEW exact14-question source mapping approval. The earlier digest
+  and its conditional statement cannot authorize this revised selection.
+
+### Previous S04 checkpoint — 15-question proposal before conditional approval assessment
 
 - Reused the retained EX12A remainder rather than re-indexing the chapter:
   all24 remaining units reviewed;15 complete questions proposed in source order:

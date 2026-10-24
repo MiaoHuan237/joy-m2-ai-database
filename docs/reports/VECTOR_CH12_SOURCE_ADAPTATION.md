@@ -2,7 +2,53 @@
 
 2026-10-23; Native / Inline under the approved Design/Plan and the user's whole-chapter execution adjustment. Data approvals remain separate.
 
-## Current content checkpoint — S04 awaits source mapping approval (2026-10-24)
+## Current checkpoint — S04 revised14 awaits NEW source mapping approval (2026-10-24)
+
+The user's latest source approval is conditional, not unconditional acceptance
+of the disclosed Q4 conflict. Read the existing source/review and viewed the
+original image: textbook line1023 calls the pictured object pentagonABCDE,
+but the actual image's boundary isABCDEF, six distinct corners, noEA edge.
+The previous proof that both expressions equalAD remains valid; it cannot
+resolve polygon type/edge relations without choosing or correcting a premise.
+The user's expressly authorized pre-approval fallback therefore applies.
+Old15-question approval was not consumed; no SourceMappingApproval carrier,
+adaptation, S04 canonical/preflight or writer was called.
+
+Q4 is held, not rewritten/deleted. Old15-question proposal and evidence remain
+immutable. New root `data/staging/vector-ch12-mapping/proposal-S04-000002/`:
+mapping SHA `66dad5f4b6e905eb5877b2a63c06ba24ab1feef9b8ecdf118443f5e987a00065`.
+Selected EX12A3/5/6/13/14/16/17/18/19/21/23/25/26/27;14 complete questions,
+14 source worked solutions,18 raw images (12 question/6 solution).
+All14 question objects equal the old mapping except contiguous semantic_order;
+old source limitations remain approval-bound, not mathematically certified
+away. Existing review of those notation issues is reused, no whole-batch audit.
+Q4 spans and image remain explicitly unselected; all203 IDs/order retained.
+New progress:34 accepted candidate +14 proposed +103 later +44 held +8
+prerequisites. Only Q4 newly held; old43 holds and their reasons unchanged.
+
+Evidence root `data/staging/vector-ch12-mapping/preparation-S04-20261024-000002/`
+contains conditional-approval assessment, revised draft, complete current
+progress, scoped verification and concise review. Two actual public proposal
+outputs byte-identical; original packages, raw fragments and image coverage
+validated by the existing profile. Current candidate verifier24/24 PASS;
+generation3, parentd3bd832e…e33c40b, ledger16/14/4 and effective711 unchanged;
+formalV1.23 remains677. No production/test/scheduler change or full-suite rerun.
+
+Separate read-only reviewer `/root/s04_conditional_revision_review`: Critical0 /
+Important0. Independently viewed Q4 evidence, checked exact changed selection,
+old73 evidence hashes,203 dispositions and existing mapping/package/image
+validators. Other14 content review reused, no new full mathematical audit claimed.
+Record: `preparation-S04-20261024-000002/INDEPENDENT_REVISION_REVIEW.txt`.
+Existing local backup utility archived27 explicit files (including both raw
+ZIPs and old/new proposals); isolated restore27/27 byte-identical. Archive
+`dist/backups/vector-ch12-s04-revised14-20261024-000001.zip`, SHA
+`b37028efed74018129d2153e04edc3df6ae17792299fc4771fc62d88e066fb93`.
+Local only, not off-device; no candidate rebuild or live rollback.
+
+Stop at **USER DECISION REQUIRED — SOURCE MAPPING APPROVAL** for the new14
+digest. There is no S04 preflight classification or import approval request yet.
+
+## Previous content checkpoint — S04 15-question proposal (2026-10-24)
 
 The entire retained EX12A remainder (24 units) was read with its source answers
 and required original images; no re-OCR, chapter re-index or new adapter.
