@@ -50,21 +50,34 @@ Updated: 2026-10-24 (Asia/Shanghai)
 
 ## Current task
 
-### Vector chapter12 — delegated S04/S05 accepted; natural groups continue (2026-10-24)
+### Vector chapter12 — authorized natural groups accepted (2026-10-24)
 
-- Actual generation000005, ledger S01(16)→S02(14)→S03(4)→S04(14)→S05(11).
-  Accumulated59 candidate records, effective736; formalV1.23 stays677 published.
-  Current digest `e996ee86f2b73c30625d32c955fffdd17dd93002021a52138c1ee7bbd5ee93be`.
-  Both new generations independently verified24/24 and successful receipts
+- Actual generation000008, ledger S01(16)→S02(14)→S03(4)→S04(14)→S05(11)
+  →S06(32)→S07(20)→S08(3). This continuation added80; accumulated114 candidate
+  records, effective791. FormalV1.23 stays677 published/selectable records.
+  Current digest `3f14589da452207d0088cd44689aded7ffbadea0768a85d808a67ae526a5f3ab`.
+- All five new generations independently verified24/24 and successful receipts
   replayed with zero duplicate writes. Genuine human S04 source approval is
-  distinguished from delegated import; S05 source/import decisions are delegated.
--203 destinations:59 accepted +82 later +54 held +8 prerequisites. Ten new
-  EX12B source-answer defects held before selection; no source correction.
-  Local archives/restores passed536 files(S04) and93 files(S05), including
-  transitive prior archive. Not Git/off-device data backup.
-- See `docs/reports/VECTOR_CH12_DELEGATION_EXECUTION.md` and actual ignored
-  batch receipts. Next: exact independently reviewed natural groups under the
-  fixed chapter grant; no new per-batch human gate within that authority.
+  distinguished from delegated import; S05–S08 source/import decisions are
+  explicitly delegated, never manufactured human exact approvals.
+- All203 unique unit destinations:114 accepted candidate +0 later/proposed
+  +81 held +8 prerequisites. Fixed117 delegated IDs:80 accepted +37 newly held
+  before selection. Original44 holds and8 prerequisites remain excluded.
+  Source math, answers, images and unknown metadata were not silently repaired.
+- Per-generation local archive/restore checks passed536(S04),93(S05),158(S06),
+  134(S07),139(S08) explicit files, retaining the verified prior archive chain.
+  These are local backups, not Git or off-device backups.
+- See `docs/reports/VECTOR_CH12_DELEGATION_EXECUTION.md`, final ignored
+  `vector-ch12-v124-S08-delegated-20261024-000001/chapter-progress.json` and
+  actual receipts. Remaining81 content/source holds need separate consideration;
+  no automatic promotion, no releases/V1.24, no scheduler change.
+- Fixed scope processing is complete; existing fail-closed `REVOKED` marker
+  explicitly records scope completion, not an invented human revocation.
+  Fresh live grant check rejects new operations; historical independent
+  verifier24/24 and unchanged zero-write receipt replay still pass. For read-only
+  recovery use retained `vector-ch12-delegation-20261024-000001/load_historical_checkpoint.py`,
+  not old continuation drivers that create live decisions. Do not remove marker
+  to reconsider held units without new authority.
 
 ### Delegation engineering checkpoint (before real append)
 
