@@ -48,6 +48,10 @@
 
 **Files:** delegated models and authority module, `v124_writer.py`, `v124_verification.py`, `v124_preflight.py`, `v124_writer_profiles.py`, new `tests/integration/test_vector_ch12_delegated_candidate.py`.
 **Interfaces:** explicit delegated build/verify/preflight request carriers; mixed ledger with old manual entries; new chapter schema branch, no alteration of old manual models/signatures. Closed private profile parameters, not runtime monkeypatching.
+The new recursive closure comprises delegated import decision/batch/ledger,
+mixed effective state, preflight result, all three requests, candidate artifacts
+and chapter contract. Existing exact manual wrappers reject those types and
+both explicit paths call the same private engine; no second writer algorithm.
 
 - [ ] Build independent synthetic fixture over the existing approved baseline test setup. Valid RED for first delegated generation ONLY after source decision/canonical dependencies GREEN.
 - [ ] Implement delegated identity/schema/authority storage, source verification and atomic writer branch. Test manual-prefix digest preservation, READY/exact-parent, duplicate IDs, forged nested carrier, direct writer bypass, no-replace and failure cleanup.

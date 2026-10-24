@@ -35,6 +35,10 @@ symlinked or malformed authority is not active. No permissions service is added.
 Historical verification of already accepted records remains possible after
 revocation; eligibility for NEW writes additionally requires live authority.
 Scope exhaustion forbids another new delegated decision, not historical replay.
+Live validation also rejects any newer formal release directory/authority or
+ambiguous formal head, even if all immutable V1.23 bytes still match. A missing
+or unexpected formal-head declaration is fail-closed. Historical verification
+does not infer current head from the continued existence of V1.23 files.
 
 ## Evidence and decisions
 
@@ -60,6 +64,11 @@ Introduce explicitly named chapter-delegated carriers and entry points; no
 arbitrary subclass acceptance, approval-shaped duck typing, monkeypatching,
 global context, or fake historical approval objects. Shared private engine
 operations may take an explicit, closed chapter/manual profile.
+The chapter-only recursive closure includes import decision, approved batch,
+ledger entry, mixed effective state, preflight result, build/verify/preflight
+requests, candidate artifacts and fixed chapter contract. Old exact-type models
+are not mutated or subclass-bypassed. Manifest, candidate, report and artifact
+references reuse existing validated carriers.
 
 Mixed ledgers preserve every original manual entry. A separate candidate schema
 branch records delegated decisions honestly. Candidate digest reconstruction
