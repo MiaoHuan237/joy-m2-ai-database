@@ -10,6 +10,8 @@ from joy_m2.errors import ImportApprovalError
 SCOPE_SHA256 = '3468bcaa245a90df3174a76ea9cb300cac5407c9821b322a5b29598969c280e2'
 USER_SHA256 = '1a86614c58e0fdcb0b5e8586a2a23264da30d4a992ba035a458af3d956c8993a'
 SCOPE_RELATIVE = Path('data/staging/vector-ch12-delegation-20261024-000001/SCOPE_RECORD.json')
+INDEX_RELATIVE = Path('data/staging/vector-ch12-intake-20261023-000001/question-review-draft-v2.json')
+INDEX_SHA256 = '08edb7ce7d167332c7d5dade49a2533e1c163307440129aeeae4b113d5a6e7bc'
 
 
 def load_chapter_grant(repo: Path, *, live: bool):
@@ -154,3 +156,161 @@ def _json(data):
 
 def _canonical(value):
     return json.dumps(value,ensure_ascii=False,sort_keys=True,separators=(',', ':'),allow_nan=False).encode()
+
+
+def _validate_review(review, mapping):
+    try:
+        keys={'schema_version','executor_id','reviewer_id','mapping_sha256','question_ids',
+              'critical','important','conditions_complete','source_unchanged','images_owned',
+              'answers_truthful','evidence','limitations'}
+        if type(review) is not dict or set(review)!=keys:
+            _reject('review fields incomplete or unknown')
+        if (review['schema_version']!='vector-ch12-independent-content-review-v1'
+                or review['mapping_sha256']!=sha256(_canonical(mapping)).hexdigest()
+                or review['question_ids']!=[q['question_id'] for q in mapping['questions']]):
+            _reject('review does not bind exact selected mapping')
+        if (any(type(review[k]) is not str or not review[k].strip() for k in ('executor_id','reviewer_id'))
+                or review['executor_id']==review['reviewer_id']):
+            _reject('separate identified reviewer required')
+        if any(type(review[k]) is not int or review[k]!=0 for k in ('critical','important')):
+            _reject('unresolved independent review findings')
+        if any(review[k] is not True for k in ('conditions_complete','source_unchanged','images_owned','answers_truthful')):
+            _reject('source quality checks incomplete')
+        if (type(review['evidence']) is not list or not review['evidence']
+                or any(type(x) is not str or not x.strip() for x in review['evidence'])
+                or type(review['limitations']) is not list
+                or any(type(x) is not str or not x.strip() for x in review['limitations'])):
+            _reject('review evidence/limitations invalid')
+    except ImportApprovalError:
+        raise
+    except (KeyError,TypeError,ValueError) as error:
+        raise ImportApprovalError('invalid source review') from error
+
+
+def _validate_source_anchors(mapping, index):
+    try:
+        records={r['proposed_question_id']:r for r in index['records']}
+        if len(records)!=len(index['records']):
+            _reject('source index contains duplicate IDs')
+        for q in mapping['questions']:
+            origin=records[q['question_id']]
+            if any(q[k]!=origin[k] for k in ('source_section','source_question_number')):
+                _reject('question ID does not match original source location')
+            own=[p['span'] for p in q['question_pieces'] if p['kind']=='source']
+            if not own:
+                _reject('own question content missing')
+            for span in own:
+                if (type(span['start_byte']) is not int or type(span['end_byte']) is not int
+                        or span['start_byte']>=span['end_byte']
+                        or not any(span['package_role']==s['source_role'] and span['member']==s['member']
+                            and s['start_byte']<=span['start_byte']<span['end_byte']<=s['end_byte']
+                            for s in origin['question_spans'])):
+                    _reject('source piece escapes original indexed question')
+    except ImportApprovalError:
+        raise
+    except (KeyError,ValueError,TypeError) as error:
+        raise ImportApprovalError('invalid source anchors') from error
+
+
+def decide_chapter_source(mapping_path, review_path, config):
+    """Create a delegated decision only after real source/independent evidence checks."""
+    from .vector_ch12_delegated_models import ChapterSourceDecision
+    from joy_m2.config import PipelineConfig
+    if type(config) is not PipelineConfig:
+        _reject('exact PipelineConfig required')
+    grant=load_chapter_grant(config.repo_root,live=True)
+    if any(not isinstance(p,Path) or p.is_symlink() or not p.is_file() for p in (mapping_path,review_path)):
+        _reject('source decision evidence files required')
+    decision=ChapterSourceDecision(_canonical(dict(
+        schema_version='vector-ch12-delegated-source-decision-v1',
+        actor='codex_under_chapter_delegation',grant_sha256=grant.scope_sha256,
+        mapping=_json(mapping_path.read_bytes()),review=_json(review_path.read_bytes()))))
+    validate_chapter_source_decision(decision,config,live=True)
+    return decision
+
+
+def validate_chapter_source_decision(decision, config, *, live):
+    from .vector_ch12_delegated_models import ChapterSourceDecision
+    from . import vector_ch12 as source
+    from joy_m2.config import PipelineConfig
+    if type(config) is not PipelineConfig or type(decision) is not ChapterSourceDecision:
+        _reject('exact chapter source decision/config required')
+    ChapterSourceDecision(decision.payload)  # Revalidate even forged frozen instances.
+    grant=load_chapter_grant(config.repo_root,live=live)
+    value=_json(decision.payload)
+    if value['grant_sha256']!=grant.scope_sha256:
+        _reject('decision refers to untrusted grant')
+    mapping=value['mapping']
+    validate_selection(grant,mapping,())
+    index=_json(_read_bound(config.repo_root/INDEX_RELATIVE,INDEX_SHA256))
+    _validate_source_anchors(mapping,index)
+    record=_json(grant.scope_bytes)
+    paths=[Path(p['path']) for p in record['packages']]
+    source._validate_shape(mapping)
+    members=source._read_packages(*paths,mapping)
+    source._validate_mapping(mapping,members,config)
+    source._validate_images(mapping,members)
+    return mapping,members
+
+
+def validate_chapter_canonical(decision, package_root, config, *, live):
+    from .vector_ch12 import _canonical_files
+    mapping,members=validate_chapter_source_decision(decision,config,live=live)
+    if (not isinstance(package_root,Path) or not package_root.is_dir()
+            or any(p.is_symlink() for p in (package_root,*package_root.parents))):
+        _reject('invalid canonical root')
+    config.require_staging_output(package_root)
+    expected=_canonical_files(mapping,members)
+    files={}
+    for path in package_root.rglob('*'):
+        if path.is_symlink() or not (path.is_dir() or path.is_file()):
+            _reject('unsafe canonical member')
+        if path.is_file(): files[path.relative_to(package_root).as_posix()]=path.read_bytes()
+    if files!=expected:
+        _reject('canonical differs from delegated source semantics or closure')
+    return {name:dict(sha256=sha256(data).hexdigest(),size_bytes=len(data))
+            for name,data in sorted(files.items())}
+
+
+def decide_chapter_import(source_decision, preflight, package_root, config, accepted_ids):
+    """Bind an actual READY preflight, never synthesize a human approval."""
+    from .vector_ch12_delegated_models import ChapterImportDecision
+    grant=load_chapter_grant(config.repo_root,live=True)
+    validate_selection(grant,_json(source_decision.payload)['mapping'],accepted_ids)
+    closure=validate_chapter_canonical(source_decision,package_root,config,live=True)
+    report=preflight.report
+    decision=ChapterImportDecision(report.batch_id,report.preflight_sha256,'V1.24',
+        report.parent_candidate_digest,
+        f'CHAPTER DELEGATED IMPORT BATCH {report.batch_id} {report.preflight_sha256} '
+        f'V1.24 PARENT {report.parent_candidate_digest} GRANT {grant.scope_sha256} SOURCE {source_decision.decision_sha256}',
+        grant.scope_sha256,source_decision.payload.decode(),_canonical(closure).decode())
+    validate_chapter_import(decision,preflight,package_root,config,live=True)
+    return decision
+
+
+def validate_chapter_import(decision, preflight, package_root, config, *, live):
+    from dataclasses import fields
+    from types import SimpleNamespace
+    from .vector_ch12_delegated_models import ChapterImportDecision,ChapterSourceDecision
+    from .v124_models import V124ImportPreflightResult
+    from .v124_verification import _preflight_payload
+    if type(decision) is not ChapterImportDecision or type(preflight) is not V124ImportPreflightResult:
+        _reject('exact delegated decision/preflight carriers required')
+    ChapterImportDecision(**{f.name:getattr(decision,f.name) for f in fields(decision)})
+    V124ImportPreflightResult(**{f.name:getattr(preflight,f.name) for f in fields(preflight)})
+    source=ChapterSourceDecision(decision.source_decision_json.encode())
+    closure=validate_chapter_canonical(source,package_root,config,live=live)
+    mapping=_json(source.payload)['mapping'];report=preflight.report
+    if (report.status!='READY FOR USER IMPORT APPROVAL' or report.blocking_errors or preflight.issues
+            or decision.batch_id!=report.batch_id or decision.batch_id!=mapping['batch_id']
+            or decision.preflight_sha256!=report.preflight_sha256
+            or decision.parent_candidate_digest!=report.parent_candidate_digest
+            or report.manifest_sha256!=closure['import_manifest.json']['sha256']
+            or _canonical(closure).decode()!=decision.canonical_closure_json
+            or tuple(q['question_id'] for q in mapping['questions'])!=tuple(c.proposed_question_id for c in preflight.candidates)):
+        _reject('delegated import does not bind source/canonical/READY preflight')
+    # This projection helper only consumes result data, not an approval. No
+    # temporary or fabricated manual approval is constructed for reconstruction.
+    payload=_preflight_payload(SimpleNamespace(preflight_result=preflight))
+    if sha256(_canonical(payload)+b'\n').hexdigest()!=report.preflight_sha256:
+        _reject('preflight digest does not reconstruct')

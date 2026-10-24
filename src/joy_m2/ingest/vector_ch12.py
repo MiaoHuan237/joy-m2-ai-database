@@ -214,8 +214,6 @@ def adapt_vector_ch12_from_mapping(textbook_path: Path, answers_path: Path,
                                   mapping_path: Path, approval: SourceMappingApproval,
                                   output_dir: Path, config: PipelineConfig
                                   ) -> V124AdaptedImportPackage:
-    from .v124_models import V124AdaptedImportPackage
-    from .v124_manifest import load_v124_import_manifest
     inputs = (textbook_path, answers_path, mapping_path)
     _check_arguments(inputs, output_dir, config)
     raw = _read_input(mapping_path, 'source mapping')
@@ -225,15 +223,35 @@ def adapt_vector_ch12_from_mapping(textbook_path: Path, answers_path: Path,
     _validate_mapping(mapping, members, config)
     _validate_images(mapping, members)
     _validate_approval(mapping, approval)
-    files = _canonical_files(mapping, members)
-    validated = []
-    def validate(root):
-        validated.append(load_v124_import_manifest(root/'import_manifest.json'))
     def recheck():
         _recheck_inputs(inputs, raw, mapping)
         _validate_approval(mapping, approval)
-    _publish_files(output_dir, config, files, recheck, validate)
-    return V124AdaptedImportPackage(output_dir, output_dir/'import_manifest.json', validated[0])
+    return _publish_canonical_mapping(mapping,members,output_dir,config,recheck)
+
+
+def adapt_vector_ch12_delegated(decision, output_dir: Path, config: PipelineConfig):
+    """Explicit chapter-delegated entry; historical manual entry is unchanged."""
+    from .vector_ch12_delegation import load_chapter_grant,validate_chapter_source_decision
+    grant=load_chapter_grant(config.repo_root,live=True)
+    paths=tuple(Path(p['path']) for p in json.loads(grant.scope_bytes)['packages'])
+    _check_arguments(paths,output_dir,config)
+    mapping,members=validate_chapter_source_decision(decision,config,live=True)
+    def recheck():
+        current,current_members=validate_chapter_source_decision(decision,config,live=True)
+        if current!=mapping or current_members!=members:
+            raise InputFormatError('delegated source changed during adaptation')
+    return _publish_canonical_mapping(mapping,members,output_dir,config,recheck)
+
+
+def _publish_canonical_mapping(mapping,members,output_dir,config,recheck):
+    from .v124_models import V124AdaptedImportPackage
+    from .v124_manifest import load_v124_import_manifest
+    files=_canonical_files(mapping,members)
+    validated=[]
+    def validate(root):
+        validated.append(load_v124_import_manifest(root/'import_manifest.json'))
+    _publish_files(output_dir,config,files,recheck,validate)
+    return V124AdaptedImportPackage(output_dir,output_dir/'import_manifest.json',validated[0])
 
 
 @dataclass(frozen=True)

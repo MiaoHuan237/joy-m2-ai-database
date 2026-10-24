@@ -5,6 +5,8 @@ from pathlib import Path
 import tempfile
 import unittest
 import zipfile
+import copy
+from unittest.mock import patch
 
 from joy_m2.errors import ImportApprovalError
 from joy_m2.ingest import vector_ch12_delegation as subject
@@ -138,3 +140,177 @@ class GrantTests(unittest.TestCase):
         with self.assertRaises(ImportApprovalError): self.load(live='yes')
         self.scope.unlink()
         with self.assertRaises(ImportApprovalError): self.load()
+
+
+class SourceEvidenceTests(unittest.TestCase):
+    def setUp(self):
+        from tests.fixtures.vector_ch12.mapping_fixture import fixture
+        self.mapping, self.members=fixture()
+        self.review=dict(schema_version='vector-ch12-independent-content-review-v1',
+            executor_id='/root',reviewer_id='/root/independent-review',
+            mapping_sha256=digest(raw(self.mapping)),question_ids=[q['question_id'] for q in self.mapping['questions']],
+            critical=0,important=0,conditions_complete=True,source_unchanged=True,
+            images_owned=True,answers_truthful=True,evidence=['Synthetic independent source check'],limitations=[])
+        self.index={'records':[dict(proposed_question_id=q['question_id'],
+            source_section=q['source_section'],source_question_number=q['source_question_number'],
+            question_spans=[dict(source_role='textbook',member='source.mmd',start_byte=s,end_byte=e)])
+            for q,(s,e) in zip(self.mapping['questions'],((5,9),(10,14)))]}
+
+    def test_review_binds_exact_mapping_order_and_separate_reviewer(self):
+        subject._validate_review(self.review,self.mapping)
+        subject._validate_source_anchors(self.mapping,self.index)
+
+    def test_review_rejects_unresolved_findings_self_review_missing_or_inexact_scope(self):
+        for key,value in (('important',1),('critical',True),('reviewer_id','/root'),
+                          ('mapping_sha256','0'*64),('question_ids',[]),('evidence',[]),
+                          ('conditions_complete',False),('source_unchanged',False),
+                          ('images_owned',False),('answers_truthful',False)):
+            review=copy.deepcopy(self.review);review[key]=value
+            with self.subTest(key=key),self.assertRaises(ImportApprovalError):
+                subject._validate_review(review,self.mapping)
+        review=copy.deepcopy(self.review);del review['reviewer_id']
+        with self.assertRaises(ImportApprovalError): subject._validate_review(review,self.mapping)
+
+    def test_same_id_with_another_question_span_cannot_claim_scope(self):
+        mapping=copy.deepcopy(self.mapping)
+        mapping['questions'][0]['question_pieces'][1]['span']=mapping['questions'][1]['question_pieces'][1]['span']
+        with self.assertRaises(ImportApprovalError): subject._validate_source_anchors(mapping,self.index)
+
+    def test_own_source_piece_cannot_extend_into_next_unit(self):
+        mapping=copy.deepcopy(self.mapping)
+        mapping['questions'][0]['question_pieces'][1]['span']['end_byte']=14
+        with self.assertRaises(ImportApprovalError): subject._validate_source_anchors(mapping,self.index)
+
+    def test_shared_condition_alone_does_not_identify_a_complete_question(self):
+        mapping=copy.deepcopy(self.mapping)
+        mapping['questions'][0]['question_pieces']=mapping['questions'][0]['question_pieces'][:1]
+        with self.assertRaises(ImportApprovalError): subject._validate_source_anchors(mapping,self.index)
+
+    def test_decision_actor_is_explicit_and_not_a_human_approval_string(self):
+        from joy_m2.ingest.vector_ch12_delegated_models import ChapterSourceDecision
+        p=dict(schema_version='vector-ch12-delegated-source-decision-v1',
+               actor='codex_under_chapter_delegation',grant_sha256='a'*64,
+               mapping=self.mapping,review=self.review)
+        decision=ChapterSourceDecision(raw(p))
+        self.assertEqual(decision.decision_sha256,digest(raw(p)))
+        self.assertEqual(decision.mapping_sha256,digest(raw(self.mapping)))
+        p['actor']='USER APPROVED SOURCE MAPPING OSM-M2B12-C '+decision.mapping_sha256
+        with self.assertRaises(ImportApprovalError): ChapterSourceDecision(raw(p))
+
+
+class SourceDecisionIntegrationTests(unittest.TestCase):
+    """Only trust anchors are substituted; real ZIP, spans, taxonomy and source API."""
+    def setUp(self):
+        GrantTests.setUp(self)
+        from tests.fixtures.vector_ch12.mapping_fixture import fixture
+        from joy_m2.config import PipelineConfig
+        self.mapping,self.members=fixture()
+        # Adopt the independent fixture's actual source IDs, not model-generated content.
+        self.ids=[q.replace('EX12B','EX12A') for q in self.ids]
+        self.record['authorized_question_ids']=self.ids
+        self.record['S04_exact_human_mapping']['question_ids']=self.ids[:14]
+        self.record['later_processing_question_ids']=self.ids[14:]
+        for role,p,mp in zip(('textbook','answers'),self.record['packages'],self.mapping['packages']):
+            path=Path(p['path']);data=self.members[(role,'source.mmd')]
+            with zipfile.ZipFile(path,'w') as z:z.writestr('source.mmd',data)
+            p.update(zip_sha256=digest(path.read_bytes()),zip_size_bytes=path.stat().st_size,
+                     selected_mmd=dict(member='source.mmd',sha256=digest(data),size_bytes=len(data)))
+            mp.update(zip_sha256=p['zip_sha256'],zip_size_bytes=p['zip_size_bytes'])
+        import sqlite3
+        db=self.formal/'Joy_M2_Complete_Question_DB_V1_23.sqlite3'
+        db.unlink()  # This is the test-owned synthetic non-SQLite placeholder.
+        with sqlite3.connect(db) as connection:
+            connection.execute('CREATE TABLE complete_question_taxonomy_v2(taxonomy_kind TEXT,value TEXT)')
+            connection.execute("INSERT INTO complete_question_taxonomy_v2 VALUES('tag','vector')")
+        self.record['baseline']['sqlite_sha256']=digest(db.read_bytes())
+        self.persist()
+        self.config=PipelineConfig(repo_root=self.root)
+        self.mapping_path=self.root/'mapping.json';self.mapping_path.write_bytes(raw(self.mapping))
+        self.review_path=self.root/'review.json'
+        self.review=dict(schema_version='vector-ch12-independent-content-review-v1',executor_id='/root',
+            reviewer_id='/root/reviewer',mapping_sha256=digest(raw(self.mapping)),
+            question_ids=[q['question_id'] for q in self.mapping['questions']],critical=0,important=0,
+            conditions_complete=True,source_unchanged=True,images_owned=True,answers_truthful=True,
+            evidence=['Independent synthetic span/answer check'],limitations=['Only final answers'])
+        self.review_path.write_bytes(raw(self.review))
+        self.index={'records':[dict(proposed_question_id=q['question_id'],source_section='EX12A',
+            source_question_number=q['source_question_number'],question_spans=[dict(source_role='textbook',
+            member='source.mmd',start_byte=s,end_byte=e)]) for q,(s,e) in zip(self.mapping['questions'],((5,9),(10,14)))]}
+        (self.root/subject.INDEX_RELATIVE).parent.mkdir(parents=True,exist_ok=True)
+        (self.root/subject.INDEX_RELATIVE).write_bytes(raw(self.index))
+        self.addCleanup(patch.stopall)
+        # Patch only external trust pins for synthetic isolation. No writer is mocked.
+        patch.object(subject,'SCOPE_SHA256',self.pin).start()
+        patch.object(subject,'USER_SHA256',digest(self.user)).start()
+        patch.object(subject,'INDEX_SHA256',digest(raw(self.index))).start()
+
+    persist=GrantTests.persist
+    load=GrantTests.load
+
+    def test_source_decision_validates_real_inventory_mapping_and_taxonomy(self):
+        decision=subject.decide_chapter_source(self.mapping_path,self.review_path,self.config)
+        mapping,members=subject.validate_chapter_source_decision(decision,self.config,live=True)
+        self.assertEqual(mapping,self.mapping)
+        self.assertEqual(members,self.members)
+
+    def test_changed_source_or_mapping_review_blocks_decision(self):
+        decision=subject.decide_chapter_source(self.mapping_path,self.review_path,self.config)
+        Path(self.record['packages'][0]['path']).write_bytes(b'changed')
+        with self.assertRaises(ImportApprovalError):
+            subject.validate_chapter_source_decision(decision,self.config,live=True)
+
+    def test_delegated_adaptation_preserves_manual_canonical_bytes(self):
+        from joy_m2.ingest.vector_ch12 import adapt_vector_ch12_delegated, adapt_vector_ch12_from_mapping
+        from joy_m2.ingest.source_mapping import SourceMappingApproval
+        decision=subject.decide_chapter_source(self.mapping_path,self.review_path,self.config)
+        self.config.staging_root.mkdir(parents=True,exist_ok=True)
+        delegated=self.config.staging_root/'delegated'
+        manual=self.config.staging_root/'manual'
+        adapt_vector_ch12_delegated(decision,delegated,self.config)
+        md=digest(raw(self.mapping))
+        # Synthetic exact approval is confined to the independent comparison fixture.
+        approval=SourceMappingApproval('OSM-M2B12-C',md,f'USER APPROVED SOURCE MAPPING OSM-M2B12-C {md}')
+        adapt_vector_ch12_from_mapping(*(Path(p['path']) for p in self.record['packages']),
+            self.mapping_path,approval,manual,self.config)
+        tree=lambda p:{f.relative_to(p).as_posix():f.read_bytes() for f in p.rglob('*') if f.is_file()}
+        self.assertEqual(tree(delegated),tree(manual))
+        closure=subject.validate_chapter_canonical(decision,delegated,self.config,live=True)
+        self.assertIn('import_manifest.json',closure)
+        self.assertEqual(closure['import_manifest.json']['sha256'],digest((delegated/'import_manifest.json').read_bytes()))
+        (delegated/'question_records.json').write_bytes(b'forged extra file')
+        with self.assertRaises(ImportApprovalError):
+            subject.validate_chapter_canonical(decision,delegated,self.config,live=True)
+
+    def test_revoked_source_decision_cannot_create_canonical(self):
+        from joy_m2.ingest.vector_ch12 import adapt_vector_ch12_delegated
+        decision=subject.decide_chapter_source(self.mapping_path,self.review_path,self.config)
+        (self.scope.parent/'REVOKED').write_bytes(b'revoked')
+        output=self.config.staging_root/'must-not-exist'
+        with self.assertRaises(ImportApprovalError): adapt_vector_ch12_delegated(decision,output,self.config)
+        self.assertFalse(output.exists())
+
+    def test_import_decision_binds_actual_ready_preflight_and_canonical(self):
+        import shutil
+        from joy_m2.ingest.vector_ch12 import adapt_vector_ch12_delegated
+        from joy_m2.ingest.v124_preflight import preflight_v124_import
+        from joy_m2.ingest.v124_models import V124PreflightRequest
+        from joy_m2.models import ArtifactRef
+        from tests.integration.test_v124_preflight import BASELINE,BASELINE_SHA,BASELINE_SIZE,_contract
+        formal=self.formal/'Joy_M2_Complete_Question_DB_V1_23.sqlite3'
+        shutil.copyfile(BASELINE,formal)
+        shutil.copyfile(BASELINE.parent/'manifest.json',self.formal/'manifest.json')
+        self.record['baseline'].update(sqlite_sha256=BASELINE_SHA,
+            manifest_sha256=digest((self.formal/'manifest.json').read_bytes()))
+        self.persist();patch.object(subject,'SCOPE_SHA256',self.pin).start()
+        source=subject.decide_chapter_source(self.mapping_path,self.review_path,self.config)
+        self.config.staging_root.mkdir(parents=True,exist_ok=True)
+        package=adapt_vector_ch12_delegated(source,self.config.staging_root/'canonical',self.config)
+        result=preflight_v124_import(V124PreflightRequest(package.manifest,package.package_root,
+            ArtifactRef(formal,BASELINE_SHA,BASELINE_SIZE,'sqlite'),None,_contract()),self.config)
+        self.assertEqual(result.report.status,'READY FOR USER IMPORT APPROVAL')
+        decision=subject.decide_chapter_import(source,result,package.package_root,self.config,())
+        self.assertEqual(decision.preflight_sha256,result.report.preflight_sha256)
+        self.assertEqual(decision.parent_candidate_digest,'797ed06ca5833bac060c1603cada38a6f2aa9eb080a40d9dc892bba9a549773a')
+        with self.assertRaises(ImportApprovalError):
+            subject.decide_chapter_import(source,result,package.package_root,self.config,
+                [self.mapping['questions'][0]['question_id']])
