@@ -50,6 +50,33 @@ Updated: 2026-10-24 (Asia/Shanghai)
 
 ## Current task
 
+### V1.24 generation000008 promotion readiness — awaiting final human approval
+
+- Fixed eight-batch candidate digest
+  `3f14589da452207d0088cd44689aded7ffbadea0768a85d808a67ae526a5f3ab`;
+  S01–S08 counts16/14/4/14/11/32/20/3 =114. Historical24/24 PASS,
+  genuine human and delegated authority retained; no grant renewal or new import.
+- Two isolated dry-runs:76 files byte-identical,72 original images833787bytes,
+  formal-equivalent query677+114=791 unique published/selectable records.
+  Each formal verifier22/22 PASS. Formal production stillV1.23/677;
+  repository releases/V1.24 remains absent, no persistent query pointer change.
+- Actual release digest
+  `52f0fb8b88ad9abdf64968336b9244da11d67904fcd46c7929e5139d74fc6273`;
+  SQLite SHA `c43479ea211ac4e93b7a325c80042816858f0b585b6a7be763f758e62a1c8da6`;
+  manifest SHA `b59b69a86a8c8a59feff51af4b15f52c5bdb86113b3415015dff6f6ce088009b`.
+- Fresh maintained1596/1596 PASS; combined1607-test run also executed the
+  separately attributed legacy11tests:9PASS/2pre-existing knownFAIL. No new
+  exclusion, error, skip or expected failure. Executablelegacy54/54 andV118
+  validatorPASS. Focused30/30; separate implementation review C0/I0/M0.
+- All114content preserved:110worked_solution/4final_answers_only,
+  explanation missing114 and difficultyNULL114 unchanged.72image references
+  (54question/18solution) decode in output and isolated restored root.
+  Local1110-file archive/restore PASS;943protected identities andAGENTS unchanged.
+  Final evidence/Git outcome recorded in ignored readiness root, not asserted
+  as off-device data backup. See docs/reports/V124_PROMOTION_READINESS.md.
+- Stop: FINAL V1.24 PROMOTION AUTHORIZATION for actual release digest above.
+  No real promotion, noV1.25, no81held/8prerequisite intake or daily-task change.
+
 ### Vector chapter12 — authorized natural groups accepted (2026-10-24)
 
 - Actual generation000008, ledger S01(16)→S02(14)→S03(4)→S04(14)→S05(11)

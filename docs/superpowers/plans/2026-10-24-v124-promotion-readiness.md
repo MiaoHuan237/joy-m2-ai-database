@@ -31,35 +31,35 @@ historical ChapterVerificationRequest independently validates mixed authority.
 Files: new v124_promotion_models.py, two callable module scaffolds;
 test_v124_promotion_models.py.
 Produces exact counterpart typed contracts with ChapterVerificationRequest.
-- [ ] Add callable discovery assertions and approval wrong-version/digest/carrier
+- [x] Add callable discovery assertions and approval wrong-version/digest/carrier
   tests; import via guarded discovery so missing capability fails an assertion.
-- [ ] Run unit module; observe valid RED, implement exact models/stubs, GREEN.
-- [ ] Check no package-root exports/history changes; commit task files.
+- [x] Run unit module; observe valid RED, implement exact models/stubs, GREEN.
+- [x] Check no package-root exports/history changes; commit task files.
 
 ### Task 2: Primitives and independent formal verifier
 
 Files: v124_promotion_verification.py, tests/fixtures/v124_promotion.py,
 test_v124_promotion_primitives.py, integration verifier tests.
 Consumes Task1 carriers; produces verify_v124_promotion -> VerificationReport.
-- [ ] Construct test-owned literal SQL/JSON fixture from pinned candidate copy,
+- [x] Construct test-owned literal SQL/JSON fixture from pinned candidate copy,
   independent of production builder/verifier helpers; expectedcounts8/114/791,
   baseline schema task13-v123-formal-v1 and72 images.
-- [ ] Assert canonical JSON/SQL semantic normalization, path validation, valid
+- [x] Assert canonical JSON/SQL semantic normalization, path validation, valid
   fixture22PASS and parsed-invalid FAIL; run before implementation (behavior RED).
-- [ ] Implement independent literal projections/digests and22checks. Read actual
+- [x] Implement independent literal projections/digests and22checks. Read actual
   historic candidate via existing verifier; no decision creation.
-- [ ] Add tampered content/role/path/image/ledger/approval/schema and rehashed
+- [x] Add tampered content/role/path/image/ledger/approval/schema and rehashed
   manifest tests; preserve malformed JSON exception. GREEN targeted modules.
 
 ### Task 3: Deterministic builder and safety
 
 Files: v124_promotion.py, integration builder tests.
 Consumes typed request and verifier; produces V124PromotionArtifacts.
-- [ ] Assert two actual builds preserve677 and project114, include72images,
+- [x] Assert two actual builds preserve677 and project114, include72images,
  76files byte-identical; stub yields behavior RED, not fixture failure.
-- [ ] Implement pinned input validation, private copy, exact transaction/image
+- [x] Implement pinned input validation, private copy, exact transaction/image
   projection/artifacts and atomic no-replace with existing safety primitive.
-- [ ] Assert protected path/symlink/alias/existing output/foreign race rejection,
+- [x] Assert protected path/symlink/alias/existing output/foreign race rejection,
   failed verification cleanup and preserved source bytes; fix scope-limited
   defects RED/GREEN. Commit verified production/tests.
 
@@ -67,27 +67,46 @@ Consumes typed request and verifier; produces V124PromotionArtifacts.
 
 Files: same three modules/tests, no real release.
 Consumes successful Task3 output, exact V124ReleasePromotionApproval.
-- [ ] In isolated repo roots test wrong/absent approval means target absent;
+- [x] In isolated repo roots test wrong/absent approval means target absent;
   exact synthetic approval yields identical76files, wrong identity/no-replace
   fail, private mutation/verification failure cleanup, foreign mutation retained.
-- [ ] Implement publish_v124_release only after behavioral RED; run GREEN.
-- [ ] Fresh independent reviewer reads whole diff/spec/tests, C0/I0 required;
+- [x] Implement publish_v124_release only after behavioral RED; run GREEN.
+- [x] Fresh independent reviewer reads whole diff/spec/tests, C0/I0 required;
   remediate with regression RED/GREEN and required re-review.
 
 ### Task 5: Real readiness acceptance and handoff
 
 Runtime: data/staging/v124-promotion-readiness/ new numbered output.
 Docs: readiness report,PROJECT_STATE. No code except reviewed defects.
-- [ ] Load stored8batches, verify24/24; fingerprint all protected inputs/formals.
-- [ ] Build two new roots,verify22/22 each, compare all76bytes,791unique published
+- [x] Load stored8batches, verify24/24; fingerprint all protected inputs/formals.
+- [x] Build two new roots,verify22/22 each, compare all76bytes,791unique published
   formal-equivalent IDs; each batch count and all114source fields unchanged.
-- [ ] Query actualtag/content samples; decode all72images and preserve ordered
+- [x] Query actualtag/content samples; decode all72images and preserve ordered
   role/reference mappings; preserve final-only/partial/missing statuses.
-- [ ] Fresh serial maintained suite (all discovered maintained modules),
+- [x] Fresh serial maintained suite (all discovered maintained modules),
   historical formal verifiers/V118validator and identity replay; no skipped gate.
-- [ ] Existing explicit backup/restore, verify restored outputs/content/images;
+- [x] Existing explicit backup/restore, verify restored outputs/content/images;
   do not snapshot live SQLite sidecars. Preserve source/evidence backup closure.
-- [ ] Write exact release/hash/file-list/report, commit only scoped files,
+- [x] Write exact release/hash/file-list/report, commit only scoped files,
   ordinary push and remote check (network failure is recorded, not a data gate).
-- [ ] Stop FINAL V1.24 PROMOTION AUTHORIZATION with actualdigest and statement;
+- [x] Stop FINAL V1.24 PROMOTION AUTHORIZATION with actualdigest and statement;
   releases/V1.24 still absent; no claim of actual114formal additions yet.
+
+## Execution evidence — 2026-10-24
+
+Native/Inline completed within scope; independent Design/Plan and implementation
+review C0/I0 (implementation alsoM0). Fresh focused30/30. Two real roots76files
+byte-identical; candidate24/24, eachformal22/22; 1110-file local restore and72images
+PASS. Actual identity and full file list are in V124_PROMOTION_READINESS.md.
+
+Maintained means the established current set:77modules1596tests allPASS.
+The fresh combined78module1607test execution also ran the separately attributed
+legacy module11tests9PASS/2knownFAIL. This is not1607PASS. Existing exclusion is
+explicit in prior V123 readiness and vector Plan; no new test excluded/changed.
+Separate reviewer checked every completion and original-HEAD attribution rules.
+Executablelegacy54/54 andV118validatorPASS. No V124 assertion/hash weakened.
+
+Ordinary push attempted; HTTP2 transport failure is not a local readiness gate.
+Final docs commit/remote readback and evidence checkpoint outcome are recorded in
+the ignored readiness root. Local worktree/branch remain; no merge/history rewrite.
+Final exact release approval is still absent. No real publication was performed.
