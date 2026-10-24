@@ -50,7 +50,23 @@ Updated: 2026-10-24 (Asia/Shanghai)
 
 ## Current task
 
-### Vector chapter12 — limited delegation engineering verified (2026-10-24)
+### Vector chapter12 — delegated S04/S05 accepted; natural groups continue (2026-10-24)
+
+- Actual generation000005, ledger S01(16)→S02(14)→S03(4)→S04(14)→S05(11).
+  Accumulated59 candidate records, effective736; formalV1.23 stays677 published.
+  Current digest `e996ee86f2b73c30625d32c955fffdd17dd93002021a52138c1ee7bbd5ee93be`.
+  Both new generations independently verified24/24 and successful receipts
+  replayed with zero duplicate writes. Genuine human S04 source approval is
+  distinguished from delegated import; S05 source/import decisions are delegated.
+-203 destinations:59 accepted +82 later +54 held +8 prerequisites. Ten new
+  EX12B source-answer defects held before selection; no source correction.
+  Local archives/restores passed536 files(S04) and93 files(S05), including
+  transitive prior archive. Not Git/off-device data backup.
+- See `docs/reports/VECTOR_CH12_DELEGATION_EXECUTION.md` and actual ignored
+  batch receipts. Next: exact independently reviewed natural groups under the
+  fixed chapter grant; no new per-batch human gate within that authority.
+
+### Delegation engineering checkpoint (before real append)
 
 - Human exact revisedS04 mapping approval received for digest
   `66dad5f4b6e905eb5877b2a63c06ba24ab1feef9b8ecdf118443f5e987a00065`.
